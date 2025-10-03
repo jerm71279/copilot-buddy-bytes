@@ -1,3 +1,17 @@
+/**
+ * CaseStudy Component
+ * 
+ * Displays a detailed case study of how OberaConnect transformed their operations
+ * using ComplianceOS. Features customer success metrics, implementation details,
+ * and measurable results to demonstrate platform value.
+ * 
+ * Key sections:
+ * - Customer challenge and pain points
+ * - Solution implementation and architecture
+ * - Measurable results and ROI
+ * - Customer testimonial
+ */
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,8 +26,10 @@ import {
   Zap,
   FileCheck
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CaseStudy = () => {
+  const navigate = useNavigate();
   return (
     <section className="py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -268,9 +284,14 @@ const CaseStudy = () => {
           </CardContent>
         </Card>
 
-        {/* CTA */}
+        {/* CTA - Navigate to interactive demo selector */}
         <div className="text-center mt-12">
-          <Button variant="hero" size="lg" className="text-lg px-8">
+          <Button 
+            variant="hero" 
+            size="lg" 
+            className="text-lg px-8"
+            onClick={() => navigate('/demo')}
+          >
             See ComplianceOS in Action
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
