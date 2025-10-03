@@ -45,11 +45,23 @@ const Navigation = () => {
   };
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setIsMenuOpen(false);
+    // If not on homepage, navigate there first
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      // Wait for navigation, then scroll
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
+    setIsMenuOpen(false);
   };
 
   return (
@@ -74,6 +86,12 @@ const Navigation = () => {
               className="text-sm font-medium hover:text-accent transition-colors"
             >
               Features
+            </button>
+            <button 
+              onClick={() => scrollToSection('frameworks')}
+              className="text-sm font-medium hover:text-accent transition-colors"
+            >
+              Frameworks
             </button>
             <Link 
               to="/integrations"
@@ -145,6 +163,12 @@ const Navigation = () => {
                 className="text-sm font-medium hover:text-accent transition-colors py-2 text-left"
               >
                 Features
+              </button>
+              <button 
+                onClick={() => scrollToSection('frameworks')}
+                className="text-sm font-medium hover:text-accent transition-colors py-2 text-left"
+              >
+                Frameworks
               </button>
               <Link 
                 to="/integrations"
