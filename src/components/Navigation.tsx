@@ -131,6 +131,11 @@ const Navigation = () => {
               </>
             ) : (
               <>
+                <Link to="/demo">
+                  <Button variant="ghost" size="sm">
+                    View Demos
+                  </Button>
+                </Link>
                 <Link to="/auth">
                   <Button variant="ghost" size="sm">
                     Sign In
@@ -211,6 +216,11 @@ const Navigation = () => {
                   </>
                 ) : (
                   <>
+                    <Link to="/demo" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="ghost" size="sm" className="justify-start w-full">
+                        View Demos
+                      </Button>
+                    </Link>
                     <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
                       <Button variant="ghost" size="sm" className="justify-start w-full">
                         Sign In
