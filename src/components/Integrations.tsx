@@ -1,5 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { 
   Webhook, 
   Database, 
@@ -12,7 +14,8 @@ import {
   Users2,
   Building,
   CalendarCheck,
-  FileText
+  FileText,
+  ArrowRight
 } from "lucide-react";
 
 const integrationCategories = [
@@ -227,11 +230,17 @@ const Integrations = () => {
         <Card className="bg-gradient-hero border-0 text-white text-center">
           <CardHeader>
             <CardTitle className="text-2xl text-white mb-2">
-              Need a Custom Integration?
+              Ready to Connect Your Systems?
             </CardTitle>
-            <CardDescription className="text-white/80 text-base">
-              Our team can build custom adapters for your specific systems and workflows.
+            <CardDescription className="text-white/80 text-base mb-4">
+              See detailed integration guides, security information, and setup requirements for 200+ business systems.
             </CardDescription>
+            <Link to="/integrations">
+              <Button size="lg" variant="hero" className="bg-white text-primary hover:bg-white/90">
+                View All Integrations
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">

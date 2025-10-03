@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Shield, Menu } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,15 +19,15 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <button 
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          <Link 
+            to="/"
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <div className="w-8 h-8 rounded-lg bg-gradient-accent flex items-center justify-center">
               <Shield className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold">ComplianceOS</span>
-          </button>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
@@ -36,12 +37,12 @@ const Navigation = () => {
             >
               Features
             </button>
-            <button 
-              onClick={() => scrollToSection('frameworks')}
+            <Link 
+              to="/integrations"
               className="text-sm font-medium hover:text-accent transition-colors"
             >
-              Frameworks
-            </button>
+              Integrations
+            </Link>
             <button 
               onClick={() => scrollToSection('case-study')}
               className="text-sm font-medium hover:text-accent transition-colors"
@@ -85,12 +86,13 @@ const Navigation = () => {
               >
                 Features
               </button>
-              <button 
-                onClick={() => scrollToSection('frameworks')}
-                className="text-sm font-medium hover:text-accent transition-colors py-2 text-left"
+              <Link 
+                to="/integrations"
+                className="text-sm font-medium hover:text-accent transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
               >
-                Frameworks
-              </button>
+                Integrations
+              </Link>
               <button 
                 onClick={() => scrollToSection('case-study')}
                 className="text-sm font-medium hover:text-accent transition-colors py-2 text-left"
