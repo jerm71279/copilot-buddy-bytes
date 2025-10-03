@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { LogOut, Users } from "lucide-react";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 type Customer = {
   id: string;
@@ -108,7 +109,9 @@ const AdminDashboard = () => {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        <MCPServerStatus />
+        
         <Card>
           <CardHeader>
             <CardTitle>Customer Management</CardTitle>

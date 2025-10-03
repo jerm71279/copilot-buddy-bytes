@@ -699,6 +699,205 @@ export type Database = {
           },
         ]
       }
+      mcp_execution_logs: {
+        Row: {
+          customer_id: string
+          error_message: string | null
+          execution_time_ms: number | null
+          id: string
+          input_data: Json
+          output_data: Json | null
+          server_id: string
+          status: string
+          timestamp: string
+          tool_id: string | null
+          tool_name: string
+          user_id: string | null
+        }
+        Insert: {
+          customer_id: string
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          input_data: Json
+          output_data?: Json | null
+          server_id: string
+          status: string
+          timestamp?: string
+          tool_id?: string | null
+          tool_name: string
+          user_id?: string | null
+        }
+        Update: {
+          customer_id?: string
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          input_data?: Json
+          output_data?: Json | null
+          server_id?: string
+          status?: string
+          timestamp?: string
+          tool_id?: string | null
+          tool_name?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_execution_logs_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_servers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mcp_execution_logs_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mcp_resources: {
+        Row: {
+          access_count: number
+          created_at: string
+          description: string | null
+          id: string
+          last_accessed: string | null
+          metadata: Json | null
+          resource_type: string
+          resource_uri: string
+          server_id: string
+        }
+        Insert: {
+          access_count?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          last_accessed?: string | null
+          metadata?: Json | null
+          resource_type: string
+          resource_uri: string
+          server_id: string
+        }
+        Update: {
+          access_count?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          last_accessed?: string | null
+          metadata?: Json | null
+          resource_type?: string
+          resource_uri?: string
+          server_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_resources_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mcp_servers: {
+        Row: {
+          capabilities: Json
+          config: Json | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          endpoint_url: string | null
+          error_message: string | null
+          id: string
+          last_health_check: string | null
+          server_name: string
+          server_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          capabilities?: Json
+          config?: Json | null
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          endpoint_url?: string | null
+          error_message?: string | null
+          id?: string
+          last_health_check?: string | null
+          server_name: string
+          server_type: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          capabilities?: Json
+          config?: Json | null
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          endpoint_url?: string | null
+          error_message?: string | null
+          id?: string
+          last_health_check?: string | null
+          server_name?: string
+          server_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mcp_tools: {
+        Row: {
+          avg_execution_time_ms: number | null
+          created_at: string
+          description: string
+          execution_count: number
+          id: string
+          input_schema: Json
+          is_enabled: boolean
+          output_schema: Json | null
+          server_id: string
+          tool_name: string
+        }
+        Insert: {
+          avg_execution_time_ms?: number | null
+          created_at?: string
+          description: string
+          execution_count?: number
+          id?: string
+          input_schema: Json
+          is_enabled?: boolean
+          output_schema?: Json | null
+          server_id: string
+          tool_name: string
+        }
+        Update: {
+          avg_execution_time_ms?: number | null
+          created_at?: string
+          description?: string
+          execution_count?: number
+          id?: string
+          input_schema?: Json
+          is_enabled?: boolean
+          output_schema?: Json | null
+          server_id?: string
+          tool_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_tools_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ml_insights: {
         Row: {
           affected_users: string[] | null
