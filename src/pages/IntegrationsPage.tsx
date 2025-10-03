@@ -9,94 +9,149 @@ import { useNavigate } from "react-router-dom";
 
 const integrationDetails = [
   {
-    category: "ERP & Financial Systems",
+    category: "Billing & Revenue Management",
     systems: [
       {
-        name: "SAP ERP",
-        logo: "💼",
-        authMethod: "OAuth 2.0 + API Keys",
-        permissions: ["Read financial transactions", "Access GL accounts", "View purchase orders", "Read vendor data"],
-        dataAccessed: ["Transaction histories", "Chart of accounts", "Vendor records", "Purchase orders", "Financial reports"],
-        setupTime: "2-4 hours",
-        complexity: "Medium"
-      },
-      {
-        name: "Oracle NetSuite",
-        logo: "☁️",
-        authMethod: "Token-Based Auth",
-        permissions: ["Read financial data", "Access customer records", "View inventory", "Read reports"],
-        dataAccessed: ["Financial transactions", "Customer data", "Inventory levels", "Sales orders"],
-        setupTime: "1-2 hours",
-        complexity: "Low"
-      }
-    ]
-  },
-  {
-    category: "HRIS & HCM",
-    systems: [
-      {
-        name: "Workday",
-        logo: "👥",
-        authMethod: "OAuth 2.0",
-        permissions: ["Read employee data", "Access org structure", "View time tracking", "Read payroll summary"],
-        dataAccessed: ["Employee profiles", "Organizational hierarchy", "Time & attendance", "Benefits enrollment"],
+        name: "Onebill",
+        logo: "💳",
+        authMethod: "API Keys + OAuth 2.0",
+        permissions: ["Read billing data", "Access customer accounts", "View invoices", "Read payment history"],
+        dataAccessed: ["Customer billing records", "Invoice history", "Payment transactions", "Subscription data", "Revenue reports"],
         setupTime: "2-3 hours",
         complexity: "Medium"
       },
       {
-        name: "BambooHR",
-        logo: "🎋",
+        name: "rev.io",
+        logo: "💰",
         authMethod: "API Keys",
-        permissions: ["Read employee info", "Access time off", "View performance reviews"],
-        dataAccessed: ["Employee directory", "PTO balances", "Performance data", "Onboarding workflows"],
-        setupTime: "30 minutes",
-        complexity: "Low"
-      }
-    ]
-  },
-  {
-    category: "CRM & Sales",
-    systems: [
-      {
-        name: "Salesforce",
-        logo: "☁️",
-        authMethod: "OAuth 2.0",
-        permissions: ["Read accounts", "Access opportunities", "View contacts", "Read cases"],
-        dataAccessed: ["Account records", "Sales pipeline", "Contact information", "Support tickets"],
+        permissions: ["Read billing data", "Access revenue streams", "View subscriptions", "Read usage data"],
+        dataAccessed: ["Billing records", "Revenue analytics", "Subscription management", "Usage tracking"],
         setupTime: "1-2 hours",
         complexity: "Low"
-      },
-      {
-        name: "HubSpot",
-        logo: "🎯",
-        authMethod: "OAuth 2.0 / API Keys",
-        permissions: ["Read contacts", "Access deals", "View campaigns", "Read analytics"],
-        dataAccessed: ["Contact database", "Deal pipeline", "Marketing campaigns", "Website analytics"],
-        setupTime: "30 minutes",
-        complexity: "Low"
       }
     ]
   },
   {
-    category: "ITSM & Service Desk",
+    category: "Cloud & Identity Management",
     systems: [
       {
-        name: "ServiceNow",
-        logo: "🛠️",
-        authMethod: "OAuth 2.0 + Basic Auth",
-        permissions: ["Read incidents", "Access change requests", "View assets", "Read KB articles"],
-        dataAccessed: ["Incident tickets", "Change management", "Asset inventory", "Service catalog"],
+        name: "Microsoft Azure",
+        logo: "☁️",
+        authMethod: "OAuth 2.0 + Service Principal",
+        permissions: ["Read tenant data", "Access Azure AD", "View resources", "Manage subscriptions"],
+        dataAccessed: ["Tenant configuration", "User identities", "Resource inventory", "Security logs", "Billing data"],
+        setupTime: "2-4 hours",
+        complexity: "High"
+      },
+      {
+        name: "Azure Lighthouse",
+        logo: "🔦",
+        authMethod: "Azure AD Integration",
+        permissions: ["Manage customer tenants", "Delegate access", "View resources", "Read activity logs"],
+        dataAccessed: ["Multi-tenant management", "Customer resources", "Delegation records", "Activity logs"],
         setupTime: "3-4 hours",
         complexity: "High"
       },
       {
-        name: "Jira Service Management",
-        logo: "🎫",
-        authMethod: "OAuth 2.0 / API Tokens",
-        permissions: ["Read issues", "Access projects", "View workflows", "Read reports"],
-        dataAccessed: ["Service requests", "Project data", "Workflow states", "SLA metrics"],
+        name: "CIPP (CyberDrain)",
+        logo: "🔷",
+        authMethod: "API Keys + Azure Integration",
+        permissions: ["Read tenant data", "Access automation logs", "View security alerts", "Manage policies"],
+        dataAccessed: ["Tenant configurations", "Security baselines", "Automation logs", "Policy compliance"],
+        setupTime: "1-2 hours",
+        complexity: "Medium"
+      }
+    ]
+  },
+  {
+    category: "Network Security Infrastructure",
+    systems: [
+      {
+        name: "SonicWall",
+        logo: "🔥",
+        authMethod: "API Keys + SNMP",
+        permissions: ["Read firewall logs", "Access security events", "View VPN connections", "Read threat data"],
+        dataAccessed: ["Firewall logs", "Intrusion detection", "VPN activity", "Threat intelligence", "Network traffic"],
+        setupTime: "1-2 hours",
+        complexity: "Medium"
+      },
+      {
+        name: "UniFi",
+        logo: "📡",
+        authMethod: "Local Controller API",
+        permissions: ["Read network stats", "Access device info", "View client data", "Read event logs"],
+        dataAccessed: ["Network topology", "Device health", "Client connections", "Bandwidth usage", "Event logs"],
+        setupTime: "30 minutes",
+        complexity: "Low"
+      },
+      {
+        name: "MikroTik",
+        logo: "🌐",
+        authMethod: "API + SSH",
+        permissions: ["Read router config", "Access logs", "View interfaces", "Read routing tables"],
+        dataAccessed: ["Router configuration", "System logs", "Interface statistics", "Routing data", "Bandwidth metrics"],
+        setupTime: "1 hour",
+        complexity: "Medium"
+      }
+    ]
+  },
+  {
+    category: "Security & Access Management",
+    systems: [
+      {
+        name: "Keeper Security Vault",
+        logo: "🔐",
+        authMethod: "SSO + API Keys",
+        permissions: ["Read vault data", "Access shared folders", "View audit logs", "Manage policies"],
+        dataAccessed: ["Password vault entries", "Shared credentials", "Access logs", "Security policies", "User activity"],
+        setupTime: "1-2 hours",
+        complexity: "Low"
+      },
+      {
+        name: "Keeper Connection Manager",
+        logo: "🔑",
+        authMethod: "SSO + API Integration",
+        permissions: ["Read connection logs", "Access session data", "View policies", "Manage gateways"],
+        dataAccessed: ["Remote connections", "Session recordings", "Access policies", "Gateway health", "User sessions"],
+        setupTime: "2-3 hours",
+        complexity: "Medium"
+      }
+    ]
+  },
+  {
+    category: "RMM & Infrastructure Management",
+    systems: [
+      {
+        name: "NinjaOne",
+        logo: "🥷",
+        authMethod: "OAuth 2.0 + API Keys",
+        permissions: ["Read device data", "Access monitoring", "View tickets", "Read patch status"],
+        dataAccessed: ["Device inventory", "System health", "Patch management", "Backup status", "Ticket history", "Script logs"],
+        setupTime: "2-3 hours",
+        complexity: "Medium"
+      }
+    ]
+  },
+  {
+    category: "Cybersecurity & Threat Management",
+    systems: [
+      {
+        name: "Threatdown",
+        logo: "⚔️",
+        authMethod: "API Keys",
+        permissions: ["Read threat data", "Access alerts", "View quarantine", "Read scan logs"],
+        dataAccessed: ["Threat detections", "Security alerts", "Quarantine events", "Scan results", "Malware intelligence"],
         setupTime: "1 hour",
         complexity: "Low"
+      },
+      {
+        name: "OpenText (Webroot)",
+        logo: "🛡️",
+        authMethod: "API Keys + Console Access",
+        permissions: ["Read endpoint data", "Access threat intelligence", "View policies", "Read reports"],
+        dataAccessed: ["Endpoint protection status", "Threat intelligence", "Security policies", "Compliance reports", "Agent health"],
+        setupTime: "1-2 hours",
+        complexity: "Medium"
       }
     ]
   }
@@ -148,14 +203,14 @@ const IntegrationsPage = () => {
             <div className="max-w-3xl mx-auto text-center">
               <Badge className="mb-4 bg-white/20 text-white border-white/30">
                 <Zap className="h-3 w-3 mr-1" />
-                200+ Integrations Available
+                Complete MSP Stack Integration
               </Badge>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
                 Connect Your Business Systems
               </h1>
               <p className="text-xl text-white/90 mb-8">
-                Securely integrate with ERP, HRIS, CRM, ITSM, and more. The more systems you connect, 
-                the smarter your ML-powered insights become.
+                Securely integrate with billing platforms, Azure, network security, RMM, and cybersecurity tools. 
+                The more systems you connect, the smarter your ML-powered insights become.
               </p>
             </div>
           </div>
@@ -196,7 +251,7 @@ const IntegrationsPage = () => {
             <div className="text-center max-w-3xl mx-auto mb-12">
               <h2 className="text-3xl font-bold mb-4">Integration Details</h2>
               <p className="text-lg text-muted-foreground">
-                See exactly what permissions are needed, what data is accessed, and how long setup takes for each system.
+                See exactly what permissions are needed, what data is accessed, and how long setup takes for each MSP platform.
               </p>
             </div>
 
@@ -309,7 +364,7 @@ const IntegrationsPage = () => {
               <CardHeader className="text-center">
                 <CardTitle className="text-3xl mb-4">Ready to Connect Your Systems?</CardTitle>
                 <CardDescription className="text-lg">
-                  Start with 2-3 core systems and expand as you see the value. 
+                  Start with your core MSP systems and expand as you see the value. 
                   The more you connect, the smarter your operational intelligence becomes.
                 </CardDescription>
               </CardHeader>

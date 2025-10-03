@@ -20,123 +20,53 @@ import {
 
 const integrationCategories = [
   {
-    category: "ERP & Financial",
+    category: "Billing & Revenue",
     icon: Building,
     integrations: [
-      { name: "SAP", logo: "💎" },
-      { name: "Oracle NetSuite", logo: "📈" },
-      { name: "Microsoft Dynamics", logo: "🔷" },
-      { name: "Workday Financial", logo: "💼" },
+      { name: "Onebill", logo: "💳" },
+      { name: "rev.io", logo: "💰" },
     ],
   },
   {
-    category: "HRIS & HCM",
-    icon: Users2,
-    integrations: [
-      { name: "Workday", logo: "👥" },
-      { name: "BambooHR", logo: "🎋" },
-      { name: "ADP", logo: "💼" },
-      { name: "UKG", logo: "⚙️" },
-    ],
-  },
-  {
-    category: "CRM & Sales",
-    icon: MessageSquare,
-    integrations: [
-      { name: "Salesforce", logo: "☁️" },
-      { name: "HubSpot", logo: "🧡" },
-      { name: "Microsoft Dynamics", logo: "🔷" },
-      { name: "Zoho CRM", logo: "📊" },
-    ],
-  },
-  {
-    category: "ITSM & Service Desk",
-    icon: GitBranch,
-    integrations: [
-      { name: "ServiceNow", logo: "🔧" },
-      { name: "Jira Service Mgmt", logo: "📋" },
-      { name: "Freshservice", logo: "🍃" },
-      { name: "ManageEngine", logo: "⚙️" },
-    ],
-  },
-  {
-    category: "ATS & Recruiting",
-    icon: Users2,
-    integrations: [
-      { name: "Greenhouse", logo: "🌱" },
-      { name: "Lever", logo: "🎯" },
-      { name: "iCIMS", logo: "👔" },
-      { name: "Workable", logo: "💼" },
-    ],
-  },
-  {
-    category: "LMS & Training",
-    icon: CalendarCheck,
-    integrations: [
-      { name: "Docebo", logo: "📚" },
-      { name: "TalentLMS", logo: "🎓" },
-      { name: "Cornerstone", logo: "📖" },
-      { name: "LinkedIn Learning", logo: "🔗" },
-    ],
-  },
-  {
-    category: "SCM & Logistics",
-    icon: Database,
-    integrations: [
-      { name: "Oracle SCM", logo: "📦" },
-      { name: "SAP Ariba", logo: "🚚" },
-      { name: "Kinaxis", logo: "⛓️" },
-      { name: "Blue Yonder", logo: "🌍" },
-    ],
-  },
-  {
-    category: "BI & Analytics",
-    icon: Webhook,
-    integrations: [
-      { name: "Power BI", logo: "📊" },
-      { name: "Tableau", logo: "📈" },
-      { name: "Looker", logo: "👁️" },
-      { name: "Domo", logo: "📉" },
-    ],
-  },
-  {
-    category: "Security & GRC",
-    icon: Lock,
-    integrations: [
-      { name: "CrowdStrike", logo: "🛡️" },
-      { name: "Vanta", logo: "✅" },
-      { name: "Splunk", logo: "🔍" },
-      { name: "LogicGate", logo: "🔐" },
-    ],
-  },
-  {
-    category: "Cloud Infrastructure",
+    category: "Cloud & Identity Management",
     icon: Cloud,
     integrations: [
-      { name: "AWS", logo: "☁️" },
-      { name: "Azure", logo: "🔷" },
-      { name: "GCP", logo: "🌐" },
-      { name: "Kubernetes", logo: "⚓" },
+      { name: "Azure", logo: "☁️" },
+      { name: "Lighthouse", logo: "🔦" },
+      { name: "CIPP", logo: "🔷" },
     ],
   },
   {
-    category: "Document & Assets",
-    icon: FileText,
+    category: "Network Security",
+    icon: Lock,
     integrations: [
-      { name: "M-Files", logo: "📁" },
-      { name: "SharePoint", logo: "📂" },
-      { name: "IBM Maximo", logo: "🏭" },
-      { name: "DocuWare", logo: "📄" },
+      { name: "SonicWall", logo: "🔥" },
+      { name: "UniFi", logo: "📡" },
+      { name: "MikroTik", logo: "🌐" },
     ],
   },
   {
-    category: "Marketing Automation",
-    icon: Mail,
+    category: "Security & Access Management",
+    icon: Lock,
     integrations: [
-      { name: "HubSpot", logo: "🧡" },
-      { name: "Marketo", logo: "🎯" },
-      { name: "Pardot", logo: "☁️" },
-      { name: "Mailchimp", logo: "📧" },
+      { name: "Keeper Security", logo: "🔐" },
+      { name: "Keeper MSP", logo: "🛡️" },
+      { name: "Connection Manager", logo: "🔑" },
+    ],
+  },
+  {
+    category: "RMM & Infrastructure",
+    icon: GitBranch,
+    integrations: [
+      { name: "NinjaOne", logo: "🥷" },
+    ],
+  },
+  {
+    category: "Cybersecurity & Threat Management",
+    icon: Lock,
+    integrations: [
+      { name: "Threatdown", logo: "⚔️" },
+      { name: "OpenText", logo: "🛡️" },
     ],
   },
 ];
@@ -145,17 +75,17 @@ const apiFeatures = [
   {
     icon: Webhook,
     title: "Real-Time Cross-System Sync",
-    description: "Bi-directional data flow across ERP, HRIS, CRM, ITSM, and all connected systems with compliance tagging preserved.",
+    description: "Bi-directional data flow across billing, Azure, RMM, network security, and all connected MSP systems with compliance tagging preserved.",
   },
   {
     icon: Database,
     title: "Intelligent Schema Mapping",
-    description: "AI-powered field mapping across systems with automatic clause linkage—map ERP controls to SOC 2, HRIS logs to ISO 27001.",
+    description: "AI-powered field mapping across systems with automatic clause linkage—map Azure controls to SOC 2, RMM logs to ISO 27001.",
   },
   {
     icon: FileSpreadsheet,
     title: "Universal Workflow Engine",
-    description: "Automate processes that span multiple systems while maintaining full audit trails and compliance tagging.",
+    description: "Automate MSP processes that span multiple systems while maintaining full audit trails and compliance tagging.",
   },
 ];
 
@@ -169,7 +99,7 @@ const Integrations = () => {
             Unified System Integration
           </h2>
           <p className="text-xl text-muted-foreground">
-            Connect your entire business tech stack—ERP, HRIS, CRM, ITSM, ATS, LMS, SCM, and more. 
+            Connect your MSP tech stack—billing, cloud management, network security, RMM, and cybersecurity. 
             Our clause-linked architecture maps operational data across all systems for unified intelligence and compliance.
           </p>
         </div>
@@ -233,7 +163,7 @@ const Integrations = () => {
               Ready to Connect Your Systems?
             </CardTitle>
             <CardDescription className="text-white/80 text-base mb-4">
-              See detailed integration guides, security information, and setup requirements for 200+ business systems.
+              See detailed integration guides, security information, and setup requirements for all MSP platforms.
             </CardDescription>
             <Link to="/integrations">
               <Button size="lg" variant="hero" className="bg-white text-primary hover:bg-white/90">
