@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
+import MLIntelligence from "@/components/MLIntelligence";
 import Frameworks from "@/components/Frameworks";
 import DashboardPreview from "@/components/DashboardPreview";
 import CaseStudy from "@/components/CaseStudy";
@@ -20,6 +21,7 @@ const Index = () => {
         <div id="features">
           <Features />
         </div>
+        <MLIntelligence />
         <div id="frameworks">
           <Frameworks />
         </div>

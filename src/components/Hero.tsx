@@ -36,9 +36,9 @@ const Hero = () => {
 
           {/* Subheading */}
           <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Unify all your business systems—ERP, HRIS, CRM, ITSM, and more—to identify bottlenecks, 
-            optimize workflows, and solve operational problems while maintaining continuous compliance across every department.
-            Trusted by OberaConnect and 500+ enterprises.
+            Connect all your business systems—ERP, HRIS, CRM, ITSM, SCM, and more—to unlock ML-powered insights. 
+            The more systems you connect, the smarter it gets. Predict problems, optimize workflows, and solve operational challenges 
+            while maintaining continuous compliance. Trusted by OberaConnect and 500+ enterprises.
           </p>
 
           {/* CTA Buttons */}
