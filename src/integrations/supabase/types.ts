@@ -164,6 +164,69 @@ export type Database = {
           },
         ]
       }
+      case_studies: {
+        Row: {
+          challenge: string
+          company_name: string
+          created_at: string
+          id: string
+          industry: string
+          is_featured: boolean
+          is_published: boolean
+          metrics: Json
+          published_date: string | null
+          results: Json
+          slug: string
+          solution: string
+          summary: string
+          testimonial_author: string | null
+          testimonial_quote: string | null
+          testimonial_role: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          challenge: string
+          company_name: string
+          created_at?: string
+          id?: string
+          industry: string
+          is_featured?: boolean
+          is_published?: boolean
+          metrics: Json
+          published_date?: string | null
+          results: Json
+          slug: string
+          solution: string
+          summary: string
+          testimonial_author?: string | null
+          testimonial_quote?: string | null
+          testimonial_role?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          challenge?: string
+          company_name?: string
+          created_at?: string
+          id?: string
+          industry?: string
+          is_featured?: boolean
+          is_published?: boolean
+          metrics?: Json
+          published_date?: string | null
+          results?: Json
+          slug?: string
+          solution?: string
+          summary?: string
+          testimonial_author?: string | null
+          testimonial_quote?: string | null
+          testimonial_role?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       compliance_controls: {
         Row: {
           automation_level: string
@@ -379,6 +442,10 @@ export type Database = {
           phone: string | null
           plan_type: string
           status: string
+          subscription_end_date: string | null
+          subscription_plan_id: string | null
+          subscription_start_date: string | null
+          subscription_status: string | null
           updated_at: string
           user_id: string | null
         }
@@ -391,6 +458,10 @@ export type Database = {
           phone?: string | null
           plan_type?: string
           status?: string
+          subscription_end_date?: string | null
+          subscription_plan_id?: string | null
+          subscription_start_date?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -403,10 +474,183 @@ export type Database = {
           phone?: string | null
           plan_type?: string
           status?: string
+          subscription_end_date?: string | null
+          subscription_plan_id?: string | null
+          subscription_start_date?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "customers_subscription_plan_id_fkey"
+            columns: ["subscription_plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dashboard_widgets: {
+        Row: {
+          created_at: string
+          customer_id: string
+          height: number
+          id: string
+          is_visible: boolean
+          position_x: number
+          position_y: number
+          updated_at: string
+          user_id: string
+          widget_config: Json
+          widget_type: string
+          width: number
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          height: number
+          id?: string
+          is_visible?: boolean
+          position_x: number
+          position_y: number
+          updated_at?: string
+          user_id: string
+          widget_config: Json
+          widget_type: string
+          width: number
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          height?: number
+          id?: string
+          is_visible?: boolean
+          position_x?: number
+          position_y?: number
+          updated_at?: string
+          user_id?: string
+          widget_config?: Json
+          widget_type?: string
+          width?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dashboard_widgets_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      evidence_files: {
+        Row: {
+          control_id: string | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          framework_id: string | null
+          id: string
+          storage_path: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          control_id?: string | null
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          framework_id?: string | null
+          id?: string
+          storage_path: string
+          uploaded_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          control_id?: string | null
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          framework_id?: string | null
+          id?: string
+          storage_path?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidence_files_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_files_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_frameworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integration_credentials: {
+        Row: {
+          created_at: string
+          credential_type: string
+          customer_id: string
+          encrypted_data: string
+          expires_at: string | null
+          id: string
+          integration_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          credential_type: string
+          customer_id: string
+          encrypted_data: string
+          expires_at?: string | null
+          id?: string
+          integration_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          credential_type?: string
+          customer_id?: string
+          encrypted_data?: string
+          expires_at?: string | null
+          id?: string
+          integration_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_credentials_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "integration_credentials_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "integrations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       integrations: {
         Row: {
@@ -564,6 +808,53 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          is_read: boolean
+          link_url: string | null
+          message: string
+          notification_type: string
+          severity: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_read?: boolean
+          link_url?: string | null
+          message: string
+          notification_type: string
+          severity?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_read?: boolean
+          link_url?: string | null
+          message?: string
+          notification_type?: string
+          severity?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prediction_history: {
         Row: {
           actual_value: Json | null
@@ -618,6 +909,51 @@ export type Database = {
           },
         ]
       }
+      subscription_plans: {
+        Row: {
+          created_at: string
+          features: Json
+          id: string
+          is_active: boolean
+          max_controls: number | null
+          max_frameworks: number | null
+          max_team_members: number | null
+          plan_name: string
+          plan_tier: string
+          price_monthly: number | null
+          price_yearly: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          features: Json
+          id?: string
+          is_active?: boolean
+          max_controls?: number | null
+          max_frameworks?: number | null
+          max_team_members?: number | null
+          plan_name: string
+          plan_tier: string
+          price_monthly?: number | null
+          price_yearly?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          features?: Json
+          id?: string
+          is_active?: boolean
+          max_controls?: number | null
+          max_frameworks?: number | null
+          max_team_members?: number | null
+          plan_name?: string
+          plan_tier?: string
+          price_monthly?: number | null
+          price_yearly?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       system_access_logs: {
         Row: {
           access_type: string
@@ -655,6 +991,149 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "system_access_logs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      testimonials: {
+        Row: {
+          author_name: string
+          author_role: string
+          company_name: string
+          created_at: string
+          display_order: number | null
+          id: string
+          is_featured: boolean
+          is_published: boolean
+          quote: string
+          rating: number
+          updated_at: string
+        }
+        Insert: {
+          author_name: string
+          author_role: string
+          company_name: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          quote: string
+          rating: number
+          updated_at?: string
+        }
+        Update: {
+          author_name?: string
+          author_role?: string
+          company_name?: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          quote?: string
+          rating?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      use_cases: {
+        Row: {
+          created_at: string
+          description: string
+          display_order: number | null
+          frameworks: string[] | null
+          icon_name: string | null
+          id: string
+          industry: string
+          is_featured: boolean
+          is_published: boolean
+          key_features: string[] | null
+          metrics: Json | null
+          problem_statement: string
+          solution_approach: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          display_order?: number | null
+          frameworks?: string[] | null
+          icon_name?: string | null
+          id?: string
+          industry: string
+          is_featured?: boolean
+          is_published?: boolean
+          key_features?: string[] | null
+          metrics?: Json | null
+          problem_statement: string
+          solution_approach: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          display_order?: number | null
+          frameworks?: string[] | null
+          icon_name?: string | null
+          id?: string
+          industry?: string
+          is_featured?: boolean
+          is_published?: boolean
+          key_features?: string[] | null
+          metrics?: Json | null
+          problem_statement?: string
+          solution_approach?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          customer_id: string | null
+          department: string | null
+          full_name: string | null
+          id: string
+          job_title: string | null
+          preferences: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          customer_id?: string | null
+          department?: string | null
+          full_name?: string | null
+          id?: string
+          job_title?: string | null
+          preferences?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          customer_id?: string | null
+          department?: string | null
+          full_name?: string | null
+          id?: string
+          job_title?: string | null
+          preferences?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_customer_id_fkey"
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
