@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { LogOut, BarChart3, TrendingUp, Shield, Users, AlertCircle, CheckCircle } from "lucide-react";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 
 const ExecutiveDashboard = () => {
   const navigate = useNavigate();
@@ -211,6 +212,11 @@ const ExecutiveDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        <DepartmentAIAssistant 
+          department="executive" 
+          departmentLabel="Executive Leadership" 
+        />
       </div>
     </div>
   );

@@ -2,3 +2,6 @@ project_id = "olrpexessehcijdvogxo"
 
 [functions.mcp-server]
 verify_jwt = false
+
+[functions.department-assistant]
+verify_jwt = false

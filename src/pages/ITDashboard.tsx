@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { LogOut, Server, Activity, AlertCircle, Zap } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 
 const ITDashboard = () => {
   const navigate = useNavigate();
@@ -175,6 +176,11 @@ const ITDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        <DepartmentAIAssistant 
+          department="it" 
+          departmentLabel="IT & Security" 
+        />
       </div>
     </div>
   );

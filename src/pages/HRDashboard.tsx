@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { LogOut, Users, UserCheck, Clock, TrendingUp } from "lucide-react";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 
 const HRDashboard = () => {
   const navigate = useNavigate();
@@ -162,6 +163,11 @@ const HRDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        <DepartmentAIAssistant 
+          department="hr" 
+          departmentLabel="Human Resources" 
+        />
       </div>
     </div>
   );

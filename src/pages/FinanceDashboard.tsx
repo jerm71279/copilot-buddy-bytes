@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 import { LogOut, DollarSign, Users, TrendingUp, CreditCard } from "lucide-react";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 
 const FinanceDashboard = () => {
   const navigate = useNavigate();
@@ -176,6 +177,11 @@ const FinanceDashboard = () => {
             </Table>
           </CardContent>
         </Card>
+
+        <DepartmentAIAssistant 
+          department="finance" 
+          departmentLabel="Finance" 
+        />
       </div>
     </div>
   );

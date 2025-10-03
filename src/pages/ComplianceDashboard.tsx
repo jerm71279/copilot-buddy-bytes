@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { LogOut, Shield, CheckCircle, AlertTriangle, FileText } from "lucide-react";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 
 const ComplianceDashboard = () => {
   const navigate = useNavigate();
@@ -169,6 +170,11 @@ const ComplianceDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        <DepartmentAIAssistant 
+          department="compliance" 
+          departmentLabel="Compliance & GRC" 
+        />
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { LogOut, TrendingUp, Workflow, AlertTriangle, Lightbulb } from "lucide-react";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 
 const OperationsDashboard = () => {
   const navigate = useNavigate();
@@ -174,6 +175,11 @@ const OperationsDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        <DepartmentAIAssistant 
+          department="operations" 
+          departmentLabel="Operations" 
+        />
       </div>
     </div>
   );
