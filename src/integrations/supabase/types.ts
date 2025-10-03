@@ -14,6 +14,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      anomaly_detections: {
+        Row: {
+          affected_user_id: string | null
+          anomaly_type: string
+          confidence_score: number | null
+          created_at: string
+          customer_id: string
+          description: string
+          detection_method: string
+          id: string
+          raw_data: Json | null
+          resolved_at: string | null
+          severity: string
+          status: string
+          system_name: string
+        }
+        Insert: {
+          affected_user_id?: string | null
+          anomaly_type: string
+          confidence_score?: number | null
+          created_at?: string
+          customer_id: string
+          description: string
+          detection_method: string
+          id?: string
+          raw_data?: Json | null
+          resolved_at?: string | null
+          severity: string
+          status?: string
+          system_name: string
+        }
+        Update: {
+          affected_user_id?: string | null
+          anomaly_type?: string
+          confidence_score?: number | null
+          created_at?: string
+          customer_id?: string
+          description?: string
+          detection_method?: string
+          id?: string
+          raw_data?: Json | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          system_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anomaly_detections_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action_details: Json | null
@@ -57,6 +113,136 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      behavioral_events: {
+        Row: {
+          action: string
+          context: Json | null
+          created_at: string
+          customer_id: string
+          duration_ms: number | null
+          event_type: string
+          id: string
+          success: boolean
+          system_name: string
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          context?: Json | null
+          created_at?: string
+          customer_id: string
+          duration_ms?: number | null
+          event_type: string
+          id?: string
+          success?: boolean
+          system_name: string
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          context?: Json | null
+          created_at?: string
+          customer_id?: string
+          duration_ms?: number | null
+          event_type?: string
+          id?: string
+          success?: boolean
+          system_name?: string
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "behavioral_events_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_controls: {
+        Row: {
+          automation_level: string
+          category: string
+          control_id: string
+          control_name: string
+          created_at: string
+          description: string | null
+          framework_id: string
+          id: string
+          required_evidence: string[] | null
+        }
+        Insert: {
+          automation_level?: string
+          category: string
+          control_id: string
+          control_name: string
+          created_at?: string
+          description?: string | null
+          framework_id: string
+          id?: string
+          required_evidence?: string[] | null
+        }
+        Update: {
+          automation_level?: string
+          category?: string
+          control_id?: string
+          control_name?: string
+          created_at?: string
+          description?: string | null
+          framework_id?: string
+          id?: string
+          required_evidence?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_controls_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_frameworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_frameworks: {
+        Row: {
+          created_at: string
+          description: string | null
+          framework_code: string
+          framework_name: string
+          id: string
+          industry: string
+          is_active: boolean
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          framework_code: string
+          framework_name: string
+          id?: string
+          industry: string
+          is_active?: boolean
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          framework_code?: string
+          framework_name?: string
+          id?: string
+          industry?: string
+          is_active?: boolean
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: []
       }
       compliance_reports: {
         Row: {
@@ -110,6 +296,75 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_tags: {
+        Row: {
+          applicable_frameworks: string[] | null
+          created_at: string
+          description: string | null
+          id: string
+          tag_name: string
+          tag_type: string
+        }
+        Insert: {
+          applicable_frameworks?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          tag_name: string
+          tag_type: string
+        }
+        Update: {
+          applicable_frameworks?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          tag_name?: string
+          tag_type?: string
+        }
+        Relationships: []
+      }
+      customer_frameworks: {
+        Row: {
+          created_at: string
+          custom_controls: Json | null
+          customer_id: string
+          enabled_at: string
+          framework_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_controls?: Json | null
+          customer_id: string
+          enabled_at?: string
+          framework_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          custom_controls?: Json | null
+          customer_id?: string
+          enabled_at?: string
+          framework_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_frameworks_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_frameworks_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_frameworks"
             referencedColumns: ["id"]
           },
         ]
@@ -246,6 +501,119 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ml_models: {
+        Row: {
+          accuracy_score: number | null
+          created_at: string
+          customer_id: string
+          deployed_at: string | null
+          features_used: string[] | null
+          hyperparameters: Json | null
+          id: string
+          model_name: string
+          model_type: string
+          status: string
+          trained_at: string | null
+          training_data_count: number | null
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          accuracy_score?: number | null
+          created_at?: string
+          customer_id: string
+          deployed_at?: string | null
+          features_used?: string[] | null
+          hyperparameters?: Json | null
+          id?: string
+          model_name: string
+          model_type: string
+          status?: string
+          trained_at?: string | null
+          training_data_count?: number | null
+          updated_at?: string
+          version: string
+        }
+        Update: {
+          accuracy_score?: number | null
+          created_at?: string
+          customer_id?: string
+          deployed_at?: string | null
+          features_used?: string[] | null
+          hyperparameters?: Json | null
+          id?: string
+          model_name?: string
+          model_type?: string
+          status?: string
+          trained_at?: string | null
+          training_data_count?: number | null
+          updated_at?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ml_models_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prediction_history: {
+        Row: {
+          actual_value: Json | null
+          confidence_score: number | null
+          created_at: string
+          customer_id: string
+          id: string
+          input_features: Json
+          model_id: string
+          predicted_value: Json
+          prediction_type: string
+          was_accurate: boolean | null
+        }
+        Insert: {
+          actual_value?: Json | null
+          confidence_score?: number | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          input_features: Json
+          model_id: string
+          predicted_value: Json
+          prediction_type: string
+          was_accurate?: boolean | null
+        }
+        Update: {
+          actual_value?: Json | null
+          confidence_score?: number | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          input_features?: Json
+          model_id?: string
+          predicted_value?: Json
+          prediction_type?: string
+          was_accurate?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prediction_history_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prediction_history_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "ml_models"
             referencedColumns: ["id"]
           },
         ]
