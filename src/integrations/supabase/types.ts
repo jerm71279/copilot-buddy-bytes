@@ -14,6 +14,106 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action_details: Json | null
+          action_type: string
+          compliance_tags: string[] | null
+          created_at: string
+          customer_id: string
+          id: string
+          system_name: string
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          action_details?: Json | null
+          action_type: string
+          compliance_tags?: string[] | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          system_name: string
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          action_details?: Json | null
+          action_type?: string
+          compliance_tags?: string[] | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          system_name?: string
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_reports: {
+        Row: {
+          created_at: string
+          customer_id: string
+          evidence_count: number | null
+          findings: Json | null
+          framework: string
+          generated_at: string
+          generated_by: string
+          id: string
+          report_name: string
+          report_period_end: string
+          report_period_start: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          evidence_count?: number | null
+          findings?: Json | null
+          framework: string
+          generated_at?: string
+          generated_by: string
+          id?: string
+          report_name: string
+          report_period_end: string
+          report_period_start: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          evidence_count?: number | null
+          findings?: Json | null
+          framework?: string
+          generated_at?: string
+          generated_by?: string
+          id?: string
+          report_name?: string
+          report_period_end?: string
+          report_period_start?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_reports_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           company_name: string
@@ -53,6 +153,147 @@ export type Database = {
         }
         Relationships: []
       }
+      integrations: {
+        Row: {
+          auth_method: string
+          connected_at: string | null
+          created_at: string
+          customer_id: string
+          id: string
+          last_sync: string | null
+          status: string
+          system_name: string
+          system_type: string
+          updated_at: string
+        }
+        Insert: {
+          auth_method: string
+          connected_at?: string | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          last_sync?: string | null
+          status?: string
+          system_name: string
+          system_type: string
+          updated_at?: string
+        }
+        Update: {
+          auth_method?: string
+          connected_at?: string | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          last_sync?: string | null
+          status?: string
+          system_name?: string
+          system_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integrations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ml_insights: {
+        Row: {
+          affected_users: string[] | null
+          category: string
+          confidence_score: number | null
+          created_at: string
+          customer_id: string
+          data_source: Json | null
+          description: string
+          expires_at: string | null
+          id: string
+          insight_type: string
+          status: string
+        }
+        Insert: {
+          affected_users?: string[] | null
+          category: string
+          confidence_score?: number | null
+          created_at?: string
+          customer_id: string
+          data_source?: Json | null
+          description: string
+          expires_at?: string | null
+          id?: string
+          insight_type: string
+          status?: string
+        }
+        Update: {
+          affected_users?: string[] | null
+          category?: string
+          confidence_score?: number | null
+          created_at?: string
+          customer_id?: string
+          data_source?: Json | null
+          description?: string
+          expires_at?: string | null
+          id?: string
+          insight_type?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ml_insights_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      system_access_logs: {
+        Row: {
+          access_type: string
+          created_at: string
+          customer_id: string
+          id: string
+          resource_accessed: string | null
+          success: boolean
+          system_name: string
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          access_type: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          resource_accessed?: string | null
+          success?: boolean
+          system_name: string
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          access_type?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          resource_accessed?: string | null
+          success?: boolean
+          system_name?: string
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "system_access_logs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -70,6 +311,100 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_sessions: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          ip_address: string | null
+          session_end: string | null
+          session_start: string
+          status: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          ip_address?: string | null
+          session_end?: string | null
+          session_start?: string
+          status?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          ip_address?: string | null
+          session_end?: string | null
+          session_start?: string
+          status?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_sessions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflows: {
+        Row: {
+          avg_completion_time: number | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          id: string
+          steps: Json | null
+          successful_executions: number | null
+          systems_involved: string[] | null
+          total_executions: number | null
+          updated_at: string
+          workflow_name: string
+        }
+        Insert: {
+          avg_completion_time?: number | null
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          id?: string
+          steps?: Json | null
+          successful_executions?: number | null
+          systems_involved?: string[] | null
+          total_executions?: number | null
+          updated_at?: string
+          workflow_name: string
+        }
+        Update: {
+          avg_completion_time?: number | null
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          id?: string
+          steps?: Json | null
+          successful_executions?: number | null
+          systems_involved?: string[] | null
+          total_executions?: number | null
+          updated_at?: string
+          workflow_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflows_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
