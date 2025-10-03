@@ -130,17 +130,34 @@ const Auth = () => {
       setIsLoading(false);
     } else if (data.user) {
       // Create customer record
-      const { error: customerError } = await supabase
+      const { data: customerData, error: customerError } = await supabase
         .from("customers")
         .insert({
           user_id: data.user.id,
           contact_name: signupName,
           company_name: signupCompany,
           email: signupEmail,
-        });
+        })
+        .select()
+        .single();
 
       if (customerError) {
         console.error("Error creating customer record:", customerError);
+      }
+
+      // Create customer customization with default settings
+      if (customerData) {
+        const { error: customizationError } = await supabase
+          .from("customer_customizations")
+          .insert({
+            customer_id: customerData.id,
+            enabled_features: ["dashboard", "integrations", "compliance", "ml_insights"],
+            default_dashboard: signupDepartment,
+          });
+
+        if (customizationError) {
+          console.error("Error creating customization:", customizationError);
+        }
       }
 
       // Create user profile with selected department
@@ -150,7 +167,7 @@ const Auth = () => {
           user_id: data.user.id,
           full_name: signupName,
           department: signupDepartment,
-          customer_id: null
+          customer_id: customerData?.id || null
         });
 
       if (profileError) {

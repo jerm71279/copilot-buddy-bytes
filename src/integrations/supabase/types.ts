@@ -390,6 +390,62 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_customizations: {
+        Row: {
+          accent_color: string | null
+          company_logo_url: string | null
+          created_at: string
+          custom_settings: Json | null
+          customer_id: string
+          dashboard_layout: Json | null
+          default_dashboard: string | null
+          enabled_features: Json | null
+          enabled_integrations: Json | null
+          id: string
+          primary_color: string | null
+          secondary_color: string | null
+          updated_at: string
+        }
+        Insert: {
+          accent_color?: string | null
+          company_logo_url?: string | null
+          created_at?: string
+          custom_settings?: Json | null
+          customer_id: string
+          dashboard_layout?: Json | null
+          default_dashboard?: string | null
+          enabled_features?: Json | null
+          enabled_integrations?: Json | null
+          id?: string
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accent_color?: string | null
+          company_logo_url?: string | null
+          created_at?: string
+          custom_settings?: Json | null
+          customer_id?: string
+          dashboard_layout?: Json | null
+          default_dashboard?: string | null
+          enabled_features?: Json | null
+          enabled_integrations?: Json | null
+          id?: string
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_customizations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_frameworks: {
         Row: {
           created_at: string
