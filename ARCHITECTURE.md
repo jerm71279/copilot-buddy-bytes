@@ -1,0 +1,370 @@
+# OberaConnect Platform Architecture
+
+## 🏛️ System Overview
+
+OberaConnect is a multi-tenant SaaS platform built on a modular, clause-aware architecture that separates concerns across customer management, department operations, integrations, and AI capabilities.
+
+## 🎨 Architectural Principles
+
+### 1. Modular Design
+Each subsystem is independently testable, replaceable, and documented:
+- **Authentication Module**: User signup, login, session management
+- **Customization Module**: Per-customer branding and feature toggles
+- **Dashboard Module**: Department-specific views and data
+- **Integration Module**: External system connections
+- **AI Module**: Department assistants and MCP server integration
+
+### 2. Data Isolation
+- **Row Level Security (RLS)**: All tables enforce customer/user isolation
+- **Department-Based Access**: Users see only their department's data
+- **Customer Customization**: UI adapts per customer without code changes
+
+### 3. Strategic Ownership
+Design decisions remain with OberaConnect leadership:
+- Schema structure (customer → profiles → customizations)
+- Department role definitions
+- Integration mapping logic
+- AI assistant behavior
+
+## 🗄️ Database Architecture
+
+### Schema Overview
+
+```
+┌─────────────────┐
+│   customers     │ (root entity)
+├─────────────────┤
+│ id              │
+│ company_name    │
+│ plan            │
+│ status          │
+└────────┬────────┘
+         │
+         ├──────────────────┬──────────────────┐
+         │                  │                  │
+┌────────▼────────┐  ┌──────▼──────────┐  ┌──▼──────────────────┐
+│ user_profiles   │  │ customer_       │  │ integrations        │
+│                 │  │ customizations  │  │                     │
+├─────────────────┤  ├─────────────────┤  ├─────────────────────┤
+│ user_id         │  │ customer_id     │  │ customer_id         │
+│ customer_id     │  │ company_logo    │  │ system_name         │
+│ full_name       │  │ primary_color   │  │ integration_type    │
+│ department      │  │ secondary_color │  │ status              │
+│ role            │  │ accent_color    │  │ auth_method         │
+└─────────────────┘  │ enabled_integ.. │  └─────────────────────┘
+                     │ enabled_feat... │
+                     │ default_dash... │
+                     │ dashboard_lay.. │
+                     │ custom_settings │
+                     └─────────────────┘
+```
+
+### Key Tables
+
+#### `customers`
+Root entity representing client organizations.
+- **Primary Key**: `id` (UUID)
+- **Fields**: company_name, contact_email, plan (starter/professional/enterprise), status
+- **RLS Policy**: Admin-only access for management
+
+#### `user_profiles`
+User accounts linked to customers with department roles.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `user_id` → auth.users, `customer_id` → customers
+- **Department Types**: admin, compliance, it, operations, hr, finance, sales, executive
+- **RLS Policy**: Users can only view their own profile
+
+#### `customer_customizations`
+Per-customer UI and feature configuration.
+- **Primary Key**: `id` (UUID)
+- **Foreign Key**: `customer_id` → customers
+- **Branding**: company_logo_url, primary_color, secondary_color, accent_color
+- **Features**: enabled_integrations[], enabled_features[]
+- **Layout**: default_dashboard, dashboard_layout (JSONB)
+- **RLS Policy**: Users can read their customer's customization
+
+#### `integrations`
+External system connection registry.
+- **Primary Key**: `id` (UUID)
+- **Foreign Key**: `customer_id` → customers (optional, NULL for system-wide)
+- **Types**: Billing, Cloud, Security, RMM, Compliance
+- **RLS Policy**: Customer-scoped or public
+
+#### `mcp_servers`
+Model Context Protocol server registry for AI capabilities.
+- **Primary Key**: `id` (UUID)
+- **Fields**: name, url, description, capabilities[], status
+- **RLS Policy**: Public read access
+
+## 🧩 Frontend Architecture
+
+### Component Hierarchy
+
+```
+App.tsx (Root)
+├── Navigation (Global)
+├── Routes
+│   ├── Index (Landing)
+│   │   ├── Hero
+│   │   ├── Features
+│   │   ├── Integrations
+│   │   ├── Testimonials
+│   │   ├── Pricing
+│   │   └── Footer
+│   │
+│   ├── Auth (Login/Signup)
+│   │
+│   ├── DemoSelector (Demo Mode Entry)
+│   │
+│   ├── IntegrationsPage (Integration Details)
+│   │
+│   ├── AdminDashboard
+│   │   ├── MCPServerStatus
+│   │   └── Customer Table
+│   │
+│   └── [Department]Dashboard
+│       ├── Stats Cards
+│       ├── Department-Specific Widgets
+│       └── DepartmentAIAssistant
+│
+└── Toaster, Sonner (Notifications)
+```
+
+### State Management
+
+#### TanStack Query (React Query)
+- Async state management for backend data
+- Automatic caching and revalidation
+- Query client configured in App.tsx
+
+#### Custom Hooks
+- **`useCustomerCustomization`**: Fetches and applies customer-specific UI settings
+  - Loads from `customer_customizations` table
+  - Applies CSS variables for theming
+  - Returns: `{ customization, isLoading }`
+  
+- **`useDemoMode`**: Detects preview/demo environment
+  - Returns: `{ isDemoMode: boolean }`
+
+### Routing Strategy
+
+**React Router v6** with role-based access:
+- `/` → Landing page (public)
+- `/auth` → Authentication (public)
+- `/demo` → Demo mode selector
+- `/integrations` → Integration details (public)
+- `/admin` → Admin dashboard (admin role)
+- `/dashboard/:department` → Department dashboards (role-based)
+
+Each dashboard component:
+1. Checks authentication state
+2. Verifies department access
+3. Fetches department-specific data
+4. Renders with customer customization
+
+## 🎨 Design System
+
+### Token-Based Styling
+
+All colors defined as HSL semantic tokens in `src/index.css`:
+```css
+:root {
+  --primary: [HSL];
+  --secondary: [HSL];
+  --accent: [HSL];
+  --background: [HSL];
+  --foreground: [HSL];
+  /* ... */
+}
+```
+
+### Customization Flow
+1. User signs up → `customer_customizations` record created
+2. `useCustomerCustomization` hook loads on dashboard mount
+3. Hook applies CSS variables: `document.documentElement.style.setProperty('--primary', value)`
+4. All components automatically reflect custom colors
+
+### Component Library
+- **Base**: shadcn/ui + Radix UI primitives
+- **Custom**: Feature-specific components in `/components`
+- **Styling**: Tailwind CSS with design tokens (no hardcoded colors)
+
+## 🔌 Integration Architecture
+
+### Integration Types
+
+1. **Billing & Revenue**: Onebill, rev.io
+2. **Cloud & Identity**: Azure, Lighthouse, CIPP
+3. **Network Security**: SonicWall, UniFi, MikroTik
+4. **Security & Access**: Keeper Security
+5. **RMM & Infrastructure**: NinjaOne
+6. **Cybersecurity**: Threatdown, OpenText
+
+### Integration Registry Pattern
+```typescript
+interface Integration {
+  id: string;
+  customer_id?: string;  // NULL = system-wide
+  system_name: string;
+  integration_type: string;
+  status: 'active' | 'inactive' | 'error';
+  config: Record<string, any>;  // JSONB
+  last_sync: timestamp;
+}
+```
+
+### Integration Display
+- **Landing Page**: High-level overview with logos
+- **Integrations Page**: Detailed info (auth methods, permissions, setup)
+- **Dashboard**: Live status indicators
+
+## 🤖 AI Architecture
+
+### Department AI Assistants
+
+Each department has a specialized AI assistant:
+- **Component**: `DepartmentAIAssistant.tsx`
+- **Backend**: `supabase/functions/department-assistant/index.ts`
+- **Models**: Lovable AI (Gemini, GPT variants)
+
+### Assistant Behavior
+1. User sends message from department dashboard
+2. Frontend calls edge function with department context
+3. Edge function routes to appropriate AI model
+4. Response streamed back to UI
+5. Context includes: department type, customer data, recent activity
+
+### MCP Server Integration
+
+**Model Context Protocol** for advanced AI capabilities:
+- **Registry**: `mcp_servers` table tracks available servers
+- **Status Component**: `MCPServerStatus.tsx` shows health
+- **Edge Function**: `supabase/functions/mcp-server/index.ts`
+- **Capabilities**: Tool execution, structured outputs, multi-step reasoning
+
+## 🔐 Security Architecture
+
+### Authentication Flow
+```
+User → Supabase Auth → Session Token → RLS Policies → Data Access
+```
+
+### Row Level Security (RLS)
+Every table has policies enforcing:
+- **Customer Isolation**: Users see only their customer's data
+- **Role-Based Access**: Department-specific data filtering
+- **Admin Override**: Admins can view all customers (for management)
+
+### Example Policy (user_profiles)
+```sql
+CREATE POLICY "Users can view their own profile"
+ON user_profiles FOR SELECT
+USING (auth.uid() = user_id);
+```
+
+## 🚀 Deployment Architecture
+
+### Lovable Cloud Platform
+- **Frontend**: Deployed via Lovable (CDN + edge caching)
+- **Backend**: Supabase (Postgres + Edge Functions)
+- **Static Assets**: Bundled with Vite, served from CDN
+
+### Environment Configuration
+- `.env` file (auto-managed by Lovable Cloud)
+- `VITE_SUPABASE_URL`: Backend API endpoint
+- `VITE_SUPABASE_PUBLISHABLE_KEY`: Anonymous access key
+- `VITE_SUPABASE_PROJECT_ID`: Project identifier
+
+### Edge Functions
+- **Runtime**: Deno on Supabase Edge
+- **Auto-deployment**: Changes pushed automatically
+- **Secrets**: Managed via Lovable Cloud secrets management
+
+## 📊 Data Flow Examples
+
+### User Signup Flow
+```
+1. User submits signup form (Auth.tsx)
+   ↓
+2. Supabase Auth creates user in auth.users
+   ↓
+3. Trigger creates customer record
+   ↓
+4. Trigger creates user_profile record
+   ↓
+5. Trigger creates customer_customizations with defaults
+   ↓
+6. User redirected to department dashboard
+   ↓
+7. useCustomerCustomization loads and applies branding
+```
+
+### Dashboard Data Load Flow
+```
+1. User navigates to /dashboard/[department]
+   ↓
+2. Dashboard component checks authentication
+   ↓
+3. Verifies user's department matches route
+   ↓
+4. Fetches department-specific stats (RLS enforced)
+   ↓
+5. Renders with customer customization applied
+   ↓
+6. AI assistant ready for department-specific queries
+```
+
+## 🧪 Testing Strategy
+
+### Component Testing
+- Manual testing in preview environment
+- Visual regression via screenshots
+- Interaction testing for critical flows
+
+### Database Testing
+- Migration testing in development environment
+- RLS policy validation
+- Data integrity constraints
+
+### Integration Testing
+- API endpoint validation
+- Edge function execution
+- Authentication flow verification
+
+## 🔄 Scalability Considerations
+
+### Current Scale
+- Multi-tenant (customers isolated by RLS)
+- Department-based data partitioning
+- Per-customer customization without code deployment
+
+### Future Scale
+- Horizontal: More customers → RLS handles isolation
+- Vertical: More data per customer → Postgres indexing
+- Geographic: Edge functions already distributed globally
+
+## 📈 Performance Patterns
+
+### Frontend
+- Code splitting via React Router
+- Lazy loading of dashboard components
+- TanStack Query caching reduces API calls
+- Design tokens prevent CSS bloat
+
+### Backend
+- Database indexes on foreign keys
+- RLS policies use indexed columns
+- Edge functions minimize cold starts
+- JSONB fields for flexible schema evolution
+
+## 🔍 Monitoring & Observability
+
+### Available Tools
+- Supabase Dashboard: Query performance, logs, RLS policy hits
+- Console Logs: Frontend errors and debugging
+- Network Requests: API call inspection
+- Edge Function Logs: Backend execution traces
+
+---
+
+**Architecture Ownership**: This design is maintained by OberaConnect leadership. Developers implement within this framework to ensure strategic consistency and platform resilience.
