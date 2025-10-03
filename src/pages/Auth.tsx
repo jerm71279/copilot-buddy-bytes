@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -19,24 +20,67 @@ const Auth = () => {
   const [signupPassword, setSignupPassword] = useState("");
   const [signupName, setSignupName] = useState("");
   const [signupCompany, setSignupCompany] = useState("");
+  const [signupDepartment, setSignupDepartment] = useState("compliance");
 
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/");
+        await redirectToDepartmentDashboard(session.user.id);
       }
     };
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session) {
-        navigate("/");
+        await redirectToDepartmentDashboard(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const redirectToDepartmentDashboard = async (userId: string) => {
+    // Check if admin
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+
+    if (roleData) {
+      navigate("/admin");
+      return;
+    }
+
+    // Check user profile for department
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("department")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (profile?.department) {
+      const dashboardRoutes: Record<string, string> = {
+        compliance: "/dashboard/compliance",
+        it: "/dashboard/it",
+        operations: "/dashboard/operations",
+        hr: "/dashboard/hr",
+        finance: "/dashboard/finance",
+        executive: "/dashboard/executive"
+      };
+
+      const route = dashboardRoutes[profile.department];
+      if (route) {
+        navigate(route);
+        return;
+      }
+    }
+
+    // Default to home page
+    navigate("/");
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +105,7 @@ const Auth = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signupEmail || !signupPassword || !signupName || !signupCompany) {
+    if (!signupEmail || !signupPassword || !signupName || !signupCompany || !signupDepartment) {
       toast.error("Please fill in all fields");
       return;
     }
@@ -99,19 +143,21 @@ const Auth = () => {
         console.error("Error creating customer record:", customerError);
       }
 
-      // Assign customer role
-      const { error: roleError } = await supabase
-        .from("user_roles")
+      // Create user profile with selected department
+      const { error: profileError } = await supabase
+        .from("user_profiles")
         .insert({
           user_id: data.user.id,
-          role: "customer",
+          full_name: signupName,
+          department: signupDepartment,
+          customer_id: null
         });
 
-      if (roleError) {
-        console.error("Error assigning role:", roleError);
+      if (profileError) {
+        console.error("Error creating profile:", profileError);
       }
 
-      toast.success("Account created successfully!");
+      toast.success("Account created successfully! Redirecting to your dashboard...");
       setIsLoading(false);
     }
   };
@@ -193,6 +239,22 @@ const Auth = () => {
                     onChange={(e) => setSignupCompany(e.target.value)}
                     required
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-department">Department</Label>
+                  <Select value={signupDepartment} onValueChange={setSignupDepartment}>
+                    <SelectTrigger id="signup-department">
+                      <SelectValue placeholder="Select your department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="compliance">Compliance & GRC</SelectItem>
+                      <SelectItem value="it">IT & Security</SelectItem>
+                      <SelectItem value="hr">Human Resources</SelectItem>
+                      <SelectItem value="finance">Finance</SelectItem>
+                      <SelectItem value="operations">Operations</SelectItem>
+                      <SelectItem value="executive">Executive Leadership</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>

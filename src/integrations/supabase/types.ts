@@ -544,6 +544,39 @@ export type Database = {
           },
         ]
       }
+      department_permissions: {
+        Row: {
+          accessible_features: Json
+          accessible_tables: Json
+          created_at: string
+          dashboard_widgets: Json
+          department: string
+          display_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          accessible_features?: Json
+          accessible_tables?: Json
+          created_at?: string
+          dashboard_widgets?: Json
+          department: string
+          display_name: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          accessible_features?: Json
+          accessible_tables?: Json
+          created_at?: string
+          dashboard_widgets?: Json
+          department?: string
+          display_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       evidence_files: {
         Row: {
           control_id: string | null
