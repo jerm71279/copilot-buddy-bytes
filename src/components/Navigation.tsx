@@ -26,10 +26,13 @@ const Navigation = () => {
               Frameworks
             </a>
             <a href="#dashboard" className="text-sm font-medium hover:text-accent transition-colors">
-              Dashboard
+              Solutions
             </a>
             <a href="#pricing" className="text-sm font-medium hover:text-accent transition-colors">
               Pricing
+            </a>
+            <a href="#testimonials" className="text-sm font-medium hover:text-accent transition-colors">
+              Customers
             </a>
           </div>
 
@@ -63,10 +66,13 @@ const Navigation = () => {
                 Frameworks
               </a>
               <a href="#dashboard" className="text-sm font-medium hover:text-accent transition-colors py-2">
-                Dashboard
+                Solutions
               </a>
               <a href="#pricing" className="text-sm font-medium hover:text-accent transition-colors py-2">
                 Pricing
+              </a>
+              <a href="#testimonials" className="text-sm font-medium hover:text-accent transition-colors py-2">
+                Customers
               </a>
               <div className="flex flex-col gap-2 pt-3 border-t border-border">
                 <Button variant="ghost" size="sm" className="justify-start">
