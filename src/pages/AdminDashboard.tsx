@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { LogOut, Users } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import { useDemoMode } from "@/hooks/useDemoMode";
 
 type Customer = {
   id: string;
@@ -22,6 +23,7 @@ type Customer = {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const isPreviewMode = useDemoMode();
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -31,6 +33,12 @@ const AdminDashboard = () => {
   }, []);
 
   const checkAdminAccess = async () => {
+    if (isPreviewMode) {
+      setIsAdmin(true);
+      fetchCustomers();
+      return;
+    }
+
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {
@@ -73,6 +81,10 @@ const AdminDashboard = () => {
   };
 
   const handleSignOut = async () => {
+    if (isPreviewMode) {
+      navigate("/demo");
+      return;
+    }
     await supabase.auth.signOut();
     navigate("/auth");
   };
@@ -102,10 +114,13 @@ const AdminDashboard = () => {
             <Users className="h-6 w-6 text-primary" />
             <h1 className="text-xl font-bold">Admin Dashboard</h1>
           </div>
-          <Button onClick={handleSignOut} variant="outline" size="sm">
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-4">
+            {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
+            <Button onClick={handleSignOut} variant="outline" size="sm">
+              <LogOut className="h-4 w-4 mr-2" />
+              {isPreviewMode ? "Back to Demos" : "Sign Out"}
+            </Button>
+          </div>
         </div>
       </nav>
 

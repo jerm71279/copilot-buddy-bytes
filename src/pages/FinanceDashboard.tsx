@@ -8,9 +8,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { toast } from "sonner";
 import { LogOut, DollarSign, Users, TrendingUp, CreditCard } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import { useDemoMode } from "@/hooks/useDemoMode";
 
 const FinanceDashboard = () => {
   const navigate = useNavigate();
+  const isPreviewMode = useDemoMode();
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [customers, setCustomers] = useState<any[]>([]);
@@ -26,6 +28,13 @@ const FinanceDashboard = () => {
   }, []);
 
   const checkAccess = async () => {
+    if (isPreviewMode) {
+      setUserProfile({ full_name: "Demo User", department: "finance" });
+      await fetchStats();
+      setIsLoading(false);
+      return;
+    }
+
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {
@@ -72,6 +81,10 @@ const FinanceDashboard = () => {
   };
 
   const handleSignOut = async () => {
+    if (isPreviewMode) {
+      navigate("/demo");
+      return;
+    }
     await supabase.auth.signOut();
     navigate("/auth");
   };
@@ -90,9 +103,10 @@ const FinanceDashboard = () => {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{userProfile?.full_name}</span>
+            {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
             <Button onClick={handleSignOut} variant="outline" size="sm">
               <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
+              {isPreviewMode ? "Back to Demos" : "Sign Out"}
             </Button>
           </div>
         </div>

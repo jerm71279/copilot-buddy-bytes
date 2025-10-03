@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Shield, Server, Users, Briefcase, DollarSign, TrendingUp, Settings } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Shield, Server, Users, Briefcase, DollarSign, TrendingUp, Settings, Info } from "lucide-react";
 
 const DemoSelector = () => {
   const navigate = useNavigate();
@@ -69,6 +70,13 @@ const DemoSelector = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto space-y-8">
+          <Alert className="bg-primary/5 border-primary/20">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Testing Environment:</strong> All dashboards are in preview mode. You can explore each department's interface, features, and AI assistants without authentication. Click "View Demos" in the navigation to return here anytime.
+            </AlertDescription>
+          </Alert>
+
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold">Department Dashboard Demo</h1>
             <p className="text-xl text-muted-foreground">
@@ -104,7 +112,7 @@ const DemoSelector = () => {
                   </CardHeader>
                   <CardContent>
                     <Button 
-                      onClick={() => navigate(dept.route)} 
+                      onClick={() => navigate(`${dept.route}?preview=true`)} 
                       className="w-full"
                       variant="outline"
                     >

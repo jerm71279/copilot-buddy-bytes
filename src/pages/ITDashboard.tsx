@@ -8,9 +8,11 @@ import { toast } from "sonner";
 import { LogOut, Server, Activity, AlertCircle, Zap } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import { useDemoMode } from "@/hooks/useDemoMode";
 
 const ITDashboard = () => {
   const navigate = useNavigate();
+  const isPreviewMode = useDemoMode();
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [stats, setStats] = useState({
@@ -25,6 +27,13 @@ const ITDashboard = () => {
   }, []);
 
   const checkAccess = async () => {
+    if (isPreviewMode) {
+      setUserProfile({ full_name: "Demo User", department: "it" });
+      await fetchStats();
+      setIsLoading(false);
+      return;
+    }
+
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {
@@ -67,6 +76,10 @@ const ITDashboard = () => {
   };
 
   const handleSignOut = async () => {
+    if (isPreviewMode) {
+      navigate("/demo");
+      return;
+    }
     await supabase.auth.signOut();
     navigate("/auth");
   };
@@ -85,9 +98,10 @@ const ITDashboard = () => {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{userProfile?.full_name}</span>
+            {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
             <Button onClick={handleSignOut} variant="outline" size="sm">
               <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
+              {isPreviewMode ? "Back to Demos" : "Sign Out"}
             </Button>
           </div>
         </div>
