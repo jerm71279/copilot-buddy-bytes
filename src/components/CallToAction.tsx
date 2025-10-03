@@ -37,7 +37,7 @@ const CallToAction = () => {
             Ready to Become Your Team's Daily Portal?
           </h2>
           <p className="text-xl text-white/90 mb-12 max-w-2xl mx-auto">
-            Join OberaConnect and 500+ enterprises giving employees one login for all systems while capturing 
+            Join forward-thinking MSP companies like OberaConnect and 500+ enterprises giving employees one login for all systems while capturing 
             behavioral intelligence that predicts problems, optimizes workflows, and maintains compliance automatically.
           </p>
 

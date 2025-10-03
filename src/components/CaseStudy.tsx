@@ -23,10 +23,10 @@ const CaseStudy = () => {
             Featured Customer
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            How OberaConnect Made One Login Power 500 Employees
+            How OberaConnect Made One Login Power Their Growing Team
           </h2>
           <p className="text-xl text-muted-foreground">
-            From password chaos to predictive intelligence: OberaConnect's transformation with unified access + ML
+            From password chaos to predictive intelligence: How this MSP company installing phones, cameras, and IT infrastructure transformed operations with unified access + ML
           </p>
         </div>
 
@@ -70,9 +70,9 @@ const CaseStudy = () => {
             </h3>
             <div className="space-y-4 text-muted-foreground">
               <p className="leading-relaxed">
-                OberaConnect's 500 employees juggled 12+ system logins daily—SAP, Workday, Salesforce, 
-                ServiceNow, and more. Password resets consumed IT resources. Compliance teams had no unified 
-                view of employee activities across systems, making audits a manual nightmare.
+                OberaConnect, an MSP company with close to 50 employees installing phones, cameras, IT networks and infrastructure, 
+                juggled 12+ system logins daily—SAP, Workday, Salesforce, ServiceNow, and more. Password resets consumed IT resources. 
+                Compliance teams had no unified view of employee activities across systems, making audits a manual nightmare.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
@@ -108,7 +108,7 @@ const CaseStudy = () => {
             <div className="space-y-4 text-muted-foreground">
               <p className="leading-relaxed">
                 ComplianceOS became OberaConnect's unified access portal and intelligence engine. 
-                All 500 employees now log in once to access every system. Every action trains ML models 
+                All employees now log in once to access every system. Every action trains ML models 
                 while maintaining automated compliance.
               </p>
               <ul className="space-y-3">

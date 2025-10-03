@@ -13,6 +13,7 @@ import ITDashboard from "./pages/ITDashboard";
 import OperationsDashboard from "./pages/OperationsDashboard";
 import HRDashboard from "./pages/HRDashboard";
 import FinanceDashboard from "./pages/FinanceDashboard";
+import SalesDashboard from "./pages/SalesDashboard";
 import ExecutiveDashboard from "./pages/ExecutiveDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/dashboard/operations" element={<OperationsDashboard />} />
           <Route path="/dashboard/hr" element={<HRDashboard />} />
           <Route path="/dashboard/finance" element={<FinanceDashboard />} />
+          <Route path="/dashboard/sales" element={<SalesDashboard />} />
           <Route path="/dashboard/executive" element={<ExecutiveDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

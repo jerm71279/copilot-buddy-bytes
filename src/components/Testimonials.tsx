@@ -6,14 +6,14 @@ const testimonials = [
     quote: "ComplianceOS transformed how we handle ISO 27001 compliance. The schema blocks and MCP Server made audit preparation seamless. We went from 8 weeks to 2 weeks.",
     author: "Jeremy Morrison",
     role: "Chief Compliance Officer",
-    company: "OberaConnect",
+    company: "OberaConnect - MSP Company",
     rating: 5,
   },
   {
     quote: "The modular architecture was exactly what we needed. Schema blocks like IR.1 and HR.8 integrate perfectly with our workflows. Compliance is now a competitive advantage.",
     author: "Sarah Chen",
     role: "VP of Information Security",
-    company: "OberaConnect",
+    company: "OberaConnect - MSP Company",
     rating: 5,
   },
   {
@@ -121,7 +121,7 @@ const Testimonials = () => {
         {/* Trust Badge */}
         <div className="mt-16 text-center">
           <p className="text-sm text-muted-foreground mb-4">
-            Trusted by leading organizations including OberaConnect
+            Trusted by leading MSP companies and organizations including OberaConnect
           </p>
           <div className="flex flex-wrap items-center justify-center gap-6">
             {["ISO 27001 Certified", "SOC 2 Type II", "GDPR Compliant", "HIPAA Ready"].map((badge, idx) => (

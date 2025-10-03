@@ -57,6 +57,14 @@ const DemoSelector = () => {
       color: "text-emerald-600"
     },
     {
+      id: "sales",
+      name: "Sales",
+      description: "Customer pipeline, revenue tracking, opportunity management",
+      icon: TrendingUp,
+      route: "/dashboard/sales",
+      color: "text-pink-600"
+    },
+    {
       id: "executive",
       name: "Executive Leadership",
       description: "High-level metrics, strategic insights, cross-department analytics",
