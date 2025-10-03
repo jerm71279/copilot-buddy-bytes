@@ -1,0 +1,72 @@
+import { Shield } from "lucide-react";
+
+const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className="bg-primary text-primary-foreground py-12 border-t border-border">
+      <div className="container mx-auto px-4">
+        <div className="grid md:grid-cols-4 gap-8 mb-8">
+          {/* Brand */}
+          <div className="md:col-span-1">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-gradient-accent flex items-center justify-center">
+                <Shield className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-xl font-bold">ComplianceOS</span>
+            </div>
+            <p className="text-sm text-primary-foreground/70">
+              Full-stack compliance platform that molds to your business.
+            </p>
+          </div>
+
+          {/* Product */}
+          <div>
+            <h4 className="font-semibold mb-4">Product</h4>
+            <ul className="space-y-2 text-sm text-primary-foreground/70">
+              <li><a href="#features" className="hover:text-primary-foreground transition-colors">Features</a></li>
+              <li><a href="#frameworks" className="hover:text-primary-foreground transition-colors">Frameworks</a></li>
+              <li><a href="#pricing" className="hover:text-primary-foreground transition-colors">Pricing</a></li>
+              <li><a href="#integrations" className="hover:text-primary-foreground transition-colors">Integrations</a></li>
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 className="font-semibold mb-4">Resources</h4>
+            <ul className="space-y-2 text-sm text-primary-foreground/70">
+              <li><a href="#docs" className="hover:text-primary-foreground transition-colors">Documentation</a></li>
+              <li><a href="#blog" className="hover:text-primary-foreground transition-colors">Blog</a></li>
+              <li><a href="#guides" className="hover:text-primary-foreground transition-colors">Compliance Guides</a></li>
+              <li><a href="#api" className="hover:text-primary-foreground transition-colors">API Reference</a></li>
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <h4 className="font-semibold mb-4">Company</h4>
+            <ul className="space-y-2 text-sm text-primary-foreground/70">
+              <li><a href="#about" className="hover:text-primary-foreground transition-colors">About Us</a></li>
+              <li><a href="#contact" className="hover:text-primary-foreground transition-colors">Contact</a></li>
+              <li><a href="#careers" className="hover:text-primary-foreground transition-colors">Careers</a></li>
+              <li><a href="#security" className="hover:text-primary-foreground transition-colors">Security</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="pt-8 border-t border-primary-foreground/10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/70">
+            <p>© {currentYear} ComplianceOS. All rights reserved.</p>
+            <div className="flex gap-6">
+              <a href="#privacy" className="hover:text-primary-foreground transition-colors">Privacy Policy</a>
+              <a href="#terms" className="hover:text-primary-foreground transition-colors">Terms of Service</a>
+              <a href="#cookies" className="hover:text-primary-foreground transition-colors">Cookie Policy</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
