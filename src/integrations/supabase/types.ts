@@ -1491,6 +1491,147 @@ export type Database = {
           },
         ]
       }
+      workflow_conditions: {
+        Row: {
+          condition_expression: Json
+          condition_type: string
+          created_at: string
+          false_path: Json | null
+          id: string
+          step_id: string
+          true_path: Json | null
+          workflow_id: string
+        }
+        Insert: {
+          condition_expression: Json
+          condition_type: string
+          created_at?: string
+          false_path?: Json | null
+          id?: string
+          step_id: string
+          true_path?: Json | null
+          workflow_id: string
+        }
+        Update: {
+          condition_expression?: Json
+          condition_type?: string
+          created_at?: string
+          false_path?: Json | null
+          id?: string
+          step_id?: string
+          true_path?: Json | null
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_conditions_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_executions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          error_message: string | null
+          execution_log: Json | null
+          id: string
+          started_at: string
+          status: string
+          trigger_data: Json | null
+          triggered_by: string
+          workflow_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          customer_id: string
+          error_message?: string | null
+          execution_log?: Json | null
+          id?: string
+          started_at?: string
+          status?: string
+          trigger_data?: Json | null
+          triggered_by: string
+          workflow_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          error_message?: string | null
+          execution_log?: Json | null
+          id?: string
+          started_at?: string
+          status?: string
+          trigger_data?: Json | null
+          triggered_by?: string
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_executions_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_triggers: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          is_enabled: boolean
+          last_triggered_at: string | null
+          trigger_config: Json
+          trigger_type: string
+          updated_at: string
+          webhook_secret: string | null
+          webhook_url: string | null
+          workflow_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_enabled?: boolean
+          last_triggered_at?: string | null
+          trigger_config?: Json
+          trigger_type: string
+          updated_at?: string
+          webhook_secret?: string | null
+          webhook_url?: string | null
+          workflow_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_enabled?: boolean
+          last_triggered_at?: string | null
+          trigger_config?: Json
+          trigger_type?: string
+          updated_at?: string
+          webhook_secret?: string | null
+          webhook_url?: string | null
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_triggers_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workflows: {
         Row: {
           avg_completion_time: number | null
@@ -1498,12 +1639,16 @@ export type Database = {
           customer_id: string
           description: string | null
           id: string
+          is_active: boolean
           steps: Json | null
           successful_executions: number | null
           systems_involved: string[] | null
+          tags: string[] | null
           total_executions: number | null
           updated_at: string
+          version: number | null
           workflow_name: string
+          workflow_type: string | null
         }
         Insert: {
           avg_completion_time?: number | null
@@ -1511,12 +1656,16 @@ export type Database = {
           customer_id: string
           description?: string | null
           id?: string
+          is_active?: boolean
           steps?: Json | null
           successful_executions?: number | null
           systems_involved?: string[] | null
+          tags?: string[] | null
           total_executions?: number | null
           updated_at?: string
+          version?: number | null
           workflow_name: string
+          workflow_type?: string | null
         }
         Update: {
           avg_completion_time?: number | null
@@ -1524,12 +1673,16 @@ export type Database = {
           customer_id?: string
           description?: string | null
           id?: string
+          is_active?: boolean
           steps?: Json | null
           successful_executions?: number | null
           systems_involved?: string[] | null
+          tags?: string[] | null
           total_executions?: number | null
           updated_at?: string
+          version?: number | null
           workflow_name?: string
+          workflow_type?: string | null
         }
         Relationships: [
           {

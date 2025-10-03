@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.department-assistant]
 verify_jwt = false
+
+[functions.workflow-executor]
+verify_jwt = false
+
+[functions.workflow-webhook]
+verify_jwt = false
