@@ -28,17 +28,17 @@ const Hero = () => {
 
           {/* Main Heading */}
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            See Everything.
+            One Login. All Systems.
             <span className="block bg-gradient-to-r from-accent to-purple-300 bg-clip-text text-transparent">
-              Solve Anything. Stay Compliant.
+              Infinite Intelligence.
             </span>
           </h1>
 
           {/* Subheading */}
           <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Connect all your business systems—ERP, HRIS, CRM, ITSM, SCM, and more—to unlock ML-powered insights. 
-            The more systems you connect, the smarter it gets. Predict problems, optimize workflows, and solve operational challenges 
-            while maintaining continuous compliance. Trusted by OberaConnect and 500+ enterprises.
+            Your employees log in once and access every system—SAP, Workday, Salesforce, ServiceNow. 
+            While they work, our ML platform learns from every action to predict problems, optimize workflows, 
+            and maintain compliance. More users = smarter predictions. Trusted by OberaConnect and 500+ enterprises.
           </p>
 
           {/* CTA Buttons */}

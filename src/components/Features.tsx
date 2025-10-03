@@ -7,39 +7,39 @@ import dashboardIcon from "@/assets/dashboard-icon.png";
 const features = [
   {
     icon: complianceIcon,
-    title: "ML-Powered Predictive Intelligence",
-    description: "Machine learning models analyze patterns across all connected systems to predict problems before they occur. Forecast staffing needs, cash flow issues, compliance risks, and operational bottlenecks with increasing accuracy as more systems connect.",
-    highlights: ["Predictive Analytics", "Risk Forecasting", "Anomaly Detection", "Pattern Recognition", "Smart Alerts"],
+    title: "Single Sign-On Access Portal",
+    description: "Employees log in once and access every business system—SAP, Workday, Salesforce, ServiceNow, and more. No more password fatigue. Every login tracked and compliance-tagged automatically.",
+    highlights: ["One Login", "Universal Access", "Activity Tracking", "Compliance Logging", "Audit Trail"],
   },
   {
     icon: workflowIcon,
-    title: "AI-Driven Workflow Optimization",
-    description: "AI automatically identifies inefficiencies and recommends optimizations across ERP, HRIS, CRM, ITSM, and SCM. The system learns from every workflow execution to continuously improve automation and eliminate redundancies.",
-    highlights: ["Auto-Optimization", "Smart Recommendations", "Learning Algorithms", "Resource Allocation"],
+    title: "Behavioral Intelligence Engine",
+    description: "ML models learn from every employee action across all systems. Capture real workflow patterns, not just API data. The more your team uses the platform, the smarter the predictions become.",
+    highlights: ["User Behavior Analysis", "Workflow Learning", "Pattern Detection", "Usage Intelligence"],
   },
   {
     icon: dashboardIcon,
-    title: "Intelligent Operational Dashboards",
-    description: "Real-time ML-powered insights into KPIs, efficiency trends, and compliance risks. The more systems you connect, the better the predictions and recommendations become—creating a powerful network effect.",
-    highlights: ["Predictive KPIs", "Trend Analysis", "Risk Scoring", "Cross-System Insights"],
+    title: "Predictive Command Center",
+    description: "Real-time dashboards powered by actual employee workflows. See bottlenecks as they happen, predict delays before they occur, and get AI recommendations based on how your team actually works.",
+    highlights: ["Real-Time Insights", "Bottleneck Prediction", "AI Recommendations", "Cross-System View"],
   },
 ];
 
 const additionalFeatures = [
   {
     icon: Database,
-    title: "The Network Effect",
-    description: "More systems connected means better ML models. Start with 3 systems, get basic automation. Connect 10+ systems, unlock predictive intelligence that transforms operations.",
+    title: "Employee Usage = Better Models",
+    description: "Every employee using the platform is training data. 100 employees = 100x more behavioral insights. 1,000 employees = enterprise-wide intelligence that predicts and prevents problems.",
   },
   {
     icon: Users,
-    title: "Continuous Learning",
-    description: "Our ML models improve with every transaction, workflow, and data point. The platform gets smarter over time, delivering increasingly accurate predictions and recommendations.",
+    title: "Zero-Trust Security Built In",
+    description: "Enterprise-grade SSO with MFA, session management, and granular access controls. Every system access logged and compliance-tagged. Security and intelligence in one platform.",
   },
   {
     icon: FileCheck,
-    title: "Cross-System Intelligence",
-    description: "Discover insights impossible to see in isolated systems. Connect ERP + HRIS to predict staffing. Add CRM + Finance to forecast cash flow. More connections = exponentially better insights.",
+    title: "Unified Audit Trail",
+    description: "Every login, transaction, and approval across all systems captured in one compliance-tagged audit trail. Instant audit readiness with evidence for every control.",
   },
 ];
 
@@ -50,11 +50,11 @@ const Features = () => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            More Data. Smarter Insights. Better Decisions.
+            Your Team's Daily Portal. Your Company's Intelligence Engine.
           </h2>
           <p className="text-xl text-muted-foreground">
-            Our ML-powered platform learns from every system you connect. The more data flowing in from ERP, HRIS, CRM, ITSM, and SCM, 
-            the better we predict problems, recommend solutions, and optimize your operations—all while maintaining continuous compliance.
+            Employees log in once to access all systems—SAP, Workday, Salesforce, ServiceNow. Every click, approval, and transaction 
+            trains our ML models. The result? Predictive intelligence that gets smarter with every user, every day.
           </p>
         </div>
 

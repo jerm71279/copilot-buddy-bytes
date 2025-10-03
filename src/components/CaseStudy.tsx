@@ -23,10 +23,10 @@ const CaseStudy = () => {
             Featured Customer
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            How OberaConnect Transformed Compliance into Strategy
+            How OberaConnect Made One Login Power 500 Employees
           </h2>
           <p className="text-xl text-muted-foreground">
-            From compliance bottleneck to competitive advantage: OberaConnect's journey with ComplianceOS
+            From password chaos to predictive intelligence: OberaConnect's transformation with unified access + ML
           </p>
         </div>
 
@@ -34,26 +34,26 @@ const CaseStudy = () => {
         <div className="grid md:grid-cols-4 gap-6 mb-12">
           <Card className="border-border text-center">
             <CardContent className="pt-6">
-              <div className="text-4xl font-bold text-success mb-2">75%</div>
-              <div className="text-sm text-muted-foreground">Time Saved on Audits</div>
+              <div className="text-4xl font-bold text-success mb-2">95%</div>
+              <div className="text-sm text-muted-foreground">Fewer Password Resets</div>
             </CardContent>
           </Card>
           <Card className="border-border text-center">
             <CardContent className="pt-6">
-              <div className="text-4xl font-bold text-accent mb-2">4</div>
-              <div className="text-sm text-muted-foreground">Frameworks Managed</div>
+              <div className="text-4xl font-bold text-accent mb-2">87%</div>
+              <div className="text-sm text-muted-foreground">Prediction Accuracy</div>
             </CardContent>
           </Card>
           <Card className="border-border text-center">
             <CardContent className="pt-6">
-              <div className="text-4xl font-bold text-warning mb-2">300+</div>
-              <div className="text-sm text-muted-foreground">Controls Automated</div>
+              <div className="text-4xl font-bold text-warning mb-2">500</div>
+              <div className="text-sm text-muted-foreground">Employees = 500x Data</div>
             </CardContent>
           </Card>
           <Card className="border-border text-center">
             <CardContent className="pt-6">
-              <div className="text-4xl font-bold text-primary mb-2">100%</div>
-              <div className="text-sm text-muted-foreground">Audit Success Rate</div>
+              <div className="text-4xl font-bold text-primary mb-2">1</div>
+              <div className="text-sm text-muted-foreground">Login for All Systems</div>
             </CardContent>
           </Card>
         </div>
@@ -70,28 +70,28 @@ const CaseStudy = () => {
             </h3>
             <div className="space-y-4 text-muted-foreground">
               <p className="leading-relaxed">
-                OberaConnect, a rapidly growing technology services company, struggled with compliance 
-                becoming a bottleneck. Their team spent weeks preparing for audits, manually collecting 
-                evidence, and managing controls across ISO 27001, SOC 2, HIPAA, and NIST frameworks.
+                OberaConnect's 500 employees juggled 12+ system logins daily—SAP, Workday, Salesforce, 
+                ServiceNow, and more. Password resets consumed IT resources. Compliance teams had no unified 
+                view of employee activities across systems, making audits a manual nightmare.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Clock className="h-3 w-3 text-destructive" />
                   </div>
-                  <span>Audit preparation took 6-8 weeks per framework</span>
+                  <span>200+ password reset tickets per month draining IT resources</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Users className="h-3 w-3 text-destructive" />
                   </div>
-                  <span>Siloed compliance across HR, Legal, IT, and Finance teams</span>
+                  <span>No visibility into actual employee workflows across systems</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <FileCheck className="h-3 w-3 text-destructive" />
                   </div>
-                  <span>Manual evidence collection and control tracking</span>
+                  <span>Fragmented compliance data with no unified audit trail</span>
                 </li>
               </ul>
             </div>
@@ -107,27 +107,28 @@ const CaseStudy = () => {
             </h3>
             <div className="space-y-4 text-muted-foreground">
               <p className="leading-relaxed">
-                By implementing ComplianceOS, OberaConnect transformed their compliance operations with 
-                a modular, clause-aware backbone that integrated seamlessly with their existing workflows.
+                ComplianceOS became OberaConnect's unified access portal and intelligence engine. 
+                All 500 employees now log in once to access every system. Every action trains ML models 
+                while maintaining automated compliance.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <CheckCircle2 className="h-3 w-3 text-success" />
                   </div>
-                  <span>Automated evidence collection through schema blocks (IR.1, HR.8, FIN.3)</span>
+                  <span>Single Sign-On replacing 12+ passwords for all 500 employees</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <CheckCircle2 className="h-3 w-3 text-success" />
                   </div>
-                  <span>MCP Server for dynamic clause resolution and control mapping</span>
+                  <span>Every employee action captured for ML training and compliance tagging</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <CheckCircle2 className="h-3 w-3 text-success" />
                   </div>
-                  <span>Integration with HRIS, SIEM, and ticketing systems</span>
+                  <span>Predictive intelligence from real behavioral data, not just APIs</span>
                 </li>
               </ul>
             </div>
@@ -147,33 +148,33 @@ const CaseStudy = () => {
               {[
                 {
                   icon: Database,
-                  title: "Compliance Backbone",
-                  description: "Clause-linked schema blocks with automated audit flags and flow logic",
+                  title: "Unified Access Portal",
+                  description: "One login for all systems—SAP, Workday, Salesforce, ServiceNow. SSO with MFA and session management.",
                 },
                 {
                   icon: Zap,
-                  title: "MCP Server",
-                  description: "Dynamic clause resolution serving flows, flags, and mappings in real-time",
+                  title: "Behavioral Capture Engine",
+                  description: "Every employee action logged, compliance-tagged, and fed to ML models for predictive intelligence.",
                 },
                 {
                   icon: TrendingUp,
-                  title: "Viewer Layer",
-                  description: "Role-based dashboards for executives, analysts, and auditors",
+                  title: "ML Intelligence Layer",
+                  description: "Predicts approval delays 5 days in advance with 87% accuracy after 3 months of employee usage data.",
                 },
                 {
                   icon: Users,
-                  title: "Orchestration Layer",
-                  description: "Workflow automation triggering escalations and exports automatically",
+                  title: "Network Effect Intelligence",
+                  description: "500 employees = 500x more training data. More users = exponentially better predictions.",
                 },
                 {
                   icon: Shield,
-                  title: "Integration Layer",
-                  description: "Seamless connections to HRIS, SIEM, CRM, and ERP systems",
+                  title: "Compliance Automation",
+                  description: "Every system access compliance-tagged. Unified audit trail across all employee activities.",
                 },
                 {
                   icon: FileCheck,
-                  title: "Schema Blocks",
-                  description: "Reusable modules (IR.1, HR.8, FIN.3) mapped to business processes",
+                  title: "Role-Based Dashboards",
+                  description: "Executives see predictive KPIs. Ops teams get bottleneck alerts. Compliance monitors live controls.",
                 },
               ].map((layer, idx) => {
                 const Icon = layer.icon;
@@ -214,10 +215,10 @@ const CaseStudy = () => {
                 </h4>
                 <ul className="space-y-3">
                   {[
-                    "Audit preparation reduced from 6-8 weeks to 1-2 weeks",
-                    "Cross-team coordination improved with shared schema logic",
-                    "Real-time compliance posture visibility for executives",
-                    "Automated control evidence collection saving 40+ hours/month",
+                    "95% reduction in password reset tickets (200+ → 10/month)",
+                    "87% prediction accuracy for approval delays after 3 months",
+                    "75% faster audit prep with unified cross-system audit trail",
+                    "IT team freed up from password management to strategic work",
                   ].map((result, idx) => (
                     <li key={idx} className="flex items-start gap-3 text-white/90">
                       <CheckCircle2 className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
@@ -233,10 +234,10 @@ const CaseStudy = () => {
                 </h4>
                 <ul className="space-y-3">
                   {[
-                    "Compliance became a competitive differentiator in sales",
-                    "Faster vendor onboarding with automated compliance checks",
-                    "Proactive risk identification and remediation",
-                    "Unified reporting across ISO 27001, SOC 2, HIPAA, and NIST",
+                    "500 employees using daily = 500x more ML training data",
+                    "Predictive intelligence identifies problems 5 days before they occur",
+                    "Employee behavioral patterns optimize workflows automatically",
+                    "One platform replacing multiple access management tools",
                   ].map((result, idx) => (
                     <li key={idx} className="flex items-start gap-3 text-white/90">
                       <CheckCircle2 className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
@@ -250,9 +251,9 @@ const CaseStudy = () => {
             {/* Quote */}
             <div className="border-t border-white/20 pt-6">
               <blockquote className="text-xl italic text-white/95 mb-4">
-                "ComplianceOS didn't just help us meet compliance requirements—it transformed how we 
-                think about risk management and business strategy. We went from reactive compliance 
-                to proactive resilience."
+                "We went from password chaos to predictive intelligence. Our employees love having one login 
+                for everything, and we love that every action they take is training our ML models to predict 
+                and prevent problems. It's transformational."
               </blockquote>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white font-bold">

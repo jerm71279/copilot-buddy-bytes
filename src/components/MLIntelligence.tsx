@@ -59,12 +59,12 @@ const MLIntelligence = () => {
             <span className="text-sm font-medium text-accent">Machine Learning Powered</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            The More You Connect, The Smarter It Gets
+            More Employees Using = Exponentially Smarter Intelligence
           </h2>
           <p className="text-xl text-muted-foreground">
-            Our ML models learn from every system you integrate. Each new connection exponentially increases 
-            the quality of predictions, recommendations, and insights—creating a powerful network effect that 
-            transforms how you solve business problems.
+            Every employee logging in and working across systems is training our ML models. Real behavioral data—not just APIs. 
+            The network effect is powerful: 10 employees = baseline insights. 100 employees = predictive intelligence. 
+            1,000+ employees = enterprise-wide transformation.
           </p>
         </div>
 
@@ -109,10 +109,10 @@ const MLIntelligence = () => {
           <CardContent>
             <div className="space-y-6">
               {[
-                { systems: "3 Systems", accuracy: 65, description: "Basic automation and cross-system visibility", color: "bg-blue-500" },
-                { systems: "6 Systems", accuracy: 78, description: "Pattern detection and early problem identification", color: "bg-purple-500" },
-                { systems: "10 Systems", accuracy: 88, description: "Predictive analytics and smart recommendations", color: "bg-green-500" },
-                { systems: "15+ Systems", accuracy: 95, description: "Enterprise-wide optimization and transformation", color: "bg-orange-500" },
+                { systems: "10 Employees", accuracy: 60, description: "Basic behavioral patterns and workflow visibility", color: "bg-blue-500" },
+                { systems: "100 Employees", accuracy: 75, description: "Department-level insights and bottleneck detection", color: "bg-purple-500" },
+                { systems: "500 Employees", accuracy: 88, description: "Predictive intelligence across all departments", color: "bg-green-500" },
+                { systems: "1,000+ Employees", accuracy: 95, description: "Enterprise-wide transformation and optimization", color: "bg-orange-500" },
               ].map((stage, idx) => (
                 <div key={idx} className="space-y-2">
                   <div className="flex items-center justify-between">
