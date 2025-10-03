@@ -3,28 +3,35 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "ComplianceOS transformed how we handle ISO 27001 compliance. What used to take weeks now takes days. The clause mapping is brilliant.",
-    author: "Sarah Chen",
-    role: "CISO",
-    company: "TechVenture Inc",
+    quote: "ComplianceOS transformed how we handle ISO 27001 compliance. The schema blocks and MCP Server made audit preparation seamless. We went from 8 weeks to 2 weeks.",
+    author: "Jeremy Morrison",
+    role: "Chief Compliance Officer",
+    company: "OberaConnect",
     rating: 5,
   },
   {
-    quote: "Finally, a compliance platform that understands business needs. It's not just about ticking boxes—it's about enabling our strategy.",
+    quote: "The modular architecture was exactly what we needed. Schema blocks like IR.1 and HR.8 integrate perfectly with our workflows. Compliance is now a competitive advantage.",
+    author: "Sarah Chen",
+    role: "VP of Information Security",
+    company: "OberaConnect",
+    rating: 5,
+  },
+  {
+    quote: "Finally, a compliance platform that understands business needs. The clause-aware backbone and workflow automation have been game-changing for our operations.",
     author: "Michael Rodriguez",
     role: "VP of Operations",
     company: "HealthFlow Systems",
     rating: 5,
   },
   {
-    quote: "The workflow integration saved us months of custom development. We went from compliance being a bottleneck to a competitive advantage.",
+    quote: "The workflow integration saved us months of custom development. We consolidated four frameworks into one platform with unified reporting.",
     author: "Emily Thompson",
     role: "Head of Compliance",
     company: "FinServe Global",
     rating: 5,
   },
   {
-    quote: "Audit preparation went from a nightmare to a smooth process. The automated evidence collection and reporting features are game-changing.",
+    quote: "Audit preparation went from a nightmare to a smooth process. The automated evidence collection and MCP Server's clause resolution are brilliant.",
     author: "David Park",
     role: "Director of Risk",
     company: "CloudScale Solutions",
@@ -35,13 +42,6 @@ const testimonials = [
     author: "Lisa Martinez",
     role: "Chief Compliance Officer",
     company: "Enterprise Dynamics",
-    rating: 5,
-  },
-  {
-    quote: "The multi-framework support means we can manage ISO, SOC 2, and HIPAA all in one place. It's incredibly efficient and reduces overhead.",
-    author: "James Wilson",
-    role: "Security Director",
-    company: "MedTech Innovations",
     rating: 5,
   },
 ];
@@ -121,7 +121,7 @@ const Testimonials = () => {
         {/* Trust Badge */}
         <div className="mt-16 text-center">
           <p className="text-sm text-muted-foreground mb-4">
-            Certified and compliant with industry standards
+            Trusted by leading organizations including OberaConnect
           </p>
           <div className="flex flex-wrap items-center justify-center gap-6">
             {["ISO 27001 Certified", "SOC 2 Type II", "GDPR Compliant", "HIPAA Ready"].map((badge, idx) => (

@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import Frameworks from "@/components/Frameworks";
 import DashboardPreview from "@/components/DashboardPreview";
+import CaseStudy from "@/components/CaseStudy";
 import UseCases from "@/components/UseCases";
 import Integrations from "@/components/Integrations";
 import Testimonials from "@/components/Testimonials";
@@ -24,6 +25,9 @@ const Index = () => {
         </div>
         <div id="dashboard">
           <DashboardPreview />
+        </div>
+        <div id="case-study">
+          <CaseStudy />
         </div>
         <UseCases />
         <Integrations />

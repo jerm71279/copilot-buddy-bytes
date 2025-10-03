@@ -25,14 +25,11 @@ const Navigation = () => {
             <a href="#frameworks" className="text-sm font-medium hover:text-accent transition-colors">
               Frameworks
             </a>
-            <a href="#dashboard" className="text-sm font-medium hover:text-accent transition-colors">
-              Solutions
+            <a href="#case-study" className="text-sm font-medium hover:text-accent transition-colors">
+              Demo
             </a>
             <a href="#pricing" className="text-sm font-medium hover:text-accent transition-colors">
               Pricing
-            </a>
-            <a href="#testimonials" className="text-sm font-medium hover:text-accent transition-colors">
-              Customers
             </a>
           </div>
 
@@ -65,14 +62,11 @@ const Navigation = () => {
               <a href="#frameworks" className="text-sm font-medium hover:text-accent transition-colors py-2">
                 Frameworks
               </a>
-              <a href="#dashboard" className="text-sm font-medium hover:text-accent transition-colors py-2">
-                Solutions
+              <a href="#case-study" className="text-sm font-medium hover:text-accent transition-colors py-2">
+                Demo
               </a>
               <a href="#pricing" className="text-sm font-medium hover:text-accent transition-colors py-2">
                 Pricing
-              </a>
-              <a href="#testimonials" className="text-sm font-medium hover:text-accent transition-colors py-2">
-                Customers
               </a>
               <div className="flex flex-col gap-2 pt-3 border-t border-border">
                 <Button variant="ghost" size="sm" className="justify-start">

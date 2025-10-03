@@ -36,7 +36,7 @@ const Hero = () => {
 
           {/* Subheading */}
           <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-            A modular, full-stack compliance platform that integrates with any company's workflows to solve business problems while maintaining audit readiness.
+            A modular, full-stack compliance platform that integrates with any company's workflows to solve business problems while maintaining audit readiness. Trusted by OberaConnect and leading enterprises.
           </p>
 
           {/* CTA Buttons */}
