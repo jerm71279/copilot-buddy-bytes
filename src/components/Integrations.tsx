@@ -17,23 +17,93 @@ import {
 
 const integrationCategories = [
   {
-    category: "Security & Monitoring",
-    icon: Lock,
+    category: "ERP & Financial",
+    icon: Building,
     integrations: [
-      { name: "CrowdStrike", logo: "🦅" },
-      { name: "Splunk", logo: "🔍" },
-      { name: "Datadog", logo: "🐶" },
-      { name: "PagerDuty", logo: "📟" },
+      { name: "SAP", logo: "💎" },
+      { name: "Oracle NetSuite", logo: "📈" },
+      { name: "Microsoft Dynamics", logo: "🔷" },
+      { name: "Workday Financial", logo: "💼" },
     ],
   },
   {
-    category: "HR Systems",
+    category: "HRIS & HCM",
     icon: Users2,
     integrations: [
+      { name: "Workday", logo: "👥" },
       { name: "BambooHR", logo: "🎋" },
-      { name: "Workday", logo: "💼" },
-      { name: "Gusto", logo: "👥" },
-      { name: "Rippling", logo: "🌊" },
+      { name: "ADP", logo: "💼" },
+      { name: "UKG", logo: "⚙️" },
+    ],
+  },
+  {
+    category: "CRM & Sales",
+    icon: MessageSquare,
+    integrations: [
+      { name: "Salesforce", logo: "☁️" },
+      { name: "HubSpot", logo: "🧡" },
+      { name: "Microsoft Dynamics", logo: "🔷" },
+      { name: "Zoho CRM", logo: "📊" },
+    ],
+  },
+  {
+    category: "ITSM & Service Desk",
+    icon: GitBranch,
+    integrations: [
+      { name: "ServiceNow", logo: "🔧" },
+      { name: "Jira Service Mgmt", logo: "📋" },
+      { name: "Freshservice", logo: "🍃" },
+      { name: "ManageEngine", logo: "⚙️" },
+    ],
+  },
+  {
+    category: "ATS & Recruiting",
+    icon: Users2,
+    integrations: [
+      { name: "Greenhouse", logo: "🌱" },
+      { name: "Lever", logo: "🎯" },
+      { name: "iCIMS", logo: "👔" },
+      { name: "Workable", logo: "💼" },
+    ],
+  },
+  {
+    category: "LMS & Training",
+    icon: CalendarCheck,
+    integrations: [
+      { name: "Docebo", logo: "📚" },
+      { name: "TalentLMS", logo: "🎓" },
+      { name: "Cornerstone", logo: "📖" },
+      { name: "LinkedIn Learning", logo: "🔗" },
+    ],
+  },
+  {
+    category: "SCM & Logistics",
+    icon: Database,
+    integrations: [
+      { name: "Oracle SCM", logo: "📦" },
+      { name: "SAP Ariba", logo: "🚚" },
+      { name: "Kinaxis", logo: "⛓️" },
+      { name: "Blue Yonder", logo: "🌍" },
+    ],
+  },
+  {
+    category: "BI & Analytics",
+    icon: Webhook,
+    integrations: [
+      { name: "Power BI", logo: "📊" },
+      { name: "Tableau", logo: "📈" },
+      { name: "Looker", logo: "👁️" },
+      { name: "Domo", logo: "📉" },
+    ],
+  },
+  {
+    category: "Security & GRC",
+    icon: Lock,
+    integrations: [
+      { name: "CrowdStrike", logo: "🛡️" },
+      { name: "Vanta", logo: "✅" },
+      { name: "Splunk", logo: "🔍" },
+      { name: "LogicGate", logo: "🔐" },
     ],
   },
   {
@@ -47,33 +117,23 @@ const integrationCategories = [
     ],
   },
   {
-    category: "Development Tools",
-    icon: GitBranch,
+    category: "Document & Assets",
+    icon: FileText,
     integrations: [
-      { name: "GitHub", logo: "🐙" },
-      { name: "GitLab", logo: "🦊" },
-      { name: "Jira", logo: "📊" },
-      { name: "Jenkins", logo: "🔧" },
+      { name: "M-Files", logo: "📁" },
+      { name: "SharePoint", logo: "📂" },
+      { name: "IBM Maximo", logo: "🏭" },
+      { name: "DocuWare", logo: "📄" },
     ],
   },
   {
-    category: "Communication",
-    icon: MessageSquare,
+    category: "Marketing Automation",
+    icon: Mail,
     integrations: [
-      { name: "Slack", logo: "💬" },
-      { name: "Microsoft Teams", logo: "👥" },
-      { name: "Email (SMTP)", logo: "📧" },
-      { name: "Zoom", logo: "📹" },
-    ],
-  },
-  {
-    category: "Business Systems",
-    icon: Building,
-    integrations: [
-      { name: "Salesforce", logo: "☁️" },
-      { name: "NetSuite", logo: "📈" },
-      { name: "QuickBooks", logo: "💚" },
-      { name: "SAP", logo: "🏢" },
+      { name: "HubSpot", logo: "🧡" },
+      { name: "Marketo", logo: "🎯" },
+      { name: "Pardot", logo: "☁️" },
+      { name: "Mailchimp", logo: "📧" },
     ],
   },
 ];
@@ -81,18 +141,18 @@ const integrationCategories = [
 const apiFeatures = [
   {
     icon: Webhook,
-    title: "RESTful API",
-    description: "Complete API access to all platform features with comprehensive documentation.",
+    title: "Real-Time Cross-System Sync",
+    description: "Bi-directional data flow across ERP, HRIS, CRM, ITSM, and all connected systems with compliance tagging preserved.",
   },
   {
     icon: Database,
-    title: "Data Sync",
-    description: "Real-time bidirectional sync with your existing systems and databases.",
+    title: "Intelligent Schema Mapping",
+    description: "AI-powered field mapping across systems with automatic clause linkage—map ERP controls to SOC 2, HRIS logs to ISO 27001.",
   },
   {
     icon: FileSpreadsheet,
-    title: "Custom Workflows",
-    description: "Build custom integrations with our workflow automation engine.",
+    title: "Universal Workflow Engine",
+    description: "Automate processes that span multiple systems while maintaining full audit trails and compliance tagging.",
   },
 ];
 
@@ -103,10 +163,11 @@ const Integrations = () => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Seamless Integrations
+            Unified System Integration
           </h2>
           <p className="text-xl text-muted-foreground">
-            Connect ComplianceOS with your existing tech stack. API-first design for maximum flexibility.
+            Connect your entire business tech stack—ERP, HRIS, CRM, ITSM, ATS, LMS, SCM, and more. 
+            Our clause-linked architecture maps operational data across all systems for unified intelligence and compliance.
           </p>
         </div>
 

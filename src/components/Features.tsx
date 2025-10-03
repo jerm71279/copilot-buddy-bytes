@@ -7,39 +7,39 @@ import dashboardIcon from "@/assets/dashboard-icon.png";
 const features = [
   {
     icon: complianceIcon,
-    title: "Compliance Backbone",
-    description: "Clause-linked schema engine with ISO, NIST, SOC2 mappings baked into every module. Immutable audit trails and risk registers.",
-    highlights: ["ISO 27001", "SOC 2", "HIPAA", "NIST"],
+    title: "Clause-Linked Schema Engine",
+    description: "Every data point, workflow, and system is tagged to compliance clauses and operational metrics. Map ERP transactions, HRIS changes, CRM activities—all traced to requirements.",
+    highlights: ["ISO 27001", "SOC 2", "HIPAA", "NIST", "Custom Tags"],
   },
   {
     icon: workflowIcon,
-    title: "Workflow Integration",
-    description: "Modular adapters for HR, Finance, Legal, and Operations. Schema block templates that clone and customize per division.",
-    highlights: ["HR Systems", "Finance Tools", "Legal Workflows", "Operations"],
+    title: "Cross-System Automation",
+    description: "Unify workflows across ERP, HRIS, ATS, LMS, CRM, ITSM, and more. Trigger actions, sync data, and maintain compliance automatically as processes execute.",
+    highlights: ["ERP Integration", "HRIS Sync", "ITSM Workflows", "CRM Automation"],
   },
   {
     icon: dashboardIcon,
-    title: "Business Intelligence",
-    description: "Executive dashboards showing how compliance supports KPIs and strategic goals. Real-time compliance posture visualization.",
-    highlights: ["Live Dashboards", "Audit Reports", "Risk Analytics", "Strategy Alignment"],
+    title: "Unified Intelligence Dashboards",
+    description: "Role-based views across all systems—executives see KPIs and risk, ops teams track workflows, compliance officers monitor controls, auditors review evidence.",
+    highlights: ["Executive KPIs", "Ops Metrics", "Compliance Score", "Audit Trail"],
   },
 ];
 
 const additionalFeatures = [
   {
     icon: Database,
-    title: "Extensible Control Library",
-    description: "Filter, link, and manage controls across any workflow with ease.",
+    title: "System-Wide Evidence Trail",
+    description: "Every transaction, workflow step, and approval has traceable lineage with compliance tagging.",
   },
   {
     icon: Users,
-    title: "Role-Based Views",
-    description: "Customized interfaces for executives, analysts, and auditors.",
+    title: "Continuous Assessment",
+    description: "Monitor health, performance, and compliance across your entire tech stack in real-time.",
   },
   {
     icon: FileCheck,
-    title: "Printable Exports",
-    description: "Board-ready reports for meetings, audits, and investor decks.",
+    title: "Operational Analytics",
+    description: "Track compliance scores, process efficiency, resource utilization, and risk indicators unified.",
   },
 ];
 
@@ -50,10 +50,10 @@ const Features = () => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Built for Modern Compliance
+            Built for Scale, Designed for Simplicity
           </h2>
           <p className="text-xl text-muted-foreground">
-            A layered architecture that adapts to your business while maintaining the highest standards of compliance.
+            A unified operational backbone that integrates all your business systems—ERP, HRIS, CRM, ITSM, SCM, and more—with compliance tagging built into every schema layer.
           </p>
         </div>
 

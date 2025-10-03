@@ -40,10 +40,10 @@ const Frameworks = () => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Multi-Framework Support
+            Compliance Tagging Across All Systems
           </h2>
           <p className="text-xl text-muted-foreground">
-            Comprehensive clause mappings and control libraries for major compliance frameworks.
+            Comprehensive clause mappings embedded in your operational schema. Every ERP transaction, HRIS record, CRM activity, and workflow step is tagged to compliance requirements.
           </p>
         </div>
 
@@ -77,15 +77,16 @@ const Frameworks = () => {
         {/* Additional Info */}
         <Card className="bg-gradient-primary border-0 text-white">
           <CardHeader>
-            <CardTitle className="text-2xl text-white">Extensible Framework Engine</CardTitle>
+            <CardTitle className="text-2xl text-white">Universal Schema Architecture</CardTitle>
             <CardDescription className="text-white/80 text-base">
-              Our clause-linked schema engine can be extended to support any compliance framework. 
-              Add custom frameworks, map controls, and maintain audit readiness across your entire organization.
+              Compliance tagging built into every layer of your business operations. Map ERP financial controls to SOC 2, 
+              HRIS access logs to ISO 27001, CRM data handling to GDPR, supply chain records to regulatory requirements—all 
+              in one unified schema engine that maintains audit readiness across your entire tech stack.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-3">
-              {["GDPR", "PCI DSS", "FedRAMP", "ISO 9001", "Custom Frameworks"].map((tag, idx) => (
+              {["GDPR", "PCI DSS", "FedRAMP", "ISO 9001", "Custom Frameworks", "Operational KPIs", "Process Controls"].map((tag, idx) => (
                 <span
                   key={idx}
                   className="px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium"

@@ -10,10 +10,11 @@ const DashboardPreview = () => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Real-Time Compliance Intelligence
+            Unified Operational Intelligence
           </h2>
           <p className="text-xl text-muted-foreground">
-            Executive dashboards that show how compliance supports your business strategy and KPIs.
+            Monitor compliance, operations, and system health across your entire business tech stack. 
+            Track ERP workflows, HRIS processes, CRM activities, and compliance controls from one unified dashboard.
           </p>
         </div>
 

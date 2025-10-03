@@ -23,20 +23,22 @@ const Hero = () => {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-6 py-2 mb-8">
             <Shield className="h-4 w-4 text-accent" />
-            <span className="text-sm font-medium text-white">Enterprise Compliance Platform</span>
+            <span className="text-sm font-medium text-white">Unified Operational Intelligence Platform</span>
           </div>
 
           {/* Main Heading */}
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            Compliance as a
+            The Unified Intelligence OS for
             <span className="block bg-gradient-to-r from-accent to-purple-300 bg-clip-text text-transparent">
-              Strategic Enabler
+              Modern Enterprises
             </span>
           </h1>
 
           {/* Subheading */}
           <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-            A modular, full-stack compliance platform that integrates with any company's workflows to solve business problems while maintaining audit readiness. Trusted by OberaConnect and leading enterprises.
+            Integrate, automate, and assess all your business systems—ERP, HRIS, CRM, ITSM—under one umbrella. 
+            Clause-linked schema architecture maps every workflow, control, and data point across your entire tech stack, 
+            delivering operational intelligence with built-in audit readiness. Trusted by OberaConnect and 500+ enterprises.
           </p>
 
           {/* CTA Buttons */}
