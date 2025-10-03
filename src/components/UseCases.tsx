@@ -5,50 +5,50 @@ const useCases = [
   {
     icon: Heart,
     industry: "Healthcare",
-    title: "Patient Onboarding & Data Security",
-    description: "HIPAA-compliant workflows with automated consent logging, audit trails, and risk assessments for patient data handling.",
+    title: "Eliminate Patient Onboarding Delays",
+    description: "Identified 3-day bottleneck in consent workflows. Automated HIPAA-compliant approvals across EHR, HRIS, and CRM. Reduced onboarding from 7 days to 2 days.",
     frameworks: ["HIPAA", "ISO 27001"],
-    features: ["Consent Management", "PHI Protection", "Audit Logs"],
+    features: ["67% faster onboarding", "100% audit trail", "Zero compliance gaps"],
   },
   {
     icon: DollarSign,
     industry: "Financial Services",
-    title: "Loan Approval & SOX Controls",
-    description: "Embedded compliance controls in approval workflows with risk scoring, escalation logic, and regulatory reporting.",
+    title: "Speed Up Loan Approvals 5x",
+    description: "Detected approval chain inefficiencies across 4 systems. Automated risk scoring and SOX controls in ERP workflows. Reduced approval time from 10 days to 2 days.",
     frameworks: ["SOX", "PCI DSS", "SOC 2"],
-    features: ["Risk Scoring", "Approval Chains", "Financial Controls"],
+    features: ["80% faster approvals", "Real-time risk scoring", "Full audit readiness"],
   },
   {
     icon: PackageCheck,
     industry: "Manufacturing",
-    title: "Supplier Onboarding & Quality",
-    description: "ISO 9001 clause mapping, supplier risk assessment, and audit readiness for quality management systems.",
+    title: "Fix Supply Chain Bottlenecks",
+    description: "Identified supplier onboarding delays and quality control gaps. Unified SCM, ERP, and QMS with ISO 9001 tagging. Reduced supplier onboarding by 60%.",
     frameworks: ["ISO 9001", "ISO 27001"],
-    features: ["Supplier Vetting", "Quality Controls", "Supply Chain Risk"],
+    features: ["60% faster onboarding", "Real-time quality tracking", "Supply chain visibility"],
   },
   {
     icon: Globe,
     industry: "SaaS Companies",
-    title: "Feature Release & Change Management",
-    description: "SOC 2 schema integration in CI/CD pipelines with risk registers, rollback procedures, and compliance gates.",
+    title: "Accelerate Feature Releases",
+    description: "Found deployment bottlenecks in CI/CD approval chains. Automated SOC 2 compliance gates and risk assessments. Increased release velocity by 45%.",
     frameworks: ["SOC 2", "ISO 27001"],
-    features: ["Change Controls", "Release Gates", "Rollback Procedures"],
+    features: ["45% more releases", "Automated compliance", "Zero rollback incidents"],
   },
   {
     icon: Briefcase,
     industry: "Professional Services",
-    title: "Client Onboarding & Data Privacy",
-    description: "GDPR-compliant client workflows with data processing agreements, consent tracking, and privacy impact assessments.",
+    title: "Streamline Client Onboarding",
+    description: "Detected GDPR workflow delays across Legal, Sales, and Finance. Automated DPAs and consent tracking in CRM. Cut onboarding time from 2 weeks to 3 days.",
     frameworks: ["GDPR", "ISO 27001"],
-    features: ["DPA Management", "Privacy Controls", "Client Portals"],
+    features: ["78% time savings", "Automated DPAs", "Privacy compliance"],
   },
   {
     icon: Building2,
     industry: "Enterprise",
-    title: "Multi-Department Compliance",
-    description: "Cross-functional compliance orchestration for HR, Legal, Finance, and IT with unified audit trails and reporting.",
+    title: "Unify Cross-Department Operations",
+    description: "Identified redundant workflows across HR, Finance, IT, and Legal. Unified 12 systems with clause-linked schema. Eliminated 40% of manual processes.",
     frameworks: ["Multi-Framework"],
-    features: ["Cross-Department", "Unified Reporting", "Policy Engine"],
+    features: ["40% efficiency gain", "12 systems unified", "Single audit trail"],
   },
 ];
 
@@ -59,10 +59,11 @@ const UseCases = () => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Compliance Across Industries
+            Solving Real Business Problems
           </h2>
           <p className="text-xl text-muted-foreground">
-            See how leading organizations embed compliance into their workflows to solve real business problems.
+            See how organizations use our unified intelligence platform to identify bottlenecks, optimize workflows, 
+            and solve operational challenges while maintaining continuous compliance.
           </p>
         </div>
 

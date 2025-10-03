@@ -28,17 +28,17 @@ const Hero = () => {
 
           {/* Main Heading */}
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            The Unified Intelligence OS for
+            See Everything.
             <span className="block bg-gradient-to-r from-accent to-purple-300 bg-clip-text text-transparent">
-              Modern Enterprises
+              Solve Anything. Stay Compliant.
             </span>
           </h1>
 
           {/* Subheading */}
           <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Integrate, automate, and assess all your business systems—ERP, HRIS, CRM, ITSM—under one umbrella. 
-            Clause-linked schema architecture maps every workflow, control, and data point across your entire tech stack, 
-            delivering operational intelligence with built-in audit readiness. Trusted by OberaConnect and 500+ enterprises.
+            Unify all your business systems—ERP, HRIS, CRM, ITSM, and more—to identify bottlenecks, 
+            optimize workflows, and solve operational problems while maintaining continuous compliance across every department.
+            Trusted by OberaConnect and 500+ enterprises.
           </p>
 
           {/* CTA Buttons */}

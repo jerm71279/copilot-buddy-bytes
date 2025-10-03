@@ -10,11 +10,11 @@ const DashboardPreview = () => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Unified Operational Intelligence
+            See Every Bottleneck. Fix Every Issue.
           </h2>
           <p className="text-xl text-muted-foreground">
-            Monitor compliance, operations, and system health across your entire business tech stack. 
-            Track ERP workflows, HRIS processes, CRM activities, and compliance controls from one unified dashboard.
+            Real-time visibility into workflow efficiency, process bottlenecks, and system health across your entire tech stack. 
+            Identify problems instantly, get actionable insights, and maintain continuous compliance across all departments.
           </p>
         </div>
 
@@ -60,61 +60,66 @@ const DashboardPreview = () => {
             </CardContent>
           </Card>
 
-          {/* Open Items */}
+          {/* Bottlenecks Detected */}
           <Card className="border-border shadow-elevated">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Action Items</CardTitle>
-                <Clock className="h-5 w-5 text-warning" />
+                <CardTitle className="text-lg">Bottlenecks Detected</CardTitle>
+                <AlertCircle className="h-5 w-5 text-warning" />
               </div>
-              <CardDescription>Requiring attention</CardDescription>
+              <CardDescription>Workflow inefficiencies</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-5xl font-bold text-warning mb-4">12</div>
+              <div className="text-5xl font-bold text-warning mb-4">8</div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">High Priority</span>
-                  <span className="font-semibold">3</span>
+                  <span className="text-muted-foreground">Approval Delays</span>
+                  <span className="font-semibold">5</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Medium Priority</span>
-                  <span className="font-semibold">9</span>
+                  <span className="text-muted-foreground">Data Sync Issues</span>
+                  <span className="font-semibold">3</span>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Framework Breakdown */}
+        {/* Workflow Efficiency Metrics */}
         <Card className="border-border shadow-elevated">
           <CardHeader>
-            <CardTitle className="text-xl">Framework Compliance Breakdown</CardTitle>
+            <CardTitle className="text-xl">Cross-System Workflow Efficiency</CardTitle>
             <CardDescription>
-              Status across all supported compliance frameworks
+              Process performance and bottleneck resolution across all departments
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               {[
-                { name: "ISO 27001", score: 96, total: 114, color: "bg-blue-500" },
-                { name: "SOC 2 Type II", score: 92, total: 64, color: "bg-purple-500" },
-                { name: "HIPAA", score: 95, total: 48, color: "bg-green-500" },
-                { name: "NIST CSF", score: 89, total: 108, color: "bg-orange-500" },
-              ].map((framework, idx) => (
+                { name: "HR Onboarding (HRIS → ATS → LMS)", efficiency: 87, avgTime: "2.3 days", color: "bg-blue-500", issue: "None" },
+                { name: "Finance Approval (ERP → Workflow)", efficiency: 94, avgTime: "4.1 hours", color: "bg-green-500", issue: "None" },
+                { name: "Sales Pipeline (CRM → CPQ)", efficiency: 72, avgTime: "8.7 days", color: "bg-orange-500", issue: "Approval delays" },
+                { name: "IT Service Requests (ITSM)", efficiency: 89, avgTime: "1.2 days", color: "bg-purple-500", issue: "None" },
+              ].map((workflow, idx) => (
                 <div key={idx}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${framework.color}`} />
-                      <span className="font-semibold">{framework.name}</span>
+                      <div className={`w-3 h-3 rounded-full ${workflow.color}`} />
+                      <div>
+                        <span className="font-semibold block">{workflow.name}</span>
+                        <span className="text-xs text-muted-foreground">Avg time: {workflow.avgTime}</span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-muted-foreground">
-                        {Math.round((framework.score / 100) * framework.total)}/{framework.total} controls
-                      </span>
-                      <span className="font-semibold text-lg">{framework.score}%</span>
+                      {workflow.issue !== "None" && (
+                        <span className="text-xs bg-warning/10 text-warning px-2 py-1 rounded">
+                          {workflow.issue}
+                        </span>
+                      )}
+                      <span className="font-semibold text-lg">{workflow.efficiency}%</span>
                     </div>
                   </div>
-                  <Progress value={framework.score} className="h-2" />
+                  <Progress value={workflow.efficiency} className="h-2" />
                 </div>
               ))}
             </div>

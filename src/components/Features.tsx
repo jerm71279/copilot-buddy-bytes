@@ -7,39 +7,39 @@ import dashboardIcon from "@/assets/dashboard-icon.png";
 const features = [
   {
     icon: complianceIcon,
-    title: "Clause-Linked Schema Engine",
-    description: "Every data point, workflow, and system is tagged to compliance clauses and operational metrics. Map ERP transactions, HRIS changes, CRM activities—all traced to requirements.",
-    highlights: ["ISO 27001", "SOC 2", "HIPAA", "NIST", "Custom Tags"],
+    title: "Bottleneck Detection & Resolution",
+    description: "Monitor workflows across all systems to identify delays, inefficiencies, and process breakdowns. Get actionable insights with clause-linked schema showing exactly where and why problems occur.",
+    highlights: ["Process Analytics", "Delay Detection", "Root Cause Analysis", "Smart Alerts", "Auto-Resolution"],
   },
   {
     icon: workflowIcon,
-    title: "Cross-System Automation",
-    description: "Unify workflows across ERP, HRIS, ATS, LMS, CRM, ITSM, and more. Trigger actions, sync data, and maintain compliance automatically as processes execute.",
-    highlights: ["ERP Integration", "HRIS Sync", "ITSM Workflows", "CRM Automation"],
+    title: "Cross-System Workflow Optimization",
+    description: "Unify and automate workflows across ERP, HRIS, ATS, LMS, CRM, ITSM. Eliminate redundancies, streamline approvals, and maintain compliance as operations execute.",
+    highlights: ["Workflow Automation", "Smart Routing", "Approval Chains", "Data Sync"],
   },
   {
     icon: dashboardIcon,
-    title: "Unified Intelligence Dashboards",
-    description: "Role-based views across all systems—executives see KPIs and risk, ops teams track workflows, compliance officers monitor controls, auditors review evidence.",
-    highlights: ["Executive KPIs", "Ops Metrics", "Compliance Score", "Audit Trail"],
+    title: "Operational Intelligence Dashboards",
+    description: "Real-time visibility into KPIs, efficiency metrics, bottlenecks, and compliance across all departments. Role-based views for executives, operations, compliance, and audit teams.",
+    highlights: ["Real-Time KPIs", "Efficiency Metrics", "Bottleneck Alerts", "Audit Readiness"],
   },
 ];
 
 const additionalFeatures = [
   {
     icon: Database,
-    title: "System-Wide Evidence Trail",
-    description: "Every transaction, workflow step, and approval has traceable lineage with compliance tagging.",
+    title: "Problem-Solving Intelligence",
+    description: "AI-powered insights identify operational issues, recommend solutions, and automate fixes across your entire tech stack.",
   },
   {
     icon: Users,
-    title: "Continuous Assessment",
-    description: "Monitor health, performance, and compliance across your entire tech stack in real-time.",
+    title: "Resource Optimization",
+    description: "Track utilization, workload distribution, and capacity across teams and systems to eliminate waste and improve efficiency.",
   },
   {
     icon: FileCheck,
-    title: "Operational Analytics",
-    description: "Track compliance scores, process efficiency, resource utilization, and risk indicators unified.",
+    title: "Compliance-First Analytics",
+    description: "Every metric tied to compliance requirements—track scores, audit readiness, control effectiveness, and risk indicators unified.",
   },
 ];
 
@@ -50,10 +50,11 @@ const Features = () => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Built for Scale, Designed for Simplicity
+            Identify Problems. Optimize Workflows. Stay Compliant.
           </h2>
           <p className="text-xl text-muted-foreground">
-            A unified operational backbone that integrates all your business systems—ERP, HRIS, CRM, ITSM, SCM, and more—with compliance tagging built into every schema layer.
+            Our unified operational intelligence platform monitors all your systems—ERP, HRIS, CRM, ITSM, SCM—to surface 
+            bottlenecks, automate solutions, and maintain continuous compliance with clause-tagged schema architecture.
           </p>
         </div>
 
