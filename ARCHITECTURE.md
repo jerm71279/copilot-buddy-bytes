@@ -96,6 +96,34 @@ Model Context Protocol server registry for AI capabilities.
 - **Fields**: name, url, description, capabilities[], status
 - **RLS Policy**: Public read access
 
+#### `workflows`
+Cross-system workflow definitions and configurations.
+- **Primary Key**: `id` (UUID)
+- **Foreign Key**: `customer_id` → customers
+- **Fields**: workflow_name, description, steps (JSONB), systems_involved[], is_active, workflow_type, version, tags[]
+- **RLS Policy**: Admin-only access for management
+
+#### `workflow_executions`
+Historical record of workflow runs with execution logs.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `workflow_id` → workflows, `customer_id` → customers
+- **Fields**: triggered_by, trigger_data (JSONB), status, started_at, completed_at, error_message, execution_log (JSONB)
+- **RLS Policy**: Admin view, system insert/update
+
+#### `workflow_triggers`
+Webhook, scheduled, and event-based trigger configurations.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `workflow_id` → workflows, `customer_id` → customers
+- **Fields**: trigger_type, trigger_config (JSONB), webhook_url, webhook_secret, is_enabled, last_triggered_at
+- **RLS Policy**: Admin-only management
+
+#### `workflow_conditions`
+Conditional branching logic for workflows.
+- **Primary Key**: `id` (UUID)
+- **Foreign Key**: `workflow_id` → workflows
+- **Fields**: step_id, condition_type, condition_expression (JSONB), true_path (JSONB), false_path (JSONB)
+- **RLS Policy**: Admin-only management
+
 ## 🧩 Frontend Architecture
 
 ### Component Hierarchy
@@ -242,6 +270,25 @@ Each department has a specialized AI assistant:
 - **Edge Function**: `supabase/functions/mcp-server/index.ts`
 - **Capabilities**: Tool execution, structured outputs, multi-step reasoning
 
+### Universal Workflow Engine
+
+**Advanced workflow automation with visual builder**:
+- **Visual Builder**: `WorkflowBuilder.tsx` - drag-and-drop step configuration
+- **Trigger Management**: `WorkflowTriggerManager.tsx` - webhook, schedule, event-based triggers
+- **Execution History**: `WorkflowExecutionHistory.tsx` - real-time status and logs
+- **Edge Functions**:
+  - `workflow-executor`: Executes workflows with conditional logic, API calls, data transforms
+  - `workflow-webhook`: Secure webhook endpoint with signature verification
+- **Features**:
+  - Multi-step workflows with branching logic
+  - Webhook triggers with auto-generated URLs
+  - Scheduled execution (cron)
+  - Conditional steps (if/switch/loop)
+  - API call orchestration
+  - Database operations
+  - Real-time execution logs
+  - Error handling and retry logic
+
 ## 🔐 Security Architecture
 
 ### Authentication Flow
@@ -279,6 +326,12 @@ USING (auth.uid() = user_id);
 - **Runtime**: Deno on Supabase Edge
 - **Auto-deployment**: Changes pushed automatically
 - **Secrets**: Managed via Lovable Cloud secrets management
+
+**Available Edge Functions**:
+1. **department-assistant**: Department-specific AI chat with context awareness
+2. **mcp-server**: Model Context Protocol tool execution
+3. **workflow-executor**: Orchestrates multi-step workflow execution with conditional logic
+4. **workflow-webhook**: Receives webhook triggers and initiates workflow runs
 
 ## 📊 Data Flow Examples
 

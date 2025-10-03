@@ -330,6 +330,202 @@ CREATE TABLE mcp_servers (
 
 ---
 
+### 7. Universal Workflow Engine Module
+**Location**: `src/components/WorkflowBuilder.tsx`, `src/components/WorkflowExecutionHistory.tsx`, `src/components/WorkflowTriggerManager.tsx`, `supabase/functions/workflow-executor/`, `supabase/functions/workflow-webhook/`
+
+**Responsibilities**:
+- Visual workflow builder with multi-step configuration
+- Webhook, scheduled, and event-based triggers
+- Workflow execution orchestration with conditional logic
+- Real-time execution monitoring and logging
+- Cross-system automation and integration
+
+**Frontend Components**:
+
+#### WorkflowBuilder
+```typescript
+const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
+  // Visual workflow creation interface
+  // Step configuration (API calls, data transforms, conditions, etc.)
+  // Trigger setup (webhook, schedule, manual)
+  // Save and test workflows
+};
+```
+
+**Step Types**:
+- `api_call` - HTTP requests to external APIs
+- `data_transform` - Data mapping and transformation
+- `condition` - Branching logic (if/switch)
+- `notification` - Send alerts and notifications
+- `database_operation` - CRUD on database tables
+- `delay` - Wait/sleep operations
+- `loop` - Iterate over data sets
+
+#### WorkflowExecutionHistory
+```typescript
+const WorkflowExecutionHistory = ({ customerId }: { customerId: string }) => {
+  // Display recent workflow runs
+  // Show execution status, duration, logs
+  // Real-time updates on running workflows
+  // Error details and troubleshooting
+};
+```
+
+#### WorkflowTriggerManager
+```typescript
+const WorkflowTriggerManager = ({ customerId }: { customerId: string }) => {
+  // Manage webhook triggers with auto-generated URLs
+  // Configure scheduled triggers (cron)
+  // Enable/disable triggers
+  // Test webhook endpoints
+  // Copy webhook URLs to clipboard
+};
+```
+
+**Backend Edge Functions**:
+
+#### workflow-executor
+```typescript
+// supabase/functions/workflow-executor/index.ts
+serve(async (req) => {
+  const { workflow_id, trigger_data, triggered_by } = await req.json();
+  
+  // 1. Fetch workflow definition
+  // 2. Create execution record
+  // 3. Execute steps sequentially
+  // 4. Handle conditional branching
+  // 5. Log each step result
+  // 6. Update execution status
+  // 7. Return execution results
+});
+```
+
+**Supported Step Executions**:
+- API calls with configurable headers/body
+- Data transformation via JSON mapping
+- Conditional evaluation (operators: equals, greater_than, contains, etc.)
+- Database operations (insert, update, delete)
+- Delay/wait operations
+- Error handling and retry logic
+
+#### workflow-webhook
+```typescript
+// supabase/functions/workflow-webhook/index.ts
+serve(async (req) => {
+  const webhookId = req.url.searchParams.get('id');
+  const payload = await req.json();
+  
+  // 1. Validate webhook ID
+  // 2. Verify webhook signature (if configured)
+  // 3. Update last_triggered_at timestamp
+  // 4. Call workflow-executor with payload
+  // 5. Return execution status
+});
+```
+
+**Security Features**:
+- HMAC SHA-256 signature verification
+- Webhook secrets per trigger
+- Auto-generated secure webhook URLs
+- Request validation and sanitization
+
+**Database Tables**:
+
+```sql
+-- Workflow definitions
+CREATE TABLE workflows (
+  id UUID PRIMARY KEY,
+  customer_id UUID NOT NULL,
+  workflow_name TEXT NOT NULL,
+  description TEXT,
+  steps JSONB,  -- Array of step configurations
+  systems_involved TEXT[],
+  is_active BOOLEAN DEFAULT true,
+  workflow_type TEXT,  -- 'manual', 'webhook', 'schedule', 'event'
+  version INTEGER DEFAULT 1,
+  tags TEXT[],
+  avg_completion_time INTEGER,
+  total_executions INTEGER,
+  successful_executions INTEGER
+);
+
+-- Execution history
+CREATE TABLE workflow_executions (
+  id UUID PRIMARY KEY,
+  workflow_id UUID REFERENCES workflows,
+  customer_id UUID NOT NULL,
+  triggered_by TEXT NOT NULL,  -- 'manual', 'webhook', 'schedule', 'event'
+  trigger_data JSONB,
+  status TEXT DEFAULT 'running',  -- 'running', 'completed', 'failed'
+  started_at TIMESTAMPTZ DEFAULT now(),
+  completed_at TIMESTAMPTZ,
+  error_message TEXT,
+  execution_log JSONB DEFAULT '[]'  -- Step-by-step logs
+);
+
+-- Trigger configurations
+CREATE TABLE workflow_triggers (
+  id UUID PRIMARY KEY,
+  workflow_id UUID REFERENCES workflows,
+  customer_id UUID NOT NULL,
+  trigger_type TEXT NOT NULL,  -- 'webhook', 'schedule', 'event', 'manual'
+  trigger_config JSONB DEFAULT '{}',
+  webhook_url TEXT,
+  webhook_secret TEXT,
+  is_enabled BOOLEAN DEFAULT true,
+  last_triggered_at TIMESTAMPTZ
+);
+
+-- Conditional logic
+CREATE TABLE workflow_conditions (
+  id UUID PRIMARY KEY,
+  workflow_id UUID REFERENCES workflows,
+  step_id TEXT NOT NULL,
+  condition_type TEXT NOT NULL,  -- 'if', 'switch', 'loop'
+  condition_expression JSONB NOT NULL,
+  true_path JSONB,
+  false_path JSONB
+);
+```
+
+**Dependencies**:
+- Database tables: `workflows`, `workflow_executions`, `workflow_triggers`, `workflow_conditions`
+- Edge functions: `workflow-executor`, `workflow-webhook`
+- Supabase Edge Runtime (Deno)
+- HMAC signature verification (Web Crypto API)
+
+**Integration with Operations Dashboard**:
+```typescript
+// src/pages/OperationsDashboard.tsx
+<Tabs defaultValue="workflows">
+  <TabsList>
+    <TabsTrigger value="workflows">Workflow Builder</TabsTrigger>
+    <TabsTrigger value="triggers">Triggers</TabsTrigger>
+    <TabsTrigger value="history">Execution History</TabsTrigger>
+    <TabsTrigger value="assistant">AI Assistant</TabsTrigger>
+  </TabsList>
+  <TabsContent value="workflows">
+    <WorkflowBuilder customerId={customerId} />
+  </TabsContent>
+  {/* ... other tabs ... */}
+</Tabs>
+```
+
+**Use Cases**:
+1. **Employee Onboarding**: Automated provisioning across HRIS, IT systems, compliance
+2. **Compliance Workflows**: Evidence collection, approval chains, reporting
+3. **IT Operations**: Incident response, server provisioning, security patching
+4. **Business Processes**: Invoice approval, contract workflows, vendor onboarding
+
+**Testing**:
+- Create test workflow with multiple steps
+- Test webhook triggers with external systems
+- Verify conditional branching logic
+- Check execution logs for debugging
+- Test error handling and recovery
+
+---
+
 ## 🔗 Module Dependencies
 
 ### Dependency Graph
@@ -339,20 +535,22 @@ CREATE TABLE mcp_servers (
 │ Authentication  │
 └────────┬────────┘
          │
-         ├─────────────┬─────────────┬─────────────┐
-         │             │             │             │
-┌────────▼────────┐ ┌──▼────────┐ ┌─▼─────────┐ ┌──▼──────────┐
-│ Customization   │ │ Dashboard │ │ AI Module │ │ Integration │
-│                 │ │           │ │           │ │             │
-└─────────────────┘ └───────────┘ └───────────┘ └─────────────┘
-                         │             │
-                         │             │
-                         └──────┬──────┘
-                                │
-                         ┌──────▼──────┐
-                         │ MCP Server  │
+         ├─────────────┬─────────────┬─────────────┬─────────────┐
+         │             │             │             │             │
+┌────────▼────────┐ ┌──▼────────┐ ┌─▼─────────┐ ┌──▼──────────┐ ┌──▼──────────────┐
+│ Customization   │ │ Dashboard │ │ AI Module │ │ Integration │ │ Workflow Engine │
+│                 │ │           │ │           │ │             │ │                 │
+└─────────────────┘ └───────────┘ └───────────┘ └─────────────┘ └─────────────────┘
+                         │             │                               │
+                         │             │                               │
+                         └──────┬──────┘                               │
+                                │                                      │
+                         ┌──────▼──────┐                               │
+                         │ MCP Server  │◄──────────────────────────────┘
                          └─────────────┘
 ```
+
+**Note**: Workflow Engine integrates with MCP Server for advanced AI-powered automation and can trigger or be triggered by other modules.
 
 ### Shared Dependencies
 
@@ -424,6 +622,45 @@ All modules depend on:
    
 5. Show detailed info
    └─> Integration Module: Display auth, permissions, setup
+```
+
+### Flow 4: Workflow Execution (Webhook Trigger)
+
+```
+1. External system sends webhook
+   └─> workflow-webhook Edge Function: Receive POST request
+   
+2. Validate webhook ID and signature
+   └─> Workflow Engine: Verify trigger configuration
+   
+3. Update last_triggered_at timestamp
+   └─> Database: workflow_triggers table
+   
+4. Call workflow-executor
+   └─> workflow-executor Edge Function: Start execution
+   
+5. Fetch workflow definition
+   └─> Database: workflows table
+   
+6. Create execution record
+   └─> Database: workflow_executions table (status: 'running')
+   
+7. Execute steps sequentially
+   └─> Workflow Engine: Process each step type
+      ├─> API calls to external systems
+      ├─> Data transformations
+      ├─> Conditional branching
+      ├─> Database operations
+      └─> Delays/loops
+   
+8. Log step results
+   └─> Database: Update execution_log (JSONB array)
+   
+9. Complete execution
+   └─> Database: Update workflow_executions (status: 'completed')
+   
+10. Display in UI
+    └─> WorkflowExecutionHistory: Real-time status update
 ```
 
 ---
