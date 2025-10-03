@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Shield, Lock, Database, Zap, CheckCircle2, AlertCircle } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useNavigate } from "react-router-dom";
 
 const integrationDetails = [
   {
@@ -125,6 +126,17 @@ const securityFeatures = [
 ];
 
 const IntegrationsPage = () => {
+  const navigate = useNavigate();
+
+  const scrollToSection = (sectionId: string) => {
+    navigate('/');
+    setTimeout(() => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -275,7 +287,7 @@ const IntegrationsPage = () => {
                                 </div>
                               </div>
 
-                              <Button className="w-full">
+                              <Button className="w-full" onClick={() => navigate('/auth')}>
                                 Connect {system.name}
                               </Button>
                             </div>
@@ -302,10 +314,10 @@ const IntegrationsPage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" variant="hero">
+                <Button size="lg" variant="hero" onClick={() => navigate('/auth')}>
                   Start Free Trial
                 </Button>
-                <Button size="lg" variant="outline">
+                <Button size="lg" variant="outline" onClick={() => scrollToSection('case-study')}>
                   Schedule Demo
                 </Button>
               </CardContent>

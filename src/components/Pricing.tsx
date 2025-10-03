@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const plans = [
   {
@@ -62,6 +63,16 @@ const plans = [
 ];
 
 const Pricing = () => {
+  const navigate = useNavigate();
+
+  const handleCTAClick = (planName: string) => {
+    if (planName === "Enterprise") {
+      // Scroll to contact section or open email
+      window.location.href = "mailto:sales@complianceos.com?subject=Enterprise Plan Inquiry";
+    } else {
+      navigate('/auth');
+    }
+  };
   return (
     <section className="py-24 bg-secondary/30" id="pricing">
       <div className="container mx-auto px-4">
@@ -128,6 +139,7 @@ const Pricing = () => {
                   variant={plan.popular ? "hero" : "outline"}
                   size="lg"
                   className="w-full"
+                  onClick={() => handleCTAClick(plan.name)}
                 >
                   {plan.cta}
                   <ArrowRight className="ml-2 h-4 w-4" />

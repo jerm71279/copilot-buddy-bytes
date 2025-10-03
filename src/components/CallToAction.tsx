@@ -1,7 +1,26 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CallToAction = () => {
+  const navigate = useNavigate();
+
+  const scrollToSection = (sectionId: string) => {
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
   return (
     <section className="py-24 bg-gradient-primary text-white relative overflow-hidden">
       {/* Background Pattern */}
@@ -27,6 +46,7 @@ const CallToAction = () => {
               size="lg" 
               variant="hero" 
               className="text-lg px-8 py-6 h-auto bg-white text-primary hover:bg-white/90"
+              onClick={() => navigate('/auth')}
             >
               Start Free Trial
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -35,6 +55,7 @@ const CallToAction = () => {
               size="lg" 
               variant="outline" 
               className="text-lg px-8 py-6 h-auto bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20"
+              onClick={() => scrollToSection('case-study')}
             >
               <Calendar className="mr-2 h-5 w-5" />
               Schedule Demo

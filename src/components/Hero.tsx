@@ -1,8 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Shield, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
@@ -43,7 +52,12 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" variant="hero" className="text-lg px-8 py-6 h-auto">
+            <Button 
+              size="lg" 
+              variant="hero" 
+              className="text-lg px-8 py-6 h-auto"
+              onClick={() => navigate('/auth')}
+            >
               Get Started
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
@@ -51,6 +65,7 @@ const Hero = () => {
               size="lg" 
               variant="outline" 
               className="text-lg px-8 py-6 h-auto bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20"
+              onClick={() => scrollToSection('case-study')}
             >
               View Demo
             </Button>

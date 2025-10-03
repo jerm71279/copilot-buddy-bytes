@@ -1,7 +1,26 @@
 import { Shield } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
+
+  const scrollToSection = (sectionId: string) => {
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
 
   return (
     <footer className="bg-primary text-primary-foreground py-12 border-t border-border">
@@ -24,10 +43,26 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li><a href="#features" className="hover:text-primary-foreground transition-colors">Features</a></li>
-              <li><a href="#frameworks" className="hover:text-primary-foreground transition-colors">Frameworks</a></li>
-              <li><a href="#pricing" className="hover:text-primary-foreground transition-colors">Pricing</a></li>
-              <li><a href="#integrations" className="hover:text-primary-foreground transition-colors">Integrations</a></li>
+              <li>
+                <button onClick={() => scrollToSection('features')} className="hover:text-primary-foreground transition-colors">
+                  Features
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection('frameworks')} className="hover:text-primary-foreground transition-colors">
+                  Frameworks
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection('pricing')} className="hover:text-primary-foreground transition-colors">
+                  Pricing
+                </button>
+              </li>
+              <li>
+                <Link to="/integrations" className="hover:text-primary-foreground transition-colors">
+                  Integrations
+                </Link>
+              </li>
             </ul>
           </div>
 
