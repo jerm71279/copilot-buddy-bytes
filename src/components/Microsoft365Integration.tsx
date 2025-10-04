@@ -51,10 +51,62 @@ export const Microsoft365Integration = () => {
   const [emails, setEmails] = useState<Email[]>([]);
   const [teamsChats, setTeamsChats] = useState<TeamsChat[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [hasAzureProvider, setHasAzureProvider] = useState<boolean | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   useEffect(() => {
-    loadMicrosoftData();
+    checkAuthProvider();
   }, []);
+
+  const checkAuthProvider = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        setError('Please sign in to access Microsoft 365 integration');
+        setLoading(false);
+        return;
+      }
+
+      // Check if user has Azure provider
+      const hasAzure = user.app_metadata?.providers?.includes('azure') || 
+                       user.app_metadata?.provider === 'azure';
+      
+      setHasAzureProvider(hasAzure);
+
+      if (hasAzure) {
+        await loadMicrosoftData();
+      } else {
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Error checking auth provider:', err);
+      setError('Failed to verify authentication');
+      setLoading(false);
+    }
+  };
+
+  const handleConnectMicrosoft365 = async () => {
+    setIsConnecting(true);
+    try {
+      const { error } = await supabase.auth.linkIdentity({
+        provider: 'azure',
+        options: {
+          scopes: 'openid email profile User.Read Calendars.Read Mail.Read Files.Read.All Chat.Read',
+          redirectTo: `${window.location.origin}/portal?tab=microsoft365`,
+        }
+      });
+
+      if (error) throw error;
+      
+      // The user will be redirected to Microsoft login
+      toast.info('Redirecting to Microsoft 365...');
+    } catch (err: any) {
+      console.error('Error connecting Microsoft 365:', err);
+      toast.error(err.message || 'Failed to connect Microsoft 365');
+      setIsConnecting(false);
+    }
+  };
 
   const callGraphAPI = async (endpoint: string) => {
     const { data, error } = await supabase.functions.invoke('graph-api', {
@@ -115,6 +167,64 @@ export const Microsoft365Integration = () => {
     }
   };
 
+  // Show connect button if user doesn't have Azure provider
+  if (hasAzureProvider === false && !loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            Connect Microsoft 365
+          </CardTitle>
+          <CardDescription>
+            Link your Microsoft 365 account to access Outlook, Calendar, Teams, and more
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="rounded-lg border bg-muted p-4">
+            <p className="text-sm mb-4">
+              To access your Microsoft 365 applications and data, connect your Microsoft account. This will enable:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-2">
+              <li>Outlook email access</li>
+              <li>Calendar events and scheduling</li>
+              <li>OneDrive file management</li>
+              <li>Teams chats and channels</li>
+              <li>SharePoint documents</li>
+            </ul>
+          </div>
+          
+          <button
+            onClick={handleConnectMicrosoft365}
+            disabled={isConnecting}
+            className="w-full h-12 flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md font-medium transition-colors disabled:opacity-50"
+          >
+            {isConnecting ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Connecting...
+              </>
+            ) : (
+              <>
+                <svg className="h-5 w-5" viewBox="0 0 23 23">
+                  <path fill="currentColor" opacity="0.6" d="M0 0h11v11H0z"/>
+                  <path fill="currentColor" opacity="0.8" d="M12 0h11v11H12z"/>
+                  <path fill="currentColor" opacity="0.6" d="M0 12h11v11H0z"/>
+                  <path fill="currentColor" d="M12 12h11v11H12z"/>
+                </svg>
+                Connect Microsoft 365 Account
+              </>
+            )}
+          </button>
+          
+          <p className="text-xs text-muted-foreground text-center">
+            You'll be redirected to Microsoft to authorize access. Your existing account will remain unchanged.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (error) {
     const isAuthError = error.includes('sign in') || error.includes('session has expired') || error.includes('not connected');
     const isPermissionError = error.includes('Permission denied') || error.includes('administrator');
@@ -140,15 +250,24 @@ export const Microsoft365Integration = () => {
           </div>
           
           {isAuthError && (
-            <div className="space-y-2">
+            <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                To access your Microsoft 365 data:
+                Your Microsoft 365 session has expired or is not connected.
               </p>
-              <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
-                <li>Sign out of your current account</li>
-                <li>Click "Sign in with Microsoft 365"</li>
-                <li>Authorize the requested permissions</li>
-              </ol>
+              <button
+                onClick={handleConnectMicrosoft365}
+                disabled={isConnecting}
+                className="w-full h-10 flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md font-medium transition-colors disabled:opacity-50"
+              >
+                {isConnecting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Reconnecting...
+                  </>
+                ) : (
+                  'Reconnect Microsoft 365'
+                )}
+              </button>
             </div>
           )}
           
