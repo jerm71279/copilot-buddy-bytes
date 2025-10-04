@@ -134,16 +134,20 @@ const Navigation = () => {
           <div className="hidden md:flex items-center gap-3">
             {isLoggedIn ? (
               <>
-                {isAdmin ? (
+                <Link to="/portal">
+                  <Button variant="ghost" size="sm">
+                    Employee Portal
+                  </Button>
+                </Link>
+                <Link to="/analytics">
+                  <Button variant="ghost" size="sm">
+                    Analytics
+                  </Button>
+                </Link>
+                {isAdmin && (
                   <Link to="/admin">
                     <Button variant="ghost" size="sm">
-                      Internal Portal
-                    </Button>
-                  </Link>
-                ) : (
-                  <Link to="/portal">
-                    <Button variant="ghost" size="sm">
-                      My Portal
+                      Admin
                     </Button>
                   </Link>
                 )}
@@ -229,16 +233,20 @@ const Navigation = () => {
               <div className="flex flex-col gap-2 pt-3 border-t border-border">
                 {isLoggedIn ? (
                   <>
-                    {isAdmin ? (
+                    <Link to="/portal" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="ghost" size="sm" className="justify-start w-full">
+                        Employee Portal
+                      </Button>
+                    </Link>
+                    <Link to="/analytics" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="ghost" size="sm" className="justify-start w-full">
+                        Analytics
+                      </Button>
+                    </Link>
+                    {isAdmin && (
                       <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
                         <Button variant="ghost" size="sm" className="justify-start w-full">
-                          Internal Portal
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Link to="/portal" onClick={() => setIsMenuOpen(false)}>
-                        <Button variant="ghost" size="sm" className="justify-start w-full">
-                          My Portal
+                          Admin
                         </Button>
                       </Link>
                     )}
