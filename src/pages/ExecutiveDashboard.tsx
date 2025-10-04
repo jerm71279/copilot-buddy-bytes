@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { LogOut, BarChart3, TrendingUp, Shield, Users, AlertCircle, CheckCircle } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 const ExecutiveDashboard = () => {
   const navigate = useNavigate();
@@ -103,6 +104,8 @@ const ExecutiveDashboard = () => {
       </nav>
 
       <div className="container mx-auto px-4 py-8 space-y-6">
+        <DashboardNavigation title="Executive Dashboard" />
+        
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
           <Card 
             className="cursor-pointer hover:shadow-lg transition-shadow"

@@ -9,6 +9,7 @@ import { LogOut, Server, Activity, AlertCircle, Zap } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 const ITDashboard = () => {
   const navigate = useNavigate();
@@ -103,6 +104,8 @@ const ITDashboard = () => {
       </nav>
 
       <div className="container mx-auto px-4 py-8 space-y-6">
+        <DashboardNavigation title="IT Dashboard" />
+        
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

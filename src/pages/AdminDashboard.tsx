@@ -14,6 +14,7 @@ import MCPExecutionLogs from "@/components/MCPExecutionLogs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import Navigation from "@/components/Navigation";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 type Customer = {
   id: string;
@@ -149,6 +150,8 @@ const AdminDashboard = () => {
       <Navigation />
 
       <div className="container mx-auto px-4 py-8 space-y-8 pt-24">
+        <DashboardNavigation title="Admin Dashboard" />
+        
         <div className="flex items-center gap-2 mb-6">
           <Users className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-bold">Admin Dashboard</h1>

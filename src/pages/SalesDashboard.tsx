@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { LogOut, TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 const SalesDashboard = () => {
   const navigate = useNavigate();
@@ -89,6 +90,8 @@ const SalesDashboard = () => {
       </nav>
 
       <main className="container mx-auto px-4 py-8">
+        <DashboardNavigation title="Sales Performance" />
+        
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Sales Performance</h2>
           <p className="text-muted-foreground">

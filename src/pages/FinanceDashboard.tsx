@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { LogOut, DollarSign, Users, TrendingUp, CreditCard } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 const FinanceDashboard = () => {
   const navigate = useNavigate();
@@ -108,6 +109,8 @@ const FinanceDashboard = () => {
       </nav>
 
       <div className="container mx-auto px-4 py-8 space-y-6">
+        <DashboardNavigation title="Finance Dashboard" />
+        
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card 
             className="cursor-pointer hover:shadow-lg transition-shadow"

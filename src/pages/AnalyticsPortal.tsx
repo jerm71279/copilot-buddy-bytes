@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   ArrowRight
 } from "lucide-react";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 const AnalyticsPortal = () => {
   const navigate = useNavigate();
@@ -185,6 +186,8 @@ const AnalyticsPortal = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
+        <DashboardNavigation title="Analytics & Insights Portal" />
+        
         {/* Key Metrics */}
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-6">Key Metrics</h2>

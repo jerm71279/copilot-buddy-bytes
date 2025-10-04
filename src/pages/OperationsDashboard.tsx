@@ -13,6 +13,7 @@ import { WorkflowBuilder } from "@/components/WorkflowBuilder";
 import { WorkflowExecutionHistory } from "@/components/WorkflowExecutionHistory";
 import { WorkflowTriggerManager } from "@/components/WorkflowTriggerManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 const OperationsDashboard = () => {
   const navigate = useNavigate();
@@ -104,6 +105,8 @@ const OperationsDashboard = () => {
       </nav>
 
       <div className="container mx-auto px-4 py-8 space-y-6">
+        <DashboardNavigation title="Operations Dashboard" />
+        
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card 
             className="cursor-pointer hover:shadow-lg transition-shadow"
