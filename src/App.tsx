@@ -7,7 +7,7 @@ import Index from "./pages/Index";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import Auth from "./pages/Auth";
 import DemoSelector from "./pages/DemoSelector";
-import CustomerPortal from "./pages/CustomerPortal";
+import Portal from "./pages/Portal";
 import AnalyticsPortal from "./pages/AnalyticsPortal";
 import WorkflowDetail from "./pages/WorkflowDetail";
 import KnowledgeBase from "./pages/KnowledgeBase";
@@ -41,10 +41,10 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/demo" element={<DemoSelector />} />
           
-          {/* Employee Portal - Protected but no admin required */}
+          {/* Portal - Protected but no admin required */}
           <Route path="/portal" element={
             <ProtectedRoute>
-              <CustomerPortal />
+              <Portal />
             </ProtectedRoute>
           } />
           

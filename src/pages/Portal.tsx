@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Microsoft365Integration } from "@/components/Microsoft365Integration";
 import { AppLauncher } from "@/components/AppLauncher";
 
-const CustomerPortal = () => {
+const Portal = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [customerData, setCustomerData] = useState<any>(null);
@@ -333,4 +333,4 @@ const CustomerPortal = () => {
   );
 };
 
-export default CustomerPortal;
+export default Portal;
