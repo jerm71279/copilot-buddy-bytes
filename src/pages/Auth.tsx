@@ -20,7 +20,6 @@ const loginSchema = z.object({
 const signupSchema = z.object({
   fullName: z.string().trim().min(1, "Full name is required").max(100, "Name too long"),
   companyName: z.string().trim().min(1, "Company name is required").max(100, "Company name too long"),
-  department: z.enum(["compliance", "it", "operations", "hr", "finance", "sales", "executive"]).optional(),
   email: z.string().trim().email("Invalid email address").max(255, "Email too long"),
   password: z.string().min(6, "Password must be at least 6 characters").max(128, "Password too long"),
 });
@@ -35,7 +34,6 @@ const Auth = () => {
   const [signupPassword, setSignupPassword] = useState("");
   const [signupName, setSignupName] = useState("");
   const [signupCompany, setSignupCompany] = useState("");
-  const [signupDepartment, setSignupDepartment] = useState<string>("");
   const [resetEmail, setResetEmail] = useState("");
   const [showResetForm, setShowResetForm] = useState(false);
 
@@ -166,7 +164,6 @@ const Auth = () => {
       const validatedData = signupSchema.parse({
         fullName: signupName,
         companyName: signupCompany,
-        department: signupDepartment,
         email: signupEmail,
         password: signupPassword,
       });
@@ -209,7 +206,7 @@ const Auth = () => {
             .insert({
               customer_id: customerData.id,
               enabled_features: ["dashboard", "integrations", "compliance", "ml_insights"],
-              default_dashboard: validatedData.department || "executive",
+              default_dashboard: "executive",
             });
 
           if (customizationError) throw customizationError;
@@ -221,7 +218,7 @@ const Auth = () => {
           .insert({
             user_id: data.user.id,
             full_name: validatedData.fullName,
-            department: validatedData.department || null,
+            department: null,
             customer_id: customerData?.id || null
           });
 
@@ -357,22 +354,6 @@ const Auth = () => {
                     onChange={(e) => setSignupCompany(e.target.value)}
                     required
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-department">Department (Optional)</Label>
-                  <Select value={signupDepartment} onValueChange={setSignupDepartment}>
-                    <SelectTrigger id="signup-department">
-                      <SelectValue placeholder="Select your department (optional)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="compliance">Compliance & GRC</SelectItem>
-                      <SelectItem value="it">IT & Security</SelectItem>
-                      <SelectItem value="hr">Human Resources</SelectItem>
-                      <SelectItem value="finance">Finance</SelectItem>
-                      <SelectItem value="operations">Operations</SelectItem>
-                      <SelectItem value="executive">Executive Leadership</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
