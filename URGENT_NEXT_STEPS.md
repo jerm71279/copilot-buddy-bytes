@@ -7,7 +7,47 @@
 
 ## 🔴 IMMEDIATE BLOCKERS (Do These First)
 
-### 1. Azure AD App Configuration - **CRITICAL**
+### 1. Enable Azure Provider in Lovable Cloud - **CRITICAL**
+**Status:** ❌ Blocking all Microsoft 365 authentication  
+**Owner:** System Administrator  
+**Time Estimate:** 10 minutes
+
+#### Error Message:
+```json
+{
+  "code": 400,
+  "error_code": "validation_failed",
+  "msg": "Unsupported provider: provider is not enabled"
+}
+```
+
+#### Actions Required:
+1. Open Lovable Cloud Backend (see button below)
+2. Navigate to **Users → Auth Settings → Azure**
+3. **Enable the Azure Provider** (toggle switch)
+4. Enter your Azure AD credentials:
+   - **Client ID** from Azure AD app registration
+   - **Client Secret** from Azure AD app registration
+   - **Azure AD Tenant** (optional, for single-tenant apps)
+5. Save configuration
+
+#### If You Don't Have Azure AD App Yet:
+1. Go to [Azure Portal](https://portal.azure.com) → **Azure Active Directory** → **App registrations**
+2. Click **New registration**
+3. Name: "OberaConnect"
+4. Supported account types: "Accounts in any organizational directory (Any Azure AD directory - Multitenant)"
+5. Add Redirect URI from Lovable Cloud backend (shown after enabling Azure provider)
+6. Under **Certificates & secrets**, create a new client secret
+7. Copy Client ID and Secret to Lovable Cloud
+
+#### Validation:
+- Azure provider shows as "Enabled" in backend
+- "Sign in with Microsoft 365" button no longer shows error
+- Clicking button redirects to login.microsoftonline.com
+
+---
+
+### 2. Azure AD App Configuration - **CRITICAL**
 **Status:** ❌ Blocking all Microsoft 365 features  
 **Owner:** Azure Admin  
 **Time Estimate:** 15 minutes
@@ -31,7 +71,7 @@
 
 ---
 
-### 2. Fix User Profile Database Issue - **HIGH PRIORITY**
+### 3. Fix User Profile Database Issue - **HIGH PRIORITY** ✅ FIXED
 **Status:** ❌ Causing 406 errors on CustomerPortal  
 **Owner:** Backend Developer  
 **Time Estimate:** 30 minutes
@@ -55,7 +95,7 @@ Error: "Cannot coerce the result to a single JSON object"
 
 ---
 
-### 3. Fix Microsoft Access Token Persistence - **HIGH PRIORITY**
+### 4. Fix Microsoft Access Token Persistence - **HIGH PRIORITY**
 **Status:** ❌ Tokens not being stored correctly  
 **Owner:** Backend Developer  
 **Time Estimate:** 1 hour
@@ -81,16 +121,17 @@ Error: "No Microsoft access token found. Please sign in with Microsoft 365."
 
 ## 🟡 HIGH PRIORITY (Week 1)
 
-### 4. Enhance Error Handling & UX
+### 5. Enhance Error Handling & UX ✅ PARTIALLY COMPLETE
 **Time Estimate:** 4 hours
 
 - [ ] Add retry logic for failed Graph API calls
-- [ ] Implement skeleton loading states
-- [ ] Show clear error messages for permission issues
-- [ ] Add "Reconnect Microsoft 365" button when token expires
+- [x] Implement skeleton loading states
+- [x] Show clear error messages for permission issues
+- [x] Add "Connect Microsoft 365" button for email users
+- [x] Add "Reconnect Microsoft 365" button when token expires
 - [ ] Cache Microsoft 365 data for offline viewing
 
-### 5. Expand Microsoft 365 Features
+### 6. Expand Microsoft 365 Features
 **Time Estimate:** 8 hours
 
 - [ ] **OneDrive/SharePoint**: File browser and search
@@ -99,7 +140,7 @@ Error: "No Microsoft access token found. Please sign in with Microsoft 365."
 - [ ] **Tasks**: Microsoft To-Do integration
 - [ ] **Presence**: User availability status
 
-### 6. Security Hardening
+### 7. Security Hardening
 **Time Estimate:** 6 hours
 
 - [ ] Encrypt tokens at rest in database
@@ -112,7 +153,7 @@ Error: "No Microsoft access token found. Please sign in with Microsoft 365."
 
 ## 🟢 MEDIUM PRIORITY (Week 2)
 
-### 7. Two-Way Sync Capabilities
+### 8. Two-Way Sync Capabilities
 **Time Estimate:** 12 hours
 
 - [ ] Create calendar events from OberaConnect
@@ -121,7 +162,7 @@ Error: "No Microsoft access token found. Please sign in with Microsoft 365."
 - [ ] Post messages to Teams channels
 - [ ] Update user presence/status
 
-### 8. Testing & Validation
+### 9. Testing & Validation
 **Time Estimate:** 8 hours
 
 - [ ] Test with multiple user accounts
@@ -131,7 +172,7 @@ Error: "No Microsoft access token found. Please sign in with Microsoft 365."
 - [ ] Cross-browser testing
 - [ ] Mobile responsiveness testing
 
-### 9. Monitoring & Observability
+### 10. Monitoring & Observability
 **Time Estimate:** 4 hours
 
 - [ ] Set up error tracking (Sentry/similar)
@@ -144,21 +185,21 @@ Error: "No Microsoft access token found. Please sign in with Microsoft 365."
 
 ## 🔵 FUTURE ENHANCEMENTS (Week 3+)
 
-### 10. Advanced Integrations
+### 11. Advanced Integrations
 - [ ] **Power Automate**: Trigger flows from OberaConnect
 - [ ] **Power BI**: Embed reports and dashboards
 - [ ] **Azure AD Groups**: Group management, user provisioning
 - [ ] **Microsoft Forms**: Embed and collect responses
 - [ ] **SharePoint Lists**: CRUD operations on lists
 
-### 11. Production Deployment
+### 12. Production Deployment
 - [ ] Move from dev Azure app to production app
 - [ ] Configure production redirect URIs
 - [ ] Set up CI/CD pipeline
 - [ ] Create deployment runbook
 - [ ] Document customer onboarding process
 
-### 12. Documentation & Training
+### 13. Documentation & Training
 - [ ] Create user guide for Microsoft 365 features
 - [ ] Document setup process for new customers
 - [ ] Create video tutorials
@@ -178,13 +219,16 @@ Error: "No Microsoft access token found. Please sign in with Microsoft 365."
 
 ## 🚀 Quick Start Checklist
 
-Before developers can work on features 4-12, these MUST be completed:
+Before developers can work on features 5-13, these MUST be completed:
 
-- [ ] Azure AD permissions granted (Item #1)
-- [ ] User profiles database fixed (Item #2)  
-- [ ] Token persistence working (Item #3)
+- [ ] **Azure provider enabled in Lovable Cloud (Item #1) - CRITICAL**
+- [ ] Azure AD permissions granted (Item #2)
+- [x] User profiles database fixed (Item #3)  
+- [ ] Token persistence working (Item #4)
 - [ ] At least one successful Microsoft 365 sign-in tested
 - [ ] All Graph API endpoints returning 200 status
+
+**Next Immediate Action:** Enable Azure provider in Lovable Cloud backend
 
 ---
 

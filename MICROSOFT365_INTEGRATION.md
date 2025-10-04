@@ -70,6 +70,9 @@ Main component that displays Microsoft 365 data in tabbed interface.
 - Calendar events (upcoming 5)
 - Recent emails (top 10)
 - Teams chats (top 10)
+- **Account linking** - Users can link Microsoft 365 to existing accounts
+- **Connection status checking** - Verifies if user has Azure provider
+- **Reconnect capability** - Handles expired sessions gracefully
 
 **State Management:**
 ```typescript
@@ -77,12 +80,29 @@ const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
 const [emails, setEmails] = useState<Email[]>([]);
 const [teamsChats, setTeamsChats] = useState<TeamsChat[]>([]);
+const [hasAzureProvider, setHasAzureProvider] = useState<boolean | null>(null);
+const [isConnecting, setIsConnecting] = useState(false);
+```
+
+**Account Linking Flow:**
+```typescript
+const handleConnectMicrosoft365 = async () => {
+  const { error } = await supabase.auth.linkIdentity({
+    provider: 'azure',
+    options: {
+      scopes: 'openid email profile User.Read Calendars.Read Mail.Read Files.Read.All Chat.Read',
+      redirectTo: `${window.location.origin}/portal?tab=microsoft365`,
+    }
+  });
+};
 ```
 
 **Error Handling:**
+- Shows "Connect Microsoft 365" button when Azure provider not linked
 - Shows friendly message when not signed in with Microsoft
 - Displays loading spinner during data fetch
-- Handles token expiration gracefully
+- Handles token expiration with "Reconnect" button
+- Provides actionable error messages with clear next steps
 
 #### 2. `src/pages/CustomerPortal.tsx`
 Customer portal page that includes Microsoft 365 integration tab.
@@ -319,16 +339,38 @@ VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
 ```
 
+### Lovable Cloud Backend Configuration
+
+**CRITICAL FIRST STEP:** Enable Azure provider before any authentication will work.
+
+#### Steps:
+1. Open Lovable Cloud Backend (Users → Auth Settings → Azure)
+2. Toggle **Enable Azure Provider**
+3. Enter Azure AD credentials:
+   - Client ID
+   - Client Secret  
+   - Azure AD Tenant (optional)
+4. Copy the **Redirect URI** shown in Lovable Cloud
+5. Add this Redirect URI to your Azure AD app
+
+#### Common Issues:
+- **Error:** "Unsupported provider: provider is not enabled"
+  - **Fix:** Enable Azure provider in Lovable Cloud backend
+- **Error:** "Invalid redirect URI"
+  - **Fix:** Ensure redirect URI in Azure AD matches Lovable Cloud exactly
+
 ### Azure AD Configuration
 
 #### Development App
-- **Redirect URI:** `https://olrpexessehcijdvogxo.supabase.co/auth/v1/callback`
+- **Redirect URI:** Get from Lovable Cloud backend after enabling Azure
 - **Environment:** Development/Testing
+- **Account Types:** Multitenant (Any Azure AD directory)
 
 #### Production App
-- **Redirect URI:** `https://yourdomain.com/auth/v1/callback`
+- **Redirect URI:** `https://yourdomain.com/auth/v1/callback` (or from Lovable Cloud)
 - **Environment:** Production
 - **Admin Consent:** Required for all users
+- **Account Types:** Single tenant (Your organization only) or Multitenant
 
 ## Rate Limits
 
@@ -371,11 +413,21 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
 
 ## Troubleshooting
 
+### "Unsupported provider: provider is not enabled"
+**This is the #1 blocker - fix this first!**
+
+1. Open Lovable Cloud Backend
+2. Navigate to Users → Auth Settings → Azure
+3. Enable Azure Provider
+4. Enter Azure AD app credentials
+5. Test sign-in button again
+
 ### "No Microsoft access token found"
 1. Check user signed in with Microsoft (not email)
-2. Verify Azure AD permissions granted
-3. Check `user.user_metadata.provider_token` exists
-4. Verify Supabase OAuth configuration
+2. Verify Azure provider enabled in Lovable Cloud backend
+3. Verify Azure AD permissions granted
+4. Check `user.user_metadata.provider_token` exists
+5. Try reconnecting Microsoft 365 account
 
 ### "Permission denied" errors
 1. Verify all permissions granted in Azure AD

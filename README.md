@@ -71,23 +71,37 @@ supabase/
 
 ## 🔑 Key Features
 
-### 1. Microsoft 365 Integration (NEW)
+### 1. Employee Portal & Application Launcher (NEW)
+- 🏢 **Unified Employee Portal**: Single sign-on access to all work applications
+- 🚀 **App Launcher**: Dynamic application tiles based on role/department
+- 🔐 **Microsoft 365 Integration**: Native OAuth authentication with account linking
+- 🎯 **Role-Based Access**: Applications shown based on employee department (IT, HR, Finance, Sales, Operations, Executive)
+- ⚙️ **Admin Panel**: Manage applications and configure department access (`/admin/applications`)
+- 📱 **Scalable**: Add new applications without code changes
+
+**⚠️ CRITICAL SETUP REQUIRED:**
+1. **Enable Azure Provider** in Lovable Cloud backend (Item #1 in [`URGENT_NEXT_STEPS.md`](./URGENT_NEXT_STEPS.md))
+2. Configure Azure AD app permissions (Item #2)
+
+### 2. Microsoft 365 Integration
 - 🔐 **Single Sign-On**: Native Microsoft 365 OAuth authentication
+- 🔗 **Account Linking**: Link Microsoft 365 to existing email accounts
 - 📧 **Email Access**: View recent emails with read status
 - 📅 **Calendar Integration**: Display upcoming calendar events
 - 💬 **Teams Integration**: Access recent Teams chats and conversations
 - 📁 **OneDrive/SharePoint**: File browser (coming soon)
 - 👤 **User Profile**: Sync Microsoft 365 profile data
+- 🔄 **Reconnect Flow**: Graceful token expiration handling
 
-**⚠️ CRITICAL SETUP REQUIRED:** See [`URGENT_NEXT_STEPS.md`](./URGENT_NEXT_STEPS.md) for Azure AD configuration.
+**Technical Details:** See [`MICROSOFT365_INTEGRATION.md`](./MICROSOFT365_INTEGRATION.md)
 
-### 2. Customer Customization
+### 3. Customer Customization
 - Per-customer branding (logo, colors)
 - Enabled features and integrations
 - Custom dashboard layouts
 - Role-based access control
 
-### 3. Department-Specific Dashboards
+### 4. Department-Specific Dashboards
 - **Admin**: Customer management and system overview
 - **Compliance**: Framework tracking, controls, evidence
 - **IT & Security**: Integration status, server health, anomalies
@@ -97,7 +111,7 @@ supabase/
 - **Sales**: Pipeline, deals, forecasting
 - **Executive**: KPIs, compliance metrics, strategic overview
 
-### 4. Integration Management
+### 5. Integration Management
 - **Microsoft 365**: Calendar, Email, Teams, OneDrive (NEW)
 - Onebill/rev.io (Billing & Revenue)
 - Azure, Lighthouse, CIPP (Cloud & Identity)
@@ -106,7 +120,7 @@ supabase/
 - NinjaOne (RMM & Infrastructure)
 - Threatdown, OpenText (Cybersecurity)
 
-### 5. AI-Powered Assistance
+### 6. AI-Powered Assistance
 - Department-specific AI assistants
 - MCP (Model Context Protocol) server integration
 - Lovable AI for seamless model access
@@ -117,6 +131,8 @@ supabase/
 - `customers` - Customer organizations
 - `user_profiles` - User accounts with department roles
 - `customer_customizations` - Per-customer UI/feature settings
+- `applications` - Employee application registry (NEW)
+- `application_access` - Role/department-based app access control (NEW)
 - `integrations` - System integration configurations
 - `mcp_servers` - MCP server registry
 - `compliance_frameworks` - Compliance tracking
