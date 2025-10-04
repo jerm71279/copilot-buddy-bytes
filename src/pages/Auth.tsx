@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
+import { Separator } from "@/components/ui/separator";
 
 // Validation schemas
 const loginSchema = z.object({
@@ -164,6 +165,24 @@ const Auth = () => {
     }
   };
 
+  const handleMicrosoftSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'azure',
+        options: {
+          scopes: 'email',
+          redirectTo: `${window.location.origin}/portal`,
+        }
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      toast.error(error.message || "Failed to sign in with Microsoft");
+      setIsLoading(false);
+    }
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -254,6 +273,34 @@ const Auth = () => {
           <CardDescription>Sign in to access your portal or create a new account</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Microsoft 365 SSO - Primary Authentication */}
+          <div className="space-y-4 mb-6">
+            <Button 
+              onClick={handleMicrosoftSignIn}
+              disabled={isLoading}
+              variant="outline"
+              className="w-full h-12 text-base font-medium"
+            >
+              <svg className="mr-2 h-5 w-5" viewBox="0 0 23 23">
+                <path fill="#f35325" d="M0 0h11v11H0z"/>
+                <path fill="#81bc06" d="M12 0h11v11H12z"/>
+                <path fill="#05a6f0" d="M0 12h11v11H0z"/>
+                <path fill="#ffba08" d="M12 12h11v11H12z"/>
+              </svg>
+              Sign in with Microsoft 365
+            </Button>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  Or continue with email
+                </span>
+              </div>
+            </div>
+          </div>
+
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Login</TabsTrigger>
