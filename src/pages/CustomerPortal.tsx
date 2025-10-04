@@ -9,11 +9,13 @@ import EmployeeToolbar from "@/components/EmployeeToolbar";
 import ExternalSystemsBar from "@/components/ExternalSystemsBar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Microsoft365Integration } from "@/components/Microsoft365Integration";
+import { AppLauncher } from "@/components/AppLauncher";
 
 const CustomerPortal = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [customerData, setCustomerData] = useState<any>(null);
+  const [userDepartment, setUserDepartment] = useState<string | null>(null);
   const [recentArticles, setRecentArticles] = useState<any[]>([]);
   const [recentWorkflows, setRecentWorkflows] = useState<any[]>([]);
 
@@ -49,6 +51,9 @@ const CustomerPortal = () => {
         ...profile,
         customers: customerInfo
       });
+      
+      // Set user department for app launcher
+      setUserDepartment(profile?.department || null);
 
       // Load recent knowledge articles
       const { data: articles } = await supabase
@@ -149,6 +154,7 @@ const CustomerPortal = () => {
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="mb-8">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="apps">Applications</TabsTrigger>
             <TabsTrigger value="microsoft365">Microsoft 365</TabsTrigger>
           </TabsList>
 
@@ -304,11 +310,23 @@ const CustomerPortal = () => {
                 ))}
               </div>
             </section>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="microsoft365">
-            <Microsoft365Integration />
-          </TabsContent>
+            <TabsContent value="apps">
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold">My Applications</h2>
+                  <p className="text-muted-foreground mt-1">
+                    Access your work applications and services
+                  </p>
+                </div>
+                <AppLauncher userDepartment={userDepartment} />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="microsoft365">
+              <Microsoft365Integration />
+            </TabsContent>
         </Tabs>
       </div>
     </div>

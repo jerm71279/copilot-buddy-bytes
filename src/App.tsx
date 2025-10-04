@@ -22,6 +22,7 @@ import SalesDashboard from "./pages/SalesDashboard";
 import ExecutiveDashboard from "./pages/ExecutiveDashboard";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ApplicationsAdmin from "./pages/ApplicationsAdmin";
 
 const queryClient = new QueryClient();
 
@@ -105,6 +106,13 @@ const App = () => (
           <Route path="/dashboard/executive" element={
             <ProtectedRoute requireAdmin>
               <ExecutiveDashboard />
+            </ProtectedRoute>
+          } />
+          
+          {/* Application Management - Admin Only */}
+          <Route path="/admin/applications" element={
+            <ProtectedRoute requireAdmin>
+              <ApplicationsAdmin />
             </ProtectedRoute>
           } />
           

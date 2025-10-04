@@ -70,6 +70,90 @@ export type Database = {
           },
         ]
       }
+      application_access: {
+        Row: {
+          application_id: string
+          created_at: string
+          department: string | null
+          id: string
+          role_id: string | null
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          role_id?: string | null
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          role_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_access_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_access_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      applications: {
+        Row: {
+          app_url: string | null
+          auth_type: string
+          category: string
+          config: Json | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          icon_name: string
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          app_url?: string | null
+          auth_type?: string
+          category?: string
+          config?: Json | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          icon_name?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          app_url?: string | null
+          auth_type?: string
+          category?: string
+          config?: Json | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          icon_name?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action_details: Json | null
