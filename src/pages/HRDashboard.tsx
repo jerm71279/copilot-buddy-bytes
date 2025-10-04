@@ -40,13 +40,14 @@ const HRDashboard = () => {
       return;
     }
 
-    // Check if user has admin role
-    const { data: adminRole } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", session.user.id)
-      .eq("role", "admin")
-      .maybeSingle();
+    // Check permissions using RBAC
+    const { data: hasPermission } = await supabase
+      .rpc('has_permission', {
+        _user_id: session.user.id,
+        _resource_type: 'dashboard',
+        _resource_name: 'hr',
+        _min_permission: 'view'
+      });
 
     const { data: profile } = await supabase
       .from("user_profiles")
@@ -54,8 +55,8 @@ const HRDashboard = () => {
       .eq("user_id", session.user.id)
       .maybeSingle();
 
-    // Allow access if user is admin OR has correct department
-    if (!adminRole && (!profile || profile.department !== "hr")) {
+    // Allow access if user has permission OR has correct department
+    if (!hasPermission && (!profile || profile.department !== "hr")) {
       toast.error("Access denied: HR department access required");
       navigate("/");
       return;

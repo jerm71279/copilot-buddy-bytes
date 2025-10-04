@@ -1197,6 +1197,65 @@ export type Database = {
           },
         ]
       }
+      role_permissions: {
+        Row: {
+          created_at: string
+          id: string
+          permission_level: string
+          resource_name: string
+          resource_type: string
+          role_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          permission_level?: string
+          resource_name: string
+          resource_type: string
+          role_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          permission_level?: string
+          resource_name?: string
+          resource_type?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       subscription_plans: {
         Row: {
           created_at: string
@@ -1431,21 +1490,35 @@ export type Database = {
       }
       user_roles: {
         Row: {
+          assigned_at: string
+          assigned_by: string | null
           id: string
-          role: Database["public"]["Enums"]["app_role"]
+          role_id: string
           user_id: string
         }
         Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
           id?: string
-          role: Database["public"]["Enums"]["app_role"]
+          role_id: string
           user_id: string
         }
         Update: {
+          assigned_at?: string
+          assigned_by?: string | null
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          role_id?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_sessions: {
         Row: {
@@ -1713,6 +1786,15 @@ export type Database = {
       get_user_customer_id: {
         Args: { _user_id: string }
         Returns: string
+      }
+      has_permission: {
+        Args: {
+          _min_permission?: string
+          _resource_name: string
+          _resource_type: string
+          _user_id: string
+        }
+        Returns: boolean
       }
       has_role: {
         Args: {

@@ -60,15 +60,14 @@ const Auth = () => {
   }, [navigate]);
 
   const redirectToDepartmentDashboard = async (userId: string) => {
-    // Check if admin
-    const { data: roleData } = await supabase
+    // Check if user has Super Admin role
+    const { data: roles } = await supabase
       .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
+      .select("role_id, roles(name)")
+      .eq("user_id", userId);
 
-    if (roleData) {
+    const hasAdmin = roles?.some((ur: any) => ur.roles?.name === 'Super Admin');
+    if (hasAdmin) {
       navigate("/admin");
       return;
     }

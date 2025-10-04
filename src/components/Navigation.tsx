@@ -25,14 +25,14 @@ const Navigation = () => {
     setIsLoggedIn(!!session);
 
     if (session) {
-      const { data: roleData } = await supabase
+      const { data: roles } = await supabase
         .from("user_roles")
-        .select("role")
-        .eq("user_id", session.user.id)
-        .eq("role", "admin")
-        .maybeSingle();
+        .select("role_id, roles(name)")
+        .eq("user_id", session.user.id);
       
-      setIsAdmin(!!roleData);
+      // Check if user has Super Admin role
+      const hasAdmin = roles?.some((ur: any) => ur.roles?.name === 'Super Admin');
+      setIsAdmin(!!hasAdmin);
     } else {
       setIsAdmin(false);
     }
