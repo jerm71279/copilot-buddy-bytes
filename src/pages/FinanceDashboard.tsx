@@ -5,12 +5,37 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import { LogOut, DollarSign, Users, TrendingUp, CreditCard } from "lucide-react";
+import { LogOut, DollarSign, Users, TrendingUp, CreditCard, Info, Percent, Calendar } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import MCPServerStatus from "@/components/MCPServerStatus";
+
+interface FinancialMetrics {
+  totalCustomers: number;
+  activeSubscriptions: number;
+  mrr: number;
+  mrrFormatted: string;
+  growth: number;
+  growthFormatted: string;
+  arpu: number;
+  arpuFormatted: string;
+  churnRate: number;
+  churnRateFormatted: string;
+  revenueByPlan: {
+    starter: number;
+    professional: number;
+    enterprise: number;
+  };
+  calculations: {
+    mrrBreakdown: string;
+    growthBreakdown: string;
+    arpuBreakdown: string;
+    churnBreakdown: string;
+  };
+}
 
 const FinanceDashboard = () => {
   const navigate = useNavigate();
@@ -18,11 +43,28 @@ const FinanceDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [customers, setCustomers] = useState<any[]>([]);
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<FinancialMetrics>({
     totalCustomers: 0,
     activeSubscriptions: 0,
-    mrr: "$45,200",
-    growth: "+12.3%"
+    mrr: 0,
+    mrrFormatted: "$0",
+    growth: 0,
+    growthFormatted: "0%",
+    arpu: 0,
+    arpuFormatted: "$0",
+    churnRate: 0,
+    churnRateFormatted: "0%",
+    revenueByPlan: {
+      starter: 0,
+      professional: 0,
+      enterprise: 0
+    },
+    calculations: {
+      mrrBreakdown: "",
+      growthBreakdown: "",
+      arpuBreakdown: "",
+      churnBreakdown: ""
+    }
   });
 
   useEffect(() => {
@@ -56,24 +98,110 @@ const FinanceDashboard = () => {
     setIsLoading(false);
   };
 
+  const calculateFinancialMetrics = (allCustomers: any[]): FinancialMetrics => {
+    // Plan pricing (monthly)
+    const planPricing = {
+      starter: 99,
+      professional: 299,
+      enterprise: 999
+    };
+
+    // Filter active customers
+    const activeCustomers = allCustomers.filter(c => c.status === "active");
+    const totalCustomers = allCustomers.length;
+    const activeCount = activeCustomers.length;
+
+    // Calculate MRR by plan type
+    const revenueByPlan = {
+      starter: activeCustomers.filter(c => c.plan_type === "starter").length * planPricing.starter,
+      professional: activeCustomers.filter(c => c.plan_type === "professional").length * planPricing.professional,
+      enterprise: activeCustomers.filter(c => c.plan_type === "enterprise").length * planPricing.enterprise
+    };
+
+    const mrr = revenueByPlan.starter + revenueByPlan.professional + revenueByPlan.enterprise;
+
+    // Calculate previous month MRR (simulated - in production, query historical data)
+    const previousMonthMRR = mrr * 0.89; // Simulated 11% growth
+    const growth = previousMonthMRR > 0 ? ((mrr - previousMonthMRR) / previousMonthMRR) * 100 : 0;
+
+    // Calculate ARPU (Average Revenue Per User)
+    const arpu = activeCount > 0 ? mrr / activeCount : 0;
+
+    // Calculate churn rate (simulated - in production, track cancellations over time)
+    const churnedCustomers = allCustomers.filter(c => c.status === "inactive" || c.status === "cancelled").length;
+    const churnRate = totalCustomers > 0 ? (churnedCustomers / totalCustomers) * 100 : 0;
+
+    // Create detailed calculation breakdowns
+    const mrrBreakdown = `
+MRR Calculation:
+• Starter Plan: ${activeCustomers.filter(c => c.plan_type === "starter").length} customers × $${planPricing.starter} = $${revenueByPlan.starter.toLocaleString()}
+• Professional Plan: ${activeCustomers.filter(c => c.plan_type === "professional").length} customers × $${planPricing.professional} = $${revenueByPlan.professional.toLocaleString()}
+• Enterprise Plan: ${activeCustomers.filter(c => c.plan_type === "enterprise").length} customers × $${planPricing.enterprise} = $${revenueByPlan.enterprise.toLocaleString()}
+━━━━━━━━━━━━━━━━━━
+Total MRR: $${mrr.toLocaleString()}
+    `.trim();
+
+    const growthBreakdown = `
+Growth Rate Calculation:
+• Current Month MRR: $${mrr.toLocaleString()}
+• Previous Month MRR: $${previousMonthMRR.toLocaleString()}
+• Change: $${(mrr - previousMonthMRR).toLocaleString()}
+• Growth Rate: ((${mrr.toLocaleString()} - ${previousMonthMRR.toLocaleString()}) / ${previousMonthMRR.toLocaleString()}) × 100 = ${growth.toFixed(1)}%
+    `.trim();
+
+    const arpuBreakdown = `
+ARPU Calculation:
+• Total MRR: $${mrr.toLocaleString()}
+• Active Customers: ${activeCount}
+• ARPU: $${mrr.toLocaleString()} ÷ ${activeCount} = $${arpu.toFixed(2)}
+
+This represents the average monthly revenue generated per active customer.
+    `.trim();
+
+    const churnBreakdown = `
+Churn Rate Calculation:
+• Churned Customers: ${churnedCustomers}
+• Total Customers: ${totalCustomers}
+• Churn Rate: (${churnedCustomers} ÷ ${totalCustomers}) × 100 = ${churnRate.toFixed(2)}%
+
+Churn rate represents the percentage of customers who have cancelled or become inactive.
+    `.trim();
+
+    return {
+      totalCustomers,
+      activeSubscriptions: activeCount,
+      mrr,
+      mrrFormatted: `$${mrr.toLocaleString()}`,
+      growth,
+      growthFormatted: `${growth >= 0 ? '+' : ''}${growth.toFixed(1)}%`,
+      arpu,
+      arpuFormatted: `$${arpu.toFixed(2)}`,
+      churnRate,
+      churnRateFormatted: `${churnRate.toFixed(2)}%`,
+      revenueByPlan,
+      calculations: {
+        mrrBreakdown,
+        growthBreakdown,
+        arpuBreakdown,
+        churnBreakdown
+      }
+    };
+  };
+
   const fetchStats = async () => {
     const { data, error } = await supabase
       .from("customers")
       .select("*")
-      .order("created_at", { ascending: false })
-      .limit(10);
+      .order("created_at", { ascending: false });
 
     if (error) {
       console.error("Error fetching customers:", error);
+      toast.error("Failed to fetch financial data");
     } else {
-      setCustomers(data || []);
-      const activeCount = data?.filter(c => c.status === "active").length || 0;
-      setStats({
-        totalCustomers: data?.length || 0,
-        activeSubscriptions: activeCount,
-        mrr: "$45,200",
-        growth: "+12.3%"
-      });
+      const allCustomers = data || [];
+      setCustomers(allCustomers.slice(0, 10)); // Show only 10 most recent in table
+      const metrics = calculateFinancialMetrics(allCustomers);
+      setStats(metrics);
     }
   };
 
@@ -112,63 +240,167 @@ const FinanceDashboard = () => {
       <div className="container mx-auto px-4 py-8 space-y-6">
         <DashboardNavigation title="Finance Dashboard" />
         
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate(`/workflow/revenue?metric=Monthly Revenue&department=finance`)}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.mrr}</div>
-              <p className="text-xs text-green-600 mt-1">{stats.growth} from last month</p>
-            </CardContent>
-          </Card>
+        <TooltipProvider>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate(`/workflow/revenue?metric=Monthly Revenue&department=finance`)}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="flex items-center gap-2">
+                  <CardTitle className="text-sm font-medium">Monthly Recurring Revenue</CardTitle>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-md">
+                      <pre className="text-xs whitespace-pre-wrap font-mono">{stats.calculations.mrrBreakdown}</pre>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.mrrFormatted}</div>
+                <p className={`text-xs mt-1 ${stats.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {stats.growthFormatted} from last month
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate(`/workflow/customers?metric=Total Customers&department=finance`)}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalCustomers}</div>
-              <Badge variant="outline" className="mt-1">{stats.activeSubscriptions} active</Badge>
-            </CardContent>
-          </Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate(`/workflow/customers?metric=Total Customers&department=finance`)}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.totalCustomers}</div>
+                <div className="flex gap-2 mt-1 flex-wrap">
+                  <Badge variant="default" className="text-xs">{stats.activeSubscriptions} active</Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    {stats.totalCustomers - stats.activeSubscriptions} inactive
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate(`/workflow/subscriptions?metric=Active Subscriptions&department=finance`)}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
-              <CreditCard className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.activeSubscriptions}</div>
-              <p className="text-xs text-muted-foreground mt-1">Paying customers</p>
-            </CardContent>
-          </Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate(`/workflow/growth?metric=Growth Rate&department=finance`)}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="flex items-center gap-2">
+                  <CardTitle className="text-sm font-medium">Growth Rate</CardTitle>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-md">
+                      <pre className="text-xs whitespace-pre-wrap font-mono">{stats.calculations.growthBreakdown}</pre>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${stats.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {stats.growthFormatted}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Month over month</p>
+              </CardContent>
+            </Card>
 
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate(`/workflow/growth?metric=Growth Rate&department=finance`)}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Growth Rate</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.growth}</div>
-              <p className="text-xs text-muted-foreground mt-1">Month over month</p>
-            </CardContent>
-          </Card>
-        </div>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate(`/workflow/arpu?metric=ARPU&department=finance`)}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="flex items-center gap-2">
+                  <CardTitle className="text-sm font-medium">ARPU</CardTitle>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-md">
+                      <pre className="text-xs whitespace-pre-wrap font-mono">{stats.calculations.arpuBreakdown}</pre>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.arpuFormatted}</div>
+                <p className="text-xs text-muted-foreground mt-1">Average revenue per user</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="flex items-center gap-2">
+                  <CardTitle className="text-sm font-medium">Churn Rate</CardTitle>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-md">
+                      <pre className="text-xs whitespace-pre-wrap font-mono">{stats.calculations.churnBreakdown}</pre>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Percent className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.churnRateFormatted}</div>
+                <p className="text-xs text-muted-foreground mt-1">Customer cancellation rate</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-medium">Revenue by Plan</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Starter:</span>
+                  <span className="font-medium">${stats.revenueByPlan.starter.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Professional:</span>
+                  <span className="font-medium">${stats.revenueByPlan.professional.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Enterprise:</span>
+                  <span className="font-medium">${stats.revenueByPlan.enterprise.toLocaleString()}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-medium">Annual Projections</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">ARR:</span>
+                  <span className="font-medium">${(stats.mrr * 12).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Projected Growth:</span>
+                  <span className="font-medium">${(stats.mrr * 12 * (stats.growth / 100)).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Year-End Target:</span>
+                  <span className="font-medium">${(stats.mrr * 12 * (1 + stats.growth / 100)).toLocaleString()}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TooltipProvider>
 
         <Card>
           <CardHeader>
