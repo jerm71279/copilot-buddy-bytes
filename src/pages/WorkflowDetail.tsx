@@ -43,11 +43,13 @@ const WorkflowDetail = () => {
   const [isLoadingInsights, setIsLoadingInsights] = useState(false);
 
   useEffect(() => {
+    console.log("🔍 WorkflowDetail mounted:", { workflowType, metricName, department });
     loadWorkflowData();
     generateAIInsights();
   }, [workflowType]);
 
   const loadWorkflowData = async () => {
+    console.log("📊 Loading workflow executions...");
     try {
       const { data, error } = await supabase
         .from("workflow_executions")
@@ -55,7 +57,11 @@ const WorkflowDetail = () => {
         .order("started_at", { ascending: false })
         .limit(20);
 
-      if (error) throw error;
+      if (error) {
+        console.error("❌ Error loading workflow data:", error);
+        throw error;
+      }
+      console.log("✅ Loaded workflow executions:", data?.length || 0, "executions");
       setExecutions(data || []);
     } catch (error) {
       console.error("Error loading workflow data:", error);
@@ -66,6 +72,7 @@ const WorkflowDetail = () => {
   };
 
   const generateAIInsights = async () => {
+    console.log("🤖 Generating AI insights for:", { workflowType, metricName, department });
     setIsLoadingInsights(true);
     try {
       const { data, error } = await supabase.functions.invoke("workflow-insights", {
@@ -76,7 +83,11 @@ const WorkflowDetail = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("❌ Error from workflow-insights function:", error);
+        throw error;
+      }
+      console.log("✅ AI insights generated successfully:", data);
       setAIInsights(data.insights);
     } catch (error) {
       console.error("Error generating insights:", error);

@@ -107,7 +107,10 @@ const OperationsDashboard = () => {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card 
             className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate(`/workflow/efficiency?metric=Workflow Efficiency&department=operations`)}
+            onClick={() => {
+              console.log("🔗 Navigating to workflow detail:", { metric: "Workflow Efficiency", department: "operations" });
+              navigate(`/workflow/efficiency?metric=Workflow Efficiency&department=operations`);
+            }}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Workflow Efficiency</CardTitle>
