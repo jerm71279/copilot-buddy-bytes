@@ -8,6 +8,7 @@ import IntegrationsPage from "./pages/IntegrationsPage";
 import Auth from "./pages/Auth";
 import DemoSelector from "./pages/DemoSelector";
 import CustomerPortal from "./pages/CustomerPortal";
+import AnalyticsPortal from "./pages/AnalyticsPortal";
 import WorkflowDetail from "./pages/WorkflowDetail";
 import KnowledgeBase from "./pages/KnowledgeBase";
 import KnowledgeArticle from "./pages/KnowledgeArticle";
@@ -36,10 +37,17 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/demo" element={<DemoSelector />} />
           
-          {/* Customer Portal - Protected but no admin required */}
+          {/* Employee Portal - Protected but no admin required */}
           <Route path="/portal" element={
             <ProtectedRoute>
               <CustomerPortal />
+            </ProtectedRoute>
+          } />
+          
+          {/* Analytics Portal - Protected but no admin required */}
+          <Route path="/analytics" element={
+            <ProtectedRoute>
+              <AnalyticsPortal />
             </ProtectedRoute>
           } />
           

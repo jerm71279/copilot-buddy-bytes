@@ -108,9 +108,14 @@ const CustomerPortal = () => {
                 </p>
               </div>
             </div>
-            <Button variant="outline" onClick={handleSignOut}>
-              Sign Out
-            </Button>
+            <div className="flex items-center gap-2">
+              <Link to="/analytics">
+                <Button variant="outline">Analytics Portal</Button>
+              </Link>
+              <Button variant="outline" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </header>
