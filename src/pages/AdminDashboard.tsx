@@ -30,7 +30,7 @@ const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [userCustomerId, setUserCustomerId] = useState<string>("demo-customer");
+  const [userCustomerId, setUserCustomerId] = useState<string>("00000000-0000-0000-0000-000000000000");
 
   useEffect(() => {
     checkAdminAccess();
@@ -39,6 +39,19 @@ const AdminDashboard = () => {
   const checkAdminAccess = async () => {
     if (isPreviewMode) {
       setIsAdmin(true);
+      // In preview mode, try to get a real customer ID from the database
+      const { data: customers } = await supabase
+        .from("customers")
+        .select("id")
+        .limit(1)
+        .maybeSingle();
+      
+      if (customers?.id) {
+        setUserCustomerId(customers.id);
+      } else {
+        // Generate a valid UUID for preview mode if no customers exist
+        setUserCustomerId("00000000-0000-0000-0000-000000000000");
+      }
       fetchCustomers();
       return;
     }
