@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,30 +14,118 @@ serve(async (req) => {
   try {
     const { workflowType, metricName, department } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error("Required environment variables are not configured");
     }
 
-    const systemPrompt = `You are an AI business analyst specializing in workflow optimization and predictive analytics. 
-Analyze the workflow data and provide actionable insights, predictions, and recommendations.
-Focus on: efficiency improvements, risk mitigation, optimization opportunities, and data-driven predictions.
-Be specific, actionable, and business-focused.`;
+    // Initialize Supabase client
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    const userPrompt = `Analyze the ${metricName} workflow in the ${department} department.
-Provide:
-1. A predictive analysis of future performance (1-2 sentences)
-2. 3-5 specific actionable recommendations to improve this workflow
-3. 3-4 key risk factors that could impact performance
-4. 3-4 optimization opportunities for efficiency gains
+    // Fetch historical workflow execution data
+    console.log("Fetching workflow execution history...");
+    const { data: executions, error: executionsError } = await supabase
+      .from('workflow_executions')
+      .select('*')
+      .order('started_at', { ascending: false })
+      .limit(100);
+
+    if (executionsError) {
+      console.error("Error fetching executions:", executionsError);
+    }
+
+    // Analyze historical data
+    const totalExecutions = executions?.length || 0;
+    const successfulExecutions = executions?.filter(e => e.status === 'completed').length || 0;
+    const failedExecutions = executions?.filter(e => e.status === 'failed').length || 0;
+    const successRate = totalExecutions > 0 ? (successfulExecutions / totalExecutions * 100).toFixed(1) : 0;
+
+    // Calculate average execution time
+    const completedWithDuration = executions?.filter(e => e.completed_at && e.started_at) || [];
+    const avgDuration = completedWithDuration.length > 0 
+      ? completedWithDuration.reduce((sum, e) => {
+          const duration = new Date(e.completed_at).getTime() - new Date(e.started_at).getTime();
+          return sum + duration;
+        }, 0) / completedWithDuration.length / 1000 / 60 // Convert to minutes
+      : 0;
+
+    // Identify common error patterns
+    const errorPatterns = executions
+      ?.filter(e => e.error_message)
+      .map(e => e.error_message)
+      .reduce((acc: Record<string, number>, msg: string) => {
+        const key = msg.substring(0, 50); // Group similar errors
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {});
+
+    const topErrors = Object.entries(errorPatterns || {})
+      .sort(([, a], [, b]) => (b as number) - (a as number))
+      .slice(0, 3)
+      .map(([msg, count]) => `${msg} (${count} occurrences)`);
+
+    // Analyze execution frequency over time
+    const recentExecutions = executions?.filter(e => {
+      const executionDate = new Date(e.started_at);
+      const daysSince = (Date.now() - executionDate.getTime()) / (1000 * 60 * 60 * 24);
+      return daysSince <= 7;
+    }).length || 0;
+
+    const historicalData = {
+      totalExecutions,
+      successfulExecutions,
+      failedExecutions,
+      successRate,
+      avgDurationMinutes: avgDuration.toFixed(1),
+      recentExecutions7Days: recentExecutions,
+      topErrors,
+      sampleExecutions: executions?.slice(0, 5).map(e => ({
+        status: e.status,
+        duration: e.completed_at && e.started_at 
+          ? ((new Date(e.completed_at).getTime() - new Date(e.started_at).getTime()) / 1000 / 60).toFixed(1) + ' min'
+          : 'N/A',
+        error: e.error_message || 'None'
+      }))
+    };
+
+    console.log("Historical analysis:", historicalData);
+
+    const systemPrompt = `You are an AI business analyst specializing in workflow optimization and predictive analytics. 
+You have access to REAL historical execution data from the customer's systems.
+Analyze the actual patterns, trends, and issues in the data to provide specific, data-driven insights.
+Focus on: efficiency improvements based on actual performance, risk mitigation based on observed failures, and optimization opportunities based on real bottlenecks.
+Be specific, actionable, and reference actual data points in your analysis.`;
+
+    const userPrompt = `Analyze the ${metricName} workflow in the ${department} department using this REAL historical data:
+
+ACTUAL PERFORMANCE DATA:
+- Total Executions: ${historicalData.totalExecutions}
+- Success Rate: ${historicalData.successRate}%
+- Average Duration: ${historicalData.avgDurationMinutes} minutes
+- Recent Activity (7 days): ${historicalData.recentExecutions7Days} executions
+- Failed Executions: ${historicalData.failedExecutions}
+
+TOP ERROR PATTERNS:
+${historicalData.topErrors.length > 0 ? historicalData.topErrors.map((e, i) => `${i + 1}. ${e}`).join('\n') : 'No significant error patterns detected'}
+
+SAMPLE RECENT EXECUTIONS:
+${historicalData.sampleExecutions?.map((e, i) => `${i + 1}. Status: ${e.status}, Duration: ${e.duration}, Error: ${e.error}`).join('\n')}
+
+Based on this ACTUAL data, provide:
+1. A predictive analysis of future performance with specific confidence level (reference actual trends)
+2. 3-5 specific actionable recommendations based on observed patterns
+3. 3-4 key risk factors identified from actual failure patterns
+4. 3-4 optimization opportunities based on real performance data
 
 Format your response as JSON with this structure:
 {
-  "prediction": "string with confidence level mentioned",
+  "prediction": "string with confidence level and specific data references",
   "confidence": number (0-100),
-  "recommendations": ["rec1", "rec2", "rec3"],
-  "risk_factors": ["risk1", "risk2", "risk3"],
-  "optimization_opportunities": ["opp1", "opp2", "opp3"]
+  "recommendations": ["rec1 with data reference", "rec2 with data reference", "rec3 with data reference"],
+  "risk_factors": ["risk1 from actual data", "risk2 from actual data", "risk3 from actual data"],
+  "optimization_opportunities": ["opp1 based on real metrics", "opp2 based on real metrics", "opp3 based on real metrics"]
 }`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
