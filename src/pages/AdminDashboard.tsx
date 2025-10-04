@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { LogOut, Users } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { MCPServerConfig } from "@/components/MCPServerConfig";
+import { AIMCPGenerator } from "@/components/AIMCPGenerator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoMode } from "@/hooks/useDemoMode";
 
@@ -143,6 +144,7 @@ const AdminDashboard = () => {
           <TabsList>
             <TabsTrigger value="status">MCP Servers Status</TabsTrigger>
             <TabsTrigger value="configure">Configure New Server</TabsTrigger>
+            <TabsTrigger value="ai-generator">AI Generator</TabsTrigger>
           </TabsList>
 
           <TabsContent value="status">
@@ -151,6 +153,17 @@ const AdminDashboard = () => {
 
           <TabsContent value="configure">
             <MCPServerConfig customerId={userCustomerId} />
+          </TabsContent>
+
+          <TabsContent value="ai-generator">
+            <AIMCPGenerator 
+              customerId={userCustomerId}
+              department="admin"
+              onServersCreated={() => {
+                toast.success("MCP servers created successfully!");
+                // Optionally refresh the status tab
+              }}
+            />
           </TabsContent>
         </Tabs>
         
