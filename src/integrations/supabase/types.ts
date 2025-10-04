@@ -423,6 +423,168 @@ export type Database = {
         }
         Relationships: []
       }
+      client_onboarding_tasks: {
+        Row: {
+          actual_hours: number | null
+          assigned_role: string | null
+          assigned_to: string | null
+          blockers: string | null
+          completed_at: string | null
+          completed_by: string | null
+          compliance_tags: string[] | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          estimated_hours: number | null
+          id: string
+          notes: string | null
+          onboarding_id: string
+          required_documents: Json | null
+          sequence_order: number
+          status: string
+          task_category: string
+          task_name: string
+          template_task_id: string | null
+          updated_at: string
+          uploaded_documents: Json | null
+        }
+        Insert: {
+          actual_hours?: number | null
+          assigned_role?: string | null
+          assigned_to?: string | null
+          blockers?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          compliance_tags?: string[] | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_hours?: number | null
+          id?: string
+          notes?: string | null
+          onboarding_id: string
+          required_documents?: Json | null
+          sequence_order?: number
+          status?: string
+          task_category: string
+          task_name: string
+          template_task_id?: string | null
+          updated_at?: string
+          uploaded_documents?: Json | null
+        }
+        Update: {
+          actual_hours?: number | null
+          assigned_role?: string | null
+          assigned_to?: string | null
+          blockers?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          compliance_tags?: string[] | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_hours?: number | null
+          id?: string
+          notes?: string | null
+          onboarding_id?: string
+          required_documents?: Json | null
+          sequence_order?: number
+          status?: string
+          task_category?: string
+          task_name?: string
+          template_task_id?: string | null
+          updated_at?: string
+          uploaded_documents?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_onboarding_tasks_onboarding_id_fkey"
+            columns: ["onboarding_id"]
+            isOneToOne: false
+            referencedRelation: "client_onboardings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_onboarding_tasks_template_task_id_fkey"
+            columns: ["template_task_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_template_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_onboardings: {
+        Row: {
+          actual_completion_date: string | null
+          client_contact_email: string
+          client_contact_name: string | null
+          client_name: string
+          completion_percentage: number | null
+          created_at: string
+          created_by: string
+          customer_id: string
+          id: string
+          metadata: Json | null
+          notes: string | null
+          start_date: string | null
+          status: string
+          target_completion_date: string | null
+          template_id: string
+          updated_at: string
+        }
+        Insert: {
+          actual_completion_date?: string | null
+          client_contact_email: string
+          client_contact_name?: string | null
+          client_name: string
+          completion_percentage?: number | null
+          created_at?: string
+          created_by: string
+          customer_id: string
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          start_date?: string | null
+          status?: string
+          target_completion_date?: string | null
+          template_id: string
+          updated_at?: string
+        }
+        Update: {
+          actual_completion_date?: string | null
+          client_contact_email?: string
+          client_contact_name?: string | null
+          client_name?: string
+          completion_percentage?: number | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          start_date?: string | null
+          status?: string
+          target_completion_date?: string | null
+          template_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_onboardings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_onboardings_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_controls: {
         Row: {
           automation_level: string
@@ -1615,6 +1777,188 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "notifications_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_milestones: {
+        Row: {
+          completed_date: string | null
+          created_at: string
+          description: string | null
+          id: string
+          milestone_name: string
+          onboarding_id: string
+          required_task_ids: Json | null
+          status: string
+          target_date: string | null
+        }
+        Insert: {
+          completed_date?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          milestone_name: string
+          onboarding_id: string
+          required_task_ids?: Json | null
+          status?: string
+          target_date?: string | null
+        }
+        Update: {
+          completed_date?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          milestone_name?: string
+          onboarding_id?: string
+          required_task_ids?: Json | null
+          status?: string
+          target_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_milestones_onboarding_id_fkey"
+            columns: ["onboarding_id"]
+            isOneToOne: false
+            referencedRelation: "client_onboardings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_task_comments: {
+        Row: {
+          comment_text: string
+          created_at: string
+          id: string
+          is_internal: boolean | null
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          comment_text: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          comment_text?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "client_onboarding_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_template_tasks: {
+        Row: {
+          assigned_role: string | null
+          compliance_tags: string[] | null
+          created_at: string
+          dependencies: Json | null
+          description: string | null
+          estimated_hours: number | null
+          id: string
+          required_documents: Json | null
+          requires_client_input: boolean | null
+          sequence_order: number
+          task_category: string
+          task_name: string
+          template_id: string
+        }
+        Insert: {
+          assigned_role?: string | null
+          compliance_tags?: string[] | null
+          created_at?: string
+          dependencies?: Json | null
+          description?: string | null
+          estimated_hours?: number | null
+          id?: string
+          required_documents?: Json | null
+          requires_client_input?: boolean | null
+          sequence_order?: number
+          task_category: string
+          task_name: string
+          template_id: string
+        }
+        Update: {
+          assigned_role?: string | null
+          compliance_tags?: string[] | null
+          created_at?: string
+          dependencies?: Json | null
+          description?: string | null
+          estimated_hours?: number | null
+          id?: string
+          required_documents?: Json | null
+          requires_client_input?: boolean | null
+          sequence_order?: number
+          task_category?: string
+          task_name?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_template_tasks_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_templates: {
+        Row: {
+          client_type: string
+          created_at: string
+          created_by: string
+          customer_id: string
+          description: string | null
+          estimated_days: number | null
+          id: string
+          is_active: boolean
+          template_name: string
+          updated_at: string
+        }
+        Insert: {
+          client_type?: string
+          created_at?: string
+          created_by: string
+          customer_id: string
+          description?: string | null
+          estimated_days?: number | null
+          id?: string
+          is_active?: boolean
+          template_name: string
+          updated_at?: string
+        }
+        Update: {
+          client_type?: string
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          description?: string | null
+          estimated_days?: number | null
+          id?: string
+          is_active?: boolean
+          template_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_templates_customer_id_fkey"
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
