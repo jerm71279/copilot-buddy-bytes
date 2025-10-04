@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { LogOut, Users } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import { MCPServerConfig } from "@/components/MCPServerConfig";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoMode } from "@/hooks/useDemoMode";
 
 type Customer = {
@@ -27,6 +29,7 @@ const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [userCustomerId, setUserCustomerId] = useState<string>("demo-customer");
 
   useEffect(() => {
     checkAdminAccess();
@@ -58,6 +61,17 @@ const AdminDashboard = () => {
       toast.error("Access denied: Admin privileges required");
       navigate("/");
       return;
+    }
+
+    // Get user's customer_id
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("customer_id")
+      .eq("user_id", session.user.id)
+      .maybeSingle();
+
+    if (profile?.customer_id) {
+      setUserCustomerId(profile.customer_id);
     }
 
     setIsAdmin(true);
@@ -125,7 +139,20 @@ const AdminDashboard = () => {
       </nav>
 
       <div className="container mx-auto px-4 py-8 space-y-8">
-        <MCPServerStatus />
+        <Tabs defaultValue="status" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="status">MCP Servers Status</TabsTrigger>
+            <TabsTrigger value="configure">Configure New Server</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="status">
+            <MCPServerStatus />
+          </TabsContent>
+
+          <TabsContent value="configure">
+            <MCPServerConfig customerId={userCustomerId} />
+          </TabsContent>
+        </Tabs>
         
         <Card>
           <CardHeader>
