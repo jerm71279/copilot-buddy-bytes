@@ -32,6 +32,8 @@ import CompliancePortal from "./pages/CompliancePortal";
 import WorkflowAutomation from "./pages/WorkflowAutomation";
 import NinjaOneIntegration from "./pages/NinjaOneIntegration";
 
+import WorkflowBuilder from "./pages/WorkflowBuilder";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -166,6 +168,11 @@ const App = () => (
           <Route path="/workflows" element={
             <ProtectedRoute>
               <WorkflowAutomation />
+            </ProtectedRoute>
+          } />
+          <Route path="/workflows/builder" element={
+            <ProtectedRoute>
+              <WorkflowBuilder />
             </ProtectedRoute>
           } />
           
