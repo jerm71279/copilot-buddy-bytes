@@ -13,8 +13,6 @@ import { WorkflowBuilder } from "@/components/WorkflowBuilder";
 import { WorkflowExecutionHistory } from "@/components/WorkflowExecutionHistory";
 import { WorkflowTriggerManager } from "@/components/WorkflowTriggerManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import MCPServerStatus from "@/components/MCPServerStatus";
-import { MCPServerConfig } from "@/components/MCPServerConfig";
 
 const OperationsDashboard = () => {
   const navigate = useNavigate();
@@ -27,8 +25,6 @@ const OperationsDashboard = () => {
     efficiency: 87,
     bottlenecks: 3
   });
-  const [hasPamAccess, setHasPamAccess] = useState(false);
-  const [customerId, setCustomerId] = useState<string>("demo-customer");
 
   useEffect(() => {
     checkAccess();
@@ -36,9 +32,7 @@ const OperationsDashboard = () => {
 
   const checkAccess = async () => {
     if (isPreviewMode) {
-      setUserProfile({ full_name: "Demo User", department: "operations", customer_id: "demo-customer" });
-      setCustomerId("demo-customer");
-      setHasPamAccess(true);
+      setUserProfile({ full_name: "Demo User", department: "operations" });
       await fetchStats();
       setIsLoading(false);
       return;
@@ -64,19 +58,6 @@ const OperationsDashboard = () => {
     }
 
     setUserProfile(profile);
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
-      
-      // Check if customer has PAM enabled
-      const { data: customization } = await supabase
-        .from("customer_customizations")
-        .select("enabled_features")
-        .eq("customer_id", profile.customer_id)
-        .maybeSingle();
-      
-      const enabledFeatures = (customization?.enabled_features as string[]) || [];
-      setHasPamAccess(enabledFeatures.includes("pam") || enabledFeatures.includes("privileged_access"));
-    }
     await fetchStats();
     setIsLoading(false);
   };
@@ -218,7 +199,6 @@ const OperationsDashboard = () => {
             <TabsTrigger value="workflows">Workflow Builder</TabsTrigger>
             <TabsTrigger value="triggers">Triggers</TabsTrigger>
             <TabsTrigger value="history">Execution History</TabsTrigger>
-            <TabsTrigger value="pam">PAM</TabsTrigger>
             <TabsTrigger value="assistant">AI Assistant</TabsTrigger>
           </TabsList>
 
@@ -231,32 +211,7 @@ const OperationsDashboard = () => {
           </TabsContent>
 
           <TabsContent value="history" className="space-y-4">
-            <WorkflowExecutionHistory customerId={customerId} />
-          </TabsContent>
-
-          <TabsContent value="pam" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Privileged Access Management</CardTitle>
-                <CardDescription>Configure MCP servers for operations system access</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Tabs defaultValue="status" className="space-y-4">
-                  <TabsList>
-                    <TabsTrigger value="status">Server Status</TabsTrigger>
-                    <TabsTrigger value="configure">Configure Server</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="status">
-                    <MCPServerStatus />
-                  </TabsContent>
-                  
-                  <TabsContent value="configure">
-                    <MCPServerConfig customerId={customerId} />
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
+            <WorkflowExecutionHistory customerId={userProfile?.customer_id || "demo-customer"} />
           </TabsContent>
 
           <TabsContent value="assistant" className="space-y-4">
