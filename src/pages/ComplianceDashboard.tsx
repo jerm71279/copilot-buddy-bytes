@@ -10,6 +10,7 @@ import { LogOut, Shield, CheckCircle, AlertTriangle, FileText } from "lucide-rea
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 const ComplianceDashboard = () => {
   const navigate = useNavigate();
@@ -183,6 +184,8 @@ const ComplianceDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        <MCPServerStatus filterByServerType="compliance" />
 
         <DepartmentAIAssistant 
           department="compliance" 

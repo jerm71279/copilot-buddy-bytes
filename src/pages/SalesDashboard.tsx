@@ -10,6 +10,7 @@ import { LogOut, TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar }
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 const SalesDashboard = () => {
   const navigate = useNavigate();
@@ -306,6 +307,8 @@ const SalesDashboard = () => {
         </div>
 
         {/* AI Assistant */}
+        <MCPServerStatus filterByServerType="sales" />
+        
         <DepartmentAIAssistant department="sales" departmentLabel="Sales" />
       </main>
     </div>

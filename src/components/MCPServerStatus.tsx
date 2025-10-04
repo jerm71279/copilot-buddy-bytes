@@ -24,22 +24,33 @@ type MCPTool = {
   avg_execution_time_ms: number | null;
 };
 
-type MCPServerStatusProps = { customerId?: string };
-export default function MCPServerStatus({ customerId }: MCPServerStatusProps) {
+type MCPServerStatusProps = { 
+  customerId?: string;
+  filterByServerType?: string; // e.g., "compliance", "it", "finance", "hr", "operations"
+};
+
+export default function MCPServerStatus({ customerId, filterByServerType }: MCPServerStatusProps) {
   const [servers, setServers] = useState<MCPServer[]>([]);
   const [tools, setTools] = useState<Record<string, MCPTool[]>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchMCPServers();
-  }, []);
+  }, [filterByServerType]);
 
   const fetchMCPServers = async () => {
     try {
-      const { data: serversData, error: serversError } = await supabase
+      let query = supabase
         .from("mcp_servers")
         .select("*")
         .order("created_at", { ascending: false });
+
+      // Apply server_type filter if provided
+      if (filterByServerType) {
+        query = query.eq("server_type", filterByServerType);
+      }
+
+      const { data: serversData, error: serversError } = await query;
 
       if (serversError) throw serversError;
 

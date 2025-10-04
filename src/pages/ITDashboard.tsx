@@ -152,7 +152,7 @@ const ITDashboard = () => {
           </Card>
         </div>
 
-        <MCPServerStatus />
+        <MCPServerStatus filterByServerType="it" />
 
         <Card>
           <CardHeader>

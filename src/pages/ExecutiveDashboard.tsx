@@ -10,6 +10,7 @@ import { LogOut, BarChart3, TrendingUp, Shield, Users, AlertCircle, CheckCircle 
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 const ExecutiveDashboard = () => {
   const navigate = useNavigate();
@@ -239,6 +240,8 @@ const ExecutiveDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        <MCPServerStatus filterByServerType="executive" />
 
         <DepartmentAIAssistant 
           department="executive" 

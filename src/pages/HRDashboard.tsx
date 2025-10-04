@@ -9,6 +9,7 @@ import { LogOut, Users, UserCheck, Clock, TrendingUp } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 const HRDashboard = () => {
   const navigate = useNavigate();
@@ -187,6 +188,8 @@ const HRDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        <MCPServerStatus filterByServerType="hr" />
 
         <DepartmentAIAssistant 
           department="hr" 

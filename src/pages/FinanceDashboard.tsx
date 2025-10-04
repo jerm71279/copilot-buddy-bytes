@@ -10,6 +10,7 @@ import { LogOut, DollarSign, Users, TrendingUp, CreditCard } from "lucide-react"
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 const FinanceDashboard = () => {
   const navigate = useNavigate();
@@ -201,6 +202,8 @@ const FinanceDashboard = () => {
             </Table>
           </CardContent>
         </Card>
+
+        <MCPServerStatus filterByServerType="finance" />
 
         <DepartmentAIAssistant 
           department="finance" 

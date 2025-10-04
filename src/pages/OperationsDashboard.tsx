@@ -14,6 +14,7 @@ import { WorkflowExecutionHistory } from "@/components/WorkflowExecutionHistory"
 import { WorkflowTriggerManager } from "@/components/WorkflowTriggerManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 const OperationsDashboard = () => {
   const navigate = useNavigate();
@@ -228,6 +229,8 @@ const OperationsDashboard = () => {
           </TabsContent>
 
           <TabsContent value="assistant" className="space-y-4">
+            <MCPServerStatus filterByServerType="operations" />
+            
             <DepartmentAIAssistant 
               department="operations" 
               departmentLabel="Operations" 
