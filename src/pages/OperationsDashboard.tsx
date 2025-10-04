@@ -45,27 +45,12 @@ const OperationsDashboard = () => {
       return;
     }
 
-    // Check permissions using RBAC
-    const { data: hasPermission } = await supabase
-      .rpc('has_permission', {
-        _user_id: session.user.id,
-        _resource_type: 'dashboard',
-        _resource_name: 'operations',
-        _min_permission: 'view'
-      });
-
+    // Get user profile
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("*")
       .eq("user_id", session.user.id)
       .maybeSingle();
-
-    // Allow access if user has permission OR has correct department
-    if (!hasPermission && (!profile || profile.department !== "operations")) {
-      toast.error("Access denied: Operations department access required");
-      navigate("/");
-      return;
-    }
 
     setUserProfile(profile);
     await fetchStats();
