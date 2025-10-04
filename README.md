@@ -71,13 +71,23 @@ supabase/
 
 ## 🔑 Key Features
 
-### 1. Customer Customization
+### 1. Microsoft 365 Integration (NEW)
+- 🔐 **Single Sign-On**: Native Microsoft 365 OAuth authentication
+- 📧 **Email Access**: View recent emails with read status
+- 📅 **Calendar Integration**: Display upcoming calendar events
+- 💬 **Teams Integration**: Access recent Teams chats and conversations
+- 📁 **OneDrive/SharePoint**: File browser (coming soon)
+- 👤 **User Profile**: Sync Microsoft 365 profile data
+
+**⚠️ CRITICAL SETUP REQUIRED:** See [`URGENT_NEXT_STEPS.md`](./URGENT_NEXT_STEPS.md) for Azure AD configuration.
+
+### 2. Customer Customization
 - Per-customer branding (logo, colors)
 - Enabled features and integrations
 - Custom dashboard layouts
 - Role-based access control
 
-### 2. Department-Specific Dashboards
+### 3. Department-Specific Dashboards
 - **Admin**: Customer management and system overview
 - **Compliance**: Framework tracking, controls, evidence
 - **IT & Security**: Integration status, server health, anomalies
@@ -87,7 +97,8 @@ supabase/
 - **Sales**: Pipeline, deals, forecasting
 - **Executive**: KPIs, compliance metrics, strategic overview
 
-### 3. Integration Management
+### 4. Integration Management
+- **Microsoft 365**: Calendar, Email, Teams, OneDrive (NEW)
 - Onebill/rev.io (Billing & Revenue)
 - Azure, Lighthouse, CIPP (Cloud & Identity)
 - SonicWall, UniFi, MikroTik (Network Security)
@@ -95,7 +106,7 @@ supabase/
 - NinjaOne (RMM & Infrastructure)
 - Threatdown, OpenText (Cybersecurity)
 
-### 4. AI-Powered Assistance
+### 5. AI-Powered Assistance
 - Department-specific AI assistants
 - MCP (Model Context Protocol) server integration
 - Lovable AI for seamless model access
@@ -133,6 +144,11 @@ Navigate to Project > Settings > Domains and click Connect Domain.
 
 ## 📚 Documentation
 
+### 🚨 Priority Documentation (Read First)
+- [**URGENT_NEXT_STEPS.md**](./URGENT_NEXT_STEPS.md) - **Critical blockers and immediate action items**
+- [**MICROSOFT365_INTEGRATION.md**](./MICROSOFT365_INTEGRATION.md) - **Microsoft 365 technical documentation**
+
+### Architecture & Development
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture and design decisions
 - [ONBOARDING.md](./ONBOARDING.md) - New developer onboarding guide
 - [MODULE_STRUCTURE.md](./MODULE_STRUCTURE.md) - Module organization and dependencies

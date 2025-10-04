@@ -77,8 +77,10 @@ export const Microsoft365Integration = () => {
 
       // Load calendar events (next 5 events)
       const today = new Date().toISOString();
+      const endDate = new Date();
+      endDate.setMonth(endDate.getMonth() + 1);
       const events = await callGraphAPI(
-        `/me/calendar/calendarView?startDateTime=${today}&$top=5&$orderby=start/dateTime`
+        `/me/calendar/calendarView?startDateTime=${today}&endDateTime=${endDate.toISOString()}&$top=5&$orderby=start/dateTime`
       );
       setCalendarEvents(events.value || []);
 
@@ -92,10 +94,20 @@ export const Microsoft365Integration = () => {
 
     } catch (err: any) {
       console.error('Error loading Microsoft data:', err);
-      if (err.message?.includes('No Microsoft access token') || err.message?.includes('TOKEN_EXPIRED')) {
+      
+      // Handle different error types
+      if (err.message?.includes('WRONG_PROVIDER')) {
+        setError('This account is not connected to Microsoft 365. Please sign out and sign in with your Microsoft 365 account.');
+      } else if (err.message?.includes('TOKEN_EXPIRED') || err.message?.includes('NO_PROVIDER_TOKEN')) {
+        setError('Your Microsoft 365 session has expired. Please sign out and sign in again.');
+      } else if (err.message?.includes('PERMISSION_DENIED')) {
+        setError('Permission denied. Your administrator needs to grant consent in Azure AD. Please contact your IT department.');
+      } else if (err.message?.includes('RATE_LIMIT')) {
+        setError('Too many requests. Please wait a moment and try again.');
+      } else if (err.message?.includes('sign in with Microsoft')) {
         setError('Please sign in with Microsoft 365 to access this data.');
       } else {
-        setError(err.message || 'Failed to load Microsoft 365 data');
+        setError(err.message || 'Failed to load Microsoft 365 data. Please try again later.');
         toast.error('Failed to load Microsoft 365 data');
       }
     } finally {
@@ -103,17 +115,56 @@ export const Microsoft365Integration = () => {
     }
   };
 
-  if (error && error.includes('sign in with Microsoft')) {
+  if (error) {
+    const isAuthError = error.includes('sign in') || error.includes('session has expired') || error.includes('not connected');
+    const isPermissionError = error.includes('Permission denied') || error.includes('administrator');
+    
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Microsoft 365 Integration</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            Microsoft 365 Integration
+          </CardTitle>
           <CardDescription>
-            Sign in with Microsoft 365 to access your calendar, emails, and more.
+            {isAuthError && "Authentication required to access Microsoft 365 data"}
+            {isPermissionError && "Additional permissions needed"}
+            {!isAuthError && !isPermissionError && "Unable to load Microsoft 365 data"}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">{error}</p>
+        <CardContent className="space-y-4">
+          <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-950">
+            <p className="text-sm text-yellow-800 dark:text-yellow-200">
+              {error}
+            </p>
+          </div>
+          
+          {isAuthError && (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                To access your Microsoft 365 data:
+              </p>
+              <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
+                <li>Sign out of your current account</li>
+                <li>Click "Sign in with Microsoft 365"</li>
+                <li>Authorize the requested permissions</li>
+              </ol>
+            </div>
+          )}
+          
+          {isPermissionError && (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                Your IT administrator needs to:
+              </p>
+              <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
+                <li>Open Azure Portal → App registrations</li>
+                <li>Find the OberaConnect app</li>
+                <li>Navigate to API permissions</li>
+                <li>Grant admin consent for all permissions</li>
+              </ol>
+            </div>
+          )}
         </CardContent>
       </Card>
     );
