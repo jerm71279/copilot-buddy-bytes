@@ -63,15 +63,17 @@ const AdminDashboard = () => {
       return;
     }
 
-    // Check if user has admin role
-    const { data: roleData } = await supabase
+    // Check if user has Super Admin role
+    const { data: roles } = await supabase
       .from("user_roles")
-      .select("role")
-      .eq("user_id", session.user.id)
-      .eq("role", "admin")
-      .maybeSingle();
+      .select("role_id, roles(name)")
+      .eq("user_id", session.user.id);
 
-    if (!roleData) {
+    const hasAdmin = roles?.some((ur: any) => 
+      ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin'
+    );
+
+    if (!hasAdmin) {
       toast.error("Access denied: Admin privileges required");
       navigate("/");
       return;
