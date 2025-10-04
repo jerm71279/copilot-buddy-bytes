@@ -14,6 +14,118 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_interactions: {
+        Row: {
+          ai_response: string
+          confidence_score: number | null
+          conversation_id: string
+          created_at: string
+          customer_id: string
+          feedback_rating: number | null
+          id: string
+          insight_generated: boolean | null
+          interaction_type: string
+          knowledge_sources: Json | null
+          metadata: Json | null
+          user_id: string
+          user_query: string
+          was_helpful: boolean | null
+        }
+        Insert: {
+          ai_response: string
+          confidence_score?: number | null
+          conversation_id: string
+          created_at?: string
+          customer_id: string
+          feedback_rating?: number | null
+          id?: string
+          insight_generated?: boolean | null
+          interaction_type: string
+          knowledge_sources?: Json | null
+          metadata?: Json | null
+          user_id: string
+          user_query: string
+          was_helpful?: boolean | null
+        }
+        Update: {
+          ai_response?: string
+          confidence_score?: number | null
+          conversation_id?: string
+          created_at?: string
+          customer_id?: string
+          feedback_rating?: number | null
+          id?: string
+          insight_generated?: boolean | null
+          interaction_type?: string
+          knowledge_sources?: Json | null
+          metadata?: Json | null
+          user_id?: string
+          user_query?: string
+          was_helpful?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_interactions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_learning_metrics: {
+        Row: {
+          articles_created: number | null
+          avg_confidence_score: number | null
+          avg_user_rating: number | null
+          created_at: string
+          customer_id: string
+          id: string
+          improvement_rate: number | null
+          insights_generated: number | null
+          knowledge_base_size: number | null
+          metric_date: string
+          total_interactions: number | null
+          updated_at: string
+        }
+        Insert: {
+          articles_created?: number | null
+          avg_confidence_score?: number | null
+          avg_user_rating?: number | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          improvement_rate?: number | null
+          insights_generated?: number | null
+          knowledge_base_size?: number | null
+          metric_date?: string
+          total_interactions?: number | null
+          updated_at?: string
+        }
+        Update: {
+          articles_created?: number | null
+          avg_confidence_score?: number | null
+          avg_user_rating?: number | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          improvement_rate?: number | null
+          insights_generated?: number | null
+          knowledge_base_size?: number | null
+          metric_date?: string
+          total_interactions?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_learning_metrics_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       anomaly_detections: {
         Row: {
           affected_user_id: string | null

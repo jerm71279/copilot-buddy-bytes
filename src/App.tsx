@@ -22,6 +22,7 @@ import SalesDashboard from "./pages/SalesDashboard";
 import ExecutiveDashboard from "./pages/ExecutiveDashboard";
 import SOCDashboard from "./pages/SOCDashboard";
 import SharePointSync from "./pages/SharePointSync";
+import IntelligentAssistant from "./pages/IntelligentAssistant";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ApplicationsAdmin from "./pages/ApplicationsAdmin";
@@ -120,6 +121,13 @@ const App = () => (
           <Route path="/sharepoint-sync" element={
             <ProtectedRoute>
               <SharePointSync />
+            </ProtectedRoute>
+          } />
+          
+          {/* Intelligent Assistant - Protected */}
+          <Route path="/intelligent-assistant" element={
+            <ProtectedRoute>
+              <IntelligentAssistant />
             </ProtectedRoute>
           } />
           

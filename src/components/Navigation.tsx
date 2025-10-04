@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Shield, Menu, LogOut, BookOpen } from "lucide-react";
+import { Shield, Menu, LogOut, BookOpen, Brain } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -151,6 +151,12 @@ const Navigation = () => {
                     </Button>
                   </Link>
                 )}
+                <Link to="/intelligent-assistant">
+                  <Button variant="ghost" size="sm">
+                    <Brain className="h-4 w-4 mr-2" />
+                    AI Assistant
+                  </Button>
+                </Link>
                 <Button variant="ghost" size="sm" onClick={handleSignOut}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Sign Out
@@ -246,16 +252,22 @@ const Navigation = () => {
                     {isAdmin && (
                       <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
                         <Button variant="ghost" size="sm" className="justify-start w-full">
-                          Admin
-                        </Button>
-                      </Link>
-                    )}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="justify-start"
-                      onClick={handleSignOut}
-                    >
+                    Admin
+                  </Button>
+                </Link>
+              )}
+              <Link to="/intelligent-assistant" onClick={() => setIsMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="justify-start w-full">
+                  <Brain className="h-4 w-4 mr-2" />
+                  AI Assistant
+                </Button>
+              </Link>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="justify-start"
+                onClick={handleSignOut}
+              >
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
                     </Button>

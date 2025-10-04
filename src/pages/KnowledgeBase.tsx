@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, FileText, BookOpen, Lightbulb, Plus, Upload, Download, Cloud } from "lucide-react";
+import { Search, FileText, BookOpen, Lightbulb, Plus, Upload, Download, Cloud, Brain } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
 
@@ -110,6 +110,12 @@ export default function KnowledgeBase() {
 
         {/* Action Buttons */}
         <div className="flex gap-2 mb-6">
+          <Link to="/intelligent-assistant">
+            <Button size="lg" className="gap-2">
+              <Brain className="h-5 w-5" />
+              Ask AI Assistant
+            </Button>
+          </Link>
           <Button onClick={() => navigate("/knowledge/new")}>
             <Plus className="mr-2 h-4 w-4" />
             New Article
