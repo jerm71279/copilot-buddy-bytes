@@ -169,7 +169,7 @@ const AdminDashboard = () => {
           </TabsList>
 
           <TabsContent value="status">
-            <MCPServerStatus />
+            <MCPServerStatus customerId={userCustomerId} />
           </TabsContent>
 
           <TabsContent value="configure">

@@ -24,7 +24,8 @@ type MCPTool = {
   avg_execution_time_ms: number | null;
 };
 
-export default function MCPServerStatus() {
+type MCPServerStatusProps = { customerId?: string };
+export default function MCPServerStatus({ customerId }: MCPServerStatusProps) {
   const [servers, setServers] = useState<MCPServer[]>([]);
   const [tools, setTools] = useState<Record<string, MCPTool[]>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -79,15 +80,19 @@ export default function MCPServerStatus() {
         return;
       }
 
-      // Get customer_id from session
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", session.user.id)
-        .single();
+      // Resolve customer_id: use prop if provided, else lookup from profile
+      let resolvedCustomerId = customerId;
 
-      const customer_id = profile?.customer_id;
-      if (!customer_id) {
+      if (!resolvedCustomerId) {
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("customer_id")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+        resolvedCustomerId = profile?.customer_id || undefined;
+      }
+
+      if (!resolvedCustomerId) {
         toast.error("Customer profile not found");
         return;
       }
@@ -98,7 +103,7 @@ export default function MCPServerStatus() {
         body: {
           server_id: serverId,
           tool_name: toolName,
-          customer_id,
+          customer_id: resolvedCustomerId,
           user_id: session.user.id,
           input_data: {},
         },
