@@ -38,6 +38,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 /**
  * CORS headers for webhook requests
@@ -48,6 +49,12 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-signature',
 };
 
+// Input validation schema
+const webhookPayloadSchema = z.record(z.any());
+
+// Maximum payload size (1MB)
+const MAX_PAYLOAD_SIZE = 1024 * 1024;
+
 serve(async (req) => {
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
@@ -55,6 +62,15 @@ serve(async (req) => {
   }
 
   try {
+    // Check payload size
+    const contentLength = req.headers.get('content-length');
+    if (contentLength && parseInt(contentLength) > MAX_PAYLOAD_SIZE) {
+      return new Response(
+        JSON.stringify({ error: 'Payload too large. Maximum size is 1MB' }),
+        { status: 413, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Initialize Supabase client with service role (full access)
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -74,8 +90,9 @@ serve(async (req) => {
 
     console.log(`Webhook triggered: ${webhookId}`);
 
-    // Step 1: Parse webhook payload
-    const payload = await req.json();
+    // Step 1: Parse and validate webhook payload
+    const rawPayload = await req.json();
+    const payload = webhookPayloadSchema.parse(rawPayload);
     console.log('Webhook payload:', payload);
 
     // Step 2: Find and validate the trigger

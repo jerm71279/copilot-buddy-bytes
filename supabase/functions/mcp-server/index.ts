@@ -1,10 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation schema
+const mcpRequestSchema = z.object({
+  tool_name: z.string().trim().min(1, "Tool name is required").max(100, "Tool name too long"),
+  server_id: z.string().uuid("Invalid server ID format"),
+  customer_id: z.string().uuid("Invalid customer ID format"),
+  user_id: z.string().uuid("Invalid user ID format").optional(),
+  input_data: z.record(z.any()).optional(),
+});
+
+// Maximum payload size (1MB)
+const MAX_PAYLOAD_SIZE = 1024 * 1024;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -12,16 +25,25 @@ serve(async (req) => {
   }
 
   try {
+    // Check payload size
+    const contentLength = req.headers.get('content-length');
+    if (contentLength && parseInt(contentLength) > MAX_PAYLOAD_SIZE) {
+      return new Response(
+        JSON.stringify({ error: 'Payload too large. Maximum size is 1MB' }),
+        { status: 413, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { tool_name, server_id, customer_id, user_id, input_data } = await req.json();
-
-    if (!tool_name || !server_id || !customer_id) {
-      throw new Error('Missing required parameters: tool_name, server_id, customer_id');
-    }
+    const requestBody = await req.json();
+    
+    // Validate input
+    const validatedInput = mcpRequestSchema.parse(requestBody);
+    const { tool_name, server_id, customer_id, user_id, input_data } = validatedInput;
 
     const startTime = Date.now();
     let output_data: any = null;

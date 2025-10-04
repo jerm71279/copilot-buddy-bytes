@@ -9,6 +9,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
+import { z } from "zod";
+
+// Validation schemas
+const loginSchema = z.object({
+  email: z.string().trim().email("Invalid email address").max(255, "Email too long"),
+  password: z.string().min(6, "Password must be at least 6 characters").max(128, "Password too long"),
+});
+
+const signupSchema = z.object({
+  fullName: z.string().trim().min(1, "Full name is required").max(100, "Name too long"),
+  companyName: z.string().trim().min(1, "Company name is required").max(100, "Company name too long"),
+  department: z.enum(["compliance", "it", "operations", "hr", "finance", "sales", "executive"], {
+    errorMap: () => ({ message: "Please select a department" }),
+  }),
+  email: z.string().trim().email("Invalid email address").max(255, "Email too long"),
+  password: z.string().min(6, "Password must be at least 6 characters").max(128, "Password too long"),
+});
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -84,97 +101,115 @@ const Auth = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginEmail || !loginPassword) {
-      toast.error("Please fill in all fields");
-      return;
-    }
-
     setIsLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: loginEmail,
-      password: loginPassword,
-    });
 
-    if (error) {
-      toast.error(error.message);
+    try {
+      // Validate inputs
+      const validatedData = loginSchema.parse({
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email: validatedData.email,
+        password: validatedData.password,
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Logged in successfully");
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      } else {
+        toast.error("An error occurred during login");
+      }
+    } finally {
       setIsLoading(false);
-    } else {
-      toast.success("Logged in successfully");
     }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signupEmail || !signupPassword || !signupName || !signupCompany || !signupDepartment) {
-      toast.error("Please fill in all fields");
-      return;
-    }
-
     setIsLoading(true);
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { data, error } = await supabase.auth.signUp({
-      email: signupEmail,
-      password: signupPassword,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          full_name: signupName,
-          company_name: signupCompany,
+
+    try {
+      // Validate inputs
+      const validatedData = signupSchema.parse({
+        fullName: signupName,
+        companyName: signupCompany,
+        department: signupDepartment,
+        email: signupEmail,
+        password: signupPassword,
+      });
+
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: validatedData.email,
+        password: validatedData.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: validatedData.fullName,
+            company_name: validatedData.companyName,
+          }
         }
-      }
-    });
+      });
 
-    if (error) {
-      toast.error(error.message);
-      setIsLoading(false);
-    } else if (data.user) {
-      // Create customer record
-      const { data: customerData, error: customerError } = await supabase
-        .from("customers")
-        .insert({
-          user_id: data.user.id,
-          contact_name: signupName,
-          company_name: signupCompany,
-          email: signupEmail,
-        })
-        .select()
-        .single();
-
-      if (customerError) {
-        console.error("Error creating customer record:", customerError);
-      }
-
-      // Create customer customization with default settings
-      if (customerData) {
-        const { error: customizationError } = await supabase
-          .from("customer_customizations")
+      if (error) throw error;
+      
+      if (data.user) {
+        // Create customer record
+        const { data: customerData, error: customerError } = await supabase
+          .from("customers")
           .insert({
-            customer_id: customerData.id,
-            enabled_features: ["dashboard", "integrations", "compliance", "ml_insights"],
-            default_dashboard: signupDepartment,
+            user_id: data.user.id,
+            contact_name: validatedData.fullName,
+            company_name: validatedData.companyName,
+            email: validatedData.email,
+          })
+          .select()
+          .single();
+
+        if (customerError) throw customerError;
+
+        // Create customer customization
+        if (customerData) {
+          const { error: customizationError } = await supabase
+            .from("customer_customizations")
+            .insert({
+              customer_id: customerData.id,
+              enabled_features: ["dashboard", "integrations", "compliance", "ml_insights"],
+              default_dashboard: validatedData.department,
+            });
+
+          if (customizationError) throw customizationError;
+        }
+
+        // Create user profile
+        const { error: profileError } = await supabase
+          .from("user_profiles")
+          .insert({
+            user_id: data.user.id,
+            full_name: validatedData.fullName,
+            department: validatedData.department,
+            customer_id: customerData?.id || null
           });
 
-        if (customizationError) {
-          console.error("Error creating customization:", customizationError);
-        }
+        if (profileError) throw profileError;
+
+        toast.success("Account created successfully! Redirecting to your dashboard...");
       }
-
-      // Create user profile with selected department
-      const { error: profileError } = await supabase
-        .from("user_profiles")
-        .insert({
-          user_id: data.user.id,
-          full_name: signupName,
-          department: signupDepartment,
-          customer_id: customerData?.id || null
-        });
-
-      if (profileError) {
-        console.error("Error creating profile:", profileError);
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      } else {
+        toast.error(error.message || "An error occurred during signup");
       }
-
-      toast.success("Account created successfully! Redirecting to your dashboard...");
+    } finally {
       setIsLoading(false);
     }
   };

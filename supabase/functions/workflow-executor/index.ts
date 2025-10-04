@@ -36,6 +36,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 /**
  * CORS headers for cross-origin requests from web app
@@ -46,6 +47,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Input validation schema
+const executeWorkflowSchema = z.object({
+  workflow_id: z.string().uuid('Invalid workflow ID format'),
+  trigger_data: z.record(z.any()).optional(),
+  triggered_by: z.string().max(50, 'Triggered by value too long').optional(),
+});
+
+// Maximum payload size (1MB)
+const MAX_PAYLOAD_SIZE = 1024 * 1024;
+
 serve(async (req) => {
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
@@ -53,13 +64,24 @@ serve(async (req) => {
   }
 
   try {
+    // Check payload size
+    const contentLength = req.headers.get('content-length');
+    if (contentLength && parseInt(contentLength) > MAX_PAYLOAD_SIZE) {
+      return new Response(
+        JSON.stringify({ error: 'Payload too large. Maximum size is 1MB' }),
+        { status: 413, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Initialize Supabase client with service role (full access)
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Parse request payload
-    const { workflow_id, trigger_data, triggered_by = 'manual' } = await req.json();
+    // Parse and validate request payload
+    const requestBody = await req.json();
+    const validatedInput = executeWorkflowSchema.parse(requestBody);
+    const { workflow_id, trigger_data, triggered_by = 'manual' } = validatedInput;
 
     // Validation: workflow_id is required
     if (!workflow_id) {

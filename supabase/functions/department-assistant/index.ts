@@ -1,10 +1,24 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Input validation schema
+const assistantRequestSchema = z.object({
+  department: z.string().trim().min(1, "Department is required").max(50, "Department name too long"),
+  query: z.string().trim().min(1, "Query is required").max(2000, "Query too long"),
+  conversationHistory: z.array(z.object({
+    role: z.enum(["user", "assistant", "system"]),
+    content: z.string(),
+  })).optional(),
+});
+
+// Maximum payload size (2MB)
+const MAX_PAYLOAD_SIZE = 2 * 1024 * 1024;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -12,14 +26,20 @@ serve(async (req) => {
   }
 
   try {
-    const { department, query, conversationHistory = [] } = await req.json();
-    
-    if (!department || !query) {
+    // Check payload size
+    const contentLength = req.headers.get("content-length");
+    if (contentLength && parseInt(contentLength) > MAX_PAYLOAD_SIZE) {
       return new Response(
-        JSON.stringify({ error: "Department and query are required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: "Payload too large. Maximum size is 2MB" }),
+        { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    const requestBody = await req.json();
+    
+    // Validate input
+    const validatedInput = assistantRequestSchema.parse(requestBody);
+    const { department, query, conversationHistory = [] } = validatedInput;
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;

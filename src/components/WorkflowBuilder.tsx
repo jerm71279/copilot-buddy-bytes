@@ -31,6 +31,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Save, Play, GitBranch, Clock, Webhook } from "lucide-react";
+import { z } from "zod";
+
+// Validation schemas
+const workflowSchema = z.object({
+  workflow_name: z.string().trim().min(1, "Workflow name is required").max(100, "Name too long"),
+  description: z.string().trim().max(500, "Description too long").optional(),
+});
+
+const stepSchema = z.object({
+  step_name: z.string().trim().min(1, "Step name is required").max(100, "Step name too long"),
+  step_type: z.enum(["api_call", "data_transform", "condition", "notification", "database_operation", "delay", "loop"], {
+    errorMap: () => ({ message: "Invalid step type" }),
+  }),
+  config: z.record(z.any()).optional(),
+});
 
 /**
  * Represents a single step in the workflow execution chain
@@ -167,30 +182,45 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
    * 4. Reset form on success
    */
   const saveWorkflow = async () => {
-    // Validation: workflow must have a name
-    if (!workflowName.trim()) {
-      toast.error("Please enter a workflow name");
-      return;
-    }
-
-    // Validation: workflow must have at least one step
-    if (steps.length === 0) {
-      toast.error("Please add at least one step");
-      return;
-    }
-
     try {
+      // Validate workflow data
+      const validatedWorkflow = workflowSchema.parse({
+        workflow_name: workflowName,
+        description: description || undefined,
+      });
+
+      // Validation: workflow must have at least one step
+      if (steps.length === 0) {
+        toast.error("Please add at least one step");
+        return;
+      }
+
+      // Validate all steps
+      steps.forEach((step, index) => {
+        try {
+          stepSchema.parse({
+            step_name: step.name,
+            step_type: step.type,
+            config: step.config,
+          });
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            throw new Error(`Step ${index + 1}: ${error.errors[0].message}`);
+          }
+        }
+      });
+
       // Step 1: Save workflow definition
       const { data: workflow, error: workflowError } = await supabase
         .from("workflows")
         .insert({
           customer_id: customerId,
-          workflow_name: workflowName,
-          description: description,
-          steps: steps as any,                                    // JSONB column
-          systems_involved: [...new Set(steps.map(s => s.type))], // Unique step types
+          workflow_name: validatedWorkflow.workflow_name,
+          description: validatedWorkflow.description || null,
+          steps: steps as any,
+          systems_involved: [...new Set(steps.map(s => s.type))],
           workflow_type: triggers.length > 0 ? triggers[0].trigger_type : "manual",
-          is_active: true                                         // Active by default
+          is_active: true
         })
         .select()
         .single();
@@ -199,7 +229,6 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
 
       // Step 2: Save trigger configurations (if any)
       if (triggers.length > 0) {
-        // Add workflow_id and customer_id to each trigger
         const triggersToInsert = triggers.map(t => ({
           workflow_id: workflow.id,
           customer_id: customerId,
@@ -215,14 +244,17 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
 
       toast.success("Workflow saved successfully!");
       
-      // Step 3: Reset form for next workflow creation
+      // Step 3: Reset form
       setWorkflowName("");
       setDescription("");
       setSteps([]);
       setTriggers([]);
     } catch (error: any) {
-      console.error("Error saving workflow:", error);
-      toast.error(`Failed to save workflow: ${error.message}`);
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      } else {
+        toast.error(error.message || "Failed to save workflow");
+      }
     }
   };
 
