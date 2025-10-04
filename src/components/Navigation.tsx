@@ -109,12 +109,38 @@ const Navigation = () => {
               Integrations
             </Link>
             {isLoggedIn && (
-              <Link 
-                to="/knowledge"
-                className="text-sm font-medium hover:text-accent transition-colors"
-              >
-                Knowledge
-              </Link>
+              <>
+                <Link 
+                  to="/knowledge"
+                  className="text-sm font-medium hover:text-accent transition-colors"
+                >
+                  Knowledge
+                </Link>
+                <Link 
+                  to="/onboarding"
+                  className="text-sm font-medium hover:text-accent transition-colors"
+                >
+                  Onboarding
+                </Link>
+                <Link 
+                  to="/compliance"
+                  className="text-sm font-medium hover:text-accent transition-colors"
+                >
+                  Compliance
+                </Link>
+                <Link 
+                  to="/workflows"
+                  className="text-sm font-medium hover:text-accent transition-colors"
+                >
+                  Workflows
+                </Link>
+                <Link 
+                  to="/ninjaone"
+                  className="text-sm font-medium hover:text-accent transition-colors"
+                >
+                  Monitoring
+                </Link>
+              </>
             )}
             <button
               onClick={() => scrollToSection('case-study')}
@@ -216,13 +242,43 @@ const Navigation = () => {
                 Integrations
               </Link>
               {isLoggedIn && (
-                <Link 
-                  to="/knowledge"
-                  className="text-sm font-medium hover:text-accent transition-colors py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Knowledge
-                </Link>
+                <>
+                  <Link 
+                    to="/knowledge"
+                    className="text-sm font-medium hover:text-accent transition-colors py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Knowledge
+                  </Link>
+                  <Link 
+                    to="/onboarding"
+                    className="text-sm font-medium hover:text-accent transition-colors py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Onboarding
+                  </Link>
+                  <Link 
+                    to="/compliance"
+                    className="text-sm font-medium hover:text-accent transition-colors py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Compliance
+                  </Link>
+                  <Link 
+                    to="/workflows"
+                    className="text-sm font-medium hover:text-accent transition-colors py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Workflows
+                  </Link>
+                  <Link 
+                    to="/ninjaone"
+                    className="text-sm font-medium hover:text-accent transition-colors py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Monitoring
+                  </Link>
+                </>
               )}
               <button
                 onClick={() => scrollToSection('case-study')}

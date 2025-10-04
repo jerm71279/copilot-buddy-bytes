@@ -26,6 +26,11 @@ import IntelligentAssistant from "./pages/IntelligentAssistant";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ApplicationsAdmin from "./pages/ApplicationsAdmin";
+import OnboardingDashboard from "./pages/OnboardingDashboard";
+import OnboardingTemplates from "./pages/OnboardingTemplates";
+import CompliancePortal from "./pages/CompliancePortal";
+import WorkflowAutomation from "./pages/WorkflowAutomation";
+import NinjaOneIntegration from "./pages/NinjaOneIntegration";
 
 const queryClient = new QueryClient();
 
@@ -135,6 +140,39 @@ const App = () => (
           <Route path="/admin/applications" element={
             <ProtectedRoute requireAdmin>
               <ApplicationsAdmin />
+            </ProtectedRoute>
+          } />
+          
+          {/* Onboarding - Protected */}
+          <Route path="/onboarding" element={
+            <ProtectedRoute>
+              <OnboardingDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/onboarding/templates" element={
+            <ProtectedRoute>
+              <OnboardingTemplates />
+            </ProtectedRoute>
+          } />
+          
+          {/* Compliance - Protected */}
+          <Route path="/compliance" element={
+            <ProtectedRoute>
+              <CompliancePortal />
+            </ProtectedRoute>
+          } />
+          
+          {/* Workflow Automation - Protected */}
+          <Route path="/workflows" element={
+            <ProtectedRoute>
+              <WorkflowAutomation />
+            </ProtectedRoute>
+          } />
+          
+          {/* NinjaOne Integration - Protected */}
+          <Route path="/ninjaone" element={
+            <ProtectedRoute>
+              <NinjaOneIntegration />
             </ProtectedRoute>
           } />
           
