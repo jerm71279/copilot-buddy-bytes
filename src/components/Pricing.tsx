@@ -68,7 +68,7 @@ const Pricing = () => {
   const handleCTAClick = (planName: string) => {
     if (planName === "Enterprise") {
       // Scroll to contact section or open email
-      window.location.href = "mailto:sales@complianceos.com?subject=Enterprise Plan Inquiry";
+      window.location.href = "mailto:sales@oberaconnect.com?subject=Enterprise Plan Inquiry";
     } else {
       navigate('/auth');
     }

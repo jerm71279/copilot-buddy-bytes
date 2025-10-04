@@ -85,7 +85,7 @@ const Navigation = () => {
             <div className="w-8 h-8 rounded-lg bg-gradient-accent flex items-center justify-center">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold">ComplianceOS</span>
+            <span className="text-xl font-bold">OberaConnect</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -126,10 +126,16 @@ const Navigation = () => {
           <div className="hidden md:flex items-center gap-3">
             {isLoggedIn ? (
               <>
-                {isAdmin && (
+                {isAdmin ? (
                   <Link to="/admin">
                     <Button variant="ghost" size="sm">
-                      Admin
+                      Internal Portal
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to="/portal">
+                    <Button variant="ghost" size="sm">
+                      My Portal
                     </Button>
                   </Link>
                 )}
@@ -147,7 +153,7 @@ const Navigation = () => {
                 </Link>
                 <Link to="/auth">
                   <Button variant="ghost" size="sm">
-                    Sign In
+                    Client Login
                   </Button>
                 </Link>
                 <Link to="/auth">
@@ -206,10 +212,16 @@ const Navigation = () => {
               <div className="flex flex-col gap-2 pt-3 border-t border-border">
                 {isLoggedIn ? (
                   <>
-                    {isAdmin && (
+                    {isAdmin ? (
                       <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
                         <Button variant="ghost" size="sm" className="justify-start w-full">
-                          Admin
+                          Internal Portal
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Link to="/portal" onClick={() => setIsMenuOpen(false)}>
+                        <Button variant="ghost" size="sm" className="justify-start w-full">
+                          My Portal
                         </Button>
                       </Link>
                     )}
@@ -232,7 +244,7 @@ const Navigation = () => {
                     </Link>
                     <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
                       <Button variant="ghost" size="sm" className="justify-start w-full">
-                        Sign In
+                        Client Login
                       </Button>
                     </Link>
                     <Link to="/auth" onClick={() => setIsMenuOpen(false)}>

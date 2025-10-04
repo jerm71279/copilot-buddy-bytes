@@ -32,10 +32,10 @@ const Footer = () => {
               <div className="w-8 h-8 rounded-lg bg-gradient-accent flex items-center justify-center">
                 <Shield className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-bold">ComplianceOS</span>
+              <span className="text-xl font-bold">OberaConnect</span>
             </div>
             <p className="text-sm text-primary-foreground/70">
-              Full-stack compliance platform that molds to your business.
+              Enterprise operational intelligence platform for modern businesses.
             </p>
           </div>
 
@@ -91,7 +91,7 @@ const Footer = () => {
 
         <div className="pt-8 border-t border-primary-foreground/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/70">
-            <p>© {currentYear} ComplianceOS. All rights reserved.</p>
+            <p>© {currentYear} OberaConnect. All rights reserved.</p>
             <div className="flex gap-6">
               <a href="#privacy" className="hover:text-primary-foreground transition-colors">Privacy Policy</a>
               <a href="#terms" className="hover:text-primary-foreground transition-colors">Terms of Service</a>

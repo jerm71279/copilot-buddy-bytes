@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import Auth from "./pages/Auth";
 import DemoSelector from "./pages/DemoSelector";
+import CustomerPortal from "./pages/CustomerPortal";
 import AdminDashboard from "./pages/AdminDashboard";
 import ComplianceDashboard from "./pages/ComplianceDashboard";
 import ITDashboard from "./pages/ITDashboard";
@@ -16,6 +17,7 @@ import FinanceDashboard from "./pages/FinanceDashboard";
 import SalesDashboard from "./pages/SalesDashboard";
 import ExecutiveDashboard from "./pages/ExecutiveDashboard";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -30,14 +32,56 @@ const App = () => (
           <Route path="/integrations" element={<IntegrationsPage />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/demo" element={<DemoSelector />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/dashboard/compliance" element={<ComplianceDashboard />} />
-          <Route path="/dashboard/it" element={<ITDashboard />} />
-          <Route path="/dashboard/operations" element={<OperationsDashboard />} />
-          <Route path="/dashboard/hr" element={<HRDashboard />} />
-          <Route path="/dashboard/finance" element={<FinanceDashboard />} />
-          <Route path="/dashboard/sales" element={<SalesDashboard />} />
-          <Route path="/dashboard/executive" element={<ExecutiveDashboard />} />
+          
+          {/* Customer Portal - Protected but no admin required */}
+          <Route path="/portal" element={
+            <ProtectedRoute>
+              <CustomerPortal />
+            </ProtectedRoute>
+          } />
+          
+          {/* Internal OberaConnect Dashboards - Admin Only */}
+          <Route path="/admin" element={
+            <ProtectedRoute requireAdmin>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/compliance" element={
+            <ProtectedRoute requireAdmin>
+              <ComplianceDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/it" element={
+            <ProtectedRoute requireAdmin>
+              <ITDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/operations" element={
+            <ProtectedRoute requireAdmin>
+              <OperationsDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/hr" element={
+            <ProtectedRoute requireAdmin>
+              <HRDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/finance" element={
+            <ProtectedRoute requireAdmin>
+              <FinanceDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/sales" element={
+            <ProtectedRoute requireAdmin>
+              <SalesDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/executive" element={
+            <ProtectedRoute requireAdmin>
+              <ExecutiveDashboard />
+            </ProtectedRoute>
+          } />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

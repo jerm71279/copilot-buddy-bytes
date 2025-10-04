@@ -34,11 +34,12 @@ const CallToAction = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Become Your Team's Daily Portal?
+            Ready to Transform Your Operations?
           </h2>
           <p className="text-xl text-white/90 mb-12 max-w-2xl mx-auto">
-            Join forward-thinking MSP companies like OberaConnect and over 100 enterprises giving employees one login for all systems while capturing 
-            behavioral intelligence that predicts problems, optimizes workflows, and maintains compliance automatically.
+            Join forward-thinking enterprises using OberaConnect to unify system access, capture 
+            behavioral intelligence, and maintain compliance automatically. One login for your team, 
+            unlimited insights for your business.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">

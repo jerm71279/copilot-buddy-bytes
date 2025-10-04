@@ -45,9 +45,10 @@ const Hero = () => {
 
           {/* Subheading */}
           <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Your employees log in once and access every system—SAP, Workday, Salesforce, ServiceNow. 
-            While they work, our ML platform learns from every action to predict problems, optimize workflows, 
-            and maintain compliance. More users = smarter predictions. Trusted by OberaConnect and over 100 enterprises.
+            OberaConnect delivers enterprise-grade operational intelligence through unified system access. 
+            Your team logs in once to access SAP, Workday, Salesforce, ServiceNow, and more. 
+            Our ML platform learns from every action to predict problems, optimize workflows, 
+            and maintain compliance across your entire organization.
           </p>
 
           {/* CTA Buttons */}
