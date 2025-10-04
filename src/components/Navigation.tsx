@@ -30,8 +30,17 @@ const Navigation = () => {
         .select("role_id, roles(name)")
         .eq("user_id", session.user.id);
       
-      // Check if user has Super Admin role
-      const hasAdmin = roles?.some((ur: any) => ur.roles?.name === 'Super Admin');
+      let hasAdmin = roles?.some((ur: any) => ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin');
+
+      // Fallback to secure function if join returns nothing
+      if (!hasAdmin) {
+        const { data: rpcHasAdmin } = await supabase.rpc('has_role', {
+          _user_id: session.user.id,
+          _role: 'admin'
+        });
+        hasAdmin = !!rpcHasAdmin;
+      }
+
       setIsAdmin(!!hasAdmin);
     } else {
       setIsAdmin(false);

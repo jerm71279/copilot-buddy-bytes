@@ -56,13 +56,22 @@ const Auth = () => {
   }, [navigate]);
 
   const redirectToDepartmentDashboard = async (userId: string) => {
-    // Check if user has Super Admin role
+    // Check if user has Super Admin/Admin role
     const { data: roles } = await supabase
       .from("user_roles")
       .select("role_id, roles(name)")
       .eq("user_id", userId);
 
-    const hasAdmin = roles?.some((ur: any) => ur.roles?.name === 'Super Admin');
+    let hasAdmin = roles?.some((ur: any) => ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin');
+
+    if (!hasAdmin) {
+      const { data: rpcHasAdmin } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'admin'
+      });
+      hasAdmin = !!rpcHasAdmin;
+    }
+
     if (hasAdmin) {
       navigate("/admin");
       return;

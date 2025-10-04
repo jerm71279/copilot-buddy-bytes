@@ -63,15 +63,21 @@ const AdminDashboard = () => {
       return;
     }
 
-    // Check if user has Super Admin role
+    // Check if user has admin role
     const { data: roles } = await supabase
       .from("user_roles")
       .select("role_id, roles(name)")
       .eq("user_id", session.user.id);
 
-    const hasAdmin = roles?.some((ur: any) => 
-      ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin'
-    );
+    let hasAdmin = roles?.some((ur: any) => ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin');
+
+    if (!hasAdmin) {
+      const { data: rpcHasAdmin } = await supabase.rpc('has_role', {
+        _user_id: session.user.id,
+        _role: 'admin'
+      });
+      hasAdmin = !!rpcHasAdmin;
+    }
 
     if (!hasAdmin) {
       toast.error("Access denied: Admin privileges required");
