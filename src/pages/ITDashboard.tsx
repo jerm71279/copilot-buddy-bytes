@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { LogOut, Server, Activity, AlertCircle, Zap } from "lucide-react";
+import { LogOut, Server, Activity, AlertCircle, Zap, Shield } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
@@ -151,6 +151,21 @@ const ITDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Security Operations</CardTitle>
+            <CardDescription>Access advanced security monitoring and threat detection</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to="/dashboard/soc">
+              <Button className="w-full" variant="outline" size="lg">
+                <Shield className="h-5 w-5 mr-2" />
+                Open Security Operations Center (SOC)
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
 
         <MCPServerStatus filterByServerType="it" />
 

@@ -20,6 +20,7 @@ import HRDashboard from "./pages/HRDashboard";
 import FinanceDashboard from "./pages/FinanceDashboard";
 import SalesDashboard from "./pages/SalesDashboard";
 import ExecutiveDashboard from "./pages/ExecutiveDashboard";
+import SOCDashboard from "./pages/SOCDashboard";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ApplicationsAdmin from "./pages/ApplicationsAdmin";
@@ -106,6 +107,11 @@ const App = () => (
           <Route path="/dashboard/executive" element={
             <ProtectedRoute requireAdmin>
               <ExecutiveDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/soc" element={
+            <ProtectedRoute requireAdmin>
+              <SOCDashboard />
             </ProtectedRoute>
           } />
           
