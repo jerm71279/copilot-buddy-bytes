@@ -1699,6 +1699,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_integration_credential: {
+        Args: { _customer_id: string; _integration_id: string }
+        Returns: {
+          credential_type: string
+          customer_id: string
+          encrypted_data: string
+          expires_at: string
+          id: string
+          integration_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
