@@ -42,13 +42,22 @@ const FinanceDashboard = () => {
       return;
     }
 
+    // Check if user has admin role
+    const { data: adminRole } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", session.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("*")
       .eq("user_id", session.user.id)
       .maybeSingle();
 
-    if (!profile || profile.department !== "finance") {
+    // Allow access if user is admin OR has correct department
+    if (!adminRole && (!profile || profile.department !== "finance")) {
       toast.error("Access denied: Finance department access required");
       navigate("/");
       return;

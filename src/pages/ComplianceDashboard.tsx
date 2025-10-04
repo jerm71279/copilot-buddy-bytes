@@ -43,13 +43,22 @@ const ComplianceDashboard = () => {
       return;
     }
 
+    // Check if user has admin role
+    const { data: adminRole } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", session.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("*")
       .eq("user_id", session.user.id)
       .maybeSingle();
 
-    if (!profile || profile.department !== "compliance") {
+    // Allow access if user is admin OR has correct department
+    if (!adminRole && (!profile || profile.department !== "compliance")) {
       toast.error("Access denied: Compliance department access required");
       navigate("/");
       return;
