@@ -26,27 +26,42 @@ const CustomerPortal = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      // Get customer profile
+      // Get user profile (may not have customer_id yet)
       const { data: profile } = await supabase
         .from("user_profiles")
-        .select("*, customers(*)")
+        .select("*")
         .eq("user_id", session.user.id)
         .single();
 
-      setCustomerData(profile);
-
+      // If profile has customer_id, fetch customer data
+      let customerInfo = null;
       if (profile?.customer_id) {
-        // Load recent knowledge articles
-        const { data: articles } = await supabase
-          .from("knowledge_articles")
+        const { data: customer } = await supabase
+          .from("customers")
           .select("*")
-          .eq("status", "published")
-          .order("updated_at", { ascending: false })
-          .limit(5);
+          .eq("id", profile.customer_id)
+          .single();
+        customerInfo = customer;
+      }
 
-        setRecentArticles(articles || []);
+      // Set combined data
+      setCustomerData({
+        ...profile,
+        customers: customerInfo
+      });
 
-        // Load recent workflow executions
+      // Load recent knowledge articles
+      const { data: articles } = await supabase
+        .from("knowledge_articles")
+        .select("*")
+        .eq("status", "published")
+        .order("updated_at", { ascending: false })
+        .limit(5);
+
+      setRecentArticles(articles || []);
+
+      // Load recent workflow executions (only if customer_id exists)
+      if (profile?.customer_id) {
         const { data: workflows } = await supabase
           .from("workflow_executions")
           .select("*")
@@ -108,7 +123,7 @@ const CustomerPortal = () => {
                   My Workspace
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  {customerData?.customers?.company_name}
+                  {customerData?.customers?.company_name || 'OberaConnect'}
                 </p>
               </div>
             </div>
@@ -141,7 +156,7 @@ const CustomerPortal = () => {
             {/* Welcome Section */}
             <div className="mb-8">
               <h2 className="text-3xl font-bold mb-2">
-                Welcome back, {customerData?.first_name || "Employee"}
+                Welcome back, {customerData?.full_name || "User"}
               </h2>
               <p className="text-muted-foreground">
                 Access your tools, knowledge, and insights all in one place
