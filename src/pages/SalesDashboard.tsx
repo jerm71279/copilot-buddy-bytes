@@ -9,6 +9,9 @@ import { toast } from "sonner";
 import { LogOut, TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import MCPServerStatus from "@/components/MCPServerStatus";
+import { MCPServerConfig } from "@/components/MCPServerConfig";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SalesDashboard = () => {
   const navigate = useNavigate();
@@ -22,6 +25,8 @@ const SalesDashboard = () => {
     conversionRate: 32,
     monthlyGrowth: 18
   });
+  const [hasPamAccess, setHasPamAccess] = useState(false);
+  const [customerId, setCustomerId] = useState<string>("demo-customer");
 
   useEffect(() => {
     checkAccess();
@@ -30,7 +35,9 @@ const SalesDashboard = () => {
   const checkAccess = async () => {
     // Skip authentication in preview mode
     if (isPreviewMode) {
-      setUserProfile({ full_name: "Demo User", department: "sales" });
+      setUserProfile({ full_name: "Demo User", department: "sales", customer_id: "demo-customer" });
+      setCustomerId("demo-customer");
+      setHasPamAccess(true);
       setIsLoading(false);
       return;
     }
@@ -55,6 +62,19 @@ const SalesDashboard = () => {
     }
 
     setUserProfile(profile);
+    if (profile?.customer_id) {
+      setCustomerId(profile.customer_id);
+      
+      // Check if customer has PAM enabled
+      const { data: customization } = await supabase
+        .from("customer_customizations")
+        .select("enabled_features")
+        .eq("customer_id", profile.customer_id)
+        .maybeSingle();
+      
+      const enabledFeatures = (customization?.enabled_features as string[]) || [];
+      setHasPamAccess(enabledFeatures.includes("pam") || enabledFeatures.includes("privileged_access"));
+    }
     setIsLoading(false);
   };
 
@@ -307,6 +327,32 @@ const SalesDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* PAM Section */}
+        {hasPamAccess && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Privileged Access Management</CardTitle>
+              <CardDescription>Configure MCP servers for sales system access</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="status" className="space-y-4">
+                <TabsList>
+                  <TabsTrigger value="status">Server Status</TabsTrigger>
+                  <TabsTrigger value="configure">Configure Server</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="status">
+                  <MCPServerStatus />
+                </TabsContent>
+                
+                <TabsContent value="configure">
+                  <MCPServerConfig customerId={customerId} />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        )}
 
         {/* AI Assistant */}
         <DepartmentAIAssistant department="sales" departmentLabel="Sales" />

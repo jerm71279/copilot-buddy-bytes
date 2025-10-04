@@ -7,8 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { LogOut, Server, Activity, AlertCircle, Zap } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import { MCPServerConfig } from "@/components/MCPServerConfig";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ITDashboard = () => {
   const navigate = useNavigate();
@@ -21,6 +23,8 @@ const ITDashboard = () => {
     mcpServers: 0,
     anomalies: 0
   });
+  const [hasPamAccess, setHasPamAccess] = useState(false);
+  const [customerId, setCustomerId] = useState<string>("demo-customer");
 
   useEffect(() => {
     checkAccess();
@@ -28,7 +32,9 @@ const ITDashboard = () => {
 
   const checkAccess = async () => {
     if (isPreviewMode) {
-      setUserProfile({ full_name: "Demo User", department: "it" });
+      setUserProfile({ full_name: "Demo User", department: "it", customer_id: "demo-customer" });
+      setCustomerId("demo-customer");
+      setHasPamAccess(true);
       await fetchStats();
       setIsLoading(false);
       return;
@@ -54,6 +60,19 @@ const ITDashboard = () => {
     }
 
     setUserProfile(profile);
+    if (profile?.customer_id) {
+      setCustomerId(profile.customer_id);
+      
+      // Check if customer has PAM enabled
+      const { data: customization } = await supabase
+        .from("customer_customizations")
+        .select("enabled_features")
+        .eq("customer_id", profile.customer_id)
+        .maybeSingle();
+      
+      const enabledFeatures = (customization?.enabled_features as string[]) || [];
+      setHasPamAccess(enabledFeatures.includes("pam") || enabledFeatures.includes("privileged_access"));
+    }
     await fetchStats();
     setIsLoading(false);
   };
@@ -154,7 +173,30 @@ const ITDashboard = () => {
           </Card>
         </div>
 
-        <MCPServerStatus />
+        {hasPamAccess && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Privileged Access Management</CardTitle>
+              <CardDescription>Configure MCP servers for IT system access</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="status" className="space-y-4">
+                <TabsList>
+                  <TabsTrigger value="status">Server Status</TabsTrigger>
+                  <TabsTrigger value="configure">Configure Server</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="status">
+                  <MCPServerStatus />
+                </TabsContent>
+                
+                <TabsContent value="configure">
+                  <MCPServerConfig customerId={customerId} />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>

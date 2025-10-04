@@ -9,6 +9,9 @@ import { toast } from "sonner";
 import { LogOut, DollarSign, Users, TrendingUp, CreditCard } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import MCPServerStatus from "@/components/MCPServerStatus";
+import { MCPServerConfig } from "@/components/MCPServerConfig";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const FinanceDashboard = () => {
   const navigate = useNavigate();
@@ -22,6 +25,8 @@ const FinanceDashboard = () => {
     mrr: "$45,200",
     growth: "+12.3%"
   });
+  const [hasPamAccess, setHasPamAccess] = useState(false);
+  const [customerId, setCustomerId] = useState<string>("demo-customer");
 
   useEffect(() => {
     checkAccess();
@@ -29,7 +34,9 @@ const FinanceDashboard = () => {
 
   const checkAccess = async () => {
     if (isPreviewMode) {
-      setUserProfile({ full_name: "Demo User", department: "finance" });
+      setUserProfile({ full_name: "Demo User", department: "finance", customer_id: "demo-customer" });
+      setCustomerId("demo-customer");
+      setHasPamAccess(true);
       await fetchStats();
       setIsLoading(false);
       return;
@@ -55,6 +62,19 @@ const FinanceDashboard = () => {
     }
 
     setUserProfile(profile);
+    if (profile?.customer_id) {
+      setCustomerId(profile.customer_id);
+      
+      // Check if customer has PAM enabled
+      const { data: customization } = await supabase
+        .from("customer_customizations")
+        .select("enabled_features")
+        .eq("customer_id", profile.customer_id)
+        .maybeSingle();
+      
+      const enabledFeatures = (customization?.enabled_features as string[]) || [];
+      setHasPamAccess(enabledFeatures.includes("pam") || enabledFeatures.includes("privileged_access"));
+    }
     await fetchStats();
     setIsLoading(false);
   };
@@ -191,6 +211,31 @@ const FinanceDashboard = () => {
             </Table>
           </CardContent>
         </Card>
+
+        {hasPamAccess && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Privileged Access Management</CardTitle>
+              <CardDescription>Configure MCP servers for financial system access</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="status" className="space-y-4">
+                <TabsList>
+                  <TabsTrigger value="status">Server Status</TabsTrigger>
+                  <TabsTrigger value="configure">Configure Server</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="status">
+                  <MCPServerStatus />
+                </TabsContent>
+                
+                <TabsContent value="configure">
+                  <MCPServerConfig customerId={customerId} />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        )}
 
         <DepartmentAIAssistant 
           department="finance" 
