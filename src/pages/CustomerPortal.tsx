@@ -6,6 +6,7 @@ import { Shield, Activity, Clock, FileText, BookOpen, Workflow, BarChart3, Setti
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
 import EmployeeToolbar from "@/components/EmployeeToolbar";
+import ExternalSystemsBar from "@/components/ExternalSystemsBar";
 
 const CustomerPortal = () => {
   const navigate = useNavigate();
@@ -123,6 +124,9 @@ const CustomerPortal = () => {
 
       {/* Employee System Toolbar */}
       <EmployeeToolbar />
+
+      {/* External Systems Bar */}
+      <ExternalSystemsBar />
 
       <div className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
