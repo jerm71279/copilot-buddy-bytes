@@ -52,6 +52,7 @@ interface WorkflowExecution {
 export const WorkflowExecutionHistory = ({ customerId }: { customerId: string }) => {
   const [executions, setExecutions] = useState<WorkflowExecution[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isDemoMode = customerId === "demo-customer";
 
   /**
    * Load execution history on component mount and when customer changes
@@ -71,6 +72,12 @@ export const WorkflowExecutionHistory = ({ customerId }: { customerId: string })
    * - Sets empty array as fallback
    */
   const fetchExecutions = async () => {
+    // Skip database queries in demo mode
+    if (isDemoMode) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("workflow_executions")

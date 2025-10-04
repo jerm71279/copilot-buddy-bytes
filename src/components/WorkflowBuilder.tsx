@@ -182,6 +182,12 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
    * 4. Reset form on success
    */
   const saveWorkflow = async () => {
+    // Prevent saving in demo mode
+    if (customerId === "demo-customer") {
+      toast.error("Cannot save workflows in demo mode");
+      return;
+    }
+
     try {
       // Validate workflow data
       const validatedWorkflow = workflowSchema.parse({

@@ -66,6 +66,7 @@ export const WorkflowTriggerManager = ({ customerId }: { customerId: string }) =
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [triggers, setTriggers] = useState<Trigger[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isDemoMode = customerId === "demo-customer";
 
   /**
    * Load workflows and triggers on component mount and when customer changes
@@ -93,6 +94,12 @@ export const WorkflowTriggerManager = ({ customerId }: { customerId: string }) =
    * - Sets empty arrays as fallback
    */
   const fetchData = async () => {
+    // Skip database queries in demo mode
+    if (isDemoMode) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const [workflowsData, triggersData] = await Promise.all([
         supabase
