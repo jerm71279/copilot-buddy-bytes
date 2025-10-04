@@ -14,7 +14,8 @@ import {
   Briefcase,
   CreditCard,
   Shield,
-  Home
+  Home,
+  DollarSign
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,6 +44,7 @@ const EmployeeToolbar = () => {
     { name: "Documents", icon: FileText, path: "/knowledge", description: "Shared documents and files" },
     { name: "IT Support", icon: Headphones, path: "/dashboard/it", description: "Help desk and IT support" },
     { name: "Finance", icon: CreditCard, path: "/dashboard/finance", description: "Expenses and reimbursements" },
+    { name: "Revio", icon: DollarSign, path: "/dashboard/sales", description: "Customer billing and revenue" },
     { name: "Compliance", icon: Shield, path: "/dashboard/compliance", description: "Training and certifications" },
     { name: "Analytics", icon: BarChart3, path: "/analytics", description: "Reports and insights" },
   ];
