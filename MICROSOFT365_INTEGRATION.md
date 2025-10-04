@@ -104,8 +104,8 @@ const handleConnectMicrosoft365 = async () => {
 - Handles token expiration with "Reconnect" button
 - Provides actionable error messages with clear next steps
 
-#### 2. `src/pages/CustomerPortal.tsx`
-Customer portal page that includes Microsoft 365 integration tab.
+#### 2. `src/pages/Portal.tsx`
+Portal page that includes Microsoft 365 integration tab.
 
 **Integration:**
 ```tsx

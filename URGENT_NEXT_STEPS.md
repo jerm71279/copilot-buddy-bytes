@@ -72,7 +72,7 @@
 ---
 
 ### 3. Fix User Profile Database Issue - **HIGH PRIORITY** ✅ FIXED
-**Status:** ❌ Causing 406 errors on CustomerPortal  
+**Status:** ❌ Causing 406 errors on Portal
 **Owner:** Backend Developer  
 **Time Estimate:** 30 minutes
 
