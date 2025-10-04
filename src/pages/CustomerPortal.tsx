@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Shield, Activity, Clock, FileText, BookOpen, Workflow, BarChart3, Settings, ExternalLink, Brain, Zap, Calendar, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
+import EmployeeToolbar from "@/components/EmployeeToolbar";
 
 const CustomerPortal = () => {
   const navigate = useNavigate();
@@ -119,6 +120,9 @@ const CustomerPortal = () => {
           </div>
         </div>
       </header>
+
+      {/* Employee System Toolbar */}
+      <EmployeeToolbar />
 
       <div className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
