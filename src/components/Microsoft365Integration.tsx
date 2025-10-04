@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Mail, User, FileText, Loader2 } from "lucide-react";
+import { Calendar, Mail, User, FileText, Loader2, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
@@ -30,11 +30,26 @@ interface Email {
   isRead: boolean;
 }
 
+interface TeamsChat {
+  id: string;
+  topic: string;
+  lastUpdatedDateTime: string;
+  chatType: string;
+}
+
+interface TeamsMessage {
+  id: string;
+  createdDateTime: string;
+  body: { content: string };
+  from: { user: { displayName: string } };
+}
+
 export const Microsoft365Integration = () => {
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [emails, setEmails] = useState<Email[]>([]);
+  const [teamsChats, setTeamsChats] = useState<TeamsChat[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,6 +85,10 @@ export const Microsoft365Integration = () => {
       // Load recent emails (top 10)
       const messages = await callGraphAPI('/me/messages?$top=10&$orderby=receivedDateTime DESC');
       setEmails(messages.value || []);
+
+      // Load Teams chats (top 10)
+      const chats = await callGraphAPI('/me/chats?$top=10&$orderby=lastUpdatedDateTime DESC');
+      setTeamsChats(chats.value || []);
 
     } catch (err: any) {
       console.error('Error loading Microsoft data:', err);
@@ -149,7 +168,7 @@ export const Microsoft365Integration = () => {
       </Card>
 
       <Tabs defaultValue="calendar" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="calendar">
             <Calendar className="h-4 w-4 mr-2" />
             Calendar
@@ -157,6 +176,10 @@ export const Microsoft365Integration = () => {
           <TabsTrigger value="email">
             <Mail className="h-4 w-4 mr-2" />
             Email
+          </TabsTrigger>
+          <TabsTrigger value="teams">
+            <MessageSquare className="h-4 w-4 mr-2" />
+            Teams
           </TabsTrigger>
         </TabsList>
 
@@ -217,6 +240,39 @@ export const Microsoft365Integration = () => {
                     </div>
                     <div className="text-sm mt-2 line-clamp-2">
                       {email.bodyPreview}
+                    </div>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="teams" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Teams Chats</CardTitle>
+              <CardDescription>Your latest Teams conversations</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {teamsChats.length === 0 ? (
+                <p className="text-muted-foreground">No recent chats</p>
+              ) : (
+                teamsChats.map((chat, idx) => (
+                  <div key={idx} className="border-b pb-4 last:border-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <div className="font-semibold flex items-center gap-2">
+                          <MessageSquare className="h-4 w-4 text-primary" />
+                          {chat.topic || "Untitled Chat"}
+                        </div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          Type: {chat.chatType}
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {new Date(chat.lastUpdatedDateTime).toLocaleDateString()}
+                      </Badge>
                     </div>
                   </div>
                 ))
