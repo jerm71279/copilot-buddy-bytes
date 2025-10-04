@@ -171,7 +171,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'azure',
         options: {
-          scopes: 'email',
+          scopes: 'openid email profile User.Read Calendars.Read Mail.Read Files.Read.All',
           redirectTo: `${window.location.origin}/portal`,
         }
       });

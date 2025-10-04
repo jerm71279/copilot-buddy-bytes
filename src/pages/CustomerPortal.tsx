@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
 import EmployeeToolbar from "@/components/EmployeeToolbar";
 import ExternalSystemsBar from "@/components/ExternalSystemsBar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Microsoft365Integration } from "@/components/Microsoft365Integration";
 
 const CustomerPortal = () => {
   const navigate = useNavigate();
@@ -129,157 +131,170 @@ const CustomerPortal = () => {
       <ExternalSystemsBar />
 
       <div className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">
-            Welcome back, {customerData?.first_name || "Employee"}
-          </h2>
-          <p className="text-muted-foreground">
-            Access your tools, knowledge, and insights all in one place
-          </p>
-        </div>
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="mb-8">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="microsoft365">Microsoft 365</TabsTrigger>
+          </TabsList>
 
-        {/* Quick Access Tools - PRIMARY */}
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-semibold">Quick Access</h3>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {quickAccessTools.map((tool) => (
-              <Link key={tool.name} to={tool.path}>
-                <Card className="hover:shadow-lg transition-all hover:border-primary cursor-pointer h-full">
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <div className="p-3 rounded-lg bg-primary/10">
-                        <tool.icon className="h-6 w-6 text-primary" />
-                      </div>
-                      <CardTitle className="text-lg">{tool.name}</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      {tool.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </section>
+          <TabsContent value="overview">
+            {/* Welcome Section */}
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold mb-2">
+                Welcome back, {customerData?.first_name || "Employee"}
+              </h2>
+              <p className="text-muted-foreground">
+                Access your tools, knowledge, and insights all in one place
+              </p>
+            </div>
 
-        {/* Recent Activity */}
-        <section className="mb-12">
-          <h3 className="text-2xl font-semibold mb-6">Recent Activity</h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Recent Knowledge Articles */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="h-5 w-5" />
-                  Recent Documentation
-                </CardTitle>
-                <CardDescription>Recently updated guides and SOPs</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {recentArticles.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No recent articles</p>
-                ) : (
-                  <div className="space-y-3">
-                    {recentArticles.slice(0, 3).map((article) => (
-                      <Link
-                        key={article.id}
-                        to={`/knowledge/${article.id}`}
-                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
-                      >
-                        <FileText className="h-4 w-4 mt-1 text-muted-foreground" />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">{article.title}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(article.updated_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                      </Link>
-                    ))}
-                    <Link to="/knowledge">
-                      <Button variant="ghost" size="sm" className="w-full mt-2">
-                        View All Documentation
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Recent Workflow Executions */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Workflow className="h-5 w-5" />
-                  Recent Workflows
-                </CardTitle>
-                <CardDescription>Latest workflow executions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {recentWorkflows.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No recent workflows</p>
-                ) : (
-                  <div className="space-y-3">
-                    {recentWorkflows.slice(0, 3).map((workflow) => (
-                      <div
-                        key={workflow.id}
-                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
-                      >
-                        <Zap className="h-4 w-4 mt-1 text-muted-foreground" />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">{workflow.workflow_name}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge 
-                              variant={workflow.status === 'success' ? 'default' : 'destructive'}
-                              className="text-xs"
-                            >
-                              {workflow.status}
-                            </Badge>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(workflow.started_at).toLocaleDateString()}
-                            </p>
+            {/* Quick Access Tools - PRIMARY */}
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-semibold">Quick Access</h3>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {quickAccessTools.map((tool) => (
+                  <Link key={tool.name} to={tool.path}>
+                    <Card className="hover:shadow-lg transition-all hover:border-primary cursor-pointer h-full">
+                      <CardHeader>
+                        <div className="flex items-center gap-3">
+                          <div className="p-3 rounded-lg bg-primary/10">
+                            <tool.icon className="h-6 w-6 text-primary" />
                           </div>
+                          <CardTitle className="text-lg">{tool.name}</CardTitle>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </section>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground">
+                          {tool.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </section>
 
-        {/* Analytics & Insights - SECONDARY */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-semibold">Analytics & Insights</h3>
-            <p className="text-sm text-muted-foreground">Explore detailed metrics and reports</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {analyticsDashboards.map((dashboard) => (
-              <Link key={dashboard.name} to={dashboard.path}>
-                <Card className="hover:shadow-md transition-all hover:border-muted-foreground/50 cursor-pointer h-full">
+            {/* Recent Activity */}
+            <section className="mb-12">
+              <h3 className="text-2xl font-semibold mb-6">Recent Activity</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Recent Knowledge Articles */}
+                <Card>
                   <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <dashboard.icon className="h-5 w-5 text-muted-foreground" />
-                      <CardTitle className="text-base">{dashboard.name}</CardTitle>
-                    </div>
+                    <CardTitle className="flex items-center gap-2">
+                      <BookOpen className="h-5 w-5" />
+                      Recent Documentation
+                    </CardTitle>
+                    <CardDescription>Recently updated guides and SOPs</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      {dashboard.description}
-                    </p>
+                    {recentArticles.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No recent articles</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {recentArticles.slice(0, 3).map((article) => (
+                          <Link
+                            key={article.id}
+                            to={`/knowledge/${article.id}`}
+                            className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                          >
+                            <FileText className="h-4 w-4 mt-1 text-muted-foreground" />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate">{article.title}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(article.updated_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                          </Link>
+                        ))}
+                        <Link to="/knowledge">
+                          <Button variant="ghost" size="sm" className="w-full mt-2">
+                            View All Documentation
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
-              </Link>
-            ))}
-          </div>
-        </section>
+
+                {/* Recent Workflow Executions */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Workflow className="h-5 w-5" />
+                      Recent Workflows
+                    </CardTitle>
+                    <CardDescription>Latest workflow executions</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {recentWorkflows.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No recent workflows</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {recentWorkflows.slice(0, 3).map((workflow) => (
+                          <div
+                            key={workflow.id}
+                            className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                          >
+                            <Zap className="h-4 w-4 mt-1 text-muted-foreground" />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate">{workflow.workflow_name}</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge 
+                                  variant={workflow.status === 'success' ? 'default' : 'destructive'}
+                                  className="text-xs"
+                                >
+                                  {workflow.status}
+                                </Badge>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(workflow.started_at).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </section>
+
+            {/* Analytics & Insights - SECONDARY */}
+            <section>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-semibold">Analytics & Insights</h3>
+                <p className="text-sm text-muted-foreground">Explore detailed metrics and reports</p>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {analyticsDashboards.map((dashboard) => (
+                  <Link key={dashboard.name} to={dashboard.path}>
+                    <Card className="hover:shadow-md transition-all hover:border-muted-foreground/50 cursor-pointer h-full">
+                      <CardHeader>
+                        <div className="flex items-center gap-3">
+                          <dashboard.icon className="h-5 w-5 text-muted-foreground" />
+                          <CardTitle className="text-base">{dashboard.name}</CardTitle>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground">
+                          {dashboard.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </TabsContent>
+
+          <TabsContent value="microsoft365">
+            <Microsoft365Integration />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
