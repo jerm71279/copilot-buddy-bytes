@@ -1,11 +1,39 @@
-# 🚨 URGENT NEXT STEPS - OberaConnect Microsoft 365 Integration
+# 🚨 URGENT NEXT STEPS - OberaConnect Platform
 
 **Last Updated:** 2025-10-04  
-**Status:** CRITICAL - Integration currently non-functional
+**Status:** Platform 88% complete - Critical integrations pending live connections
 
 ---
 
 ## 🔴 IMMEDIATE BLOCKERS (Do These First)
+
+### 0. Revio Live API Integration - **BUSINESS CRITICAL**
+**Status:** ⏳ Awaiting OneBill → Revio migration  
+**Owner:** Finance/Operations Team  
+**Time Estimate:** Depends on migration timeline
+
+#### Current Status:
+- ✅ Revio integration infrastructure complete
+- ✅ Edge function `revio-data` deployed with placeholder data
+- ✅ React hook `useRevioData` implemented
+- ✅ TypeScript types defined (`src/types/revio.ts`)
+- ✅ Sales Dashboard displaying Revio data (placeholder mode)
+- ✅ Employee toolbar includes Revio access
+- ⏳ Live Revio API connection pending OneBill migration
+- ⏳ Revio API credentials not yet configured
+
+#### What's Ready:
+The Revio integration infrastructure is production-ready and waiting for:
+1. Completion of OneBill → Revio migration
+2. Revio API credentials (API key, base URL)
+3. Update of edge function to call live Revio API instead of placeholder data
+
+#### Documentation:
+- See `REVIO_INTEGRATION_GUIDE.md` for complete implementation details
+- See `API_REFERENCE_REVIO.md` for API documentation
+- Edge function: `supabase/functions/revio-data/index.ts`
+
+---
 
 ### 1. Enable Azure Provider in Lovable Cloud - **CRITICAL**
 **Status:** ❌ Blocking all Microsoft 365 authentication  

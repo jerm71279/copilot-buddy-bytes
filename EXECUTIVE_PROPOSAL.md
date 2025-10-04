@@ -21,8 +21,8 @@ OberaConnect MSP Platform represents a strategic transformation initiative desig
 
 ### Investment Overview
 
-- **Development Status**: 85% complete, functional production-ready MVP
-- **Time to Market**: 30-60 days to full deployment
+- **Development Status**: 88% complete, functional production-ready MVP with Revio integration infrastructure
+- **Time to Market**: 30-45 days to full deployment (Revio live integration pending OneBill → Revio migration)
 - **Expected ROI**: 250-400% over 24 months
 - **Risk Level**: Low - leveraging proven technologies and existing infrastructure
 
@@ -90,6 +90,7 @@ A unified, AI-powered platform that:
 **Integration Layer:**
 - Microsoft 365 native integration (Graph API)
 - SharePoint bidirectional sync
+- Revio billing & revenue data integration (infrastructure complete, live API pending migration)
 - Webhook support for external system integration
 - RESTful APIs for custom integrations
 

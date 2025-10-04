@@ -450,6 +450,66 @@ channel.unsubscribe();
 
 ---
 
+### Revio Data Integration
+
+**Endpoint**: `revio-data`
+
+**Purpose**: Customer billing and revenue data aggregation from Revio
+
+**Current Status**: Infrastructure complete with placeholder data until OneBill → Revio migration
+
+**Request**:
+```typescript
+const { data, error } = await supabase.functions.invoke('revio-data', {
+  body: {
+    dataType: 'all'  // Required: 'all', 'customers_by_ticket', 'customers_by_sla', 'customers_by_revenue', 'subscriptions', 'recent_interactions'
+  }
+});
+```
+
+**Response**:
+```typescript
+{
+  success: boolean;
+  message?: string;
+  data: {
+    customers_by_ticket: CustomersByTicket[];
+    customers_by_sla: CustomersBySLA[];
+    customers_by_revenue: CustomersByRevenue[];
+    subscriptions: SubscriptionStats;
+    recent_interactions: CustomerInteraction[];
+  }
+}
+```
+
+**Example Usage**:
+```typescript
+import { useRevioData } from '@/hooks/useRevioData';
+
+const SalesDashboard = () => {
+  const { data, loading, error } = useRevioData();
+  
+  if (loading) return <div>Loading revenue data...</div>;
+  if (error) return <div>Error: {error}</div>;
+  
+  return (
+    <div>
+      <h2>Active Subscriptions: {data.subscriptions.active}</h2>
+      <h2>Revenue by Tier:</h2>
+      {data.customers_by_revenue.map(tier => (
+        <div key={tier.revenue_tier}>
+          {tier.revenue_tier}: ${tier.total_revenue}
+        </div>
+      ))}
+    </div>
+  );
+};
+```
+
+**Documentation**: See `API_REFERENCE_REVIO.md` for complete Revio API documentation
+
+---
+
 ## 🛡️ Row Level Security (RLS)
 
 All tables have RLS policies enforcing data isolation.

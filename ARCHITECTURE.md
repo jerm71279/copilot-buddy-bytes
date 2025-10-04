@@ -332,6 +332,13 @@ USING (auth.uid() = user_id);
 2. **mcp-server**: Model Context Protocol tool execution
 3. **workflow-executor**: Orchestrates multi-step workflow execution with conditional logic
 4. **workflow-webhook**: Receives webhook triggers and initiates workflow runs
+5. **revio-data**: Customer billing and revenue data aggregation (placeholder until live)
+6. **graph-api**: Microsoft 365 Graph API integration
+7. **sharepoint-sync**: SharePoint document synchronization
+8. **knowledge-processor**: AI-powered knowledge base processing
+9. **intelligent-assistant**: Cross-department AI assistant
+10. **ai-mcp-generator**: Automated MCP configuration
+11. **workflow-insights**: Workflow analytics and optimization
 
 ## 📊 Data Flow Examples
 

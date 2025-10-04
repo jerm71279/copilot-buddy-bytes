@@ -112,8 +112,9 @@ supabase/
 - **Executive**: KPIs, compliance metrics, strategic overview
 
 ### 5. Integration Management
-- **Microsoft 365**: Calendar, Email, Teams, OneDrive (NEW)
-- Onebill/rev.io (Billing & Revenue)
+- **Microsoft 365**: Calendar, Email, Teams, OneDrive (ACTIVE)
+- **Revio**: Billing & Revenue data (Infrastructure complete, live API pending OneBill migration) (NEW)
+- OneBill (Current billing system, migration to Revio in progress)
 - Azure, Lighthouse, CIPP (Cloud & Identity)
 - SonicWall, UniFi, MikroTik (Network Security)
 - Keeper Security (Password & Access Management)
