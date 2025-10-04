@@ -119,13 +119,16 @@ const DemoSelector = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Button 
-                      onClick={() => navigate(`${dept.route}?preview=true`)} 
-                      className="w-full"
-                      variant="outline"
-                    >
-                      View Dashboard
-                    </Button>
+                  <Button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(`${dept.route}?preview=true`);
+                    }} 
+                    className="w-full"
+                    variant="outline"
+                  >
+                    View Dashboard
+                  </Button>
                   </CardContent>
                 </Card>
               );
