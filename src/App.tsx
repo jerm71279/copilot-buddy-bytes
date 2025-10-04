@@ -8,6 +8,7 @@ import IntegrationsPage from "./pages/IntegrationsPage";
 import Auth from "./pages/Auth";
 import DemoSelector from "./pages/DemoSelector";
 import CustomerPortal from "./pages/CustomerPortal";
+import WorkflowDetail from "./pages/WorkflowDetail";
 import AdminDashboard from "./pages/AdminDashboard";
 import ComplianceDashboard from "./pages/ComplianceDashboard";
 import ITDashboard from "./pages/ITDashboard";
@@ -39,6 +40,9 @@ const App = () => (
               <CustomerPortal />
             </ProtectedRoute>
           } />
+          
+          {/* Workflow Detail Pages */}
+          <Route path="/workflow/:workflowType" element={<WorkflowDetail />} />
           
           {/* Internal OberaConnect Dashboards - Admin Only */}
           <Route path="/admin" element={

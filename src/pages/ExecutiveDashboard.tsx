@@ -104,7 +104,10 @@ const ExecutiveDashboard = () => {
 
       <div className="container mx-auto px-4 py-8 space-y-6">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/customers?metric=Total Customers&department=executive`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -115,7 +118,10 @@ const ExecutiveDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/compliance?metric=Compliance Score&department=executive`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Compliance</CardTitle>
               <Shield className="h-4 w-4 text-muted-foreground" />
@@ -126,7 +132,10 @@ const ExecutiveDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/efficiency?metric=Workflow Efficiency&department=executive`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Workflow Efficiency</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -137,7 +146,10 @@ const ExecutiveDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/insights?metric=ML Insights&department=executive`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">ML Insights</CardTitle>
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
@@ -148,7 +160,10 @@ const ExecutiveDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/risks?metric=Risk Alerts&department=executive`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Risk Alerts</CardTitle>
               <AlertCircle className="h-4 w-4 text-muted-foreground" />

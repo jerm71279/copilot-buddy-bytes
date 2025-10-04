@@ -105,7 +105,10 @@ const OperationsDashboard = () => {
 
       <div className="container mx-auto px-4 py-8 space-y-6">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/efficiency?metric=Workflow Efficiency&department=operations`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Workflow Efficiency</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -116,7 +119,10 @@ const OperationsDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/active?metric=Active Workflows&department=operations`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Workflows</CardTitle>
               <Workflow className="h-4 w-4 text-muted-foreground" />
@@ -127,7 +133,10 @@ const OperationsDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/insights?metric=ML Insights&department=operations`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">ML Insights</CardTitle>
               <Lightbulb className="h-4 w-4 text-muted-foreground" />
@@ -138,7 +147,10 @@ const OperationsDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/bottlenecks?metric=Bottlenecks&department=operations`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Bottlenecks</CardTitle>
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />

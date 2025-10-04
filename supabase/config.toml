@@ -12,5 +12,8 @@ verify_jwt = false
 [functions.workflow-webhook]
 verify_jwt = false
 
+[functions.workflow-insights]
+verify_jwt = false
+
 [functions.ai-mcp-generator]
 verify_jwt = true
