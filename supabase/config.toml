@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.ai-mcp-generator]
 verify_jwt = true
+
+[functions.knowledge-processor]
+verify_jwt = true

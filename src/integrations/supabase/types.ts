@@ -788,6 +788,289 @@ export type Database = {
           },
         ]
       }
+      knowledge_access_logs: {
+        Row: {
+          access_type: string
+          article_id: string | null
+          customer_id: string
+          id: string
+          search_query: string | null
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          access_type: string
+          article_id?: string | null
+          customer_id: string
+          id?: string
+          search_query?: string | null
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          access_type?: string
+          article_id?: string | null
+          customer_id?: string
+          id?: string
+          search_query?: string | null
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_access_logs_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      knowledge_articles: {
+        Row: {
+          article_type: string
+          category_id: string | null
+          content: string
+          created_at: string
+          created_by: string
+          customer_id: string
+          id: string
+          source_metadata: Json | null
+          source_type: string | null
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          article_type: string
+          category_id?: string | null
+          content: string
+          created_at?: string
+          created_by: string
+          customer_id: string
+          id?: string
+          source_metadata?: Json | null
+          source_type?: string | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          article_type?: string
+          category_id?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          id?: string
+          source_metadata?: Json | null
+          source_type?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_articles_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      knowledge_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon_name: string | null
+          id: string
+          name: string
+          parent_category_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon_name?: string | null
+          id?: string
+          name: string
+          parent_category_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon_name?: string | null
+          id?: string
+          name?: string
+          parent_category_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_categories_parent_category_id_fkey"
+            columns: ["parent_category_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      knowledge_files: {
+        Row: {
+          ai_summary: string | null
+          article_id: string | null
+          customer_id: string
+          extracted_content: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          id: string
+          metadata: Json | null
+          processed_status: string
+          storage_path: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          article_id?: string | null
+          customer_id: string
+          extracted_content?: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          id?: string
+          metadata?: Json | null
+          processed_status?: string
+          storage_path: string
+          uploaded_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          ai_summary?: string | null
+          article_id?: string | null
+          customer_id?: string
+          extracted_content?: string | null
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          metadata?: Json | null
+          processed_status?: string
+          storage_path?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_files_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      knowledge_insights: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          customer_id: string
+          data_sources: Json | null
+          description: string
+          id: string
+          insight_type: string
+          related_articles: string[] | null
+          related_workflows: string[] | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          customer_id: string
+          data_sources?: Json | null
+          description: string
+          id?: string
+          insight_type: string
+          related_articles?: string[] | null
+          related_workflows?: string[] | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          title: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          customer_id?: string
+          data_sources?: Json | null
+          description?: string
+          id?: string
+          insight_type?: string
+          related_articles?: string[] | null
+          related_workflows?: string[] | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      knowledge_versions: {
+        Row: {
+          article_id: string
+          change_summary: string | null
+          changed_by: string
+          content: string
+          created_at: string
+          id: string
+          title: string
+          version: number
+        }
+        Insert: {
+          article_id: string
+          change_summary?: string | null
+          changed_by: string
+          content: string
+          created_at?: string
+          id?: string
+          title: string
+          version: number
+        }
+        Update: {
+          article_id?: string
+          change_summary?: string | null
+          changed_by?: string
+          content?: string
+          created_at?: string
+          id?: string
+          title?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_versions_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mcp_execution_logs: {
         Row: {
           customer_id: string

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Shield, Menu, LogOut } from "lucide-react";
+import { Shield, Menu, LogOut, BookOpen } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -108,7 +108,15 @@ const Navigation = () => {
             >
               Integrations
             </Link>
-            <button 
+            {isLoggedIn && (
+              <Link 
+                to="/knowledge"
+                className="text-sm font-medium hover:text-accent transition-colors"
+              >
+                Knowledge
+              </Link>
+            )}
+            <button
               onClick={() => scrollToSection('case-study')}
               className="text-sm font-medium hover:text-accent transition-colors"
             >
@@ -197,7 +205,16 @@ const Navigation = () => {
               >
                 Integrations
               </Link>
-              <button 
+              {isLoggedIn && (
+                <Link 
+                  to="/knowledge"
+                  className="text-sm font-medium hover:text-accent transition-colors py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Knowledge
+                </Link>
+              )}
+              <button
                 onClick={() => scrollToSection('case-study')}
                 className="text-sm font-medium hover:text-accent transition-colors py-2 text-left"
               >
