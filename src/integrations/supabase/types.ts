@@ -1710,6 +1710,10 @@ export type Database = {
           integration_id: string
         }[]
       }
+      get_user_customer_id: {
+        Args: { _user_id: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
