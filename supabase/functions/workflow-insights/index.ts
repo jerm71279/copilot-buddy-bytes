@@ -194,6 +194,78 @@ Format your response as JSON with this structure:
       };
     }
 
+    // Step 6: Create knowledge insight from workflow analysis
+    if (insights.confidence > 70) {
+      const { error: insightError } = await supabase
+        .from("knowledge_insights")
+        .insert({
+          customer_id: executions?.[0]?.customer_id || '00000000-0000-0000-0000-000000000000',
+          insight_type: "workflow_optimization",
+          title: `${metricName} Workflow Optimization in ${department}`,
+          description: `${insights.prediction}\n\nKey Recommendations:\n${insights.recommendations.map((r: string, i: number) => `${i + 1}. ${r}`).join('\n')}\n\nRisk Factors:\n${insights.risk_factors.map((r: string, i: number) => `${i + 1}. ${r}`).join('\n')}`,
+          confidence_score: insights.confidence / 100,
+          status: "new",
+          data_sources: {
+            workflow_type: workflowType,
+            metric_name: metricName,
+            department: department,
+            analysis_date: new Date().toISOString(),
+            historical_data: historicalData
+          }
+        });
+
+      if (insightError) {
+        console.error("Failed to create knowledge insight:", insightError);
+      }
+
+      // Step 7: Auto-create knowledge article for high-confidence insights
+      if (insights.confidence > 85) {
+        const { error: articleError } = await supabase
+          .from("knowledge_articles")
+          .insert({
+            customer_id: executions?.[0]?.customer_id || '00000000-0000-0000-0000-000000000000',
+            created_by: executions?.[0]?.triggered_by || '00000000-0000-0000-0000-000000000000',
+            title: `Best Practices: ${metricName} Workflow`,
+            content: `# ${metricName} Workflow - ${department} Department
+
+## Performance Analysis
+${insights.prediction}
+
+## Recommended Actions
+${insights.recommendations.map((r: string, i: number) => `${i + 1}. ${r}`).join('\n')}
+
+## Risk Mitigation
+${insights.risk_factors.map((r: string, i: number) => `${i + 1}. ${r}`).join('\n')}
+
+## Optimization Opportunities
+${insights.optimization_opportunities.map((o: string, i: number) => `${i + 1}. ${o}`).join('\n')}
+
+## Performance Metrics
+- Success Rate: ${historicalData.successRate}%
+- Average Duration: ${historicalData.avgDurationMinutes} minutes
+- Recent Executions (7 days): ${historicalData.recentExecutions7Days}
+
+*This article was automatically generated from workflow analysis on ${new Date().toISOString().split('T')[0]}*`,
+            article_type: "guide",
+            status: "published",
+            tags: ["workflow", "optimization", department.toLowerCase(), "ai-generated"],
+            source_type: "ai_generated",
+            source_metadata: {
+              generated_from: "workflow_insights",
+              workflow_type: workflowType,
+              confidence_score: insights.confidence,
+              analysis_date: new Date().toISOString()
+            }
+          });
+
+        if (articleError) {
+          console.error("Failed to create knowledge article:", articleError);
+        } else {
+          console.log("✅ Created knowledge article from workflow insights");
+        }
+      }
+    }
+
     return new Response(
       JSON.stringify({ insights }),
       { 

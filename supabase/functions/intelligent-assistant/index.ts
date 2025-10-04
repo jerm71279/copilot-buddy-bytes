@@ -36,13 +36,25 @@ serve(async (req) => {
     // Step 2: Get recent insights for context
     const { data: recentInsights, error: insightsError } = await supabaseClient
       .from("knowledge_insights")
-      .select("title, description, confidence_score")
+      .select("title, description, confidence_score, insight_type")
       .eq("customer_id", customerId)
       .order("created_at", { ascending: false })
-      .limit(3);
+      .limit(5);
 
     if (insightsError) {
       console.error("Error fetching insights:", insightsError);
+    }
+
+    // Step 2b: Get recent workflow execution patterns
+    const { data: recentWorkflows, error: workflowsError } = await supabaseClient
+      .from("workflow_executions")
+      .select("workflow_id, status, started_at, completed_at, error_message")
+      .eq("customer_id", customerId)
+      .order("started_at", { ascending: false })
+      .limit(10);
+
+    if (workflowsError) {
+      console.error("Error fetching workflows:", workflowsError);
     }
 
     // Step 3: Get conversation history for context
@@ -66,28 +78,43 @@ serve(async (req) => {
     if (recentInsights && recentInsights.length > 0) {
       knowledgeContext += "\n\nRecent AI-Generated Insights:\n";
       recentInsights.forEach((insight) => {
-        knowledgeContext += `\n- ${insight.title} (confidence: ${(insight.confidence_score * 100).toFixed(0)}%)\n`;
-        knowledgeContext += `  ${insight.description}\n`;
+        knowledgeContext += `\n- [${insight.insight_type?.toUpperCase()}] ${insight.title} (confidence: ${(insight.confidence_score * 100).toFixed(0)}%)\n`;
+        knowledgeContext += `  ${insight.description.substring(0, 300)}...\n`;
       });
+    }
+
+    // Add workflow context
+    if (recentWorkflows && recentWorkflows.length > 0) {
+      const successRate = (recentWorkflows.filter(w => w.status === 'completed').length / recentWorkflows.length * 100).toFixed(0);
+      const recentErrors = recentWorkflows.filter(w => w.error_message).slice(0, 3);
+      
+      knowledgeContext += "\n\nRecent Workflow Performance:\n";
+      knowledgeContext += `- Success Rate: ${successRate}% (last 10 executions)\n`;
+      if (recentErrors.length > 0) {
+        knowledgeContext += `- Recent Issues:\n${recentErrors.map(w => `  • ${w.error_message}`).join('\n')}\n`;
+      }
     }
 
     // Build conversation history
     const messages: any[] = [
       {
         role: "system",
-        content: `You are an intelligent AI assistant integrated with a comprehensive knowledge base. Your role is to:
+        content: `You are an intelligent AI assistant integrated with a comprehensive knowledge base and workflow automation system. Your role is to:
 
-1. Answer questions using the provided knowledge base context
-2. Generate actionable insights based on patterns you observe
-3. Recommend improvements to processes and workflows
+1. Answer questions using the provided knowledge base context and workflow performance data
+2. Generate actionable insights based on patterns you observe in both knowledge articles and workflow executions
+3. Recommend improvements to processes, workflows, and procedures
 4. Identify gaps in knowledge that should be documented
-5. Learn from each interaction to provide better responses
+5. Suggest workflow optimizations based on performance patterns
+6. Learn from each interaction to provide better responses
 
 When generating insights:
-- Be specific and actionable
+- Be specific and actionable, referencing both knowledge articles and workflow data
 - Provide confidence scores for your recommendations
-- Reference knowledge base articles when applicable
-- Identify opportunities for process improvement
+- Reference knowledge base articles and workflow patterns when applicable
+- Identify opportunities for process improvement and workflow automation
+- Suggest when workflow insights should become documented best practices
+- Recommend when manual processes could be automated as workflows
 
 ${knowledgeContext}`,
       },
@@ -151,11 +178,13 @@ ${knowledgeContext}`,
 Return a JSON object with this structure:
 {
   "has_insight": boolean,
-  "insight_type": "process_improvement" | "knowledge_gap" | "pattern_discovery" | "best_practice",
+  "insight_type": "process_improvement" | "knowledge_gap" | "pattern_discovery" | "best_practice" | "workflow_optimization",
   "title": "Brief title",
   "description": "Detailed description",
   "confidence_score": 0.0-1.0,
   "should_create_article": boolean,
+  "should_create_workflow": boolean,
+  "workflow_suggestion": "Optional: describe a workflow that could automate this process",
   "suggested_tags": ["tag1", "tag2"]
 }
 
