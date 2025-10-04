@@ -2,17 +2,16 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, Activity, CheckCircle2, AlertCircle, Clock, FileText } from "lucide-react";
+import { Shield, Activity, Clock, FileText, BookOpen, Workflow, BarChart3, Settings, ExternalLink, Brain, Zap, Calendar, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const CustomerPortal = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [customerData, setCustomerData] = useState<any>(null);
-  const [complianceStatus, setComplianceStatus] = useState<any[]>([]);
-  const [integrations, setIntegrations] = useState<any[]>([]);
+  const [recentArticles, setRecentArticles] = useState<any[]>([]);
+  const [recentWorkflows, setRecentWorkflows] = useState<any[]>([]);
 
   useEffect(() => {
     loadCustomerData();
@@ -33,21 +32,25 @@ const CustomerPortal = () => {
       setCustomerData(profile);
 
       if (profile?.customer_id) {
-        // Load compliance frameworks
-        const { data: frameworks } = await supabase
-          .from("customer_frameworks")
-          .select("*, compliance_frameworks(*)")
-          .eq("customer_id", profile.customer_id);
-
-        setComplianceStatus(frameworks || []);
-
-        // Load integrations
-        const { data: integrationsData } = await supabase
-          .from("integrations")
+        // Load recent knowledge articles
+        const { data: articles } = await supabase
+          .from("knowledge_articles")
           .select("*")
-          .eq("customer_id", profile.customer_id);
+          .eq("status", "published")
+          .order("updated_at", { ascending: false })
+          .limit(5);
 
-        setIntegrations(integrationsData || []);
+        setRecentArticles(articles || []);
+
+        // Load recent workflow executions
+        const { data: workflows } = await supabase
+          .from("workflow_executions")
+          .select("*")
+          .eq("customer_id", profile.customer_id)
+          .order("started_at", { ascending: false })
+          .limit(5);
+
+        setRecentWorkflows(workflows || []);
       }
     } catch (error) {
       console.error("Error loading customer data:", error);
@@ -72,6 +75,22 @@ const CustomerPortal = () => {
     );
   }
 
+  // Quick access tools
+  const quickAccessTools = [
+    { name: "Knowledge Base", icon: BookOpen, path: "/knowledge", description: "SOPs, guides, and documentation" },
+    { name: "Workflows", icon: Workflow, path: "/workflow/automation", description: "Process automation and execution" },
+    { name: "AI Assistant", icon: Brain, path: "/portal", description: "Get AI-powered help and insights" },
+    { name: "Integrations", icon: Zap, path: "/integrations", description: "Connected systems and tools" },
+  ];
+
+  // Analytics/Dashboards - Secondary access
+  const analyticsDashboards = [
+    { name: "Operations", icon: BarChart3, path: "/dashboard/operations", description: "Workflow metrics and insights" },
+    { name: "Compliance", icon: Shield, path: "/dashboard/compliance", description: "Compliance status and reports" },
+    { name: "IT Systems", icon: Activity, path: "/dashboard/it", description: "System health and performance" },
+    { name: "Executive", icon: BarChart3, path: "/dashboard/executive", description: "High-level business metrics" },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -82,10 +101,10 @@ const CustomerPortal = () => {
               <Shield className="h-8 w-8 text-primary" />
               <div>
                 <h1 className="text-2xl font-bold">
-                  {customerData?.customers?.company_name || "Customer Portal"}
+                  My Workspace
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Managed by OberaConnect
+                  {customerData?.customers?.company_name}
                 </p>
               </div>
             </div>
@@ -97,162 +116,157 @@ const CustomerPortal = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="compliance">Compliance</TabsTrigger>
-            <TabsTrigger value="systems">Systems</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
-          </TabsList>
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-2">
+            Welcome back, {customerData?.first_name || "Employee"}
+          </h2>
+          <p className="text-muted-foreground">
+            Access your tools, knowledge, and insights all in one place
+          </p>
+        </div>
 
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    Compliance Status
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">
-                    {complianceStatus.length}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Active frameworks
-                  </p>
-                </CardContent>
-              </Card>
+        {/* Quick Access Tools - PRIMARY */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-semibold">Quick Access</h3>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {quickAccessTools.map((tool) => (
+              <Link key={tool.name} to={tool.path}>
+                <Card className="hover:shadow-lg transition-all hover:border-primary cursor-pointer h-full">
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 rounded-lg bg-primary/10">
+                        <tool.icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <CardTitle className="text-lg">{tool.name}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      {tool.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-5 w-5 text-blue-500" />
-                    Connected Systems
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">
-                    {integrations.filter(i => i.status === 'active').length}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Systems monitored
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-purple-500" />
-                    Account Status
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Badge variant="default">
-                    {customerData?.customers?.status || "Active"}
-                  </Badge>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Plan: {customerData?.customers?.plan_type || "Standard"}
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Compliance Tab */}
-          <TabsContent value="compliance" className="space-y-6">
+        {/* Recent Activity */}
+        <section className="mb-12">
+          <h3 className="text-2xl font-semibold mb-6">Recent Activity</h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Recent Knowledge Articles */}
             <Card>
               <CardHeader>
-                <CardTitle>Compliance Frameworks</CardTitle>
-                <CardDescription>
-                  Your organization's compliance status
-                </CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="h-5 w-5" />
+                  Recent Documentation
+                </CardTitle>
+                <CardDescription>Recently updated guides and SOPs</CardDescription>
               </CardHeader>
               <CardContent>
-                {complianceStatus.length === 0 ? (
-                  <p className="text-muted-foreground">No frameworks configured yet.</p>
+                {recentArticles.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No recent articles</p>
                 ) : (
-                  <div className="space-y-4">
-                    {complianceStatus.map((framework) => (
-                      <div
-                        key={framework.id}
-                        className="flex items-center justify-between p-4 border rounded-lg"
+                  <div className="space-y-3">
+                    {recentArticles.slice(0, 3).map((article) => (
+                      <Link
+                        key={article.id}
+                        to={`/knowledge/${article.id}`}
+                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
                       >
-                        <div>
-                          <h4 className="font-semibold">
-                            {framework.compliance_frameworks?.framework_name}
-                          </h4>
-                          <p className="text-sm text-muted-foreground">
-                            {framework.compliance_frameworks?.framework_code}
+                        <FileText className="h-4 w-4 mt-1 text-muted-foreground" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{article.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(article.updated_at).toLocaleDateString()}
                           </p>
                         </div>
-                        <Badge variant="default">Active</Badge>
+                        <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                      </Link>
+                    ))}
+                    <Link to="/knowledge">
+                      <Button variant="ghost" size="sm" className="w-full mt-2">
+                        View All Documentation
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Workflow Executions */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Workflow className="h-5 w-5" />
+                  Recent Workflows
+                </CardTitle>
+                <CardDescription>Latest workflow executions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {recentWorkflows.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No recent workflows</p>
+                ) : (
+                  <div className="space-y-3">
+                    {recentWorkflows.slice(0, 3).map((workflow) => (
+                      <div
+                        key={workflow.id}
+                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                      >
+                        <Zap className="h-4 w-4 mt-1 text-muted-foreground" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{workflow.workflow_name}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge 
+                              variant={workflow.status === 'success' ? 'default' : 'destructive'}
+                              className="text-xs"
+                            >
+                              {workflow.status}
+                            </Badge>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(workflow.started_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 )}
               </CardContent>
             </Card>
-          </TabsContent>
+          </div>
+        </section>
 
-          {/* Systems Tab */}
-          <TabsContent value="systems" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Connected Systems</CardTitle>
-                <CardDescription>
-                  Systems integrated and monitored by OberaConnect
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {integrations.length === 0 ? (
-                  <p className="text-muted-foreground">No systems connected yet.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {integrations.map((integration) => (
-                      <div
-                        key={integration.id}
-                        className="flex items-center justify-between p-4 border rounded-lg"
-                      >
-                        <div>
-                          <h4 className="font-semibold">{integration.system_name}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            Type: {integration.system_type}
-                          </p>
-                        </div>
-                        <Badge
-                          variant={integration.status === 'active' ? 'default' : 'secondary'}
-                        >
-                          {integration.status}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Reports Tab */}
-          <TabsContent value="reports" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Available Reports</CardTitle>
-                <CardDescription>
-                  Compliance and system reports generated by OberaConnect
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  No reports available at this time. Reports are generated monthly
-                  and will appear here when ready.
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {/* Analytics & Insights - SECONDARY */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-semibold">Analytics & Insights</h3>
+            <p className="text-sm text-muted-foreground">Explore detailed metrics and reports</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {analyticsDashboards.map((dashboard) => (
+              <Link key={dashboard.name} to={dashboard.path}>
+                <Card className="hover:shadow-md transition-all hover:border-muted-foreground/50 cursor-pointer h-full">
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <dashboard.icon className="h-5 w-5 text-muted-foreground" />
+                      <CardTitle className="text-base">{dashboard.name}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      {dashboard.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );
