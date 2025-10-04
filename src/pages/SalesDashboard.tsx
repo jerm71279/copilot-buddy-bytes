@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { LogOut, TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar } from "lucide-react";
+import { LogOut, TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
@@ -305,6 +305,99 @@ const SalesDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Revio Customer Insights */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Revio Customer Insights</CardTitle>
+            <CardDescription>Recent billing interactions and customer updates</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {/* Summary Stats */}
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="p-4 border rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span className="text-sm font-medium">Active Subscriptions</span>
+                  </div>
+                  <div className="text-2xl font-bold">142</div>
+                  <p className="text-xs text-muted-foreground">+12 this month</p>
+                </div>
+                <div className="p-4 border rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Clock className="h-5 w-5 text-yellow-600" />
+                    <span className="text-sm font-medium">Open Tickets</span>
+                  </div>
+                  <div className="text-2xl font-bold">8</div>
+                  <p className="text-xs text-muted-foreground">Avg response: 2.4hrs</p>
+                </div>
+                <div className="p-4 border rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertCircle className="h-5 w-5 text-red-600" />
+                    <span className="text-sm font-medium">Payment Issues</span>
+                  </div>
+                  <div className="text-2xl font-bold">3</div>
+                  <p className="text-xs text-muted-foreground">Require attention</p>
+                </div>
+              </div>
+
+              {/* Recent Customer Interactions */}
+              <div>
+                <h4 className="text-sm font-semibold mb-3">Recent Customer Interactions</h4>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 p-3 border rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-medium text-sm">Enterprise Corp - Payment Received</p>
+                        <Badge variant="outline" className="text-xs">Billing</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Monthly subscription payment processed - $12,000</p>
+                      <p className="text-xs text-muted-foreground mt-1">2 hours ago</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 border rounded-lg">
+                    <Clock className="h-5 w-5 text-yellow-600 mt-0.5" />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-medium text-sm">Tech Solutions Inc - Support Ticket</p>
+                        <Badge variant="outline" className="text-xs">Support</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Question about invoice details for recent upgrade</p>
+                      <p className="text-xs text-muted-foreground mt-1">5 hours ago</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 border rounded-lg">
+                    <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-medium text-sm">Global Services Ltd - Payment Failed</p>
+                        <Badge variant="destructive" className="text-xs">Urgent</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Credit card declined - subscription at risk</p>
+                      <p className="text-xs text-muted-foreground mt-1">Yesterday</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 border rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-medium text-sm">Modern Office Co - Subscription Upgrade</p>
+                        <Badge variant="outline" className="text-xs">Update</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Upgraded from Standard to Premium plan - $8,500/mo</p>
+                      <p className="text-xs text-muted-foreground mt-1">2 days ago</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* AI Assistant */}
         <MCPServerStatus filterByServerType="sales" />
