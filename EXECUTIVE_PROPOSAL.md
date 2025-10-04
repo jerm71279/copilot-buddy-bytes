@@ -295,27 +295,26 @@ Tailored interfaces for each functional area:
 ### Investment Breakdown
 
 **Development Costs (Already Invested):**
-- Platform development: ~$120,000 (complete)
-- Infrastructure setup: ~$15,000 (complete)
-- Testing and QA: ~$10,000 (complete)
-- **Total Development Investment**: ~$145,000
+- Lovable platform subscription: $200 (annual)
+- Development time: Internal (no additional cost)
+- Infrastructure: Included with Lovable Cloud (no additional cost)
+- **Total Development Investment**: $200
 
-**Deployment Costs (Phase 1-4):**
-- Staff training: $8,000
-- Data migration: $5,000
-- Security audit: $7,500
-- Contingency (10%): $2,050
-- **Total Deployment Investment**: $22,550
+**Deployment Costs:**
+- Staff training: Internal time (no additional cash cost)
+- Data migration: Internal time (no additional cash cost)
+- Security audit: Future consideration
+- **Total Deployment Investment**: $0
 
 **Ongoing Operational Costs (Annual):**
-- Cloud infrastructure (Supabase/Lovable): $12,000/year
-- AI API usage (Lovable AI): $6,000/year (scales with usage)
-- Maintenance and updates: $18,000/year
-- **Total Annual Operating Cost**: $36,000/year
+- Lovable platform subscription: $200/year (already paid)
+- Cloud infrastructure: Included with Lovable Cloud
+- AI API usage: Included with Lovable AI
+- **Total Annual Operating Cost**: $200/year
 
-**Total Initial Investment**: $167,550  
-**Year 1 Operating Cost**: $36,000  
-**Total Year 1 Cost**: $203,550
+**Total Initial Investment**: $200  
+**Year 1 Operating Cost**: $200  
+**Total Year 1 Cost**: $200
 
 ---
 
@@ -356,21 +355,21 @@ Tailored interfaces for each functional area:
 #### ROI Calculation
 
 **Year 1:**
-- Total Investment: $203,550
-- Annual Benefit: $955,900
-- **Net Benefit Year 1**: $752,350
-- **ROI Year 1**: 370%
+- Total Investment: $200
+- Annual Benefit: $955,900 (projected)
+- **Net Benefit Year 1**: $955,700
+- **ROI Year 1**: 477,850%
 
 **Year 2:**
-- Operating Cost: $36,000
+- Operating Cost: $200
 - Annual Benefit: $955,900 (conservative, no growth)
-- **Net Benefit Year 2**: $919,900
-- **Cumulative ROI**: 820%
+- **Net Benefit Year 2**: $955,700
+- **Cumulative ROI**: 955,400%
 
 **3-Year Total:**
-- Total Investment: $311,550 (including 3 years operating costs)
+- Total Investment: $600 (3 years × $200)
 - Total Benefit: $2,867,700
-- **3-Year ROI**: 820%
+- **3-Year ROI**: 477,950%
 
 ---
 
