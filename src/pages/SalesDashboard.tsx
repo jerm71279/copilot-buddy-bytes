@@ -329,30 +329,28 @@ const SalesDashboard = () => {
         </div>
 
         {/* PAM Section */}
-        {hasPamAccess && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Privileged Access Management</CardTitle>
-              <CardDescription>Configure MCP servers for sales system access</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="status" className="space-y-4">
-                <TabsList>
-                  <TabsTrigger value="status">Server Status</TabsTrigger>
-                  <TabsTrigger value="configure">Configure Server</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="status">
-                  <MCPServerStatus />
-                </TabsContent>
-                
-                <TabsContent value="configure">
-                  <MCPServerConfig customerId={customerId} />
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-        )}
+        <Card>
+          <CardHeader>
+            <CardTitle>Privileged Access Management</CardTitle>
+            <CardDescription>Configure MCP servers for sales system access</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="status" className="space-y-4">
+              <TabsList>
+                <TabsTrigger value="status">Server Status</TabsTrigger>
+                <TabsTrigger value="configure">Configure Server</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="status">
+                <MCPServerStatus />
+              </TabsContent>
+              
+              <TabsContent value="configure">
+                <MCPServerConfig customerId={customerId} />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
 
         {/* AI Assistant */}
         <DepartmentAIAssistant department="sales" departmentLabel="Sales" />

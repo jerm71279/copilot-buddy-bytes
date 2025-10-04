@@ -204,30 +204,28 @@ const ComplianceDashboard = () => {
           </CardContent>
         </Card>
 
-        {hasPamAccess && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Privileged Access Management</CardTitle>
-              <CardDescription>Configure MCP servers for compliance system access</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="status" className="space-y-4">
-                <TabsList>
-                  <TabsTrigger value="status">Server Status</TabsTrigger>
-                  <TabsTrigger value="configure">Configure Server</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="status">
-                  <MCPServerStatus />
-                </TabsContent>
-                
-                <TabsContent value="configure">
-                  <MCPServerConfig customerId={customerId} />
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-        )}
+        <Card>
+          <CardHeader>
+            <CardTitle>Privileged Access Management</CardTitle>
+            <CardDescription>Configure MCP servers for compliance system access</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="status" className="space-y-4">
+              <TabsList>
+                <TabsTrigger value="status">Server Status</TabsTrigger>
+                <TabsTrigger value="configure">Configure Server</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="status">
+                <MCPServerStatus />
+              </TabsContent>
+              
+              <TabsContent value="configure">
+                <MCPServerConfig customerId={customerId} />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
 
         <DepartmentAIAssistant 
           department="compliance" 

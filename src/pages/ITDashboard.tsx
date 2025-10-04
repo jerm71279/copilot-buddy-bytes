@@ -173,30 +173,28 @@ const ITDashboard = () => {
           </Card>
         </div>
 
-        {hasPamAccess && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Privileged Access Management</CardTitle>
-              <CardDescription>Configure MCP servers for IT system access</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="status" className="space-y-4">
-                <TabsList>
-                  <TabsTrigger value="status">Server Status</TabsTrigger>
-                  <TabsTrigger value="configure">Configure Server</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="status">
-                  <MCPServerStatus />
-                </TabsContent>
-                
-                <TabsContent value="configure">
-                  <MCPServerConfig customerId={customerId} />
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-        )}
+        <Card>
+          <CardHeader>
+            <CardTitle>Privileged Access Management</CardTitle>
+            <CardDescription>Configure MCP servers for IT system access</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="status" className="space-y-4">
+              <TabsList>
+                <TabsTrigger value="status">Server Status</TabsTrigger>
+                <TabsTrigger value="configure">Configure Server</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="status">
+                <MCPServerStatus />
+              </TabsContent>
+              
+              <TabsContent value="configure">
+                <MCPServerConfig customerId={customerId} />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
