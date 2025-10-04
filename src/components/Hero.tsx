@@ -47,7 +47,7 @@ const Hero = () => {
           <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
             Your employees log in once and access every system—SAP, Workday, Salesforce, ServiceNow. 
             While they work, our ML platform learns from every action to predict problems, optimize workflows, 
-            and maintain compliance. More users = smarter predictions. Trusted by OberaConnect and 500+ enterprises.
+            and maintain compliance. More users = smarter predictions. Trusted by OberaConnect and over 100 enterprises.
           </p>
 
           {/* CTA Buttons */}

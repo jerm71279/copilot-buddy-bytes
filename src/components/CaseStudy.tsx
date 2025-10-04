@@ -62,8 +62,8 @@ const CaseStudy = () => {
           </Card>
           <Card className="border-border text-center">
             <CardContent className="pt-6">
-              <div className="text-4xl font-bold text-warning mb-2">500</div>
-              <div className="text-sm text-muted-foreground">Employees = 500x Data</div>
+              <div className="text-4xl font-bold text-warning mb-2">50</div>
+              <div className="text-sm text-muted-foreground">Employees = 50x Data</div>
             </CardContent>
           </Card>
           <Card className="border-border text-center">
@@ -132,7 +132,7 @@ const CaseStudy = () => {
                   <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <CheckCircle2 className="h-3 w-3 text-success" />
                   </div>
-                  <span>Single Sign-On replacing 12+ passwords for all 500 employees</span>
+                  <span>Single Sign-On replacing 12+ passwords for all 50 employees</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -180,7 +180,7 @@ const CaseStudy = () => {
                 {
                   icon: Users,
                   title: "Network Effect Intelligence",
-                  description: "500 employees = 500x more training data. More users = exponentially better predictions.",
+                  description: "50 employees = 50x more training data. More users = exponentially better predictions.",
                 },
                 {
                   icon: Shield,
@@ -250,7 +250,7 @@ const CaseStudy = () => {
                 </h4>
                 <ul className="space-y-3">
                   {[
-                    "500 employees using daily = 500x more ML training data",
+                    "50 employees using daily = 50x more ML training data",
                     "Predictive intelligence identifies problems 5 days before they occur",
                     "Employee behavioral patterns optimize workflows automatically",
                     "One platform replacing multiple access management tools",
@@ -273,11 +273,11 @@ const CaseStudy = () => {
               </blockquote>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white font-bold">
-                  JM
+                  EF
                 </div>
                 <div>
-                  <div className="font-semibold text-white">Jeremy Morrison</div>
-                  <div className="text-sm text-white/70">Chief Compliance Officer, OberaConnect</div>
+                  <div className="font-semibold text-white">Evan Fisher</div>
+                  <div className="text-sm text-white/70">CEO, OberaConnect</div>
                 </div>
               </div>
             </div>

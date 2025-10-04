@@ -4,15 +4,15 @@ import { Star } from "lucide-react";
 const testimonials = [
   {
     quote: "ComplianceOS transformed how we handle ISO 27001 compliance. The schema blocks and MCP Server made audit preparation seamless. We went from 8 weeks to 2 weeks.",
-    author: "Jeremy Morrison",
-    role: "Chief Compliance Officer",
+    author: "Devon Harris",
+    role: "Owner",
     company: "OberaConnect - MSP Company",
     rating: 5,
   },
   {
     quote: "The modular architecture was exactly what we needed. Schema blocks like IR.1 and HR.8 integrate perfectly with our workflows. Compliance is now a competitive advantage.",
-    author: "Sarah Chen",
-    role: "VP of Information Security",
+    author: "Evan Fisher",
+    role: "CEO",
     company: "OberaConnect - MSP Company",
     rating: 5,
   },
@@ -47,7 +47,7 @@ const testimonials = [
 ];
 
 const stats = [
-  { value: "500+", label: "Enterprise Customers" },
+  { value: "100+", label: "Enterprise Customers" },
   { value: "99.9%", label: "Audit Success Rate" },
   { value: "50%", label: "Time Savings" },
   { value: "4.9/5", label: "Customer Rating" },
