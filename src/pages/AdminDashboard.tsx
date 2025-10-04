@@ -10,6 +10,7 @@ import { LogOut, Users } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { MCPServerConfig } from "@/components/MCPServerConfig";
 import { AIMCPGenerator } from "@/components/AIMCPGenerator";
+import MCPExecutionLogs from "@/components/MCPExecutionLogs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoMode } from "@/hooks/useDemoMode";
 
@@ -164,12 +165,17 @@ const AdminDashboard = () => {
         <Tabs defaultValue="status" className="space-y-4">
           <TabsList>
             <TabsTrigger value="status">MCP Servers Status</TabsTrigger>
+            <TabsTrigger value="logs">Execution Logs</TabsTrigger>
             <TabsTrigger value="configure">Configure New Server</TabsTrigger>
             <TabsTrigger value="ai-generator">AI Generator</TabsTrigger>
           </TabsList>
 
           <TabsContent value="status">
             <MCPServerStatus customerId={userCustomerId} />
+          </TabsContent>
+
+          <TabsContent value="logs">
+            <MCPExecutionLogs customerId={userCustomerId} />
           </TabsContent>
 
           <TabsContent value="configure">
