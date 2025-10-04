@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, FileText, BookOpen, Lightbulb, Plus, Upload, Download } from "lucide-react";
+import { Search, FileText, BookOpen, Lightbulb, Plus, Upload, Download, Cloud } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
 
@@ -118,6 +118,12 @@ export default function KnowledgeBase() {
             <Upload className="mr-2 h-4 w-4" />
             Upload Files
           </Button>
+          <Link to="/sharepoint-sync">
+            <Button variant="outline">
+              <Cloud className="mr-2 h-4 w-4" />
+              SharePoint Sync
+            </Button>
+          </Link>
           <Button variant="outline" onClick={() => navigate("/knowledge/generate")}>
             <Lightbulb className="mr-2 h-4 w-4" />
             Generate from Workflows

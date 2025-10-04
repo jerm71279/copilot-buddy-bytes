@@ -1623,6 +1623,109 @@ export type Database = {
         }
         Relationships: []
       }
+      sharepoint_sync_config: {
+        Row: {
+          created_at: string
+          customer_id: string
+          filter_extensions: string[] | null
+          id: string
+          last_sync_at: string | null
+          library_id: string | null
+          library_name: string | null
+          site_id: string
+          site_name: string
+          site_url: string
+          sync_enabled: boolean
+          sync_frequency_minutes: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          filter_extensions?: string[] | null
+          id?: string
+          last_sync_at?: string | null
+          library_id?: string | null
+          library_name?: string | null
+          site_id: string
+          site_name: string
+          site_url: string
+          sync_enabled?: boolean
+          sync_frequency_minutes?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          filter_extensions?: string[] | null
+          id?: string
+          last_sync_at?: string | null
+          library_id?: string | null
+          library_name?: string | null
+          site_id?: string
+          site_name?: string
+          site_url?: string
+          sync_enabled?: boolean
+          sync_frequency_minutes?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sharepoint_sync_config_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sharepoint_sync_logs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          files_failed: number | null
+          files_synced: number | null
+          id: string
+          status: string
+          sync_completed_at: string | null
+          sync_config_id: string
+          sync_details: Json | null
+          sync_started_at: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          files_failed?: number | null
+          files_synced?: number | null
+          id?: string
+          status?: string
+          sync_completed_at?: string | null
+          sync_config_id: string
+          sync_details?: Json | null
+          sync_started_at?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          files_failed?: number | null
+          files_synced?: number | null
+          id?: string
+          status?: string
+          sync_completed_at?: string | null
+          sync_config_id?: string
+          sync_details?: Json | null
+          sync_started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sharepoint_sync_logs_sync_config_id_fkey"
+            columns: ["sync_config_id"]
+            isOneToOne: false
+            referencedRelation: "sharepoint_sync_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscription_plans: {
         Row: {
           created_at: string

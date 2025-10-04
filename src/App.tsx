@@ -21,6 +21,7 @@ import FinanceDashboard from "./pages/FinanceDashboard";
 import SalesDashboard from "./pages/SalesDashboard";
 import ExecutiveDashboard from "./pages/ExecutiveDashboard";
 import SOCDashboard from "./pages/SOCDashboard";
+import SharePointSync from "./pages/SharePointSync";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ApplicationsAdmin from "./pages/ApplicationsAdmin";
@@ -112,6 +113,13 @@ const App = () => (
           <Route path="/dashboard/soc" element={
             <ProtectedRoute requireAdmin>
               <SOCDashboard />
+            </ProtectedRoute>
+          } />
+          
+          {/* SharePoint Sync - Protected */}
+          <Route path="/sharepoint-sync" element={
+            <ProtectedRoute>
+              <SharePointSync />
             </ProtectedRoute>
           } />
           
