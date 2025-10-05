@@ -331,7 +331,15 @@ export default function ComplianceAuditReports() {
             {/* Data Breakdown */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {auditData.map((data) => (
-                <Card key={data.source_table}>
+                <Card 
+                  key={data.source_table}
+                  className={data.count > 0 ? "cursor-pointer hover:border-primary transition-colors" : ""}
+                  onClick={() => {
+                    if (data.count > 0) {
+                      navigate(`/compliance/framework/${selectedFramework}/records?source=${encodeURIComponent(data.source_table)}&timeRange=${selectedTimeRange}`);
+                    }
+                  }}
+                >
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg flex items-center justify-between">
                       {data.source_table}
@@ -342,8 +350,8 @@ export default function ComplianceAuditReports() {
                   </CardHeader>
                   <CardContent>
                     {data.count > 0 ? (
-                      <div className="text-sm text-muted-foreground">
-                        {data.count} compliance-tagged {data.count === 1 ? 'record' : 'records'} found
+                      <div className="text-sm text-primary font-medium">
+                        Click to view {data.count} {data.count === 1 ? 'record' : 'records'} →
                       </div>
                     ) : (
                       <div className="text-sm text-muted-foreground">

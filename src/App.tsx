@@ -29,13 +29,14 @@ import ApplicationsAdmin from "./pages/ApplicationsAdmin";
 import OnboardingDashboard from "./pages/OnboardingDashboard";
 import OnboardingTemplates from "./pages/OnboardingTemplates";
 import CompliancePortal from "./pages/CompliancePortal";
+import ComplianceFrameworkDetail from "./pages/ComplianceFrameworkDetail";
+import ComplianceFrameworkRecords from "./pages/ComplianceFrameworkRecords";
+import ComplianceAuditReports from "./pages/ComplianceAuditReports";
+import ComplianceEvidenceUpload from "./pages/ComplianceEvidenceUpload";
+import ComplianceReportDetail from "./pages/ComplianceReportDetail";
 import WorkflowAutomation from "./pages/WorkflowAutomation";
 import NinjaOneIntegration from "./pages/NinjaOneIntegration";
 import PrivilegedAccessAudit from "./pages/PrivilegedAccessAudit";
-import ComplianceAuditReports from "./pages/ComplianceAuditReports";
-import ComplianceFrameworkDetail from "./pages/ComplianceFrameworkDetail";
-import ComplianceEvidenceUpload from "./pages/ComplianceEvidenceUpload";
-import ComplianceReportDetail from "./pages/ComplianceReportDetail";
 
 import WorkflowBuilder from "./pages/WorkflowBuilder";
 
@@ -199,6 +200,13 @@ const App = () => (
           <Route path="/compliance/audit-reports" element={
             <ProtectedRoute>
               <ComplianceAuditReports />
+            </ProtectedRoute>
+          } />
+          
+          {/* Compliance Framework Records - Protected */}
+          <Route path="/compliance/framework/:framework/records" element={
+            <ProtectedRoute>
+              <ComplianceFrameworkRecords />
             </ProtectedRoute>
           } />
           
