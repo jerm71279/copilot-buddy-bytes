@@ -142,22 +142,23 @@ All deployed and operational:
 - **Lovable Platform Subscription**: $200/year
 - **Lovable Cloud Usage** (database, storage, edge functions): Estimated $50-200/month based on usage
 - **Lovable AI Usage** (AI API calls): Estimated $50-150/month based on usage
-- **Total Estimated Operating Cost**: $1,400-4,400/year
+- **In-house Programmer** (development & lifecycle management): $90,000-100,000/year
+- **Total Estimated Operating Cost**: $91,400-104,400/year
 
 ### Total Year 1 Cost
 - **Initial Investment**: $200
-- **Year 1 Operating Costs**: $1,400-4,400
-- **Total Year 1 Cost**: $1,600-4,600
+- **Year 1 Operating Costs**: $91,400-104,400
+- **Total Year 1 Cost**: $91,600-104,600
 
 ### Year 1 ROI Projection
-- **Total Year 1 Cost**: $1,600-4,600
+- **Total Year 1 Cost**: $91,600-104,600
 - **Projected Benefits**: $418,400/year
   - Onboarding acceleration: $62,500 (25 clients × 50 hours × $50/hr)
   - Operational efficiency: $200,000
   - Client retention: $100,000
   - Revenue growth: $55,900
-- **Net Benefit Year 1**: $413,800-416,800
-- **ROI**: **9,062%-26,050%** (still exceptional ROI with usage-based costs)
+- **Net Benefit Year 1**: $313,800-326,800
+- **ROI**: **300%-357%** (strong ROI even with dedicated programmer)
 
 ---
 
