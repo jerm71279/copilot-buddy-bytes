@@ -88,11 +88,12 @@ graph TB
             MCPLogs[mcp_execution_logs]
         end
         
-        subgraph "Compliance"
+        subgraph "Compliance & Audit"
             CompFrameworks[compliance_frameworks]
             CompControls[compliance_controls]
             CompReports[compliance_reports]
             AuditLogs[audit_logs]
+            PrivAccess[Privileged Access Audit]
         end
         
         RLS[Row Level Security<br/>Policies]
@@ -313,6 +314,19 @@ Conditional branching logic for workflows.
 - **Fields**: step_id, condition_type, condition_expression (JSONB), true_path (JSONB), false_path (JSONB)
 - **RLS Policy**: Admin-only management
 
+#### `audit_logs`
+Comprehensive audit trail for privileged access and system actions.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `user_id` → auth.users, `customer_id` → customers
+- **Fields**: action_type, system_name, action_details (JSONB), compliance_tags[], timestamp, ip_address, user_agent
+- **Purpose**: Track all privileged access to RMM systems (NinjaOne, etc.), compliance actions, and security-critical operations
+- **RLS Policy**: Users can view their customer's audit logs based on role permissions
+- **Use Cases**: 
+  - Privileged access tracking (who accessed which RMM system and when)
+  - Compliance reporting (SOC2, HIPAA audit requirements)
+  - Security incident investigation
+  - Cross-platform activity correlation
+
 ## 🧩 Frontend Architecture
 
 ### Component Hierarchy
@@ -363,6 +377,13 @@ App.tsx (Root)
 - **`useDemoMode`**: Detects preview/demo environment
   - Returns: `{ isDemoMode: boolean }`
 
+- **`useAuditLog`**: Centralized audit logging for privileged access and compliance
+  - Automatically logs user, customer, and timestamp information
+  - Provides `logAction()` for general audit events
+  - Provides `logPrivilegedAccess()` for RMM/privileged system access
+  - Tags logs with compliance categories (e.g., 'privileged_access', 'rmm', 'ninjaone')
+  - Returns: `{ logAction, logPrivilegedAccess }`
+
 ### Routing Strategy
 
 **React Router v6** with role-based access:
@@ -372,6 +393,7 @@ App.tsx (Root)
 - `/integrations` → Integration details (public)
 - `/admin` → Admin dashboard (admin role)
 - `/dashboard/:department` → Department dashboards (role-based)
+- `/privileged-access-audit` → Privileged access audit logs (admin/compliance role)
 
 Each dashboard component:
 1. Checks authentication state

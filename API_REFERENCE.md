@@ -240,6 +240,77 @@ const { data, error } = await supabase
   .eq('customer_id', customerId);
 ```
 
+#### Audit Logs
+```typescript
+// Fetch all audit logs for customer (with user profile data)
+const { data, error } = await supabase
+  .from('audit_logs')
+  .select(`
+    *,
+    user_profiles (
+      full_name,
+      department
+    )
+  `)
+  .eq('customer_id', customerId)
+  .order('timestamp', { ascending: false })
+  .limit(100);
+
+// Fetch privileged access logs only
+const { data, error } = await supabase
+  .from('audit_logs')
+  .select('*')
+  .eq('customer_id', customerId)
+  .contains('compliance_tags', ['privileged_access'])
+  .order('timestamp', { ascending: false });
+
+// Filter by system (e.g., NinjaOne)
+const { data, error } = await supabase
+  .from('audit_logs')
+  .select('*')
+  .eq('customer_id', customerId)
+  .eq('system_name', 'ninjaone')
+  .order('timestamp', { ascending: false });
+
+// Create audit log entry using hook
+import { useAuditLog } from '@/hooks/useAuditLog';
+
+const MyComponent = () => {
+  const { logPrivilegedAccess } = useAuditLog();
+  
+  const handleRMMAccess = async () => {
+    await logPrivilegedAccess('ninjaone', 'view_devices', {
+      device_count: 150,
+      alert_count: 3
+    });
+  };
+};
+```
+
+**Audit Log Schema**:
+```typescript
+interface AuditLog {
+  id: string;
+  created_at: string;
+  user_id: string;
+  customer_id: string;
+  action_type: string;        // e.g., 'privileged_view_devices', 'connection_attempt'
+  system_name: string;         // e.g., 'ninjaone', 'azure', 'keeper'
+  action_details: object;      // JSONB with context-specific data
+  compliance_tags: string[];   // e.g., ['privileged_access', 'rmm', 'ninjaone']
+  timestamp: string;
+  ip_address?: string;
+  user_agent?: string;
+}
+```
+
+**Common Compliance Tags**:
+- `privileged_access`: Any RMM or admin-level system access
+- `rmm`: Remote monitoring and management actions
+- `ninjaone`: Specific to NinjaOne platform
+- `security`: Security-related actions
+- `compliance`: Compliance framework actions
+
 ### Query Patterns
 
 #### Filtering

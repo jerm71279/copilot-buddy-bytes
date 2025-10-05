@@ -107,6 +107,8 @@ The alternative was using Tailwind's JIT with dynamic classes, but that would re
 - [ ] Document any schema changes made
 - [ ] Update data flow diagrams
 - [ ] Reflect new modules or components added
+- [ ] Document new hooks (e.g., useAuditLog)
+- [ ] Update routing table with new pages
 
 #### 3. ONBOARDING.md
 - [ ] Add any new learning resources discovered
@@ -120,8 +122,9 @@ The alternative was using Tailwind's JIT with dynamic classes, but that would re
 
 #### 5. API_REFERENCE.md
 - [ ] Document new edge functions
-- [ ] Add any new database tables or fields
+- [ ] Add any new database tables or fields (e.g., audit_logs)
 - [ ] Update query examples if patterns changed
+- [ ] Document new hooks and their usage patterns
 
 ### Creating a Custom Handoff Document
 
