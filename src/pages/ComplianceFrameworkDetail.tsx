@@ -160,7 +160,11 @@ export default function ComplianceFrameworkDetail() {
             <CardContent>
               <div className="space-y-4">
                 {controls.map((control) => (
-                  <div key={control.id} className="border-b pb-4 last:border-0">
+                  <div 
+                    key={control.id} 
+                    className="border-b pb-4 last:border-0 cursor-pointer hover:bg-muted/50 p-3 rounded-lg transition-colors"
+                    onClick={() => navigate(`/compliance/frameworks/${id}/controls/${control.id}`)}
+                  >
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <h4 className="font-semibold">{control.control_name}</h4>
@@ -171,8 +175,9 @@ export default function ComplianceFrameworkDetail() {
                     {control.description && (
                       <p className="text-sm text-muted-foreground mb-2">{control.description}</p>
                     )}
-                    <div className="flex gap-2 text-xs text-muted-foreground">
-                      <span>Automation: {control.automation_level}</span>
+                    <div className="flex gap-2 text-xs">
+                      <span className="text-muted-foreground">Automation: {control.automation_level}</span>
+                      <span className="text-primary font-medium">Click to view details →</span>
                     </div>
                   </div>
                 ))}

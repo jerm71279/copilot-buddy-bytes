@@ -31,6 +31,7 @@ import OnboardingTemplates from "./pages/OnboardingTemplates";
 import CompliancePortal from "./pages/CompliancePortal";
 import ComplianceFrameworkDetail from "./pages/ComplianceFrameworkDetail";
 import ComplianceFrameworkRecords from "./pages/ComplianceFrameworkRecords";
+import ComplianceControlDetail from "./pages/ComplianceControlDetail";
 import ComplianceAuditReports from "./pages/ComplianceAuditReports";
 import ComplianceEvidenceUpload from "./pages/ComplianceEvidenceUpload";
 import ComplianceReportDetail from "./pages/ComplianceReportDetail";
@@ -214,6 +215,13 @@ const App = () => (
           <Route path="/compliance/frameworks/:id" element={
             <ProtectedRoute>
               <ComplianceFrameworkDetail />
+            </ProtectedRoute>
+          } />
+          
+          {/* Compliance Control Detail - Protected */}
+          <Route path="/compliance/frameworks/:frameworkId/controls/:controlId" element={
+            <ProtectedRoute>
+              <ComplianceControlDetail />
             </ProtectedRoute>
           } />
           <Route path="/compliance/evidence/upload" element={
