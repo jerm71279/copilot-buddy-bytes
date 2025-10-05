@@ -38,6 +38,7 @@ import ComplianceReportDetail from "./pages/ComplianceReportDetail";
 import WorkflowAutomation from "./pages/WorkflowAutomation";
 import NinjaOneIntegration from "./pages/NinjaOneIntegration";
 import PrivilegedAccessAudit from "./pages/PrivilegedAccessAudit";
+import TestWorkflowEvidence from "./pages/TestWorkflowEvidence";
 
 import WorkflowBuilder from "./pages/WorkflowBuilder";
 
@@ -227,6 +228,13 @@ const App = () => (
           <Route path="/compliance/evidence/upload" element={
             <ProtectedRoute>
               <ComplianceEvidenceUpload />
+            </ProtectedRoute>
+          } />
+          
+          {/* Test Workflow Evidence - Admin Only */}
+          <Route path="/test/workflow-evidence" element={
+            <ProtectedRoute requireAdmin>
+              <TestWorkflowEvidence />
             </ProtectedRoute>
           } />
           <Route path="/compliance/reports/:id" element={
