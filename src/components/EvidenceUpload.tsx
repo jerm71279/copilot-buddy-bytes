@@ -190,10 +190,9 @@ export default function EvidenceUpload({ frameworkId, controlId, onUploadComplet
             disabled={!selectedFramework || !!controlId}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select control" />
+              <SelectValue placeholder="Select control (optional)" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">None</SelectItem>
               {controls.map((ctrl) => (
                 <SelectItem key={ctrl.id} value={ctrl.control_id}>
                   {ctrl.control_id} - {ctrl.control_name}
