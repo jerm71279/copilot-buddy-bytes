@@ -200,7 +200,7 @@ Format your response as JSON with this structure:
         .from("knowledge_insights")
         .insert({
           customer_id: executions?.[0]?.customer_id || '00000000-0000-0000-0000-000000000000',
-          insight_type: "workflow_optimization",
+          insight_type: "optimization", // Valid values: pattern, recommendation, gap_analysis, trend, optimization
           title: `${metricName} Workflow Optimization in ${department}`,
           description: `${insights.prediction}\n\nKey Recommendations:\n${insights.recommendations.map((r: string, i: number) => `${i + 1}. ${r}`).join('\n')}\n\nRisk Factors:\n${insights.risk_factors.map((r: string, i: number) => `${i + 1}. ${r}`).join('\n')}`,
           confidence_score: insights.confidence / 100,
@@ -216,6 +216,8 @@ Format your response as JSON with this structure:
 
       if (insightError) {
         console.error("Failed to create knowledge insight:", insightError);
+      } else {
+        console.log("✅ Created knowledge insight from workflow analysis");
       }
 
       // Step 7: Auto-create knowledge article for high-confidence insights

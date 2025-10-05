@@ -157,6 +157,52 @@ const AdminDashboard = () => {
           <h1 className="text-2xl font-bold">Admin Dashboard</h1>
           {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
         </div>
+
+        {/* Testing & Validation Quick Access */}
+        <div className="grid gap-4 md:grid-cols-3 mb-6">
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/test/validation')}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">System Validation</CardTitle>
+                <Badge variant="secondary">Testing</Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Run comprehensive validation tests for database, RLS, functions, and performance
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/test/comprehensive')}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">Data & Security Tests</CardTitle>
+                <Badge variant="secondary">Testing</Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Generate test data, run fuzz tests, and trace database flows
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/applications')}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">Application Management</CardTitle>
+                <Badge variant="secondary">Admin</Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Manage applications in the app launcher
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
         <Tabs defaultValue="status" className="space-y-4">
           <TabsList>
             <TabsTrigger value="status">MCP Servers Status</TabsTrigger>

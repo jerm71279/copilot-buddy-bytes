@@ -42,6 +42,8 @@ import PrivilegedAccessAudit from "./pages/PrivilegedAccessAudit";
 import TestWorkflowEvidence from "./pages/TestWorkflowEvidence";
 import ComprehensiveTestDashboard from "./pages/ComprehensiveTestDashboard";
 
+import SystemValidationDashboard from "./pages/SystemValidationDashboard";
+
 import WorkflowBuilder from "./pages/WorkflowBuilder";
 
 const queryClient = new QueryClient();
@@ -249,6 +251,13 @@ const App = () => (
           <Route path="/test/comprehensive" element={
             <ProtectedRoute requireAdmin>
               <ComprehensiveTestDashboard />
+            </ProtectedRoute>
+          } />
+          
+          {/* System Validation Dashboard - Admin Only */}
+          <Route path="/test/validation" element={
+            <ProtectedRoute requireAdmin>
+              <SystemValidationDashboard />
             </ProtectedRoute>
           } />
           
