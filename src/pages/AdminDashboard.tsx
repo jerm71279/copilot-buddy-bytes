@@ -150,7 +150,23 @@ const AdminDashboard = () => {
       <Navigation />
 
       <div className="container mx-auto px-4 py-8 space-y-8 pt-24">
-        <DashboardNavigation title="Admin Dashboard" dashboardPath="/admin" />
+        <DashboardNavigation 
+          title="Admin Dashboard" 
+          dashboardPath="/admin"
+          dashboards={[
+            { name: "Admin Dashboard", path: "/admin" },
+            { name: "Employee Portal", path: "/portal" },
+            { name: "Analytics Portal", path: "/analytics-portal" },
+            { name: "Compliance Dashboard", path: "/compliance" },
+            { name: "Executive Dashboard", path: "/executive" },
+            { name: "Finance Dashboard", path: "/finance" },
+            { name: "HR Dashboard", path: "/hr" },
+            { name: "IT Dashboard", path: "/it" },
+            { name: "Operations Dashboard", path: "/operations" },
+            { name: "Sales Dashboard", path: "/sales" },
+            { name: "SOC Dashboard", path: "/soc" },
+          ]}
+        />
         
         <div className="flex items-center gap-2 mb-6">
           <Users className="h-6 w-6 text-primary" />

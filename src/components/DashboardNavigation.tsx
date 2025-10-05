@@ -1,14 +1,26 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LayoutDashboard } from "lucide-react";
+import { ArrowLeft, LayoutDashboard, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+interface Dashboard {
+  name: string;
+  path: string;
+}
 
 interface DashboardNavigationProps {
   title?: string;
   showTitle?: boolean;
   dashboardPath?: string; // Allow custom dashboard path
+  dashboards?: Dashboard[]; // Optional list of dashboards for dropdown
 }
 
-const DashboardNavigation = ({ title, showTitle = false, dashboardPath = '/portal' }: DashboardNavigationProps) => {
+const DashboardNavigation = ({ title, showTitle = false, dashboardPath = '/portal', dashboards }: DashboardNavigationProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -40,15 +52,42 @@ const DashboardNavigation = ({ title, showTitle = false, dashboardPath = '/porta
         <ArrowLeft className="h-4 w-4" />
         Back
       </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleDashboards}
-        className="gap-2"
-      >
-        <LayoutDashboard className="h-4 w-4" />
-        Dashboards
-      </Button>
+      {dashboards && dashboards.length > 0 ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              Dashboards
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56 bg-background">
+            {dashboards.map((dashboard) => (
+              <DropdownMenuItem
+                key={dashboard.path}
+                onClick={() => navigate(dashboard.path)}
+                className="cursor-pointer"
+              >
+                {dashboard.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleDashboards}
+          className="gap-2"
+        >
+          <LayoutDashboard className="h-4 w-4" />
+          Dashboards
+        </Button>
+      )}
       {showTitle && title && (
         <h1 className="text-2xl font-bold ml-4">{title}</h1>
       )}
