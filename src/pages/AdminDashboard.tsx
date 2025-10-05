@@ -150,7 +150,7 @@ const AdminDashboard = () => {
       <Navigation />
 
       <div className="container mx-auto px-4 py-8 space-y-8 pt-24">
-        <DashboardNavigation title="Admin Dashboard" />
+        <DashboardNavigation title="Admin Dashboard" dashboardPath="/admin" />
         
         <div className="flex items-center gap-2 mb-6">
           <Users className="h-6 w-6 text-primary" />
