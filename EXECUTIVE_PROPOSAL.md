@@ -343,12 +343,11 @@ Tailored interfaces for each functional area:
 - **Annual Savings**: $45,500
 
 **5. Client Onboarding Acceleration**
-- Reduced onboarding time: 40 hours → 15 hours per client
-- Capacity for 10 additional clients/year
-- Average client value: $60,000/year × 10 clients
-- **Additional Revenue Capacity**: $600,000/year
+- 25 clients/year × 50 hours saved per client (1 hour × 50 employees)
+- Average blended labor cost: $100/hour × 50 hours = $5,000 per client
+- **Annual Savings**: $125,000/year
 
-**Total Quantifiable Annual Benefit**: $955,900
+**Total Quantifiable Annual Benefit**: $480,900
 
 ---
 
@@ -356,20 +355,20 @@ Tailored interfaces for each functional area:
 
 **Year 1:**
 - Total Investment: $200
-- Annual Benefit: $955,900 (projected)
-- **Net Benefit Year 1**: $955,700
-- **ROI Year 1**: 477,850%
+- Annual Benefit: $480,900
+- **Net Benefit Year 1**: $480,700
+- **ROI Year 1**: 240,350%
 
 **Year 2:**
 - Operating Cost: $200
-- Annual Benefit: $955,900 (conservative, no growth)
-- **Net Benefit Year 2**: $955,700
-- **Cumulative ROI**: 955,400%
+- Annual Benefit: $480,900 (conservative, no growth)
+- **Net Benefit Year 2**: $480,700
+- **Cumulative ROI**: 480,700%
 
 **3-Year Total:**
 - Total Investment: $600 (3 years × $200)
-- Total Benefit: $2,867,700
-- **3-Year ROI**: 477,950%
+- Total Benefit: $1,442,700
+- **3-Year ROI**: 240,450%
 
 ---
 

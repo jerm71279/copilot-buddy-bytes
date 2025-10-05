@@ -149,9 +149,13 @@ All deployed and operational:
 
 ### Year 1 ROI Projection
 - **Operating Cost**: $200/year
-- **Projected Benefits**: $955,900/year
-- **Net Benefit Year 1**: $955,700
-- **ROI**: **477,850%** (exceptional ROI due to minimal investment)
+- **Projected Benefits**: $480,900/year
+  - Onboarding acceleration: $125,000 (25 clients × 50 hours × $100/hr)
+  - Operational efficiency: $200,000
+  - Client retention: $100,000
+  - Revenue growth: $55,900
+- **Net Benefit Year 1**: $480,700
+- **ROI**: **240,350%** (exceptional ROI due to minimal investment)
 
 ---
 
