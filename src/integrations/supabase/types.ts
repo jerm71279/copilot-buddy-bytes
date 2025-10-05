@@ -17,6 +17,7 @@ export type Database = {
       ai_interactions: {
         Row: {
           ai_response: string
+          compliance_tags: string[] | null
           confidence_score: number | null
           conversation_id: string
           created_at: string
@@ -33,6 +34,7 @@ export type Database = {
         }
         Insert: {
           ai_response: string
+          compliance_tags?: string[] | null
           confidence_score?: number | null
           conversation_id: string
           created_at?: string
@@ -49,6 +51,7 @@ export type Database = {
         }
         Update: {
           ai_response?: string
+          compliance_tags?: string[] | null
           confidence_score?: number | null
           conversation_id?: string
           created_at?: string
@@ -130,6 +133,7 @@ export type Database = {
         Row: {
           affected_user_id: string | null
           anomaly_type: string
+          compliance_tags: string[] | null
           confidence_score: number | null
           created_at: string
           customer_id: string
@@ -145,6 +149,7 @@ export type Database = {
         Insert: {
           affected_user_id?: string | null
           anomaly_type: string
+          compliance_tags?: string[] | null
           confidence_score?: number | null
           created_at?: string
           customer_id: string
@@ -160,6 +165,7 @@ export type Database = {
         Update: {
           affected_user_id?: string | null
           anomaly_type?: string
+          compliance_tags?: string[] | null
           confidence_score?: number | null
           created_at?: string
           customer_id?: string
@@ -313,6 +319,7 @@ export type Database = {
       behavioral_events: {
         Row: {
           action: string
+          compliance_tags: string[] | null
           context: Json | null
           created_at: string
           customer_id: string
@@ -326,6 +333,7 @@ export type Database = {
         }
         Insert: {
           action: string
+          compliance_tags?: string[] | null
           context?: Json | null
           created_at?: string
           customer_id: string
@@ -339,6 +347,7 @@ export type Database = {
         }
         Update: {
           action?: string
+          compliance_tags?: string[] | null
           context?: Json | null
           created_at?: string
           customer_id?: string
@@ -993,6 +1002,7 @@ export type Database = {
       }
       evidence_files: {
         Row: {
+          compliance_tags: string[] | null
           control_id: string | null
           created_at: string
           customer_id: string
@@ -1007,6 +1017,7 @@ export type Database = {
           uploaded_by: string
         }
         Insert: {
+          compliance_tags?: string[] | null
           control_id?: string | null
           created_at?: string
           customer_id: string
@@ -1021,6 +1032,7 @@ export type Database = {
           uploaded_by: string
         }
         Update: {
+          compliance_tags?: string[] | null
           control_id?: string | null
           created_at?: string
           customer_id?: string
@@ -1053,6 +1065,7 @@ export type Database = {
       }
       integration_credentials: {
         Row: {
+          compliance_tags: string[] | null
           created_at: string
           credential_type: string
           customer_id: string
@@ -1063,6 +1076,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          compliance_tags?: string[] | null
           created_at?: string
           credential_type: string
           customer_id: string
@@ -1073,6 +1087,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          compliance_tags?: string[] | null
           created_at?: string
           credential_type?: string
           customer_id?: string
@@ -1150,6 +1165,7 @@ export type Database = {
         Row: {
           access_type: string
           article_id: string | null
+          compliance_tags: string[] | null
           customer_id: string
           id: string
           search_query: string | null
@@ -1159,6 +1175,7 @@ export type Database = {
         Insert: {
           access_type: string
           article_id?: string | null
+          compliance_tags?: string[] | null
           customer_id: string
           id?: string
           search_query?: string | null
@@ -1168,6 +1185,7 @@ export type Database = {
         Update: {
           access_type?: string
           article_id?: string | null
+          compliance_tags?: string[] | null
           customer_id?: string
           id?: string
           search_query?: string | null
@@ -1431,6 +1449,7 @@ export type Database = {
       }
       mcp_execution_logs: {
         Row: {
+          compliance_tags: string[] | null
           customer_id: string
           error_message: string | null
           execution_time_ms: number | null
@@ -1445,6 +1464,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          compliance_tags?: string[] | null
           customer_id: string
           error_message?: string | null
           execution_time_ms?: number | null
@@ -1459,6 +1479,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          compliance_tags?: string[] | null
           customer_id?: string
           error_message?: string | null
           execution_time_ms?: number | null
@@ -2230,6 +2251,7 @@ export type Database = {
       system_access_logs: {
         Row: {
           access_type: string
+          compliance_tags: string[] | null
           created_at: string
           customer_id: string
           id: string
@@ -2241,6 +2263,7 @@ export type Database = {
         }
         Insert: {
           access_type: string
+          compliance_tags?: string[] | null
           created_at?: string
           customer_id: string
           id?: string
@@ -2252,6 +2275,7 @@ export type Database = {
         }
         Update: {
           access_type?: string
+          compliance_tags?: string[] | null
           created_at?: string
           customer_id?: string
           id?: string
@@ -2534,6 +2558,7 @@ export type Database = {
       workflow_executions: {
         Row: {
           completed_at: string | null
+          compliance_tags: string[] | null
           created_at: string
           customer_id: string
           error_message: string | null
@@ -2547,6 +2572,7 @@ export type Database = {
         }
         Insert: {
           completed_at?: string | null
+          compliance_tags?: string[] | null
           created_at?: string
           customer_id: string
           error_message?: string | null
@@ -2560,6 +2586,7 @@ export type Database = {
         }
         Update: {
           completed_at?: string | null
+          compliance_tags?: string[] | null
           created_at?: string
           customer_id?: string
           error_message?: string | null
@@ -2634,6 +2661,7 @@ export type Database = {
       workflows: {
         Row: {
           avg_completion_time: number | null
+          compliance_tags: string[] | null
           created_at: string
           customer_id: string
           description: string | null
@@ -2651,6 +2679,7 @@ export type Database = {
         }
         Insert: {
           avg_completion_time?: number | null
+          compliance_tags?: string[] | null
           created_at?: string
           customer_id: string
           description?: string | null
@@ -2668,6 +2697,7 @@ export type Database = {
         }
         Update: {
           avg_completion_time?: number | null
+          compliance_tags?: string[] | null
           created_at?: string
           customer_id?: string
           description?: string | null
