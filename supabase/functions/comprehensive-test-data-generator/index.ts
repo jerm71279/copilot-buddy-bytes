@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
             category_id: categories?.[0]?.id,
             title: 'Password Policy Requirements',
             content: 'All passwords must be at least 12 characters and include uppercase, lowercase, numbers, and special characters.',
-            article_type: 'policy',
+            article_type: 'sop',
             status: 'published',
             created_by: testUserId,
             tags: ['security', 'authentication', 'policy']
@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
             category_id: categories?.[1]?.id,
             title: 'Server Backup Procedures',
             content: 'Daily automated backups run at 2 AM. Manual backups can be triggered from the admin panel.',
-            article_type: 'procedure',
+            article_type: 'sop',
             status: 'published',
             created_by: testUserId,
             tags: ['backup', 'operations', 'maintenance']
