@@ -24,6 +24,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,7 @@ interface WorkflowExecution {
 }
 
 export const WorkflowExecutionHistory = ({ customerId }: { customerId: string }) => {
+  const navigate = useNavigate();
   const [executions, setExecutions] = useState<WorkflowExecution[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const isDemoMode = customerId === "demo-customer";
@@ -197,7 +199,11 @@ export const WorkflowExecutionHistory = ({ customerId }: { customerId: string })
           /* List of execution records */
           <div className="space-y-4">
             {executions.map((execution) => (
-              <Card key={execution.id}>
+              <Card 
+                key={execution.id} 
+                className="cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => navigate(`/workflow/execution/${execution.id}`)}
+              >
                 <CardContent className="pt-6">
                   {/* Execution Header: Status, name, timing */}
                   <div className="flex items-start justify-between mb-4">
