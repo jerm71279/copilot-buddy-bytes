@@ -186,7 +186,7 @@ const AnalyticsPortal = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <DashboardNavigation title="Analytics & Insights Portal" />
+        <DashboardNavigation title="Analytics & Insights Portal" dashboardPath="/admin" />
         
         {/* Key Metrics */}
         <section className="mb-12">

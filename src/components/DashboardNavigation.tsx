@@ -5,9 +5,10 @@ import { ArrowLeft, LayoutDashboard } from "lucide-react";
 interface DashboardNavigationProps {
   title?: string;
   showTitle?: boolean;
+  dashboardPath?: string; // Allow custom dashboard path
 }
 
-const DashboardNavigation = ({ title, showTitle = false }: DashboardNavigationProps) => {
+const DashboardNavigation = ({ title, showTitle = false, dashboardPath = '/portal' }: DashboardNavigationProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -16,12 +17,15 @@ const DashboardNavigation = ({ title, showTitle = false }: DashboardNavigationPr
   };
 
   const handleDashboards = () => {
-    // Navigate to portal and scroll to dashboards section
-    if (location.pathname === '/portal') {
+    // Special handling for portal with scroll
+    if (dashboardPath === '/portal' && location.pathname === '/portal') {
       const dashboardsSection = document.getElementById('dashboards-section');
       dashboardsSection?.scrollIntoView({ behavior: 'smooth' });
-    } else {
+    } else if (dashboardPath === '/portal') {
       navigate('/portal', { state: { scrollToDashboards: true } });
+    } else {
+      // Navigate to specified dashboard path
+      navigate(dashboardPath);
     }
   };
 
