@@ -16,7 +16,13 @@ const DashboardNavigation = ({ title, showTitle = false }: DashboardNavigationPr
   };
 
   const handleDashboards = () => {
-    navigate('/portal');
+    // Navigate to portal and scroll to dashboards section
+    if (location.pathname === '/portal') {
+      const dashboardsSection = document.getElementById('dashboards-section');
+      dashboardsSection?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/portal', { state: { scrollToDashboards: true } });
+    }
   };
 
   return (

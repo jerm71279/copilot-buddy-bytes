@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Shield, Activity, Clock, FileText, BookOpen, Workflow, BarChart3, Settings, ExternalLink, Brain, Zap, Calendar, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import EmployeeToolbar from "@/components/EmployeeToolbar";
 import ExternalSystemsBar from "@/components/ExternalSystemsBar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,6 +13,7 @@ import { AppLauncher } from "@/components/AppLauncher";
 
 const Portal = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [customerData, setCustomerData] = useState<any>(null);
   const [userDepartment, setUserDepartment] = useState<string | null>(null);
@@ -22,6 +23,16 @@ const Portal = () => {
   useEffect(() => {
     loadCustomerData();
   }, []);
+
+  useEffect(() => {
+    // Handle scroll to dashboards section
+    if (location.state?.scrollToDashboards) {
+      setTimeout(() => {
+        const dashboardsSection = document.getElementById('dashboards-section');
+        dashboardsSection?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [location]);
 
   const loadCustomerData = async () => {
     try {
@@ -285,7 +296,7 @@ const Portal = () => {
             </section>
 
             {/* Analytics & Insights - SECONDARY */}
-            <section>
+            <section id="dashboards-section">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-semibold">Analytics & Insights</h3>
                 <p className="text-sm text-muted-foreground">Explore detailed metrics and reports</p>
