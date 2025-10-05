@@ -39,7 +39,7 @@ const AnalyticsPortal = () => {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile?.customer_id) return;
 

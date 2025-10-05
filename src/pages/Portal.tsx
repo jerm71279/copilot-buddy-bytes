@@ -44,7 +44,7 @@ const Portal = () => {
         .from("user_profiles")
         .select("*")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       // If profile has customer_id, fetch customer data
       let customerInfo = null;
@@ -53,7 +53,7 @@ const Portal = () => {
           .from("customers")
           .select("*")
           .eq("id", profile.customer_id)
-          .single();
+          .maybeSingle();
         customerInfo = customer;
       }
 
