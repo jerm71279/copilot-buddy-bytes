@@ -19,6 +19,10 @@ interface WorkflowExecution {
   execution_log: any;
   triggered_by: string;
   error_message: string | null;
+  workflows?: {
+    workflow_name: string;
+    description: string | null;
+  };
 }
 
 interface AIInsight {
@@ -53,7 +57,10 @@ const WorkflowDetail = () => {
     try {
       const { data, error } = await supabase
         .from("workflow_executions")
-        .select("*")
+        .select(`
+          *,
+          workflows(workflow_name, description)
+        `)
         .order("started_at", { ascending: false })
         .limit(20);
 
@@ -313,26 +320,49 @@ const WorkflowDetail = () => {
               <CardContent>
                 <div className="space-y-4">
                   {executions.slice(0, 10).map((execution) => (
-                    <div key={execution.id} className="border rounded-lg p-4 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                    <div key={execution.id} className="border rounded-lg p-4 space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3 flex-1">
                           {getStatusIcon(execution.status)}
-                          <span className="font-medium">Execution {execution.id.slice(0, 8)}</span>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-base">
+                              {execution.workflows?.workflow_name || "Unknown Workflow"}
+                            </h4>
+                            {execution.workflows?.description && (
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {execution.workflows.description}
+                              </p>
+                            )}
+                          </div>
                         </div>
                         <Badge variant={execution.status === "completed" ? "default" : "destructive"}>
                           {execution.status}
                         </Badge>
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        <p>Started: {new Date(execution.started_at).toLocaleString()}</p>
-                        {execution.completed_at && (
-                          <p>Duration: {((new Date(execution.completed_at).getTime() - new Date(execution.started_at).getTime()) / 1000 / 60).toFixed(2)} min</p>
-                        )}
-                        <p>Triggered by: {execution.triggered_by}</p>
+                      
+                      <div className="bg-muted/50 p-3 rounded-md space-y-2">
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="font-medium">
+                            {execution.triggered_by === 'manual' && '👤 Manual Execution'}
+                            {execution.triggered_by === 'webhook' && '🔗 Webhook Triggered'}
+                            {execution.triggered_by === 'schedule' && '⏰ Scheduled Run'}
+                            {!['manual', 'webhook', 'schedule'].includes(execution.triggered_by) && `Triggered: ${execution.triggered_by}`}
+                          </span>
+                        </div>
+                        <div className="text-xs text-muted-foreground space-y-1">
+                          <p>Started: {new Date(execution.started_at).toLocaleString()}</p>
+                          {execution.completed_at && (
+                            <p>Duration: {((new Date(execution.completed_at).getTime() - new Date(execution.started_at).getTime()) / 1000 / 60).toFixed(2)} min</p>
+                          )}
+                          {execution.execution_log && Array.isArray(execution.execution_log) && execution.execution_log.length > 0 && (
+                            <p>Steps completed: {execution.execution_log.length}</p>
+                          )}
+                        </div>
                       </div>
+                      
                       {execution.error_message && (
-                        <div className="bg-destructive/10 text-destructive p-2 rounded text-sm">
-                          {execution.error_message}
+                        <div className="bg-destructive/10 text-destructive p-3 rounded text-sm border border-destructive/20">
+                          <strong>Error:</strong> {execution.error_message}
                         </div>
                       )}
                     </div>

@@ -201,26 +201,31 @@ export const WorkflowExecutionHistory = ({ customerId }: { customerId: string })
                 <CardContent className="pt-6">
                   {/* Execution Header: Status, name, timing */}
                   <div className="flex items-start justify-between mb-4">
-                    <div className="space-y-1">
+                    <div className="space-y-1 flex-1">
                       <div className="flex items-center gap-2">
                         {getStatusIcon(execution.status)}
-                        <h4 className="font-semibold">
+                        <h4 className="font-semibold text-lg">
                           {execution.workflows?.workflow_name || "Unknown Workflow"}
                         </h4>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>
-                          Triggered: {new Date(execution.started_at).toLocaleString()}
-                        </span>
-                        <span>•</span>
-                        <span>
-                          Duration: {formatDuration(execution.started_at, execution.completed_at)}
-                        </span>
+                      <div className="text-sm text-muted-foreground">
+                        <p className="font-medium">
+                          {execution.triggered_by === 'manual' && '👤 Manual execution'}
+                          {execution.triggered_by === 'webhook' && '🔗 Triggered by webhook'}
+                          {execution.triggered_by === 'schedule' && '⏰ Scheduled execution'}
+                          {!['manual', 'webhook', 'schedule'].includes(execution.triggered_by) && `Triggered by: ${execution.triggered_by}`}
+                        </p>
+                        <p className="mt-1">
+                          Started: {new Date(execution.started_at).toLocaleString()} • Duration: {formatDuration(execution.started_at, execution.completed_at)}
+                        </p>
+                        {execution.execution_log && execution.execution_log.length > 0 && (
+                          <p className="mt-1 text-xs">
+                            Completed {execution.execution_log.length} step{execution.execution_log.length !== 1 ? 's' : ''}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {/* Show how it was triggered */}
-                      <Badge variant="outline">{execution.triggered_by}</Badge>
                       {/* Show current status */}
                       {getStatusBadge(execution.status)}
                     </div>

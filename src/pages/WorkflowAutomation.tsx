@@ -25,6 +25,7 @@ interface WorkflowExecution {
   started_at: string;
   completed_at: string | null;
   error_message: string | null;
+  triggered_by: string;
 }
 
 export default function WorkflowAutomation() {
@@ -284,19 +285,25 @@ export default function WorkflowAutomation() {
                 {executions.map((execution) => (
                   <Card key={execution.id}>
                     <CardContent className="py-4">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-3 flex-1">
                           {getExecutionIcon(execution.status)}
-                          <div>
-                            <p className="font-medium">
+                          <div className="flex-1">
+                            <p className="font-semibold text-base">
                               {workflows.find(w => w.id === execution.workflow_id)?.workflow_name || 'Unknown Workflow'}
                             </p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {execution.triggered_by === 'manual' && '👤 Manual execution'}
+                              {execution.triggered_by === 'webhook' && '🔗 Webhook trigger'}
+                              {execution.triggered_by === 'schedule' && '⏰ Scheduled run'}
+                              {!['manual', 'webhook', 'schedule'].includes(execution.triggered_by) && `Triggered: ${execution.triggered_by}`}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
                               Started {new Date(execution.started_at).toLocaleString()}
-                              {execution.completed_at && ` • Completed ${new Date(execution.completed_at).toLocaleString()}`}
+                              {execution.completed_at && ` • Completed in ${((new Date(execution.completed_at).getTime() - new Date(execution.started_at).getTime()) / 1000).toFixed(1)}s`}
                             </p>
                             {execution.error_message && (
-                              <p className="text-sm text-red-600 mt-1">{execution.error_message}</p>
+                              <p className="text-sm text-red-600 mt-2 p-2 bg-red-50 rounded">{execution.error_message}</p>
                             )}
                           </div>
                         </div>
