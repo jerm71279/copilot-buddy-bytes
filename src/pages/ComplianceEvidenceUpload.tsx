@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LayoutDashboard } from "lucide-react";
 import EvidenceUpload from "@/components/EvidenceUpload";
 
 export default function ComplianceEvidenceUpload() {
@@ -13,14 +13,26 @@ export default function ComplianceEvidenceUpload() {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
-        <Button 
-          onClick={() => navigate('/compliance')} 
-          variant="ghost" 
-          className="mb-6"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Compliance Portal
-        </Button>
+        <div className="flex items-center gap-3 mb-6">
+          <Button 
+            onClick={() => navigate(-1)} 
+            variant="outline" 
+            size="sm"
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          <Button 
+            onClick={() => navigate('/portal')} 
+            variant="outline" 
+            size="sm"
+            className="gap-2"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Dashboards
+          </Button>
+        </div>
 
         <EvidenceUpload onUploadComplete={() => navigate('/compliance')} />
       </main>

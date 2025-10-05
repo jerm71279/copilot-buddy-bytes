@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Home } from "lucide-react";
+import { ArrowLeft, LayoutDashboard } from "lucide-react";
 
 interface DashboardNavigationProps {
   title?: string;
@@ -11,24 +11,12 @@ const DashboardNavigation = ({ title, showTitle = false }: DashboardNavigationPr
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Determine home path based on current location
-  const getHomePath = () => {
-    if (location.pathname.startsWith('/admin')) {
-      return '/admin';
-    } else if (location.pathname.startsWith('/analytics')) {
-      return '/analytics';
-    } else if (location.pathname.startsWith('/dashboard')) {
-      return '/portal';
-    }
-    return '/portal';
-  };
-
   const handleBack = () => {
     navigate(-1);
   };
 
-  const handleHome = () => {
-    navigate(getHomePath());
+  const handleDashboards = () => {
+    navigate('/portal');
   };
 
   return (
@@ -45,11 +33,11 @@ const DashboardNavigation = ({ title, showTitle = false }: DashboardNavigationPr
       <Button
         variant="outline"
         size="sm"
-        onClick={handleHome}
+        onClick={handleDashboards}
         className="gap-2"
       >
-        <Home className="h-4 w-4" />
-        Home
+        <LayoutDashboard className="h-4 w-4" />
+        Dashboards
       </Button>
       {showTitle && title && (
         <h1 className="text-2xl font-bold ml-4">{title}</h1>
