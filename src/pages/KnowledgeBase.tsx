@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, FileText, BookOpen, Lightbulb, Plus, Upload, Download, Cloud, Brain } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 export default function KnowledgeBase() {
   const navigate = useNavigate();
@@ -90,8 +91,9 @@ export default function KnowledgeBase() {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8 pt-24">
+        <DashboardNavigation title="Knowledge Base" />
+        
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Knowledge Base</h1>
           <p className="text-muted-foreground">
             Search SOPs, guides, and AI-generated insights from your workflows
           </p>

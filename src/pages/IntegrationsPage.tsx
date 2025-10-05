@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Navigation from "@/components/Navigation";
+import DashboardNavigation from "@/components/DashboardNavigation";
 import Footer from "@/components/Footer";
 import { Shield, Lock, Database, Zap, CheckCircle2, AlertCircle } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -197,6 +198,9 @@ const IntegrationsPage = () => {
       <Navigation />
       
       <main className="pt-24 pb-16">
+        <div className="container mx-auto px-4">
+          <DashboardNavigation title="Integrations" />
+        </div>
         {/* Hero Section */}
         <section className="py-16 bg-gradient-primary text-white">
           <div className="container mx-auto px-4">

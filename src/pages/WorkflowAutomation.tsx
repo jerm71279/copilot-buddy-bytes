@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
+import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -135,9 +136,10 @@ export default function WorkflowAutomation() {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
+        <DashboardNavigation title="Workflow Automation" />
+        
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Workflow Automation</h1>
             <p className="text-muted-foreground">Automate repetitive tasks and connect systems</p>
           </div>
           <Button onClick={() => navigate('/workflows/builder')}>

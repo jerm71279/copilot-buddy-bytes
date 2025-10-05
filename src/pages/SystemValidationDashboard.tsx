@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
+import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -319,8 +320,9 @@ export default function SystemValidationDashboard() {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
+        <DashboardNavigation title="System Validation Dashboard" />
+        
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">System Validation Dashboard</h1>
           <p className="text-muted-foreground">
             Comprehensive validation and testing of all system components
           </p>
