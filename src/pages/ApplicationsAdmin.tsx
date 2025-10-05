@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Plus, Trash2, Save, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Navigation from '@/components/Navigation';
+import DashboardNavigation from '@/components/DashboardNavigation';
 
 interface Application {
   id: string;
@@ -201,6 +202,23 @@ export default function ApplicationsAdmin() {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
+        <DashboardNavigation 
+          title="Applications Manager"
+          dashboards={[
+            { name: "Admin Dashboard", path: "/admin" },
+            { name: "Employee Portal", path: "/portal" },
+            { name: "Analytics Portal", path: "/analytics" },
+            { name: "Compliance Portal", path: "/compliance" },
+            { name: "Executive Dashboard", path: "/dashboard/executive" },
+            { name: "Finance Dashboard", path: "/dashboard/finance" },
+            { name: "HR Dashboard", path: "/dashboard/hr" },
+            { name: "IT Dashboard", path: "/dashboard/it" },
+            { name: "Operations Dashboard", path: "/dashboard/operations" },
+            { name: "Sales Dashboard", path: "/dashboard/sales" },
+            { name: "SOC Dashboard", path: "/dashboard/soc" },
+          ]}
+        />
+        
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-4xl font-bold">Applications Manager</h1>

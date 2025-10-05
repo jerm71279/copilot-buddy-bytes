@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
+import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -116,6 +117,23 @@ export default function WorkflowBuilder() {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
+        <DashboardNavigation 
+          title="Workflow Builder"
+          dashboards={[
+            { name: "Admin Dashboard", path: "/admin" },
+            { name: "Employee Portal", path: "/portal" },
+            { name: "Analytics Portal", path: "/analytics" },
+            { name: "Compliance Portal", path: "/compliance" },
+            { name: "Executive Dashboard", path: "/dashboard/executive" },
+            { name: "Finance Dashboard", path: "/dashboard/finance" },
+            { name: "HR Dashboard", path: "/dashboard/hr" },
+            { name: "IT Dashboard", path: "/dashboard/it" },
+            { name: "Operations Dashboard", path: "/dashboard/operations" },
+            { name: "Sales Dashboard", path: "/dashboard/sales" },
+            { name: "SOC Dashboard", path: "/dashboard/soc" },
+          ]}
+        />
+        
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-6">
             <Button variant="ghost" size="sm" onClick={() => navigate('/workflows')}>
