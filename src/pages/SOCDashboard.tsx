@@ -220,7 +220,10 @@ const SOCDashboard = () => {
         
         {/* Key Metrics Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/incidents?metric=Total Incidents&department=security`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Incidents</CardTitle>
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />
@@ -233,7 +236,10 @@ const SOCDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/threats?metric=Active Threats&department=security`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Threats</CardTitle>
               <Eye className="h-4 w-4 text-muted-foreground" />
@@ -244,7 +250,10 @@ const SOCDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/compliance-score?metric=Compliance Score&department=security`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Compliance Score</CardTitle>
               <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
@@ -255,7 +264,10 @@ const SOCDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/response-time?metric=Response Time&department=security`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Avg Response Time</CardTitle>
               <Clock className="h-4 w-4 text-muted-foreground" />

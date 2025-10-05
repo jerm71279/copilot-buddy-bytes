@@ -192,7 +192,10 @@ const AnalyticsPortal = () => {
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-6">Key Metrics</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate(`/workflow/all-workflows?metric=Total Workflows&department=analytics`)}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Workflows</CardTitle>
                 <Zap className="h-4 w-4 text-muted-foreground" />
@@ -203,7 +206,10 @@ const AnalyticsPortal = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate(`/workflow/success-rate?metric=Success Rate&department=analytics`)}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
                 <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -214,7 +220,10 @@ const AnalyticsPortal = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate(`/workflow/ai-insights?metric=AI Insights&department=analytics`)}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">AI Insights</CardTitle>
                 <Brain className="h-4 w-4 text-purple-500" />
@@ -225,7 +234,10 @@ const AnalyticsPortal = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate(`/workflow/anomalies?metric=Anomalies&department=analytics`)}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Anomalies</CardTitle>
                 <AlertTriangle className="h-4 w-4 text-orange-500" />

@@ -168,7 +168,10 @@ const ComplianceDashboard = () => {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/compliance-score?metric=Compliance Score&department=compliance`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Compliance Score</CardTitle>
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
@@ -179,7 +182,10 @@ const ComplianceDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/frameworks?metric=Active Frameworks&department=compliance`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Frameworks</CardTitle>
               <Shield className="h-4 w-4 text-muted-foreground" />
@@ -190,7 +196,10 @@ const ComplianceDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/controls?metric=Controls&department=compliance`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Controls</CardTitle>
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />
@@ -201,7 +210,10 @@ const ComplianceDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/evidence?metric=Evidence Files&department=compliance`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Evidence Files</CardTitle>
               <FileText className="h-4 w-4 text-muted-foreground" />

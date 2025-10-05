@@ -107,7 +107,10 @@ const ITDashboard = () => {
         <DashboardNavigation title="IT Dashboard" />
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/integrations?metric=Total Integrations&department=it`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Integrations</CardTitle>
               <Zap className="h-4 w-4 text-muted-foreground" />
@@ -118,7 +121,10 @@ const ITDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/mcp-servers?metric=MCP Servers&department=it`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">MCP Servers</CardTitle>
               <Server className="h-4 w-4 text-muted-foreground" />
@@ -129,7 +135,10 @@ const ITDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/system-health?metric=System Health&department=it`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">System Health</CardTitle>
               <Activity className="h-4 w-4 text-muted-foreground" />
@@ -140,7 +149,10 @@ const ITDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/anomalies?metric=Anomalies Detected&department=it`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Anomalies Detected</CardTitle>
               <AlertCircle className="h-4 w-4 text-muted-foreground" />

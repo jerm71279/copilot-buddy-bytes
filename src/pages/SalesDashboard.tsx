@@ -102,7 +102,10 @@ const SalesDashboard = () => {
 
         {/* Key Metrics */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/revenue?metric=Total Revenue&department=sales`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -116,7 +119,10 @@ const SalesDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/deals?metric=Active Deals&department=sales`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Deals</CardTitle>
               <Target className="h-4 w-4 text-muted-foreground" />
@@ -129,7 +135,10 @@ const SalesDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/customers?metric=Total Customers&department=sales`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -142,7 +151,10 @@ const SalesDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/workflow/conversion?metric=Conversion Rate&department=sales`)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
