@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -30,15 +30,15 @@ export default function EvidenceUpload({ frameworkId, controlId, onUploadComplet
   const [complianceTags, setComplianceTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
 
-  useState(() => {
+  useEffect(() => {
     loadFrameworks();
-  });
+  }, []);
 
-  useState(() => {
+  useEffect(() => {
     if (selectedFramework) {
       loadControls(selectedFramework);
     }
-  });
+  }, [selectedFramework]);
 
   const loadFrameworks = async () => {
     const { data } = await supabase
