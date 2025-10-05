@@ -39,6 +39,7 @@ import WorkflowAutomation from "./pages/WorkflowAutomation";
 import NinjaOneIntegration from "./pages/NinjaOneIntegration";
 import PrivilegedAccessAudit from "./pages/PrivilegedAccessAudit";
 import TestWorkflowEvidence from "./pages/TestWorkflowEvidence";
+import ComprehensiveTestDashboard from "./pages/ComprehensiveTestDashboard";
 
 import WorkflowBuilder from "./pages/WorkflowBuilder";
 
@@ -237,6 +238,14 @@ const App = () => (
               <TestWorkflowEvidence />
             </ProtectedRoute>
           } />
+          
+          {/* Comprehensive Test Dashboard - Admin Only */}
+          <Route path="/test/comprehensive" element={
+            <ProtectedRoute requireAdmin>
+              <ComprehensiveTestDashboard />
+            </ProtectedRoute>
+          } />
+          
           <Route path="/compliance/reports/:id" element={
             <ProtectedRoute>
               <ComplianceReportDetail />
