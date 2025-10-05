@@ -308,13 +308,13 @@ Tailored interfaces for each functional area:
 
 **Ongoing Operational Costs (Annual):**
 - Lovable platform subscription: $200/year (already paid)
-- Cloud infrastructure: Included with Lovable Cloud
-- AI API usage: Included with Lovable AI
-- **Total Annual Operating Cost**: $200/year
+- Lovable Cloud usage (database, storage, edge functions): Estimated $50-200/month
+- Lovable AI usage (AI API calls): Estimated $50-150/month
+- **Total Annual Operating Cost**: $1,400-4,400/year
 
 **Total Initial Investment**: $200  
-**Year 1 Operating Cost**: $200  
-**Total Year 1 Cost**: $200
+**Year 1 Operating Cost**: $1,400-4,400  
+**Total Year 1 Cost**: $1,600-4,600
 
 ---
 
@@ -354,21 +354,21 @@ Tailored interfaces for each functional area:
 #### ROI Calculation
 
 **Year 1:**
-- Total Investment: $200
+- Total Investment: $1,600-4,600
 - Annual Benefit: $418,400
-- **Net Benefit Year 1**: $418,200
-- **ROI Year 1**: 209,100%
+- **Net Benefit Year 1**: $413,800-416,800
+- **ROI Year 1**: 9,062%-26,050%
 
 **Year 2:**
-- Operating Cost: $200
+- Operating Cost: $1,400-4,400
 - Annual Benefit: $418,400 (conservative, no growth)
-- **Net Benefit Year 2**: $418,200
-- **Cumulative ROI**: 418,200%
+- **Net Benefit Year 2**: $414,000-417,000
+- **Cumulative ROI**: 14,231%-18,147%
 
 **3-Year Total:**
-- Total Investment: $600 (3 years × $200)
+- Total Investment: $4,400-13,400 (subscription + usage-based costs)
 - Total Benefit: $1,255,200
-- **3-Year ROI**: 209,200%
+- **3-Year ROI**: 9,270%-28,418%
 
 ---
 

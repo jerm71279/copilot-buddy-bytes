@@ -136,26 +136,28 @@ All deployed and operational:
 ### Investment to Date
 - **Lovable Platform**: $200 (annual subscription paid)
 - **Development**: Internal time (no cash cost)
-- **Infrastructure**: Included with Lovable Cloud
 - **Total Invested**: $200
 
-### Remaining Investment
-- **Security Audit**: Future consideration
-- **Training**: Internal time (no cash cost)
-- **Total Remaining**: $0
+### Ongoing Operational Costs (Annual)
+- **Lovable Platform Subscription**: $200/year
+- **Lovable Cloud Usage** (database, storage, edge functions): Estimated $50-200/month based on usage
+- **Lovable AI Usage** (AI API calls): Estimated $50-150/month based on usage
+- **Total Estimated Operating Cost**: $1,400-4,400/year
 
-### Total Project Cost
-**$200** (incredibly efficient development with Lovable platform)
+### Total Year 1 Cost
+- **Initial Investment**: $200
+- **Year 1 Operating Costs**: $1,400-4,400
+- **Total Year 1 Cost**: $1,600-4,600
 
 ### Year 1 ROI Projection
-- **Operating Cost**: $200/year
+- **Total Year 1 Cost**: $1,600-4,600
 - **Projected Benefits**: $418,400/year
   - Onboarding acceleration: $62,500 (25 clients × 50 hours × $50/hr)
   - Operational efficiency: $200,000
   - Client retention: $100,000
   - Revenue growth: $55,900
-- **Net Benefit Year 1**: $418,200
-- **ROI**: **209,100%** (exceptional ROI due to minimal investment)
+- **Net Benefit Year 1**: $413,800-416,800
+- **ROI**: **9,062%-26,050%** (still exceptional ROI with usage-based costs)
 
 ---
 
