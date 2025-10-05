@@ -120,6 +120,53 @@ const ComplianceDashboard = () => {
           </Button>
         </div>
         
+        {/* Primary Compliance Frameworks - ISO27001 & SOC 2 */}
+        <div className="grid gap-4 md:grid-cols-2 mb-6">
+          <Card className="border-primary">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                ISO 27001
+              </CardTitle>
+              <CardDescription>Information Security Management</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold">94%</span>
+                  <Badge variant="default">Compliant</Badge>
+                </div>
+                <Progress value={94} className="h-2" />
+                <p className="text-xs text-muted-foreground mt-2">
+                  All workflows tagged with ISO27001 compliance
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                SOC 2 Type II
+              </CardTitle>
+              <CardDescription>Service Organization Controls</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold">95%</span>
+                  <Badge variant="default">Compliant</Badge>
+                </div>
+                <Progress value={95} className="h-2" />
+                <p className="text-xs text-muted-foreground mt-2">
+                  All workflows tagged with SOC2 compliance
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -139,7 +186,7 @@ const ComplianceDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.frameworks}</div>
-              <p className="text-xs text-muted-foreground mt-1">SOC 2, GDPR, HIPAA</p>
+              <p className="text-xs text-muted-foreground mt-1">ISO27001, SOC 2, GDPR</p>
             </CardContent>
           </Card>
 
@@ -168,17 +215,10 @@ const ComplianceDashboard = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Framework Coverage</CardTitle>
-            <CardDescription>Compliance status across frameworks</CardDescription>
+            <CardTitle>Additional Framework Coverage</CardTitle>
+            <CardDescription>Other compliance frameworks status</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-medium">SOC 2 Type II</span>
-                <Badge>95% Complete</Badge>
-              </div>
-              <Progress value={95} />
-            </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-medium">GDPR</span>
@@ -192,6 +232,13 @@ const ComplianceDashboard = () => {
                 <Badge variant="secondary">In Progress</Badge>
               </div>
               <Progress value={72} />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-medium">PCI DSS</span>
+                <Badge variant="secondary">In Progress</Badge>
+              </div>
+              <Progress value={65} />
             </div>
           </CardContent>
         </Card>
