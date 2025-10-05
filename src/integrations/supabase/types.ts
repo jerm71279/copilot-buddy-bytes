@@ -2763,6 +2763,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      validate_uuid_not_undefined: {
+        Args: { uuid_value: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "customer"
