@@ -6,7 +6,168 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, FileText, Download, Calendar, Shield } from "lucide-react";
+import { ArrowLeft, FileText, Download, Calendar, Shield, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+
+interface Finding {
+  title?: string;
+  description?: string;
+  severity?: string;
+  status?: string;
+  category?: string;
+  recommendations?: string[];
+  impact?: string;
+  controlId?: string;
+}
+
+function FindingsDisplay({ findings }: { findings: any }) {
+  // Handle different finding formats
+  const renderFindings = () => {
+    // If findings is an array
+    if (Array.isArray(findings)) {
+      return findings.map((finding: Finding, index: number) => (
+        <div key={index} className="mb-6 last:mb-0">
+          {renderFindingCard(finding, index)}
+          {index < findings.length - 1 && <Separator className="mt-6" />}
+        </div>
+      ));
+    }
+    
+    // If findings is an object with categories
+    if (typeof findings === 'object' && findings !== null) {
+      const categories = Object.keys(findings);
+      if (categories.length === 0) {
+        return <p className="text-muted-foreground">No findings to display.</p>;
+      }
+      
+      return categories.map((category, catIndex) => (
+        <div key={category} className="mb-6 last:mb-0">
+          <h3 className="text-lg font-semibold mb-4 capitalize">{category.replace(/_/g, ' ')}</h3>
+          {Array.isArray(findings[category]) ? (
+            findings[category].map((finding: Finding, findingIndex: number) => (
+              <div key={`${category}-${findingIndex}`} className="ml-4 mb-4">
+                {renderFindingCard(finding, findingIndex)}
+              </div>
+            ))
+          ) : (
+            <div className="ml-4">
+              {renderFindingContent(findings[category])}
+            </div>
+          )}
+          {catIndex < categories.length - 1 && <Separator className="mt-6" />}
+        </div>
+      ));
+    }
+    
+    return <p className="text-muted-foreground">No findings available.</p>;
+  };
+
+  const getSeverityIcon = (severity?: string) => {
+    switch (severity?.toLowerCase()) {
+      case 'critical':
+      case 'high':
+        return <XCircle className="h-5 w-5 text-destructive" />;
+      case 'medium':
+        return <AlertCircle className="h-5 w-5 text-yellow-500" />;
+      case 'low':
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      default:
+        return <FileText className="h-5 w-5 text-muted-foreground" />;
+    }
+  };
+
+  const getSeverityBadge = (severity?: string) => {
+    const variant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+      critical: "destructive",
+      high: "destructive",
+      medium: "outline",
+      low: "secondary"
+    };
+    return variant[severity?.toLowerCase() || ''] || "default";
+  };
+
+  const renderFindingCard = (finding: Finding, index: number) => {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-start gap-3">
+          {finding.severity && getSeverityIcon(finding.severity)}
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              {finding.title && (
+                <h4 className="font-semibold text-base">{finding.title}</h4>
+              )}
+              {finding.severity && (
+                <Badge variant={getSeverityBadge(finding.severity)}>
+                  {finding.severity}
+                </Badge>
+              )}
+              {finding.status && (
+                <Badge variant="outline">{finding.status}</Badge>
+              )}
+            </div>
+            
+            {finding.controlId && (
+              <p className="text-sm text-muted-foreground mb-2">
+                Control: {finding.controlId}
+              </p>
+            )}
+            
+            {finding.category && (
+              <p className="text-sm text-muted-foreground mb-2">
+                Category: {finding.category}
+              </p>
+            )}
+            
+            {finding.description && (
+              <p className="text-sm mb-3">{finding.description}</p>
+            )}
+            
+            {finding.impact && (
+              <div className="mb-3">
+                <p className="text-sm font-medium mb-1">Impact:</p>
+                <p className="text-sm text-muted-foreground">{finding.impact}</p>
+              </div>
+            )}
+            
+            {finding.recommendations && finding.recommendations.length > 0 && (
+              <div>
+                <p className="text-sm font-medium mb-1">Recommendations:</p>
+                <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                  {finding.recommendations.map((rec, i) => (
+                    <li key={i}>{rec}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderFindingContent = (content: any) => {
+    if (typeof content === 'string') {
+      return <p className="text-sm">{content}</p>;
+    }
+    if (typeof content === 'object') {
+      return (
+        <div className="space-y-2">
+          {Object.entries(content).map(([key, value]) => (
+            <div key={key}>
+              <span className="text-sm font-medium capitalize">{key.replace(/_/g, ' ')}: </span>
+              <span className="text-sm text-muted-foreground">
+                {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+              </span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return <div>{renderFindings()}</div>;
+}
 
 export default function ComplianceReportDetail() {
   const { id } = useParams();
@@ -147,13 +308,11 @@ export default function ComplianceReportDetail() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5" />
-                  Findings
+                  Findings & Observations
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <pre className="whitespace-pre-wrap text-sm bg-muted p-4 rounded">
-                  {JSON.stringify(report.findings, null, 2)}
-                </pre>
+                <FindingsDisplay findings={report.findings} />
               </CardContent>
             </Card>
           )}
