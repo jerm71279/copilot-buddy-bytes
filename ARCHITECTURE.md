@@ -27,8 +27,11 @@ graph TB
             AdminDash[Admin Dashboard]
             AppAdmin[Applications Admin]
             WorkflowUI[Workflow Builder UI]
+            WorkflowDetail[Workflow Execution Detail]
             KnowledgeUI[Knowledge Base UI]
             IntegUI[Integrations UI]
+            TestValidation[System Validation Dashboard]
+            TestComprehensive[Comprehensive Test Dashboard]
         end
         
         subgraph "AI Features"

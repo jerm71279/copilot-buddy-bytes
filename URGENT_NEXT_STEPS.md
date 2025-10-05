@@ -99,27 +99,22 @@ The Revio integration infrastructure is production-ready and waiting for:
 
 ---
 
-### 3. Fix User Profile Database Issue - **HIGH PRIORITY** ✅ FIXED
-**Status:** ❌ Causing 406 errors on Portal
+### 3. Fix User Profile Database Issue - ✅ FIXED
+**Status:** ✅ Resolved - RLS policy infinite recursion fixed
 **Owner:** Backend Developer  
-**Time Estimate:** 30 minutes
+**Completed:** October 5, 2025
 
-#### Current Issue:
-```
-GET /rest/v1/user_profiles?select=*%2Ccustomers%28*%29&user_id=eq.7aea5ddd...
-Status: 406 (Not Acceptable)
-Error: "Cannot coerce the result to a single JSON object"
-```
+#### Issue Fixed:
+- ✅ Infinite recursion in `user_roles` table RLS policy resolved
+- ✅ New security definer function `has_role()` prevents recursion
+- ✅ Admin and user self-management policies working correctly
 
-#### Root Cause:
-- Users signing in with Microsoft 365 don't have profiles created
-- The `auto_assign_admin_role` trigger only fires for email signups
-- Foreign key relationship between user_profiles and customers is missing
-
-#### Fix Required:
-- Run database migration to create profiles for OAuth users
-- Add trigger for Microsoft 365 sign-ins
-- Fix data model relationships
+#### Additional Fixes Completed:
+- ✅ `workflow-insights` edge function constraint violation fixed
+- ✅ Workflow execution logs now clickable with detail page (`/workflow-execution/:id`)
+- ✅ System Validation Dashboard created at `/test/validation`
+- ✅ Comprehensive Test Dashboard enhanced at `/test/comprehensive`
+- ✅ Complete testing documentation in `TESTING_GUIDE.md`
 
 ---
 

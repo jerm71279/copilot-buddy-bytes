@@ -112,7 +112,22 @@ supabase/
 - **Executive**: KPIs, compliance metrics, strategic overview
 - **Privileged Access Audit**: Comprehensive audit logging for RMM and privileged system access with compliance tracking
 
-### 5. Integration Management
+### 5. Testing & Validation Infrastructure (NEW)
+- 🧪 **System Validation Dashboard**: Comprehensive testing at `/test/validation`
+  - Database schema validation with RLS policy testing
+  - Edge function health checks and response time monitoring
+  - Data integrity verification across all tables
+  - Performance benchmarks and optimization insights
+  - UI component validation
+- 🔬 **Comprehensive Test Dashboard**: Advanced testing at `/test/comprehensive`
+  - Automated test data generation for all modules
+  - Security fuzz testing (SQL injection, XSS, buffer overflow)
+  - Database flow tracing and query analysis
+  - Integration with CI/CD pipelines
+- 📊 **Workflow Execution Detail**: Clickable execution logs with full debugging info
+- 📚 **Complete Test Documentation**: See [`TESTING_GUIDE.md`](./TESTING_GUIDE.md)
+
+### 6. Integration Management
 - **Microsoft 365**: Calendar, Email, Teams, OneDrive (ACTIVE)
 - **Revio**: Billing & Revenue data (Infrastructure complete, live API pending OneBill migration) (NEW)
 - OneBill (Current billing system, migration to Revio in progress)
@@ -122,7 +137,7 @@ supabase/
 - NinjaOne (RMM & Infrastructure)
 - Threatdown, OpenText (Cybersecurity)
 
-### 6. AI-Powered Assistance
+### 7. AI-Powered Assistance
 - Department-specific AI assistants
 - MCP (Model Context Protocol) server integration
 - Lovable AI for seamless model access
@@ -172,6 +187,7 @@ Navigate to Project > Settings > Domains and click Connect Domain.
 - [MODULE_STRUCTURE.md](./MODULE_STRUCTURE.md) - Module organization and dependencies
 - [API_REFERENCE.md](./API_REFERENCE.md) - API endpoints and data flows
 - [DEVELOPER_HANDOFF.md](./DEVELOPER_HANDOFF.md) - Knowledge transfer protocol
+- [TESTING_GUIDE.md](./TESTING_GUIDE.md) - Comprehensive testing and validation framework
 
 ## 🔄 Development Workflow
 
@@ -188,9 +204,14 @@ Navigate to Project > Settings > Domains and click Connect Domain.
 - Design system tokens for all styling (no hardcoded colors)
 
 ### Testing Strategy
-- Manual testing via preview environment
-- Integration testing for critical flows
-- Database migrations tested before production
+- **Automated Validation**: System Validation Dashboard (`/test/validation`)
+- **Security Testing**: Comprehensive fuzz testing for SQL injection, XSS, input validation
+- **Performance Monitoring**: Real-time benchmarks for queries, edge functions, page loads
+- **Integration Testing**: Critical flows validated with automated test data generation
+- **Database Testing**: Schema validation, RLS policy verification, flow tracing
+- **Manual Testing**: Preview environment for UI/UX validation
+- **CI/CD Integration**: Automated tests via edge function APIs
+- **Documentation**: Complete testing guide in [`TESTING_GUIDE.md`](./TESTING_GUIDE.md)
 
 ## 🤝 Contributing
 
