@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { LogOut, Shield, CheckCircle, AlertTriangle, FileText } from "lucide-react";
+import { LogOut, Shield, CheckCircle, AlertTriangle, FileText, FileCheck } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
@@ -108,6 +108,17 @@ const ComplianceDashboard = () => {
 
       <div className="container mx-auto px-4 py-8 space-y-6">
         <DashboardNavigation title="Compliance Dashboard" />
+        
+        <div className="flex gap-2 mb-4">
+          <Button onClick={() => navigate('/compliance/audit-reports')}>
+            <FileCheck className="h-4 w-4 mr-2" />
+            Generate Audit Report
+          </Button>
+          <Button onClick={() => navigate('/compliance')} variant="outline">
+            <FileText className="h-4 w-4 mr-2" />
+            Compliance Portal
+          </Button>
+        </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>

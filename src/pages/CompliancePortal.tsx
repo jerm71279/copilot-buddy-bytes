@@ -116,10 +116,16 @@ export default function CompliancePortal() {
             <h1 className="text-4xl font-bold mb-2">Compliance Management</h1>
             <p className="text-muted-foreground">Track compliance frameworks and evidence collection</p>
           </div>
-          <Button onClick={() => navigate('/compliance/evidence/upload')}>
-            <Plus className="mr-2 h-4 w-4" />
-            Upload Evidence
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => navigate('/compliance/audit-reports')}>
+              <FileCheck className="mr-2 h-4 w-4" />
+              Generate Audit Report
+            </Button>
+            <Button onClick={() => navigate('/compliance/evidence/upload')} variant="outline">
+              <Plus className="mr-2 h-4 w-4" />
+              Upload Evidence
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
