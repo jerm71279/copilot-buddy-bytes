@@ -10,10 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Activity, Server, AlertCircle, CheckCircle2, Shield, HardDrive } from "lucide-react";
+import { useAuditLog } from "@/hooks/useAuditLog";
 
 export default function NinjaOneIntegration() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { logPrivilegedAccess } = useAuditLog();
   const [isLoading, setIsLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
   const [credentials, setCredentials] = useState({
@@ -50,6 +52,11 @@ export default function NinjaOneIntegration() {
       setIsConnected(!!integration);
       
       if (integration) {
+        // Log privileged access to NinjaOne
+        await logPrivilegedAccess('NinjaOne', 'access', {
+          action: 'dashboard_access',
+          integration_id: integration.id
+        });
         await loadNinjaOneData();
       }
     } catch (error) {
@@ -61,6 +68,12 @@ export default function NinjaOneIntegration() {
 
   const loadNinjaOneData = async () => {
     try {
+      // Log data access
+      await logPrivilegedAccess('NinjaOne', 'view_devices', {
+        action: 'load_device_data',
+        device_count: 3
+      });
+
       // Mock data for now - in production, this would call NinjaOne API via edge function
       setDevices([
         { id: 1, name: "Server-01", status: "online", type: "server", alerts: 0 },
@@ -72,6 +85,11 @@ export default function NinjaOneIntegration() {
         { id: 1, device: "PC-Finance-01", severity: "warning", message: "High CPU usage", time: new Date() },
         { id: 2, device: "PC-HR-05", severity: "critical", message: "Device offline", time: new Date() }
       ]);
+
+      await logPrivilegedAccess('NinjaOne', 'view_alerts', {
+        action: 'load_alert_data',
+        alert_count: 2
+      });
     } catch (error) {
       console.error('Error loading NinjaOne data:', error);
     }
@@ -115,6 +133,13 @@ export default function NinjaOneIntegration() {
 
       // In production, store encrypted credentials
       // await supabase.from('integration_credentials').insert(...)
+
+      // Log privileged connection
+      await logPrivilegedAccess('NinjaOne', 'connect', {
+        action: 'establish_connection',
+        api_url: credentials.apiUrl,
+        client_id: credentials.clientId
+      });
 
       toast({
         title: "Success",

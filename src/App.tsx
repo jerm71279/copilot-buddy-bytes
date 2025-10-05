@@ -31,6 +31,7 @@ import OnboardingTemplates from "./pages/OnboardingTemplates";
 import CompliancePortal from "./pages/CompliancePortal";
 import WorkflowAutomation from "./pages/WorkflowAutomation";
 import NinjaOneIntegration from "./pages/NinjaOneIntegration";
+import PrivilegedAccessAudit from "./pages/PrivilegedAccessAudit";
 
 import WorkflowBuilder from "./pages/WorkflowBuilder";
 
@@ -180,6 +181,13 @@ const App = () => (
           <Route path="/ninjaone" element={
             <ProtectedRoute>
               <NinjaOneIntegration />
+            </ProtectedRoute>
+          } />
+          
+          {/* Privileged Access Audit - Admin Only */}
+          <Route path="/audit/privileged-access" element={
+            <ProtectedRoute requireAdmin>
+              <PrivilegedAccessAudit />
             </ProtectedRoute>
           } />
           
