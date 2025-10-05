@@ -65,7 +65,7 @@ const DashboardNavigation = ({ title, showTitle = false, dashboardPath = '/porta
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56 bg-background">
+          <DropdownMenuContent align="start" className="w-56 bg-background z-50">
             {dashboards.map((dashboard) => (
               <DropdownMenuItem
                 key={dashboard.path}
