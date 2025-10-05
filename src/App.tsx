@@ -33,6 +33,7 @@ import WorkflowAutomation from "./pages/WorkflowAutomation";
 import NinjaOneIntegration from "./pages/NinjaOneIntegration";
 import PrivilegedAccessAudit from "./pages/PrivilegedAccessAudit";
 import ComplianceAuditReports from "./pages/ComplianceAuditReports";
+import ComplianceFrameworkDetail from "./pages/ComplianceFrameworkDetail";
 
 import WorkflowBuilder from "./pages/WorkflowBuilder";
 
@@ -196,6 +197,13 @@ const App = () => (
           <Route path="/compliance/audit-reports" element={
             <ProtectedRoute>
               <ComplianceAuditReports />
+            </ProtectedRoute>
+          } />
+          
+          {/* Compliance Framework Detail - Protected */}
+          <Route path="/compliance/frameworks/:id" element={
+            <ProtectedRoute>
+              <ComplianceFrameworkDetail />
             </ProtectedRoute>
           } />
           
