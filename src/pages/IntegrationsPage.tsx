@@ -199,7 +199,22 @@ const IntegrationsPage = () => {
       
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
-          <DashboardNavigation title="Integrations" />
+          <DashboardNavigation 
+            title="Integrations"
+            dashboards={[
+              { name: "Admin Dashboard", path: "/admin" },
+              { name: "Employee Portal", path: "/portal" },
+              { name: "Analytics Portal", path: "/analytics" },
+              { name: "Compliance Portal", path: "/compliance" },
+              { name: "Executive Dashboard", path: "/dashboard/executive" },
+              { name: "Finance Dashboard", path: "/dashboard/finance" },
+              { name: "HR Dashboard", path: "/dashboard/hr" },
+              { name: "IT Dashboard", path: "/dashboard/it" },
+              { name: "Operations Dashboard", path: "/dashboard/operations" },
+              { name: "Sales Dashboard", path: "/dashboard/sales" },
+              { name: "SOC Dashboard", path: "/dashboard/soc" },
+            ]}
+          />
         </div>
         {/* Hero Section */}
         <section className="py-16 bg-gradient-primary text-white">
