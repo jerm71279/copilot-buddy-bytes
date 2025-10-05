@@ -5,7 +5,15 @@ import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Shield, CheckCircle, FileText } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ArrowLeft, Shield, CheckCircle, FileText, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ComplianceFrameworkDetail() {
@@ -115,13 +123,49 @@ export default function ComplianceFrameworkDetail() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <CheckCircle className="h-4 w-4" />
-                Controls
+              <CardTitle className="text-sm font-medium flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4" />
+                  Controls
+                </div>
+                {controls.length > 0 && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-6 px-2">
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto bg-background">
+                      <DropdownMenuLabel>All Controls</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {controls.map((control) => (
+                        <DropdownMenuItem
+                          key={control.id}
+                          className="cursor-pointer flex-col items-start py-3"
+                          onClick={() => navigate(`/compliance/frameworks/${id}/controls/${control.id}`)}
+                        >
+                          <div className="flex items-center justify-between w-full mb-1">
+                            <span className="font-semibold text-sm">{control.control_name}</span>
+                            <Badge variant="outline" className="ml-2">{control.category}</Badge>
+                          </div>
+                          <span className="text-xs text-muted-foreground">{control.control_id}</span>
+                          {control.description && (
+                            <span className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                              {control.description}
+                            </span>
+                          )}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{controls.length}</div>
+              {controls.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-1">Click arrow to view list</p>
+              )}
             </CardContent>
           </Card>
 
@@ -149,42 +193,6 @@ export default function ComplianceFrameworkDetail() {
           </Card>
         </div>
 
-        {controls.length > 0 && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Controls</CardTitle>
-              <CardDescription>
-                Compliance controls defined for {framework.framework_name}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {controls.map((control) => (
-                  <div 
-                    key={control.id} 
-                    className="border-b pb-4 last:border-0 cursor-pointer hover:bg-muted/50 p-3 rounded-lg transition-colors"
-                    onClick={() => navigate(`/compliance/frameworks/${id}/controls/${control.id}`)}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className="font-semibold">{control.control_name}</h4>
-                        <p className="text-sm text-muted-foreground">{control.control_id}</p>
-                      </div>
-                      <Badge variant="outline">{control.category}</Badge>
-                    </div>
-                    {control.description && (
-                      <p className="text-sm text-muted-foreground mb-2">{control.description}</p>
-                    )}
-                    <div className="flex gap-2 text-xs">
-                      <span className="text-muted-foreground">Automation: {control.automation_level}</span>
-                      <span className="text-primary font-medium">Click to view details →</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {evidenceFiles.length > 0 && (
           <Card>
