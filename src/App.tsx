@@ -34,6 +34,8 @@ import NinjaOneIntegration from "./pages/NinjaOneIntegration";
 import PrivilegedAccessAudit from "./pages/PrivilegedAccessAudit";
 import ComplianceAuditReports from "./pages/ComplianceAuditReports";
 import ComplianceFrameworkDetail from "./pages/ComplianceFrameworkDetail";
+import ComplianceEvidenceUpload from "./pages/ComplianceEvidenceUpload";
+import ComplianceReportDetail from "./pages/ComplianceReportDetail";
 
 import WorkflowBuilder from "./pages/WorkflowBuilder";
 
@@ -204,6 +206,16 @@ const App = () => (
           <Route path="/compliance/frameworks/:id" element={
             <ProtectedRoute>
               <ComplianceFrameworkDetail />
+            </ProtectedRoute>
+          } />
+          <Route path="/compliance/evidence/upload" element={
+            <ProtectedRoute>
+              <ComplianceEvidenceUpload />
+            </ProtectedRoute>
+          } />
+          <Route path="/compliance/reports/:id" element={
+            <ProtectedRoute>
+              <ComplianceReportDetail />
             </ProtectedRoute>
           } />
           
