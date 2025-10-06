@@ -16,7 +16,7 @@ import DashboardNavigation from "@/components/DashboardNavigation";
 import { toast } from "sonner";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
-import { NetworkSecurityDiagram } from "@/components/NetworkSecurityDiagram";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -347,10 +347,6 @@ const SOCDashboard = () => {
                 <Search className="h-4 w-4 mr-2" />
                 Threat Analysis
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setActiveTab('network')}>
-                <Globe className="h-4 w-4 mr-2" />
-                Network Security Diagram
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
@@ -502,10 +498,9 @@ const SOCDashboard = () => {
 
         {/* Tabs for Different Views */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="incidents">Security Incidents</TabsTrigger>
             <TabsTrigger value="anomalies">Anomaly Detection</TabsTrigger>
-            <TabsTrigger value="network">Network Security</TabsTrigger>
             <TabsTrigger value="compliance">Compliance Status</TabsTrigger>
           </TabsList>
 
@@ -605,9 +600,6 @@ const SOCDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="network" className="space-y-4">
-            <NetworkSecurityDiagram />
-          </TabsContent>
 
           <TabsContent value="compliance" className="space-y-4">
             <Card>
