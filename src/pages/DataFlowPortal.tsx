@@ -4,12 +4,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Network, Database, GitBranch, Shield, Users, DollarSign, Briefcase, TrendingUp, Activity, Lock, Zap, UserPlus, Server } from "lucide-react";
+import cippDiagram from "@/assets/dataflow-cipp.png";
+import cmdbDiagram from "@/assets/dataflow-cmdb.png";
+import changeDiagram from "@/assets/dataflow-change.png";
+import complianceDiagram from "@/assets/dataflow-compliance.png";
+import workflowDiagram from "@/assets/dataflow-workflow.png";
 
 const FlowStep = ({ color, title, description }: { color: string; title: string; description: string }) => (
-  <div className={`flex items-start gap-3 p-3 bg-background/50 rounded-lg border border-${color}-500/20`}>
-    <div className={`h-2 w-2 rounded-full bg-${color}-500 mt-2`} />
+  <div className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border border-border">
+    <div className={`h-2 w-2 rounded-full mt-2`} style={{ backgroundColor: `hsl(var(--${color}))` }} />
     <div>
-      <strong className={`text-${color}-600 dark:text-${color}-400`}>{title}:</strong>
+      <strong className="text-foreground">{title}:</strong>
       <p className="text-sm text-muted-foreground">{description}</p>
     </div>
   </div>
@@ -19,10 +24,10 @@ const DataFlowPortal = () => {
   const [selectedDashboard, setSelectedDashboard] = useState("cipp");
 
   const dashboards = [
-    { id: "cipp", name: "CIPP", icon: Shield, color: "blue" },
-    { id: "cmdb", name: "CMDB", icon: Database, color: "purple" },
-    { id: "change", name: "Change Mgmt", icon: GitBranch, color: "orange" },
-    { id: "compliance", name: "Compliance", icon: Shield, color: "green" },
+    { id: "cipp", name: "CIPP", icon: Shield, color: "blue", diagram: cippDiagram },
+    { id: "cmdb", name: "CMDB", icon: Database, color: "purple", diagram: cmdbDiagram },
+    { id: "change", name: "Change Mgmt", icon: GitBranch, color: "orange", diagram: changeDiagram },
+    { id: "compliance", name: "Compliance", icon: Shield, color: "green", diagram: complianceDiagram },
     { id: "admin", name: "Admin", icon: Lock, color: "red" },
     { id: "it", name: "IT", icon: Server, color: "cyan" },
     { id: "executive", name: "Executive", icon: TrendingUp, color: "indigo" },
@@ -31,7 +36,7 @@ const DataFlowPortal = () => {
     { id: "finance", name: "Finance", icon: Briefcase, color: "amber" },
     { id: "operations", name: "Operations", icon: Activity, color: "violet" },
     { id: "soc", name: "SOC", icon: Lock, color: "rose" },
-    { id: "workflow", name: "Workflows", icon: Zap, color: "yellow" },
+    { id: "workflow", name: "Workflows", icon: Zap, color: "yellow", diagram: workflowDiagram },
     { id: "mcp", name: "MCP", icon: Server, color: "teal" },
     { id: "onboarding", name: "Onboarding", icon: UserPlus, color: "lime" },
   ];
@@ -95,11 +100,18 @@ const DataFlowPortal = () => {
                     </CardTitle>
                     <CardDescription>Microsoft 365 tenant management and health monitoring</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <FlowStep color="blue" title="Authentication" description="User authentication check → Redirect to login if needed → Load user profile and customer ID" />
-                    <FlowStep color="blue" title="Data Loading" description="Query cipp_tenants & cipp_tenant_health tables → Display tenant list with health metrics" />
-                    <FlowStep color="blue" title="Sync Action" description="Call cipp-sync edge function → Update database → Reload dashboard data" />
-                    <FlowStep color="blue" title="Navigation" description="Select tenant to view detailed information and health status" />
+                  <CardContent className="space-y-6">
+                    <div className="bg-background/80 p-4 rounded-lg border border-blue-500/20">
+                      <h3 className="text-lg font-semibold mb-3 text-blue-600 dark:text-blue-400">Visual Flow Diagram</h3>
+                      <img src={cippDiagram} alt="CIPP Dashboard Data Flow" className="w-full rounded-lg" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400">Flow Steps</h3>
+                      <FlowStep color="blue" title="Authentication" description="User authentication check → Redirect to login if needed → Load user profile and customer ID" />
+                      <FlowStep color="blue" title="Data Loading" description="Query cipp_tenants & cipp_tenant_health tables → Display tenant list with health metrics" />
+                      <FlowStep color="blue" title="Sync Action" description="Call cipp-sync edge function → Update database → Reload dashboard data" />
+                      <FlowStep color="blue" title="Navigation" description="Select tenant to view detailed information and health status" />
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -114,11 +126,18 @@ const DataFlowPortal = () => {
                     </CardTitle>
                     <CardDescription>Configuration Management Database for asset tracking</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <FlowStep color="purple" title="Authentication" description="Verify user session → Load customer context" />
-                    <FlowStep color="purple" title="Data Query" description="Query cmdb_items table → Apply filters and search criteria → Display asset inventory" />
-                    <FlowStep color="purple" title="CRUD Operations" description="Add/Edit/Delete assets → Update cmdb_items table → Refresh asset list" />
-                    <FlowStep color="purple" title="NinjaOne Sync" description="Call ninjaone-sync function → Fetch from NinjaOne API → Update CMDB" />
+                  <CardContent className="space-y-6">
+                    <div className="bg-background/80 p-4 rounded-lg border border-purple-500/20">
+                      <h3 className="text-lg font-semibold mb-3 text-purple-600 dark:text-purple-400">Visual Flow Diagram</h3>
+                      <img src={cmdbDiagram} alt="CMDB Dashboard Data Flow" className="w-full rounded-lg" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-purple-600 dark:text-purple-400">Flow Steps</h3>
+                      <FlowStep color="purple" title="Authentication" description="Verify user session → Load customer context" />
+                      <FlowStep color="purple" title="Data Query" description="Query cmdb_items table → Apply filters and search criteria → Display asset inventory" />
+                      <FlowStep color="purple" title="CRUD Operations" description="Add/Edit/Delete assets → Update cmdb_items table → Refresh asset list" />
+                      <FlowStep color="purple" title="NinjaOne Sync" description="Call ninjaone-sync function → Fetch from NinjaOne API → Update CMDB" />
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -133,11 +152,18 @@ const DataFlowPortal = () => {
                     </CardTitle>
                     <CardDescription>Track and manage organizational changes</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <FlowStep color="orange" title="Load Changes" description="Query change_requests table → Apply status filters → Display change list" />
-                    <FlowStep color="orange" title="Create/Update" description="New change request → Update database → Log to audit_logs → Trigger notifications" />
-                    <FlowStep color="orange" title="Impact Analysis" description="Call change-impact-analyzer function → Assess risk → Update change record" />
-                    <FlowStep color="orange" title="Workflow" description="Status transitions → Approval routing → Stakeholder notifications" />
+                  <CardContent className="space-y-6">
+                    <div className="bg-background/80 p-4 rounded-lg border border-orange-500/20">
+                      <h3 className="text-lg font-semibold mb-3 text-orange-600 dark:text-orange-400">Visual Flow Diagram</h3>
+                      <img src={changeDiagram} alt="Change Management Data Flow" className="w-full rounded-lg" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-orange-600 dark:text-orange-400">Flow Steps</h3>
+                      <FlowStep color="orange" title="Load Changes" description="Query change_requests table → Apply status filters → Display change list" />
+                      <FlowStep color="orange" title="Create/Update" description="New change request → Update database → Log to audit_logs → Trigger notifications" />
+                      <FlowStep color="orange" title="Impact Analysis" description="Call change-impact-analyzer function → Assess risk → Update change record" />
+                      <FlowStep color="orange" title="Workflow" description="Status transitions → Approval routing → Stakeholder notifications" />
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -152,11 +178,18 @@ const DataFlowPortal = () => {
                     </CardTitle>
                     <CardDescription>Framework compliance and evidence management</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <FlowStep color="green" title="Load Frameworks" description="Query compliance_frameworks & compliance_controls → Calculate compliance scores" />
-                    <FlowStep color="green" title="Audit Logs" description="Query audit_logs table → Display compliance activities and events" />
-                    <FlowStep color="green" title="Evidence Upload" description="Upload files to storage bucket → Create compliance_evidence record → Update control status" />
-                    <FlowStep color="green" title="Score Calculation" description="Recalculate compliance scores → Update dashboard metrics" />
+                  <CardContent className="space-y-6">
+                    <div className="bg-background/80 p-4 rounded-lg border border-green-500/20">
+                      <h3 className="text-lg font-semibold mb-3 text-green-600 dark:text-green-400">Visual Flow Diagram</h3>
+                      <img src={complianceDiagram} alt="Compliance Dashboard Data Flow" className="w-full rounded-lg" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-green-600 dark:text-green-400">Flow Steps</h3>
+                      <FlowStep color="green" title="Load Frameworks" description="Query compliance_frameworks & compliance_controls → Calculate compliance scores" />
+                      <FlowStep color="green" title="Audit Logs" description="Query audit_logs table → Display compliance activities and events" />
+                      <FlowStep color="green" title="Evidence Upload" description="Upload files to storage bucket → Create compliance_evidence record → Update control status" />
+                      <FlowStep color="green" title="Score Calculation" description="Recalculate compliance scores → Update dashboard metrics" />
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -286,10 +319,10 @@ const DataFlowPortal = () => {
                     <CardDescription>Workflow execution and operational metrics</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <FlowStep color="violet" title="Workflow Data" description="Query workflow_executions → Query mcp_execution_logs → Query change_requests" />
-                    <FlowStep color="violet" title="Operations Metrics" description="Calculate workflow success rates, execution times, operational KPIs" />
-                    <FlowStep color="violet" title="Workflow Execution" description="Execute workflows → Call workflow-executor function → Log results" />
-                    <FlowStep color="violet" title="Navigation" description="View workflow details → Navigate to Change Management" />
+                    <FlowStep color="violet" title="Workflow Query" description="Query workflows & workflow_executions → Calculate operational metrics" />
+                    <FlowStep color="violet" title="Execution Monitoring" description="Monitor active workflows → Display execution status and history" />
+                    <FlowStep color="violet" title="Performance Metrics" description="Calculate success rates, execution times, and error rates" />
+                    <FlowStep color="violet" title="Alerts" description="Monitor for failures → Send notifications for critical issues" />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -305,15 +338,15 @@ const DataFlowPortal = () => {
                     <CardDescription>Security Operations Center monitoring</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <FlowStep color="rose" title="Security Data" description="Query security_incidents → Query audit_logs → Query CIPP security scores" />
-                    <FlowStep color="rose" title="Security Metrics" description="Calculate security posture, incident counts, threat levels" />
-                    <FlowStep color="rose" title="Incident Management" description="Create/view incidents → Track resolution → Display audit logs" />
-                    <FlowStep color="rose" title="Security Scanning" description="Trigger security assessments → Monitor security posture" />
+                    <FlowStep color="rose" title="Security Monitoring" description="Query audit_logs → Monitor privileged access → Track security events" />
+                    <FlowStep color="rose" title="Threat Detection" description="Analyze security patterns → Detect anomalies → Generate alerts" />
+                    <FlowStep color="rose" title="Incident Response" description="Create incident tickets → Track resolution → Document findings" />
+                    <FlowStep color="rose" title="Compliance" description="Generate security reports → Track compliance with security frameworks" />
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              {/* Workflow Automation */}
+              {/* Workflow Automation Dashboard */}
               <TabsContent value="workflow" className="mt-6">
                 <Card className="border-yellow-500/20 bg-gradient-to-br from-yellow-500/5 to-transparent">
                   <CardHeader>
@@ -321,13 +354,20 @@ const DataFlowPortal = () => {
                       <Zap className="h-5 w-5" />
                       Workflow Automation Data Flow
                     </CardTitle>
-                    <CardDescription>Workflow creation, execution, and monitoring</CardDescription>
+                    <CardDescription>Automated workflow orchestration and execution</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <FlowStep color="yellow" title="Workflow List" description="Query workflows table → Query workflow_executions → Display workflow library" />
-                    <FlowStep color="yellow" title="Workflow Builder" description="Create/edit workflows → Configure steps and triggers → Save configuration" />
-                    <FlowStep color="yellow" title="Execution" description="Call workflow-executor function → Process steps → Log to workflow_executions and mcp_execution_logs" />
-                    <FlowStep color="yellow" title="Monitoring" description="View execution history → Track success/failure → Analyze performance" />
+                  <CardContent className="space-y-6">
+                    <div className="bg-background/80 p-4 rounded-lg border border-yellow-500/20">
+                      <h3 className="text-lg font-semibold mb-3 text-yellow-600 dark:text-yellow-400">Visual Flow Diagram</h3>
+                      <img src={workflowDiagram} alt="Workflow Automation Data Flow" className="w-full rounded-lg" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-yellow-600 dark:text-yellow-400">Flow Steps</h3>
+                      <FlowStep color="yellow" title="Load Workflows" description="Query workflows & workflow_steps tables → Display workflow list" />
+                      <FlowStep color="yellow" title="Execution" description="Trigger workflow → Call workflow-executor function → Execute steps sequentially" />
+                      <FlowStep color="yellow" title="Monitoring" description="Query workflow_executions → Display execution history and status" />
+                      <FlowStep color="yellow" title="Evidence Generation" description="Call workflow-evidence-generator → Create compliance evidence from workflow outputs" />
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -343,10 +383,10 @@ const DataFlowPortal = () => {
                     <CardDescription>Model Context Protocol server management</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <FlowStep color="teal" title="Server List" description="Query mcp_servers table → Query mcp_execution_logs → Display server inventory" />
-                    <FlowStep color="teal" title="Configuration" description="Configure MCP servers → Update mcp_servers table → Log changes" />
-                    <FlowStep color="teal" title="Testing" description="Call mcp-server function → Test endpoints → Update server status" />
-                    <FlowStep color="teal" title="AI Generation" description="Call ai-mcp-generator function → Create new MCP server configurations" />
+                    <FlowStep color="teal" title="Server Query" description="Query mcp_servers → Query mcp_execution_logs → Display server status" />
+                    <FlowStep color="teal" title="Execution" description="Call mcp-server function → Execute AI tasks → Log execution results" />
+                    <FlowStep color="teal" title="Monitoring" description="Track server health → Monitor execution metrics → Display logs" />
+                    <FlowStep color="teal" title="Configuration" description="Manage server configs → Update AI models → Test connections" />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -359,13 +399,13 @@ const DataFlowPortal = () => {
                       <UserPlus className="h-5 w-5" />
                       Onboarding Dashboard Data Flow
                     </CardTitle>
-                    <CardDescription>Employee onboarding task management</CardDescription>
+                    <CardDescription>New employee onboarding automation</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <FlowStep color="lime" title="Task Data" description="Query onboarding_tasks → Query employee_records → Calculate completion statistics" />
-                    <FlowStep color="lime" title="Task Management" description="Create tasks → Assign to employees → Send notifications" />
-                    <FlowStep color="lime" title="Task Completion" description="Update task status → Log to audit_logs → Recalculate progress" />
-                    <FlowStep color="lime" title="Templates" description="Access onboarding templates → Clone template tasks for new employees" />
+                    <FlowStep color="lime" title="Load Templates" description="Query onboarding_templates → Display available templates" />
+                    <FlowStep color="lime" title="Create Onboarding" description="Select template → Create employee_records → Generate onboarding_tasks" />
+                    <FlowStep color="lime" title="Task Management" description="Track task completion → Update progress → Send reminders" />
+                    <FlowStep color="lime" title="Automation" description="Trigger workflows for provisioning → Create accounts → Assign access" />
                   </CardContent>
                 </Card>
               </TabsContent>
