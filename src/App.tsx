@@ -42,7 +42,10 @@ import PrivilegedAccessAudit from "./pages/PrivilegedAccessAudit";
 import CMDBDashboard from "./pages/CMDBDashboard";
 import CMDBItemDetail from "./pages/CMDBItemDetail";
 import CMDBAddItem from "./pages/CMDBAddItem";
+import CMDBEditItem from "./pages/CMDBEditItem";
 import ChangeManagement from "./pages/ChangeManagement";
+import ChangeManagementNew from "./pages/ChangeManagementNew";
+import ChangeManagementDetail from "./pages/ChangeManagementDetail";
 import TestWorkflowEvidence from "./pages/TestWorkflowEvidence";
 import ComprehensiveTestDashboard from "./pages/ComprehensiveTestDashboard";
 
@@ -215,6 +218,11 @@ const App = () => (
               <CMDBAddItem />
             </ProtectedRoute>
           } />
+          <Route path="/cmdb/:id/edit" element={
+            <ProtectedRoute>
+              <CMDBEditItem />
+            </ProtectedRoute>
+          } />
           <Route path="/cmdb/:id" element={
             <ProtectedRoute>
               <CMDBItemDetail />
@@ -223,6 +231,16 @@ const App = () => (
           <Route path="/change-management" element={
             <ProtectedRoute>
               <ChangeManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/change-management/new" element={
+            <ProtectedRoute>
+              <ChangeManagementNew />
+            </ProtectedRoute>
+          } />
+          <Route path="/change-management/:id" element={
+            <ProtectedRoute>
+              <ChangeManagementDetail />
             </ProtectedRoute>
           } />
           
