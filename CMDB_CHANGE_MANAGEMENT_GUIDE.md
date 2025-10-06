@@ -6,7 +6,8 @@ OberaConnect now includes a comprehensive **Configuration Management Database (C
 
 ✅ **Asset & Infrastructure Tracking** - Complete CI inventory with relationships  
 ✅ **AI-Powered Risk Analysis** - ML models predict change success probability  
-✅ **NinjaOne Integration** - Automatic device synchronization  
+✅ **NinjaOne Integration** - Automatic device synchronization + ticketing  
+✅ **Bi-Directional Ticket Sync** - Change requests auto-create NinjaOne tickets  
 ✅ **Compliance Integration** - Links to existing compliance framework  
 ✅ **Network Effect Learning** - Gets smarter with every change
 
@@ -56,8 +57,35 @@ Maps dependencies and connections between CIs:
 
 ```
 Draft → Submitted → Pending Approval → Approved → Scheduled → In Progress → Completed
+                                    ↓                                        ↑
+                                 Rejected                    NinjaOne Ticket Sync
                                     ↓
-                                 Rejected / Failed / Rolled Back
+                              Failed / Rolled Back
+```
+
+#### **NinjaOne Ticketing Integration** 🎫
+
+**Automatic Ticket Creation:**
+- Change requests can automatically create NinjaOne tickets
+- Full change details mapped to ticket description
+- Affected CIs listed in ticket
+- Implementation and rollback plans included
+- Priority mapping (Critical/High/Medium/Low)
+
+**Bi-Directional Sync:**
+- Webhook integration keeps statuses in sync
+- Ticket updates in NinjaOne automatically update change requests
+- Manual sync available for immediate status refresh
+- Complete audit trail of all sync operations
+
+**Status Mapping:**
+```
+NinjaOne Status       →  Change Request Status
+------------------       ---------------------
+OPEN/NEW             →  pending_approval
+IN_PROGRESS          →  in_progress
+RESOLVED/CLOSED      →  completed
+CANCELLED            →  cancelled
 ```
 
 #### **Change Types**
@@ -126,18 +154,64 @@ Uses Google Gemini 2.5 Flash for:
 
 ## Implementation Steps
 
+### Phase 0: NinjaOne Setup (Pre-requisite)
+
+#### **Configure NinjaOne API Access**
+
+1. **Get NinjaOne Credentials:**
+   - Log into NinjaOne at `https://app.ninjarmm.com` (or your instance)
+   - Navigate to **Administration** → **Apps** → **API**
+   - Click **Add** or **Create Application**
+   - Name: "OberaConnect CMDB Integration"
+   - Scopes: Select **Monitoring** and **Management**
+   - Save and copy:
+     - **Client ID** → `NINJAONE_CLIENT_ID`
+     - **Client Secret** → `NINJAONE_CLIENT_SECRET` (shown only once!)
+   
+2. **Determine Instance:**
+   - URL: `https://app.ninjarmm.com` → instance = `app`
+   - URL: `https://eu.ninjarmm.com` → instance = `eu`
+   - This is your `NINJAONE_INSTANCE` value
+
+3. **Add Secrets to OberaConnect:**
+   - Credentials are stored securely using Lovable Cloud secrets
+   - Contact support to add: `NINJAONE_CLIENT_ID`, `NINJAONE_CLIENT_SECRET`, `NINJAONE_INSTANCE`
+
+4. **Configure Webhook (for ticket sync):**
+   - In NinjaOne: **Administration** → **Integrations** → **Webhooks**
+   - Create new webhook:
+     - URL: `https://olrpexessehcijdvogxo.supabase.co/functions/v1/ninjaone-webhook`
+     - Events: `ticket.created`, `ticket.updated`
+     - No authentication required (public endpoint)
+
 ### Phase 1: CMDB Population (Week 1-2)
 
 #### **Option A: NinjaOne Sync** (Recommended)
-```typescript
-// Automatic device import from NinjaOne
-// Edge function to be implemented
-const syncNinjaOne = async () => {
-  // Fetch devices from NinjaOne API
-  // Map to configuration_items table
-  // Create relationships based on network topology
-  // Tag with criticality based on business rules
-}
+
+**Automatic Device Import:**
+1. Navigate to `/cmdb`
+2. Click **"Sync NinjaOne"** button
+3. System will:
+   - Authenticate with NinjaOne API
+   - Fetch all managed devices
+   - Map devices to configuration items
+   - Determine criticality based on device role
+   - Link via `ninjaone_device_id` for ongoing sync
+
+**Sync Features:**
+- Maps device types (Workstation, Server, VM) to CI types
+- Imports: hostname, IP, MAC, OS, manufacturer, model, serial
+- Auto-tags criticality (servers = high, workstations = medium)
+- Stores NinjaOne device ID for reference
+- Runs in background, reports statistics
+
+**Initial Sync:**
+```
+Processing 50 devices...
+✓ Created: 45 new CIs
+✓ Updated: 5 existing CIs
+✓ Relationships: 12 dependencies mapped
+✓ Time: ~30 seconds
 ```
 
 #### **Option B: Manual Entry**
@@ -181,17 +255,42 @@ const syncNinjaOne = async () => {
    - Emergency change procedures
    - Blackout windows/maintenance windows
 
-2. **Approval Hierarchy**
+2. **NinjaOne Ticketing Integration**
+   
+   **Setup:**
+   - Webhook configured (see Phase 0)
+   - API credentials stored as secrets
+   - Test ticket creation with sample change
+   
+   **Usage:**
+   - Create change request in OberaConnect
+   - Click **"Create NinjaOne Ticket"** button
+   - System creates ticket with:
+     - Change request details
+     - Affected systems list
+     - Implementation plan
+     - Rollback plan
+     - Priority and risk level
+   - Ticket ID stored on change request
+   - Status syncs automatically via webhook
+   
+   **Manual Sync:**
+   - Click **"Sync Status"** to refresh immediately
+   - Click **"View in NinjaOne"** to open ticket
+   - All sync operations logged to audit trail
+
+3. **Approval Hierarchy**
    ```
    Level 1: Technical Approval (IT Team)
    Level 2: Management Approval (Department Heads)
    Level 3: Executive Approval (Critical Systems)
    ```
 
-3. **Testing with Sample Changes**
+4. **Testing with Sample Changes**
    - Create test change requests
    - Run AI impact analysis
-   - Validate workflow routing
+   - Create NinjaOne tickets
+   - Validate webhook sync
    - Verify notifications
 
 ### Phase 4: Integration & Automation (Week 4-6)
@@ -249,6 +348,43 @@ const { data: analysisResult } = await supabase.functions.invoke(
 console.log("Risk Analysis:", analysisResult.analysis);
 console.log("Success Probability:", analysisResult.analysis.success_probability);
 console.log("Key Concerns:", analysisResult.analysis.risk_summary.key_concerns);
+```
+
+### Create NinjaOne Ticket from Change Request
+
+```typescript
+import { supabase } from "@/integrations/supabase/client";
+
+// Create NinjaOne ticket for existing change request
+const { data: ticketResult } = await supabase.functions.invoke(
+  "ninjaone-ticket",
+  {
+    body: {
+      change_request_id: changeRequestId,
+      action: "create",
+    },
+  }
+);
+
+if (ticketResult.success) {
+  console.log("Ticket created:", ticketResult.ticket);
+  console.log("Ticket ID:", ticketResult.ticket.id);
+  console.log("Ticket Number:", ticketResult.ticket.number);
+  console.log("Ticket URL:", ticketResult.ticket.url);
+}
+
+// Sync ticket status from NinjaOne
+const { data: syncResult } = await supabase.functions.invoke(
+  "ninjaone-ticket",
+  {
+    body: {
+      change_request_id: changeRequestId,
+      action: "sync",
+    },
+  }
+);
+
+console.log("Synced status:", syncResult.ticket.status);
 ```
 
 ### Query CI Relationships
@@ -311,6 +447,12 @@ change_requests (
   -- Scheduling: requested/scheduled/actual times
   -- Risk assessment: scores, ML predictions
   -- Ownership & approvals
+  -- NinjaOne Integration:
+  ninjaone_ticket_id TEXT,
+  ninjaone_ticket_number TEXT,
+  ninjaone_ticket_status TEXT,
+  ninjaone_ticket_url TEXT,
+  ninjaone_ticket_synced_at TIMESTAMPTZ,
   created_at, updated_at
 )
 ```
@@ -419,10 +561,32 @@ The ML models learn:
 ### Common Issues
 
 **Q: CIs not syncing from NinjaOne?**
-A: Check integration credentials at `/ninjaone`, verify API permissions
+A: 
+- Check NinjaOne credentials are configured (NINJAONE_CLIENT_ID, NINJAONE_CLIENT_SECRET, NINJAONE_INSTANCE)
+- Verify API permissions include "Monitoring" scope
+- Check edge function logs: `/edge-functions/ninjaone-sync`
+- Ensure NinjaOne account has active devices
+
+**Q: NinjaOne tickets not creating?**
+A:
+- Verify credentials are set correctly
+- Check API scope includes "Management" for ticketing
+- Review edge function logs: `/edge-functions/ninjaone-ticket`
+- Confirm change request has valid `change_request_id`
+
+**Q: Ticket status not syncing automatically?**
+A:
+- Verify webhook is configured in NinjaOne
+- Check webhook URL matches your Supabase project
+- Events must include: `ticket.created`, `ticket.updated`
+- Test with manual "Sync Status" button first
+- Review webhook logs in NinjaOne dashboard
 
 **Q: Change impact analysis not running?**
-A: Ensure affected_ci_ids are valid UUIDs, check edge function logs
+A: 
+- Ensure affected_ci_ids are valid UUIDs
+- Check edge function logs: `/edge-functions/change-impact-analyzer`
+- Verify CIs exist in database
 
 **Q: Risk scores seem inaccurate?**
 A: System improves with data - needs 20+ changes for reliable predictions
@@ -434,11 +598,12 @@ A: Verify RLS policies, check customer_id matches user profile
 
 ## Next Steps
 
-1. ✅ **Populate CMDB** - Start with critical systems
-2. ✅ **Map Relationships** - Define key dependencies
-3. ✅ **Create Sample Changes** - Test workflow
-4. ✅ **Train Team** - Change management processes
-5. ✅ **Monitor & Refine** - Track success rates, improve policies
+1. ✅ **Configure NinjaOne** - Add API credentials and webhook
+2. ✅ **Populate CMDB** - Start with NinjaOne sync
+3. ✅ **Map Relationships** - Define key dependencies
+4. ✅ **Create Sample Changes** - Test workflow and ticketing
+5. ✅ **Train Team** - Change management processes
+6. ✅ **Monitor & Refine** - Track success rates, improve policies
 
 ---
 
@@ -446,7 +611,63 @@ A: Verify RLS policies, check customer_id matches user profile
 
 - **CMDB Dashboard**: `/cmdb`
 - **Change Management**: `/change-management`
+- **NinjaOne Integration**: API credentials via secrets management
 - **Architecture Doc**: `ARCHITECTURE.md`
 - **API Reference**: `API_REFERENCE.md`
+- **Edge Functions**:
+  - `ninjaone-sync` - Device synchronization
+  - `ninjaone-ticket` - Ticket creation/sync
+  - `ninjaone-webhook` - Automatic status updates
+  - `change-impact-analyzer` - AI risk analysis
 
 For questions or issues, check audit logs and edge function logs for debugging.
+
+---
+
+## Feature Summary
+
+### ✅ Implemented Features
+
+1. **CMDB Core**
+   - Configuration item tracking (hardware, software, network, cloud)
+   - CI relationships and dependency mapping
+   - Asset lifecycle management
+   - Search, filter, and export capabilities
+
+2. **NinjaOne Integration**
+   - ✅ Device synchronization (automatic import)
+   - ✅ Ticket creation from change requests
+   - ✅ Bi-directional status sync via webhooks
+   - ✅ Manual sync on-demand
+   - ✅ Direct links to NinjaOne tickets
+
+3. **Change Management**
+   - Change request workflow (draft → approved → completed)
+   - AI-powered impact analysis
+   - Risk scoring and success probability
+   - Approval workflows
+   - Audit trail and compliance tracking
+
+4. **AI Features**
+   - Impact analysis using Gemini AI
+   - Success probability prediction
+   - Similar change pattern matching
+   - Automated mitigation strategies
+   - Continuous learning from outcomes
+
+### 🚀 Coming Soon
+
+1. **Advanced Relationship Mapping**
+   - Automatic dependency discovery
+   - Network topology visualization
+   - Impact radius visualization
+
+2. **Change Analytics**
+   - Success rate trending
+   - Risk factor analysis
+   - Optimization recommendations
+
+3. **Azure Integration**
+   - Cloud resource import
+   - Azure Resource Manager sync
+   - Cost allocation tracking
