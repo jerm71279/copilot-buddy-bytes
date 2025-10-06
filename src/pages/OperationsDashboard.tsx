@@ -158,7 +158,7 @@ const OperationsDashboard = () => {
             <DropdownMenuContent align="start" className="w-56 bg-background z-50">
               <DropdownMenuLabel>Operations Management</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/workflow-builder')}>
+              <DropdownMenuItem onClick={() => navigate('/workflows/builder')}>
                 <GitBranch className="h-4 w-4 mr-2" />
                 Workflow Builder
               </DropdownMenuItem>
