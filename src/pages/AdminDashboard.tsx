@@ -175,7 +175,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Testing & Validation Quick Access */}
-        <div className="grid gap-4 md:grid-cols-3 mb-6">
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5 mb-6">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/test/validation')}>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -214,6 +214,34 @@ const AdminDashboard = () => {
             <CardContent>
               <p className="text-sm text-muted-foreground">
                 Manage applications in the app launcher
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/cmdb')}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">CMDB Dashboard</CardTitle>
+                <Badge variant="secondary">IT</Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Configuration management database and asset tracking
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/change-management')}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">Change Management</CardTitle>
+                <Badge variant="secondary">IT</Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                AI-powered change control and impact analysis
               </p>
             </CardContent>
           </Card>
