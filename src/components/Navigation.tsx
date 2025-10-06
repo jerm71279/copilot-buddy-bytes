@@ -107,6 +107,14 @@ const Navigation = () => {
         {/* Navigation Menu */}
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-14">
+            {/* Mobile Menu Button - Left Side */}
+            <button
+              className="md:hidden p-2 hover:bg-accent/10 rounded-lg transition-colors"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center justify-center flex-1 gap-6">
               {isLoggedIn && (
@@ -238,39 +246,31 @@ const Navigation = () => {
                       Get Started
                     </Button>
                   </Link>
-                </>
-              )}
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2 hover:bg-accent/10 rounded-lg transition-colors ml-auto"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <Menu className="h-6 w-6" />
-            </button>
+              </>
+            )}
           </div>
         </div>
+      </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Dropdown Menu - Positioned Below Button */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border px-4">
-            <div className="flex flex-col gap-3">
+          <div className="md:hidden absolute left-4 top-full mt-2 w-64 bg-background border border-border rounded-lg shadow-lg z-50 py-2">
+            <div className="flex flex-col">
               <button 
                 onClick={() => scrollToSection('features')}
-                className="text-sm font-medium hover:text-accent transition-colors py-2 text-left"
+                className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 text-left rounded"
               >
                 Features
               </button>
               <button 
                 onClick={() => scrollToSection('frameworks')}
-                className="text-sm font-medium hover:text-accent transition-colors py-2 text-left"
+                className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 text-left rounded"
               >
                 Frameworks
               </button>
               <Link 
                 to="/integrations"
-                className="text-sm font-medium hover:text-accent transition-colors py-2"
+                className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Integrations
@@ -279,35 +279,35 @@ const Navigation = () => {
                 <>
                   <Link 
                     to="/knowledge"
-                    className="text-sm font-medium hover:text-accent transition-colors py-2"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Knowledge
                   </Link>
                   <Link 
                     to="/onboarding"
-                    className="text-sm font-medium hover:text-accent transition-colors py-2"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Onboarding
                   </Link>
                   <Link 
                     to="/compliance"
-                    className="text-sm font-medium hover:text-accent transition-colors py-2"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Compliance
                   </Link>
                   <Link 
                     to="/workflows"
-                    className="text-sm font-medium hover:text-accent transition-colors py-2"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Workflows
                   </Link>
                   <Link 
                     to="/ninjaone"
-                    className="text-sm font-medium hover:text-accent transition-colors py-2"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Monitoring
@@ -316,17 +316,17 @@ const Navigation = () => {
               )}
               <button
                 onClick={() => scrollToSection('case-study')}
-                className="text-sm font-medium hover:text-accent transition-colors py-2 text-left"
+                className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 text-left rounded"
               >
                 Demo
               </button>
               <button 
                 onClick={() => scrollToSection('pricing')}
-                className="text-sm font-medium hover:text-accent transition-colors py-2 text-left"
+                className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 text-left rounded"
               >
                 Pricing
               </button>
-              <div className="flex flex-col gap-2 pt-3 border-t border-border">
+              <div className="border-t border-border mt-2 pt-2">
                 {isLoggedIn ? (
                   <>
                     <Link to="/portal" onClick={() => setIsMenuOpen(false)}>
@@ -355,7 +355,7 @@ const Navigation = () => {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="justify-start"
+                      className="justify-start w-full"
                       onClick={handleSignOut}
                     >
                       <LogOut className="h-4 w-4 mr-2" />
