@@ -53,6 +53,7 @@ graph TB
         IntellAssist[intelligent-assistant]
         AIMCPGen[ai-mcp-generator]
         WorkflowInsights[workflow-insights]
+        CIPPSync[cipp-sync]
     end
     
     subgraph "Lovable Cloud Backend"
@@ -108,6 +109,7 @@ graph TB
         Revio[Revio Billing<br/>Revenue Data]
         OneBill[OneBill<br/>Current System]
         NinjaOne[NinjaOne<br/>RMM/PSA]
+        CIPP[CIPP<br/>M365 Tenant Management]
         LovableAI[Lovable AI<br/>Gemini/GPT Models]
     end
     
@@ -142,6 +144,7 @@ graph TB
     GraphAPI --> M365
     SharePointSync --> SharePoint
     RevioData --> Revio
+    CIPPSync --> CIPP
     
     %% AI Integration
     DeptAssist --> LovableAI
@@ -190,10 +193,10 @@ graph TB
 
 **Architecture Layers**:
 
-1. **Frontend Layer (Purple)**: 8 department-specific dashboards, employee portal, admin tools, and AI features built in React with Vite
-2. **Edge Functions Layer**: 11 serverless functions handling AI assistants, workflows, integrations, and external API connections
-3. **Backend Layer (Green/Red)**: Lovable Cloud (Supabase) with 50+ tables organized into core user data, workflows, AI/knowledge, MCP tools, compliance tracking, and integrations - all protected by Row Level Security
-4. **External Systems**: Microsoft 365, SharePoint, Revio billing, and Lovable AI for LLM capabilities
+1. **Frontend Layer (Purple)**: 8 department-specific dashboards, employee portal, admin tools, AI features, and CIPP management portal built in React with Vite
+2. **Edge Functions Layer**: 12 serverless functions handling AI assistants, workflows, integrations, CIPP tenant management, and external API connections
+3. **Backend Layer (Green/Red)**: Lovable Cloud (Supabase) with 55+ tables organized into core user data, workflows, AI/knowledge, MCP tools, compliance tracking, CIPP tenant management, and integrations - all protected by Row Level Security
+4. **External Systems**: Microsoft 365, SharePoint, Revio billing, CIPP tenant management, NinjaOne RMM, and Lovable AI for LLM capabilities
 
 All data flows through authentication and RLS policies ensure users only access their organization's data based on their role and department.
 
@@ -479,6 +482,37 @@ interface Integration {
 - **Landing Page**: High-level overview with logos
 - **Integrations Page**: Detailed info (auth methods, permissions, setup)
 - **Dashboard**: Live status indicators
+
+### CIPP Tenant Management
+
+**CIPP (CyberDrain Improved Partner Portal)** provides centralized Microsoft 365 tenant management:
+
+**Frontend**: `src/pages/CIPPDashboard.tsx` - Tenant overview and health monitoring
+
+**Backend**: `supabase/functions/cipp-sync/index.ts` - CIPP API integration
+
+**Database Tables**:
+- `cipp_tenants` - Microsoft 365 tenant registry with sync status
+- `cipp_security_baselines` - Automated security configurations
+- `cipp_policies` - Conditional Access, Intune, and compliance policies
+- `cipp_tenant_health` - Health scores, security metrics, and alerts
+- `cipp_audit_logs` - CIPP action audit trail
+
+**Key Capabilities**:
+- **Tenant Sync**: Import and manage multiple Microsoft 365 tenants
+- **Security Baselines**: Apply standardized security configurations across tenants
+- **Policy Management**: Centralized Conditional Access and Intune policies
+- **Health Monitoring**: Real-time security and compliance scoring
+- **Bulk Operations**: Apply changes across multiple tenants simultaneously
+
+**Workflow**:
+1. Admin navigates to `/cipp` dashboard
+2. Clicks "Sync Tenants" to import from CIPP instance
+3. Views tenant health scores and security metrics
+4. Creates and applies security baselines
+5. Manages policies across tenant portfolio
+
+**RLS Policies**: Admins can manage all CIPP resources, users can view their organization's tenants
 
 ## 🤖 AI Architecture
 

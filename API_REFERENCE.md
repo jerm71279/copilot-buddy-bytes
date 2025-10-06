@@ -581,6 +581,127 @@ const SalesDashboard = () => {
 
 ---
 
+### CIPP Sync
+
+**Endpoint**: `cipp-sync`
+
+**Purpose**: Centralized Microsoft 365 tenant management via CIPP API
+
+**Authentication**: Requires JWT (admin role recommended)
+
+**Request**:
+```typescript
+// Sync all tenants from CIPP
+const { data, error } = await supabase.functions.invoke('cipp-sync', {
+  body: {
+    action: 'sync_tenants',
+    customerId: 'uuid-string'
+  }
+});
+
+// Get tenant health scores
+const { data, error } = await supabase.functions.invoke('cipp-sync', {
+  body: {
+    action: 'get_tenant_health',
+    tenantId: 'tenant-id-string',
+    customerId: 'uuid-string'
+  }
+});
+
+// Apply security baseline to tenants
+const { data, error } = await supabase.functions.invoke('cipp-sync', {
+  body: {
+    action: 'apply_baseline',
+    baselineId: 'uuid-string',
+    targetTenantIds: ['tenant-id-1', 'tenant-id-2'],
+    customerId: 'uuid-string'
+  }
+});
+```
+
+**Response**:
+```typescript
+{
+  success: boolean;
+  message?: string;
+  data?: any;
+  results?: Array<{
+    tenant: string;
+    status: 'success' | 'error';
+    error?: string;
+  }>;
+}
+```
+
+**Supported Actions**:
+- `sync_tenants` - Import all Microsoft 365 tenants from CIPP instance
+- `get_tenant_health` - Fetch security scores and health metrics
+- `apply_baseline` - Deploy security baseline to multiple tenants
+
+**Database Integration**:
+```typescript
+// Fetching tenant data
+const { data: tenants } = await supabase
+  .from('cipp_tenants')
+  .select('*')
+  .eq('customer_id', customerId)
+  .order('tenant_name');
+
+// Fetching health data
+const { data: health } = await supabase
+  .from('cipp_tenant_health')
+  .select('*')
+  .in('tenant_id', tenantIds)
+  .order('last_checked_at', { ascending: false });
+
+// Creating security baseline
+const { data } = await supabase
+  .from('cipp_security_baselines')
+  .insert({
+    customer_id: customerId,
+    baseline_name: 'CIS Microsoft 365',
+    baseline_type: 'security',
+    settings: { /* baseline config */ },
+    created_by: userId
+  });
+```
+
+**CIPP API Integration**:
+- **ListTenants**: GET `/api/ListTenants` - Retrieves all managed tenants
+- **GetSecureScore**: POST `/api/ListGraphRequest` - Tenant security scoring
+- **ApplyStandards**: POST `/api/AddStandardsDeploy` - Deploy security standards
+
+**Required Secrets**:
+- `CIPP_URL` - CIPP instance URL
+- `CIPP_API_KEY` - CIPP API key with tenant management permissions
+
+**Example Usage**:
+```typescript
+const CIPPTenantManager = () => {
+  const handleSync = async () => {
+    const { data, error } = await supabase.functions.invoke('cipp-sync', {
+      body: {
+        action: 'sync_tenants',
+        customerId: currentCustomerId
+      }
+    });
+    
+    if (data?.success) {
+      console.log(`Synced ${data.message}`);
+      // Refresh tenant list
+    }
+  };
+  
+  return (
+    <Button onClick={handleSync}>
+      Sync Tenants from CIPP
+    </Button>
+  );
+};
+```
+
+---
+
 ## 🛡️ Row Level Security (RLS)
 
 All tables have RLS policies enforcing data isolation.

@@ -138,11 +138,12 @@ supabase/
 - 📊 **Workflow Execution Detail**: Clickable execution logs with full debugging info
 - 📚 **Complete Test Documentation**: See [`TESTING_GUIDE.md`](./TESTING_GUIDE.md)
 
-### 6. Integration Management
+### Integration Management
 - **Microsoft 365**: Calendar, Email, Teams, OneDrive (ACTIVE)
+- **CIPP**: Centralized M365 tenant management and security automation (ACTIVE)
 - **Revio**: Billing & Revenue data (Infrastructure complete, live API pending OneBill migration) (NEW)
 - OneBill (Current billing system, migration to Revio in progress)
-- Azure, Lighthouse, CIPP (Cloud & Identity)
+- Azure, Lighthouse (Cloud & Identity)
 - SonicWall, UniFi, MikroTik (Network Security)
 - Keeper Security (Password & Access Management)
 - NinjaOne (RMM & Infrastructure)
@@ -166,6 +167,11 @@ supabase/
 - `compliance_frameworks` - Compliance tracking
 - `ml_insights` - Machine learning analytics
 - `workflows` - Operations workflow management
+- `cipp_tenants` - CIPP managed Microsoft 365 tenants (NEW)
+- `cipp_security_baselines` - CIPP security configurations (NEW)
+- `cipp_policies` - CIPP policy management (NEW)
+- `cipp_tenant_health` - CIPP health monitoring (NEW)
+- `cipp_audit_logs` - CIPP action audit trail (NEW)
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed schema documentation.
 
@@ -191,6 +197,7 @@ Navigate to Project > Settings > Domains and click Connect Domain.
 ### 🚨 Priority Documentation (Read First)
 - [**URGENT_NEXT_STEPS.md**](./URGENT_NEXT_STEPS.md) - **Critical blockers and immediate action items**
 - [**MICROSOFT365_INTEGRATION.md**](./MICROSOFT365_INTEGRATION.md) - **Microsoft 365 technical documentation**
+- [**CIPP_INTEGRATION_GUIDE.md**](./CIPP_INTEGRATION_GUIDE.md) - **CIPP tenant management guide**
 
 ### Architecture & Development
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture and design decisions
@@ -199,6 +206,11 @@ Navigate to Project > Settings > Domains and click Connect Domain.
 - [API_REFERENCE.md](./API_REFERENCE.md) - API endpoints and data flows
 - [DEVELOPER_HANDOFF.md](./DEVELOPER_HANDOFF.md) - Knowledge transfer protocol
 - [TESTING_GUIDE.md](./TESTING_GUIDE.md) - Comprehensive testing and validation framework
+
+### Integration Guides
+- [MICROSOFT365_INTEGRATION.md](./MICROSOFT365_INTEGRATION.md) - Microsoft 365 OAuth and Graph API
+- [CIPP_INTEGRATION_GUIDE.md](./CIPP_INTEGRATION_GUIDE.md) - CIPP tenant management and security automation
+- [REVIO_INTEGRATION_GUIDE.md](./REVIO_INTEGRATION_GUIDE.md) - Revio billing and revenue data
 
 ## 🔄 Development Workflow
 

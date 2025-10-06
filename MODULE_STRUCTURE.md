@@ -227,6 +227,130 @@ interface Integration {
 
 ---
 
+### 4A. CIPP Tenant Management Module
+**Location**: `src/pages/CIPPDashboard.tsx`, `src/types/cipp.ts`, `supabase/functions/cipp-sync/`
+
+**Responsibilities**:
+- Centralized Microsoft 365 tenant management
+- Security baseline automation across tenants
+- Policy deployment and monitoring
+- Tenant health tracking and alerting
+
+**Frontend Component**:
+```typescript
+const CIPPDashboard = () => {
+  const [tenants, setTenants] = useState<CIPPTenant[]>([]);
+  const [healthData, setHealthData] = useState<TenantHealth[]>([]);
+  
+  // Load tenant data
+  const loadData = async () => {
+    const { data: tenantsData } = await supabase
+      .from('cipp_tenants')
+      .select('*')
+      .eq('customer_id', customerId);
+    
+    const { data: healthData } = await supabase
+      .from('cipp_tenant_health')
+      .select('*')
+      .in('tenant_id', tenantIds);
+  };
+  
+  // Sync tenants from CIPP
+  const handleSyncTenants = async () => {
+    await supabase.functions.invoke('cipp-sync', {
+      body: { action: 'sync_tenants', customerId }
+    });
+  };
+};
+```
+
+**Backend Edge Function**:
+```typescript
+// supabase/functions/cipp-sync/index.ts
+serve(async (req) => {
+  const { action, tenantId, customerId } = await req.json();
+  
+  // Actions:
+  // - sync_tenants: Import all tenants from CIPP
+  // - get_tenant_health: Fetch security scores
+  // - apply_baseline: Deploy security baseline to tenants
+  
+  // Calls CIPP API with X-API-KEY authentication
+  // Stores results in cipp_tenants and cipp_tenant_health tables
+});
+```
+
+**Database Tables**:
+```sql
+-- Tenant registry
+CREATE TABLE cipp_tenants (
+  id UUID PRIMARY KEY,
+  customer_id UUID NOT NULL,
+  tenant_id TEXT NOT NULL,
+  tenant_name TEXT NOT NULL,
+  default_domain_name TEXT NOT NULL,
+  status TEXT DEFAULT 'active',
+  last_sync_at TIMESTAMPTZ,
+  sync_status TEXT DEFAULT 'pending',
+  metadata JSONB,
+  UNIQUE(customer_id, tenant_id)
+);
+
+-- Security baselines
+CREATE TABLE cipp_security_baselines (
+  id UUID PRIMARY KEY,
+  customer_id UUID NOT NULL,
+  baseline_name TEXT NOT NULL,
+  baseline_type TEXT NOT NULL,
+  settings JSONB NOT NULL,
+  applied_to_tenants UUID[]
+);
+
+-- Policy management
+CREATE TABLE cipp_policies (
+  id UUID PRIMARY KEY,
+  customer_id UUID NOT NULL,
+  tenant_id UUID,
+  policy_type TEXT NOT NULL,
+  policy_name TEXT NOT NULL,
+  configuration JSONB NOT NULL,
+  status TEXT DEFAULT 'active'
+);
+
+-- Health monitoring
+CREATE TABLE cipp_tenant_health (
+  id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL,
+  health_score INTEGER,
+  security_score INTEGER,
+  compliance_score INTEGER,
+  alerts JSONB,
+  recommendations JSONB
+);
+```
+
+**Dependencies**:
+- External: CIPP instance with API access
+- Database tables: `cipp_tenants`, `cipp_security_baselines`, `cipp_policies`, `cipp_tenant_health`, `cipp_audit_logs`
+- Edge function: `cipp-sync`
+- Secrets: `CIPP_URL`, `CIPP_API_KEY`
+
+**Key Features**:
+- **Multi-Tenant Management**: Manage multiple Microsoft 365 tenants from single dashboard
+- **Security Automation**: Apply security baselines across tenant portfolio
+- **Health Monitoring**: Real-time security and compliance scoring
+- **Policy Deployment**: Centralized Conditional Access and Intune policy management
+- **Audit Trail**: Complete action logging in `cipp_audit_logs`
+
+**Testing**:
+- Configure CIPP credentials via secrets
+- Sync tenants from CIPP instance
+- Verify tenant health scores display correctly
+- Test security baseline application
+- Check audit logs for all actions
+
+---
+
 ### 5. AI Module
 **Location**: `src/components/DepartmentAIAssistant.tsx`, `supabase/functions/department-assistant/`
 
