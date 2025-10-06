@@ -199,25 +199,37 @@ All data flows through authentication and RLS policies ensure users only access 
 
 ## 🎨 Architectural Principles
 
-### 1. Modular Design
+### 1. Database-Centric Hub Architecture
+The platform follows a **hub-and-spoke model** where:
+- **Central Hub**: Lovable Cloud (Supabase) database with the `customers` table as root entity
+- **Authentication Layer**: All access flows through auth + Row Level Security
+- **Feature Spokes**: Department dashboards, workflows, compliance, integrations, AI assistants
+- **Data Flow**: All features read/write through the central database
+- **AI Enhancement**: AI tools augment features but aren't required for core operations
+
+### 2. Modular Design
 Each subsystem is independently testable, replaceable, and documented:
 - **Authentication Module**: User signup, login, session management
 - **Customization Module**: Per-customer branding and feature toggles
-- **Dashboard Module**: Department-specific views and data
+- **Dashboard Module**: Department-specific views and data (8 dashboards + Sales Portal)
 - **Integration Module**: External system connections
-- **AI Module**: Department assistants and MCP server integration
+- **AI Module**: Department assistants and MCP server integration (enhancement layer)
+- **Workflow Module**: Universal automation engine
+- **Compliance Module**: Framework tracking and audit logging
 
-### 2. Data Isolation
+### 3. Data Isolation
 - **Row Level Security (RLS)**: All tables enforce customer/user isolation
 - **Department-Based Access**: Users see only their department's data
 - **Customer Customization**: UI adapts per customer without code changes
+- **Multi-Tenant Security**: Critical vulnerabilities patched (Oct 5, 2025)
 
-### 3. Strategic Ownership
+### 4. Strategic Ownership
 Design decisions remain with OberaConnect leadership:
 - Schema structure (customer → profiles → customizations)
 - Department role definitions
 - Integration mapping logic
 - AI assistant behavior
+- Workflow orchestration patterns
 
 ## 🗄️ Database Architecture
 

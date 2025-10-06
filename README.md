@@ -6,10 +6,12 @@ OberaConnect is a clause-aware, multi-tenant SaaS platform that provides AI-powe
 
 ## 🏗️ Architecture Philosophy
 
-This project follows a **modular, documented, and role-independent** development strategy designed for:
+This project follows a **modular, hub-and-spoke, database-centric** architecture designed for:
 - **Resilience**: Platform remains operational regardless of team changes
 - **Maintainability**: Clear separation of concerns and documentation
 - **Extensibility**: New features can be added without full system knowledge
+- **Scalability**: Multi-tenant database (Lovable Cloud) as central hub with feature "spokes"
+- **AI Enhancement**: AI tools augment features but aren't required for core operations
 
 ## 📋 Quick Start
 
@@ -108,9 +110,18 @@ supabase/
 - **Operations**: Workflow efficiency, ML insights
 - **HR**: Employee management, session tracking
 - **Finance**: Revenue, subscriptions, customer data
-- **Sales**: Pipeline, deals, forecasting
+- **Sales**: Pipeline, deals, forecasting with dedicated Sales Portal
 - **Executive**: KPIs, compliance metrics, strategic overview
 - **Privileged Access Audit**: Comprehensive audit logging for RMM and privileged system access with compliance tracking
+
+**NEW - Sales Portal** (`/sales-portal`):
+- Personal performance metrics dashboard
+- Pipeline management and deal tracking
+- Activity timeline with recent touchpoints
+- Customer quick access directory
+- Territory performance analytics
+- Direct links to workflow automation for deals, customers, leads
+- Department-specific AI assistant
 
 ### 5. Testing & Validation Infrastructure (NEW)
 - 🧪 **System Validation Dashboard**: Comprehensive testing at `/test/validation`
