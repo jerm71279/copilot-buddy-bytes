@@ -15,6 +15,8 @@ import {
   AlertTriangle,
   RefreshCw,
   Sparkles,
+  Ticket,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -24,6 +26,8 @@ const ChangeManagementDetail = () => {
   const [loading, setLoading] = useState(true);
   const [change, setChange] = useState<any>(null);
   const [impactAnalysis, setImpactAnalysis] = useState<any>(null);
+  const [creatingTicket, setCreatingTicket] = useState(false);
+  const [syncingTicket, setSyncingTicket] = useState(false);
 
   useEffect(() => {
     loadChangeData();
@@ -78,6 +82,62 @@ const ChangeManagementDetail = () => {
     }
   };
 
+  const createNinjaOneTicket = async () => {
+    try {
+      setCreatingTicket(true);
+      toast.info("Creating NinjaOne ticket...");
+
+      const { data, error } = await supabase.functions.invoke("ninjaone-ticket", {
+        body: {
+          change_request_id: id,
+          action: "create",
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success("NinjaOne ticket created successfully");
+        loadChangeData();
+      } else {
+        toast.error(data.error || "Failed to create ticket");
+      }
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+      toast.error("Failed to create NinjaOne ticket");
+    } finally {
+      setCreatingTicket(false);
+    }
+  };
+
+  const syncNinjaOneTicket = async () => {
+    try {
+      setSyncingTicket(true);
+      toast.info("Syncing ticket status...");
+
+      const { data, error } = await supabase.functions.invoke("ninjaone-ticket", {
+        body: {
+          change_request_id: id,
+          action: "sync",
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success("Ticket status synced");
+        loadChangeData();
+      } else {
+        toast.error(data.error || "Failed to sync ticket");
+      }
+    } catch (error) {
+      console.error("Error syncing ticket:", error);
+      toast.error("Failed to sync ticket status");
+    } finally {
+      setSyncingTicket(false);
+    }
+  };
+
   if (loading || !change) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -105,6 +165,35 @@ const ChangeManagementDetail = () => {
             Back to Change Management
           </Button>
           <div className="flex gap-2">
+            {!change.ninjaone_ticket_id && (
+              <Button
+                variant="outline"
+                onClick={createNinjaOneTicket}
+                disabled={creatingTicket}
+              >
+                <Ticket className="h-4 w-4 mr-2" />
+                {creatingTicket ? "Creating..." : "Create NinjaOne Ticket"}
+              </Button>
+            )}
+            {change.ninjaone_ticket_id && (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={syncNinjaOneTicket}
+                  disabled={syncingTicket}
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${syncingTicket ? "animate-spin" : ""}`} />
+                  Sync Status
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.open(change.ninjaone_ticket_url, "_blank")}
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View in NinjaOne
+                </Button>
+              </>
+            )}
             {change.change_status === "draft" && (
               <Button onClick={() => updateStatus("pending_approval")}>
                 Submit for Approval
@@ -156,8 +245,24 @@ const ChangeManagementDetail = () => {
                 <div className="flex items-center gap-3 mb-2">
                   <Badge variant="outline">{change.change_number}</Badge>
                   <CardTitle className="text-2xl">{change.title}</CardTitle>
+                  {change.ninjaone_ticket_number && (
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      <Ticket className="h-3 w-3" />
+                      NinjaOne #{change.ninjaone_ticket_number}
+                    </Badge>
+                  )}
                 </div>
                 <CardDescription className="mt-2">{change.description}</CardDescription>
+                {change.ninjaone_ticket_status && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    NinjaOne Status: <Badge variant="outline">{change.ninjaone_ticket_status}</Badge>
+                    {change.ninjaone_ticket_synced_at && (
+                      <span className="ml-2">
+                        Last synced: {new Date(change.ninjaone_ticket_synced_at).toLocaleString()}
+                      </span>
+                    )}
+                  </p>
+                )}
               </div>
               <div className="flex gap-2">
                 <Badge variant={

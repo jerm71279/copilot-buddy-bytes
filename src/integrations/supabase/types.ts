@@ -624,6 +624,11 @@ export type Database = {
           implemented_by: string | null
           justification: string
           ml_recommendation: string | null
+          ninjaone_ticket_id: string | null
+          ninjaone_ticket_number: string | null
+          ninjaone_ticket_status: string | null
+          ninjaone_ticket_synced_at: string | null
+          ninjaone_ticket_url: string | null
           primary_ci_id: string | null
           priority: Database["public"]["Enums"]["change_priority"]
           requested_by: string
@@ -674,6 +679,11 @@ export type Database = {
           implemented_by?: string | null
           justification: string
           ml_recommendation?: string | null
+          ninjaone_ticket_id?: string | null
+          ninjaone_ticket_number?: string | null
+          ninjaone_ticket_status?: string | null
+          ninjaone_ticket_synced_at?: string | null
+          ninjaone_ticket_url?: string | null
           primary_ci_id?: string | null
           priority?: Database["public"]["Enums"]["change_priority"]
           requested_by: string
@@ -724,6 +734,11 @@ export type Database = {
           implemented_by?: string | null
           justification?: string
           ml_recommendation?: string | null
+          ninjaone_ticket_id?: string | null
+          ninjaone_ticket_number?: string | null
+          ninjaone_ticket_status?: string | null
+          ninjaone_ticket_synced_at?: string | null
+          ninjaone_ticket_url?: string | null
           primary_ci_id?: string | null
           priority?: Database["public"]["Enums"]["change_priority"]
           requested_by?: string

@@ -3,6 +3,12 @@ project_id = "olrpexessehcijdvogxo"
 [functions.ninjaone-sync]
 verify_jwt = true
 
+[functions.ninjaone-ticket]
+verify_jwt = true
+
+[functions.ninjaone-webhook]
+verify_jwt = false
+
 [functions.mcp-server]
 verify_jwt = false
 
