@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Menu, LogOut, Brain, Search } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { GlobalSearch } from "./GlobalSearch";
 import oberaLogo from "@/assets/obera-logo-cropped.png";
@@ -12,6 +12,8 @@ const Navigation = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isLandingPage = location.pathname === "/" || location.pathname === "/auth";
 
   useEffect(() => {
     checkAuth();
@@ -107,13 +109,15 @@ const Navigation = () => {
         {/* Navigation Menu */}
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-14">
-            {/* Mobile Menu Button - Left Side */}
-            <button
-              className="md:hidden p-2 hover:bg-accent/10 rounded-lg transition-colors"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <Menu className="h-6 w-6" />
-            </button>
+            {/* Mobile Menu Button - Only on Landing/Auth Pages */}
+            {isLandingPage && (
+              <button
+                className="md:hidden p-2 hover:bg-accent/10 rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                <Menu className="h-6 w-6" />
+              </button>
+            )}
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center justify-center flex-1 gap-6">
@@ -264,8 +268,8 @@ const Navigation = () => {
         </div>
       </div>
 
-        {/* Mobile Dropdown Menu - Positioned Below Button */}
-        {isMenuOpen && (
+        {/* Mobile Dropdown Menu - Only on Landing/Auth Pages */}
+        {isLandingPage && isMenuOpen && (
           <div className="md:hidden absolute left-4 top-full mt-2 w-64 bg-background/100 border border-border rounded-lg shadow-xl z-[100] py-2">
             <div className="flex flex-col">
               <button 
