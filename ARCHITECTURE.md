@@ -353,8 +353,16 @@ App.tsx (Root)
 │   ├── IntegrationsPage (Integration Details)
 │   │
 │   ├── AdminDashboard
-│   │   ├── MCPServerStatus
-│   │   └── Customer Table
+│   │   ├── Quick Access Menu Bar
+│   │   │   ├── MCP Tools Dropdown (Server Status, Logs, Configure, AI Generator)
+│   │   │   ├── Testing & Validation Dropdown (System Validation, Data & Security)
+│   │   │   └── Admin Buttons (Applications, CMDB, Change Management)
+│   │   ├── Dynamic Content Card (conditional, based on selected view)
+│   │   │   ├── MCPServerStatus
+│   │   │   ├── MCPExecutionLogs
+│   │   │   ├── MCPServerConfig
+│   │   │   └── AIMCPGenerator
+│   │   └── Customer Management Table
 │   │
 │   └── [Department]Dashboard
 │       ├── Stats Cards
