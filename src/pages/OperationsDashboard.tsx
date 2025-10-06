@@ -132,11 +132,12 @@ const OperationsDashboard = () => {
         />
         
         {/* Quick Access Menu Bar */}
-        <div className="flex gap-3 mb-6 flex-wrap">
-          {/* Operations Tools Dropdown */}
-          <DropdownMenu>
+        <div className="bg-card border-b border-border -mx-4 px-4">
+          <div className="flex gap-3 py-3 overflow-x-auto">
+            {/* Operations Tools Dropdown */}
+            <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2 whitespace-nowrap">
                 <Workflow className="h-4 w-4" />
                 Operations Tools
                 <ChevronDown className="h-4 w-4" />
@@ -174,7 +175,7 @@ const OperationsDashboard = () => {
           {/* Reports Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2 whitespace-nowrap">
                 <FileText className="h-4 w-4" />
                 Reports
                 <ChevronDown className="h-4 w-4" />
@@ -191,6 +192,7 @@ const OperationsDashboard = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

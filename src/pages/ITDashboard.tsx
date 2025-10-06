@@ -130,16 +130,17 @@ const ITDashboard = () => {
         />
         
         {/* Quick Access Menu Bar */}
-        <div className="flex gap-3 mb-6 flex-wrap">
-          {/* IT Tools Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Server className="h-4 w-4" />
-                IT Tools
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+        <div className="bg-card border-b border-border -mx-4 px-4">
+          <div className="flex gap-3 py-3 overflow-x-auto">
+            {/* IT Tools Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2 whitespace-nowrap">
+                  <Server className="h-4 w-4" />
+                  IT Tools
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 bg-background z-50">
               <DropdownMenuLabel>IT Management</DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -163,26 +164,27 @@ const ITDashboard = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Reports Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <FileText className="h-4 w-4" />
-                Reports
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-              <DropdownMenuLabel>IT Reports</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/analytics?department=it')}>
-                IT Analytics
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/workflow/system-health?department=it')}>
-                System Health Reports
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            {/* Reports Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2 whitespace-nowrap">
+                  <FileText className="h-4 w-4" />
+                  Reports
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+                <DropdownMenuLabel>IT Reports</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/analytics?department=it')}>
+                  IT Analytics
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/workflow/system-health?department=it')}>
+                  System Health Reports
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

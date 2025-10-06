@@ -264,16 +264,17 @@ Churn rate represents the percentage of customers who have cancelled or become i
         />
         
         {/* Quick Access Menu Bar */}
-        <div className="flex gap-3 mb-6 flex-wrap">
-          {/* Finance Tools Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <DollarSign className="h-4 w-4" />
-                Finance Tools
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+        <div className="bg-card border-b border-border -mx-4 px-4">
+          <div className="flex gap-3 py-3 overflow-x-auto">
+            {/* Finance Tools Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2 whitespace-nowrap">
+                  <DollarSign className="h-4 w-4" />
+                  Finance Tools
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 bg-background z-50">
               <DropdownMenuLabel>Finance Management</DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -297,26 +298,27 @@ Churn rate represents the percentage of customers who have cancelled or become i
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Reports Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <FileText className="h-4 w-4" />
-                Reports
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-              <DropdownMenuLabel>Financial Reports</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/analytics?department=finance')}>
-                Financial Analytics
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/workflow/revenue-reports?department=finance')}>
-                Revenue Reports
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            {/* Reports Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2 whitespace-nowrap">
+                  <FileText className="h-4 w-4" />
+                  Reports
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+                <DropdownMenuLabel>Financial Reports</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/analytics?department=finance')}>
+                  Financial Analytics
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/workflow/revenue-reports?department=finance')}>
+                  Revenue Reports
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         
         <TooltipProvider>

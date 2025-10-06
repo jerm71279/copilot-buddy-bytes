@@ -184,16 +184,17 @@ const AdminDashboard = () => {
         </div>
 
         {/* Quick Access Menu Bar */}
-        <div className="flex gap-3 mb-6 flex-wrap">
-          {/* MCP Tools Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Server className="h-4 w-4" />
-                MCP Tools
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+        <div className="bg-card border-b border-border -mx-4 px-4">
+          <div className="flex gap-3 py-3 overflow-x-auto">
+            {/* MCP Tools Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2 whitespace-nowrap">
+                  <Server className="h-4 w-4" />
+                  MCP Tools
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 bg-background z-50">
               <DropdownMenuLabel>MCP Server Management</DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -212,15 +213,15 @@ const AdminDashboard = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Testing & Validation Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <TestTube className="h-4 w-4" />
-                Testing & Validation
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+            {/* Testing & Validation Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2 whitespace-nowrap">
+                  <TestTube className="h-4 w-4" />
+                  Testing & Validation
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 bg-background z-50">
               <DropdownMenuLabel>Test Tools</DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -233,16 +234,17 @@ const AdminDashboard = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Admin Cards */}
-          <Button variant="outline" onClick={() => navigate('/admin/applications')}>
-            Application Management
-          </Button>
-          <Button variant="outline" onClick={() => navigate('/cmdb')}>
-            CMDB Dashboard
-          </Button>
-          <Button variant="outline" onClick={() => navigate('/change-management')}>
-            Change Management
-          </Button>
+            {/* Admin Cards */}
+            <Button variant="outline" onClick={() => navigate('/admin/applications')} className="whitespace-nowrap">
+              Application Management
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/cmdb')} className="whitespace-nowrap">
+              CMDB Dashboard
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/change-management')} className="whitespace-nowrap">
+              Change Management
+            </Button>
+          </div>
         </div>
 
         {/* Active View Content */}

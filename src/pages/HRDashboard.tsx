@@ -128,16 +128,17 @@ const HRDashboard = () => {
         />
         
         {/* Quick Access Menu Bar */}
-        <div className="flex gap-3 mb-6 flex-wrap">
-          {/* HR Tools Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Users className="h-4 w-4" />
-                HR Tools
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+        <div className="bg-card border-b border-border -mx-4 px-4">
+          <div className="flex gap-3 py-3 overflow-x-auto">
+            {/* HR Tools Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2 whitespace-nowrap">
+                  <Users className="h-4 w-4" />
+                  HR Tools
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 bg-background z-50">
               <DropdownMenuLabel>HR Management</DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -161,26 +162,27 @@ const HRDashboard = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Reports Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <FileText className="h-4 w-4" />
-                Reports
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-              <DropdownMenuLabel>HR Reports</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/analytics?department=hr')}>
-                HR Analytics
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/workflow/workforce-reports?department=hr')}>
-                Workforce Reports
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            {/* Reports Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2 whitespace-nowrap">
+                  <FileText className="h-4 w-4" />
+                  Reports
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+                <DropdownMenuLabel>HR Reports</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/analytics?department=hr')}>
+                  HR Analytics
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/workflow/workforce-reports?department=hr')}>
+                  Workforce Reports
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
