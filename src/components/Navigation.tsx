@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { GlobalSearch } from "./GlobalSearch";
-import oberaLogo from "@/assets/obera-logo.png";
+import oberaLogo from "@/assets/obera-logo-cropped.png";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -94,12 +94,12 @@ const Navigation = () => {
           <div className="flex items-center justify-center">
             <Link 
               to="/"
-              className="block hover:opacity-90 transition-opacity w-[98%]"
+              className="block hover:opacity-90 transition-opacity w-full"
             >
               <img 
                 src={oberaLogo} 
                 alt="OberaConnect Logo" 
-                className="w-full h-auto max-h-24 object-contain"
+                className="w-full h-auto max-h-28 md:max-h-32 object-contain"
               />
             </Link>
           </div>
