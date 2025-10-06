@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { LogOut, Users } from "lucide-react";
+import { LogOut, Users, ChevronDown, Server, TestTube } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { MCPServerConfig } from "@/components/MCPServerConfig";
 import { AIMCPGenerator } from "@/components/AIMCPGenerator";
@@ -15,6 +15,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Customer = {
   id: string;
@@ -34,6 +42,7 @@ const AdminDashboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [userCustomerId, setUserCustomerId] = useState<string>("00000000-0000-0000-0000-000000000000");
+  const [activeView, setActiveView] = useState<string | null>(null);
 
   useEffect(() => {
     checkAdminAccess();
@@ -174,110 +183,101 @@ const AdminDashboard = () => {
           {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
         </div>
 
-        {/* Testing & Validation Quick Access */}
-        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5 mb-6">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/test/validation')}>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">System Validation</CardTitle>
-                <Badge variant="secondary">Testing</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Run comprehensive validation tests for database, RLS, functions, and performance
-              </p>
-            </CardContent>
-          </Card>
+        {/* Quick Access Menu Bar */}
+        <div className="flex gap-3 mb-6 flex-wrap">
+          {/* MCP Tools Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Server className="h-4 w-4" />
+                MCP Tools
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>MCP Server Management</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setActiveView('mcp-status')}>
+                Server Status
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setActiveView('mcp-logs')}>
+                Execution Logs
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setActiveView('mcp-configure')}>
+                Configure New Server
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setActiveView('mcp-ai')}>
+                AI Generator
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/test/comprehensive')}>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">Data & Security Tests</CardTitle>
-                <Badge variant="secondary">Testing</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Generate test data, run fuzz tests, and trace database flows
-              </p>
-            </CardContent>
-          </Card>
+          {/* Testing & Validation Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <TestTube className="h-4 w-4" />
+                Testing & Validation
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Test Tools</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/test/validation')}>
+                System Validation
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/test/comprehensive')}>
+                Data & Security Tests
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/applications')}>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">Application Management</CardTitle>
-                <Badge variant="secondary">Admin</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Manage applications in the app launcher
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/cmdb')}>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">CMDB Dashboard</CardTitle>
-                <Badge variant="secondary">IT</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Configuration management database and asset tracking
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/change-management')}>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">Change Management</CardTitle>
-                <Badge variant="secondary">IT</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                AI-powered change control and impact analysis
-              </p>
-            </CardContent>
-          </Card>
+          {/* Admin Cards */}
+          <Button variant="outline" onClick={() => navigate('/admin/applications')}>
+            Application Management
+          </Button>
+          <Button variant="outline" onClick={() => navigate('/cmdb')}>
+            CMDB Dashboard
+          </Button>
+          <Button variant="outline" onClick={() => navigate('/change-management')}>
+            Change Management
+          </Button>
         </div>
 
-        <Tabs defaultValue="status" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="status">MCP Servers Status</TabsTrigger>
-            <TabsTrigger value="logs">Execution Logs</TabsTrigger>
-            <TabsTrigger value="configure">Configure New Server</TabsTrigger>
-            <TabsTrigger value="ai-generator">AI Generator</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="status">
-            <MCPServerStatus customerId={userCustomerId} />
-          </TabsContent>
-
-          <TabsContent value="logs">
-            <MCPExecutionLogs customerId={userCustomerId} />
-          </TabsContent>
-
-          <TabsContent value="configure">
-            <MCPServerConfig customerId={userCustomerId} />
-          </TabsContent>
-
-          <TabsContent value="ai-generator">
-            <AIMCPGenerator 
-              customerId={userCustomerId}
-              department="admin"
-              onServersCreated={() => {
-                toast.success("MCP servers created successfully!");
-                // Optionally refresh the status tab
-              }}
-            />
-          </TabsContent>
-        </Tabs>
+        {/* Active View Content */}
+        {activeView && (
+          <Card className="mb-6">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>
+                  {activeView === 'mcp-status' && 'MCP Server Status'}
+                  {activeView === 'mcp-logs' && 'Execution Logs'}
+                  {activeView === 'mcp-configure' && 'Configure New Server'}
+                  {activeView === 'mcp-ai' && 'AI MCP Generator'}
+                </CardTitle>
+                <Button variant="ghost" size="sm" onClick={() => setActiveView(null)}>
+                  Close
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {activeView === 'mcp-status' && <MCPServerStatus customerId={userCustomerId} />}
+              {activeView === 'mcp-logs' && <MCPExecutionLogs customerId={userCustomerId} />}
+              {activeView === 'mcp-configure' && <MCPServerConfig customerId={userCustomerId} />}
+              {activeView === 'mcp-ai' && (
+                <AIMCPGenerator 
+                  customerId={userCustomerId}
+                  department="admin"
+                  onServersCreated={() => {
+                    toast.success("MCP servers created successfully!");
+                    setActiveView('mcp-status');
+                  }}
+                />
+              )}
+            </CardContent>
+          </Card>
+        )}
         
         <Card>
           <CardHeader>
