@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { LogOut, TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar, AlertCircle, CheckCircle, Clock, ChevronDown, FileText, BarChart } from "lucide-react";
+import { LogOut, TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar, AlertCircle, CheckCircle, Clock, ChevronDown, FileText, BarChart, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
@@ -141,6 +141,11 @@ const SalesDashboard = () => {
               <DropdownMenuItem onClick={() => navigate('/workflow/deals?department=sales')}>
                 <DollarSign className="h-4 w-4 mr-2" />
                 Active Deals
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Server className="h-4 w-4 mr-2" />
+                MCP Servers
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -487,7 +492,9 @@ const SalesDashboard = () => {
         </Card>
 
         {/* AI Assistant */}
-        <MCPServerStatus filterByServerType="sales" />
+        <div id="mcp-section">
+          <MCPServerStatus filterByServerType="sales" />
+        </div>
         
         <DepartmentAIAssistant department="sales" departmentLabel="Sales" />
       </main>

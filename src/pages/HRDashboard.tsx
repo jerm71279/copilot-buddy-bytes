@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { LogOut, Users, UserCheck, Clock, TrendingUp, ChevronDown, FileText, ClipboardList, UserPlus } from "lucide-react";
+import { LogOut, Users, UserCheck, Clock, TrendingUp, ChevronDown, FileText, ClipboardList, UserPlus, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
@@ -153,6 +153,11 @@ const HRDashboard = () => {
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Performance Reviews
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Server className="h-4 w-4 mr-2" />
+                MCP Servers
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -263,7 +268,9 @@ const HRDashboard = () => {
           </CardContent>
         </Card>
 
-        <MCPServerStatus filterByServerType="hr" />
+        <div id="mcp-section">
+          <MCPServerStatus filterByServerType="hr" />
+        </div>
 
         <DepartmentAIAssistant 
           department="hr" 

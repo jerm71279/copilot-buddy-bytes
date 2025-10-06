@@ -155,6 +155,11 @@ const ITDashboard = () => {
                 <Zap className="h-4 w-4 mr-2" />
                 Integrations
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Server className="h-4 w-4 mr-2" />
+                MCP Servers
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -276,7 +281,9 @@ const ITDashboard = () => {
           </Card>
         </div>
 
-        <MCPServerStatus filterByServerType="it" />
+        <div id="mcp-section">
+          <MCPServerStatus filterByServerType="it" />
+        </div>
 
         <Card>
           <CardHeader>

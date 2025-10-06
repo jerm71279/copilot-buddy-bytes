@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import { LogOut, DollarSign, Users, TrendingUp, CreditCard, Info, Percent, Calendar, ChevronDown, FileText, Receipt } from "lucide-react";
+import { LogOut, DollarSign, Users, TrendingUp, CreditCard, Info, Percent, Calendar, ChevronDown, FileText, Receipt, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
@@ -289,6 +289,11 @@ Churn rate represents the percentage of customers who have cancelled or become i
                 <CreditCard className="h-4 w-4 mr-2" />
                 Subscriptions
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Server className="h-4 w-4 mr-2" />
+                MCP Servers
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -509,7 +514,9 @@ Churn rate represents the percentage of customers who have cancelled or become i
           </CardContent>
         </Card>
 
-        <MCPServerStatus filterByServerType="finance" />
+        <div id="mcp-section">
+          <MCPServerStatus filterByServerType="finance" />
+        </div>
 
         <DepartmentAIAssistant 
           department="finance" 

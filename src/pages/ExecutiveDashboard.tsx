@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { LogOut, BarChart3, TrendingUp, Shield, Users, AlertCircle, CheckCircle, ChevronDown, FileText, Building } from "lucide-react";
+import { LogOut, BarChart3, TrendingUp, Shield, Users, AlertCircle, CheckCircle, ChevronDown, FileText, Building, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
@@ -155,6 +155,11 @@ const ExecutiveDashboard = () => {
               <DropdownMenuItem onClick={() => navigate('/compliance')}>
                 <Shield className="h-4 w-4 mr-2" />
                 Compliance Overview
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Server className="h-4 w-4 mr-2" />
+                MCP Servers
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -315,7 +320,9 @@ const ExecutiveDashboard = () => {
           </Card>
         </div>
 
-        <MCPServerStatus filterByServerType="executive" />
+        <div id="mcp-section">
+          <MCPServerStatus filterByServerType="executive" />
+        </div>
 
         <DepartmentAIAssistant 
           department="executive" 

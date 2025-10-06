@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { LogOut, Shield, CheckCircle, AlertTriangle, FileText, FileCheck, ChevronDown, ClipboardList, FolderOpen } from "lucide-react";
+import { LogOut, Shield, CheckCircle, AlertTriangle, FileText, FileCheck, ChevronDown, ClipboardList, FolderOpen, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
@@ -161,6 +161,11 @@ const ComplianceDashboard = () => {
               <DropdownMenuItem onClick={() => navigate('/compliance')}>
                 <Shield className="h-4 w-4 mr-2" />
                 Compliance Portal
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Server className="h-4 w-4 mr-2" />
+                MCP Servers
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -322,7 +327,9 @@ const ComplianceDashboard = () => {
           </CardContent>
         </Card>
 
-        <MCPServerStatus filterByServerType="compliance" />
+        <div id="mcp-section">
+          <MCPServerStatus filterByServerType="compliance" />
+        </div>
 
         <DepartmentAIAssistant 
           department="compliance" 
