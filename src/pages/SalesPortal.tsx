@@ -115,7 +115,7 @@ const SalesPortal = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">${(myStats.monthlyRevenue / 1000).toFixed(0)}K</div>
-              <p className="text-xs text-green-600">+18% from last month</p>
+              <p className="text-xs text-success">+18% from last month</p>
             </CardContent>
           </Card>
 
