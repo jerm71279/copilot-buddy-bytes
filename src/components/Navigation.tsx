@@ -93,15 +93,15 @@ const Navigation = () => {
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border">
         {/* Logo Banner - Full Width Edge to Edge */}
-        <div className="w-full bg-gradient-to-r from-background via-accent/5 to-background border-b border-border/50 py-3">
+        <div className="w-full bg-gradient-to-r from-background via-accent/5 to-background border-b border-border/50 py-0">
           <Link 
             to="/"
-            className="block hover:opacity-90 transition-opacity px-4 md:px-8"
+            className="block hover:opacity-90 transition-opacity"
           >
             <img 
               src={oberaLogo} 
               alt="OberaConnect Logo" 
-              className="w-full h-14 md:h-16 object-contain"
+              className="w-full h-24 md:h-32 object-contain"
             />
           </Link>
         </div>
