@@ -49,6 +49,16 @@ Implemented a unified dropdown menu pattern across all department dashboards for
 - **Reports** dropdown: Operations Analytics, Workflow Efficiency Reports
 - **Redundancy removed**: Deleted entire tabs section that duplicated dropdown items
 
+### 10. Sales Portal (NEW)
+- **Personal Performance**: Active Deals, Monthly Revenue, Quota Progress, Closed Deals
+- **My Pipeline**: Active deals with status badges and close dates
+- **Activities**: Recent sales activities (calls, proposals, demos)
+- **Customers**: Customer accounts management
+- **Reports**: Sales Analytics, Performance Reports, Pipeline Management, Sales Dashboard
+- **AI Assistant**: Department-specific AI assistant for sales queries
+- **Route**: `/sales-portal` (protected, no admin required)
+- **Access**: Accessible from Sales Dashboard via "Sales Portal" button
+
 ## Design Pattern
 
 ```tsx
@@ -124,6 +134,11 @@ Implemented a unified dropdown menu pattern across all department dashboards for
 - `src/pages/ITDashboard.tsx` - Removed duplicate CMDB/Change Management card section
 - `src/pages/OperationsDashboard.tsx` - Removed tabs section (Workflow Builder, Triggers, History, AI Assistant)
 
+### New Portal Creation
+- `src/pages/SalesPortal.tsx` - New dedicated sales rep portal with personal metrics and tools
+- `src/App.tsx` - Added `/sales-portal` route configuration
+- `src/pages/SalesDashboard.tsx` - Added Sales Portal navigation link
+
 ### Framework Display Updates
 - `src/components/Frameworks.tsx` - Changed from page navigation to collapsible inline display
 
@@ -160,6 +175,39 @@ All dashboards include nested MCP server submenu:
 </DropdownMenuSub>
 ```
 
+## Known Navigation Routes (Sales Portal)
+
+The Sales Portal includes navigation to the following routes:
+- `/workflow/deals` - Dynamic workflow route for deal management
+- `/workflow/customers` - Dynamic workflow route for customer management
+- `/workflow/performance-reports` - Dynamic workflow route for performance reporting
+- `/workflow/pipeline` - Dynamic workflow route for pipeline management
+- `/analytics` - Existing analytics portal
+- `/dashboard/sales` - Existing sales dashboard
+
+**Note**: All `/workflow/*` routes use the dynamic route pattern defined in App.tsx (`/workflow/:workflowType`). The WorkflowDetail component handles different workflow types based on the URL parameter and query parameters.
+
+## Testing Results (2025-10-06)
+
+### Sales Portal Testing
+✅ **Console Logs**: No errors detected  
+✅ **Route Registration**: `/sales-portal` properly configured in App.tsx  
+✅ **Authentication**: Protected route (ProtectedRoute component)  
+✅ **Navigation**: All dropdown menus functional  
+✅ **UI Components**: Tabs, Cards, Badges rendering correctly  
+✅ **Design System**: Using semantic tokens (primary, secondary, accent)  
+✅ **AI Integration**: DepartmentAIAssistant component integrated  
+✅ **Demo Mode**: useDemoMode hook implemented for preview functionality  
+
+### Validation Checklist
+✅ No TypeScript errors  
+✅ No console warnings (except React Router deprecation warnings - not critical)  
+✅ Proper use of design system tokens  
+✅ Responsive layout with proper spacing  
+✅ Navigation links properly configured  
+✅ Authentication flow validated  
+✅ Demo mode support implemented  
+
 ## Deployment Status
 
 ✅ Production ready  
@@ -167,4 +215,5 @@ All dashboards include nested MCP server submenu:
 ✅ Backward compatible  
 ✅ No database migrations needed  
 ✅ All redundancies removed  
-✅ Validated across all dashboards
+✅ Validated across all dashboards  
+✅ Sales Portal fully functional
