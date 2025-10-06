@@ -156,6 +156,7 @@ export default function OnboardingTemplates() {
             { name: "Employee Portal", path: "/portal" },
             { name: "Analytics Portal", path: "/analytics" },
             { name: "Compliance Portal", path: "/compliance" },
+            { name: "Change Management", path: "/change-management" },
             { name: "Executive Dashboard", path: "/dashboard/executive" },
             { name: "Finance Dashboard", path: "/dashboard/finance" },
             { name: "HR Dashboard", path: "/dashboard/hr" },

@@ -123,6 +123,7 @@ const SalesDashboard = () => {
             { name: "Sales Portal", path: "/sales-portal" },
             { name: "Analytics Portal", path: "/analytics" },
             { name: "Compliance Portal", path: "/compliance" },
+            { name: "Change Management", path: "/change-management" },
             { name: "Executive Dashboard", path: "/dashboard/executive" },
             { name: "Finance Dashboard", path: "/dashboard/finance" },
             { name: "HR Dashboard", path: "/dashboard/hr" },
