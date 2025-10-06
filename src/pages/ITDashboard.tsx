@@ -34,7 +34,6 @@ const ITDashboard = () => {
     anomalies: 0
   });
   const [mcpServersList, setMcpServersList] = useState<any[]>([]);
-  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
 
   useEffect(() => {
     checkAccess();
@@ -180,13 +179,17 @@ const ITDashboard = () => {
                   MCP Servers
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="bg-background">
+                  <DropdownMenuItem onClick={() => navigate('/mcp-servers')}>
+                    All MCP Servers
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   {mcpServersList.length === 0 ? (
-                    <DropdownMenuItem disabled>No servers available</DropdownMenuItem>
+                    <DropdownMenuItem disabled>No IT servers</DropdownMenuItem>
                   ) : (
                     mcpServersList.map((server) => (
                       <DropdownMenuItem
                         key={server.id}
-                        onClick={() => setSelectedServerId(server.id)}
+                        onClick={() => navigate(`/mcp-servers?server=${server.id}`)}
                       >
                         {server.server_name}
                       </DropdownMenuItem>
@@ -316,72 +319,10 @@ const ITDashboard = () => {
           </Card>
         </div>
 
-        {selectedServerId ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>MCP Server Details</CardTitle>
-              <CardDescription>
-                {mcpServersList.find(s => s.id === selectedServerId)?.server_name}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <MCPServerStatus customerId={userProfile?.customer_id} />
-              <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={() => setSelectedServerId(null)}
-              >
-                Back to All Servers
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            <div id="mcp-section">
-              <MCPServerStatus filterByServerType="it" />
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>System Integrations</CardTitle>
-                <CardDescription>Connected systems and their status</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Zap className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium">Workday HCM</p>
-                        <p className="text-sm text-muted-foreground">HR System</p>
-                      </div>
-                    </div>
-                    <Badge>Active</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Server className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium">Salesforce</p>
-                        <p className="text-sm text-muted-foreground">CRM</p>
-                      </div>
-                    </div>
-                    <Badge>Active</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <DepartmentAIAssistant 
-              department="it" 
-              departmentLabel="IT & Security" 
-            />
-          </>
-        )}
+        <DepartmentAIAssistant 
+          department="it" 
+          departmentLabel="IT & Security" 
+        />
       </div>
     </div>
   );

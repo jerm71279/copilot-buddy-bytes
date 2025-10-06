@@ -52,6 +52,7 @@ import ComprehensiveTestDashboard from "./pages/ComprehensiveTestDashboard";
 import SystemValidationDashboard from "./pages/SystemValidationDashboard";
 
 import WorkflowBuilder from "./pages/WorkflowBuilder";
+import MCPServerDashboard from "./pages/MCPServerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -308,6 +309,13 @@ const App = () => (
           <Route path="/compliance/reports/:id" element={
             <ProtectedRoute>
               <ComplianceReportDetail />
+            </ProtectedRoute>
+          } />
+          
+          {/* MCP Server Dashboard - Protected */}
+          <Route path="/mcp-servers" element={
+            <ProtectedRoute>
+              <MCPServerDashboard />
             </ProtectedRoute>
           } />
           

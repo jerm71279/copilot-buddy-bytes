@@ -36,7 +36,6 @@ const ComplianceDashboard = () => {
     complianceScore: 92
   });
   const [mcpServers, setMcpServers] = useState<any[]>([]);
-  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
 
   useEffect(() => {
     checkAccess();
@@ -187,13 +186,17 @@ const ComplianceDashboard = () => {
                   MCP Servers
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="bg-background">
+                  <DropdownMenuItem onClick={() => navigate('/mcp-servers')}>
+                    All MCP Servers
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   {mcpServers.length === 0 ? (
-                    <DropdownMenuItem disabled>No servers available</DropdownMenuItem>
+                    <DropdownMenuItem disabled>No compliance servers</DropdownMenuItem>
                   ) : (
                     mcpServers.map((server) => (
                       <DropdownMenuItem
                         key={server.id}
-                        onClick={() => setSelectedServerId(server.id)}
+                        onClick={() => navigate(`/mcp-servers?server=${server.id}`)}
                       >
                         {server.server_name}
                       </DropdownMenuItem>
@@ -362,37 +365,10 @@ const ComplianceDashboard = () => {
           </CardContent>
         </Card>
 
-        {selectedServerId ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>MCP Server Details</CardTitle>
-              <CardDescription>
-                {mcpServers.find(s => s.id === selectedServerId)?.server_name}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <MCPServerStatus customerId={userProfile?.customer_id} />
-              <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={() => setSelectedServerId(null)}
-              >
-                Back to All Servers
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            <div id="mcp-section">
-              <MCPServerStatus filterByServerType="compliance" />
-            </div>
-
-            <DepartmentAIAssistant 
-              department="compliance" 
-              departmentLabel="Compliance & GRC" 
-            />
-          </>
-        )}
+        <DepartmentAIAssistant 
+          department="compliance" 
+          departmentLabel="Compliance & GRC" 
+        />
       </div>
     </div>
   );

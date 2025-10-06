@@ -55,7 +55,6 @@ const FinanceDashboard = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [customers, setCustomers] = useState<any[]>([]);
   const [mcpServers, setMcpServers] = useState<any[]>([]);
-  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
   const [stats, setStats] = useState<FinancialMetrics>({
     totalCustomers: 0,
     activeSubscriptions: 0,
@@ -314,13 +313,17 @@ Churn rate represents the percentage of customers who have cancelled or become i
                   MCP Servers
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="bg-background">
+                  <DropdownMenuItem onClick={() => navigate('/mcp-servers')}>
+                    All MCP Servers
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   {mcpServers.length === 0 ? (
-                    <DropdownMenuItem disabled>No servers available</DropdownMenuItem>
+                    <DropdownMenuItem disabled>No finance servers</DropdownMenuItem>
                   ) : (
                     mcpServers.map((server) => (
                       <DropdownMenuItem
                         key={server.id}
-                        onClick={() => setSelectedServerId(server.id)}
+                        onClick={() => navigate(`/mcp-servers?server=${server.id}`)}
                       >
                         {server.server_name}
                       </DropdownMenuItem>
@@ -549,37 +552,10 @@ Churn rate represents the percentage of customers who have cancelled or become i
           </CardContent>
         </Card>
 
-        {selectedServerId ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>MCP Server Details</CardTitle>
-              <CardDescription>
-                {mcpServers.find(s => s.id === selectedServerId)?.server_name}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <MCPServerStatus customerId={userProfile?.customer_id} />
-              <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={() => setSelectedServerId(null)}
-              >
-                Back to All Servers
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            <div id="mcp-section">
-              <MCPServerStatus filterByServerType="finance" />
-            </div>
-
-            <DepartmentAIAssistant 
-              department="finance" 
-              departmentLabel="Finance" 
-            />
-          </>
-        )}
+        <DepartmentAIAssistant 
+          department="finance" 
+          departmentLabel="Finance" 
+        />
       </div>
     </div>
   );

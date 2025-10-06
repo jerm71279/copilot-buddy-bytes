@@ -67,7 +67,6 @@ const SOCDashboard = () => {
   const [incidents, setIncidents] = useState<SecurityIncident[]>([]);
   const [anomalies, setAnomalies] = useState<any[]>([]);
   const [mcpServers, setMcpServers] = useState<any[]>([]);
-  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
 
   useEffect(() => {
     checkAccess();
@@ -294,13 +293,17 @@ const SOCDashboard = () => {
                   MCP Servers
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="bg-background">
+                  <DropdownMenuItem onClick={() => navigate('/mcp-servers')}>
+                    All MCP Servers
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   {mcpServers.length === 0 ? (
-                    <DropdownMenuItem disabled>No servers available</DropdownMenuItem>
+                    <DropdownMenuItem disabled>No security servers</DropdownMenuItem>
                   ) : (
                     mcpServers.map((server) => (
                       <DropdownMenuItem
                         key={server.id}
-                        onClick={() => setSelectedServerId(server.id)}
+                        onClick={() => navigate(`/mcp-servers?server=${server.id}`)}
                       >
                         {server.server_name}
                       </DropdownMenuItem>
@@ -579,46 +582,6 @@ const SOCDashboard = () => {
         </Tabs>
 
         {/* Quick Actions */}
-        {selectedServerId ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>MCP Server Details</CardTitle>
-              <CardDescription>
-                {mcpServers.find(s => s.id === selectedServerId)?.server_name}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <MCPServerStatus customerId={userProfile?.customer_id} />
-              <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={() => setSelectedServerId(null)}
-              >
-                Back to All Servers
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            <div id="mcp-section">
-              <Card>
-                <CardHeader>
-                  <CardTitle>MCP Security Servers</CardTitle>
-                  <CardDescription>AI-powered security monitoring servers</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Security MCP servers integration coming soon...</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <DepartmentAIAssistant 
-              department="security" 
-              departmentLabel="Security Operations" 
-            />
-          </>
-        )}
-
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>

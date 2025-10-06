@@ -18,6 +18,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
 const SalesDashboard = () => {
@@ -32,10 +35,23 @@ const SalesDashboard = () => {
     conversionRate: 32,
     monthlyGrowth: 18
   });
+  const [mcpServers, setMcpServers] = useState<any[]>([]);
 
   useEffect(() => {
     checkAccess();
+    fetchMcpServers();
   }, []);
+
+  const fetchMcpServers = async () => {
+    const { data } = await supabase
+      .from("mcp_servers")
+      .select("id, server_name, server_type")
+      .eq("server_type", "sales")
+      .eq("status", "active")
+      .order("server_name");
+    
+    if (data) setMcpServers(data);
+  };
 
   const checkAccess = async () => {
     if (isPreviewMode) {
@@ -144,10 +160,30 @@ const SalesDashboard = () => {
                 Active Deals
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' })}>
-                <Server className="h-4 w-4 mr-2" />
-                MCP Servers
-              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Server className="h-4 w-4 mr-2" />
+                  MCP Servers
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="bg-background">
+                  <DropdownMenuItem onClick={() => navigate('/mcp-servers')}>
+                    All MCP Servers
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {mcpServers.length === 0 ? (
+                    <DropdownMenuItem disabled>No sales servers</DropdownMenuItem>
+                  ) : (
+                    mcpServers.map((server) => (
+                      <DropdownMenuItem
+                        key={server.id}
+                        onClick={() => navigate(`/mcp-servers?server=${server.id}`)}
+                      >
+                        {server.server_name}
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -493,10 +529,6 @@ const SalesDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* AI Assistant */}
-        <div id="mcp-section">
-          <MCPServerStatus filterByServerType="sales" />
-        </div>
         
         <DepartmentAIAssistant department="sales" departmentLabel="Sales" />
       </main>

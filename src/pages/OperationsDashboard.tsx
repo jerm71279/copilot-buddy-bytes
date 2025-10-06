@@ -39,7 +39,6 @@ const OperationsDashboard = () => {
     bottlenecks: 3
   });
   const [mcpServers, setMcpServers] = useState<any[]>([]);
-  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
 
   useEffect(() => {
     checkAccess();
@@ -182,17 +181,17 @@ const OperationsDashboard = () => {
                   MCP Servers
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="bg-background">
+                  <DropdownMenuItem onClick={() => navigate('/mcp-servers')}>
+                    All MCP Servers
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   {mcpServers.length === 0 ? (
-                    <DropdownMenuItem disabled>No servers available</DropdownMenuItem>
+                    <DropdownMenuItem disabled>No operations servers</DropdownMenuItem>
                   ) : (
                     mcpServers.map((server) => (
                       <DropdownMenuItem
                         key={server.id}
-                        onClick={() => {
-                          setSelectedServerId(server.id);
-                          const assistantTab = document.querySelector('[value="assistant"]') as HTMLElement;
-                          assistantTab?.click();
-                        }}
+                        onClick={() => navigate(`/mcp-servers?server=${server.id}`)}
                       >
                         {server.server_name}
                       </DropdownMenuItem>
@@ -347,34 +346,10 @@ const OperationsDashboard = () => {
           </TabsContent>
 
           <TabsContent value="assistant" className="space-y-4">
-            {selectedServerId ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>MCP Server Details</CardTitle>
-                  <CardDescription>
-                    {mcpServers.find(s => s.id === selectedServerId)?.server_name}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <MCPServerStatus customerId={userProfile?.customer_id || "demo-customer"} />
-                  <Button 
-                    variant="outline" 
-                    className="mt-4"
-                    onClick={() => setSelectedServerId(null)}
-                  >
-                    Back to All Servers
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <>
-                <MCPServerStatus filterByServerType="operations" />
-                <DepartmentAIAssistant 
-                  department="operations" 
-                  departmentLabel="Operations" 
-                />
-              </>
-            )}
+            <DepartmentAIAssistant 
+              department="operations" 
+              departmentLabel="Operations" 
+            />
           </TabsContent>
         </Tabs>
       </div>
