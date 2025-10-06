@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { LogOut, Server, Activity, AlertCircle, Zap, Shield, ChevronDown, FileText, Database, Settings } from "lucide-react";
+import { Server, Activity, AlertCircle, Zap, Shield, ChevronDown, FileText, Database, Settings } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import {
   DropdownMenu,
@@ -156,24 +157,9 @@ const ITDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Server className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold">IT & Security Dashboard</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{userProfile?.full_name}</span>
-            {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
-            <Button onClick={handleSignOut} variant="outline" size="sm">
-              <LogOut className="h-4 w-4 mr-2" />
-              {isPreviewMode ? "Back to Demos" : "Sign Out"}
-            </Button>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
-      <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="container mx-auto px-4 pt-28 pb-8 space-y-6">
         <DashboardNavigation 
           title="IT Dashboard"
           dashboards={[

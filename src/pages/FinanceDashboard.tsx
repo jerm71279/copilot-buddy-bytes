@@ -7,9 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import { LogOut, DollarSign, Users, TrendingUp, CreditCard, Info, Percent, Calendar, ChevronDown, FileText, Receipt, Server } from "lucide-react";
+import { DollarSign, Users, TrendingUp, CreditCard, Info, Percent, Calendar, ChevronDown, FileText, Receipt, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { useRevioData } from "@/hooks/useRevioData";
 import MCPServerStatus from "@/components/MCPServerStatus";
@@ -299,24 +300,9 @@ Churn rate represents the percentage of customers who have cancelled or become i
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold">Finance Dashboard</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{userProfile?.full_name}</span>
-            {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
-            <Button onClick={handleSignOut} variant="outline" size="sm">
-              <LogOut className="h-4 w-4 mr-2" />
-              {isPreviewMode ? "Back to Demos" : "Sign Out"}
-            </Button>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
-      <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="container mx-auto px-4 pt-28 pb-8 space-y-6">
         <DashboardNavigation 
           title="Finance Dashboard"
           dashboards={[

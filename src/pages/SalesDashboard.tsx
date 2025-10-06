@@ -6,9 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { LogOut, TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar, AlertCircle, CheckCircle, Clock, ChevronDown, FileText, BarChart, Server } from "lucide-react";
+import { TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar, AlertCircle, CheckCircle, Clock, ChevronDown, FileText, BarChart, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import {
@@ -140,28 +141,9 @@ const SalesDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold">Sales Dashboard</h1>
-            {isPreviewMode && (
-              <Badge variant="secondary" className="ml-2">Preview Mode</Badge>
-            )}
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              {userProfile?.full_name || "Sales User"}
-            </span>
-            <Button onClick={handleSignOut} variant="outline" size="sm">
-              <LogOut className="h-4 w-4 mr-2" />
-              {isPreviewMode ? "Back to Demos" : "Sign Out"}
-            </Button>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 pt-28 pb-8">
         <DashboardNavigation 
           title="Sales Performance"
           dashboards={[

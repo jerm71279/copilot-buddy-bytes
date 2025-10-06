@@ -7,11 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  LogOut, Shield, AlertTriangle, Activity, Eye, Lock, 
+  Shield, AlertTriangle, Activity, Eye, Lock, 
   TrendingUp, Database, Users, FileWarning, CheckCircle2,
   Clock, Zap, ChevronDown, FileText, Search, Server, Globe
 } from "lucide-react";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { toast } from "sonner";
 import MCPServerStatus from "@/components/MCPServerStatus";
@@ -280,28 +281,9 @@ const SOCDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold">Security Operations Center</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <Badge variant="outline" className="gap-1">
-              <Activity className="h-3 w-3" />
-              Live Monitoring
-            </Badge>
-            <span className="text-sm text-muted-foreground">{userProfile?.full_name}</span>
-            {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
-            <Button onClick={handleSignOut} variant="outline" size="sm">
-              <LogOut className="h-4 w-4 mr-2" />
-              {isPreviewMode ? "Back to Demos" : "Sign Out"}
-            </Button>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
-      <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="container mx-auto px-4 pt-28 pb-8 space-y-6">
         <DashboardNavigation 
           title="Security Operations Center"
           dashboards={[
