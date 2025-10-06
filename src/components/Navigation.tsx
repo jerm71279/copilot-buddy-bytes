@@ -1,13 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { Shield, Menu, LogOut, BookOpen, Brain } from "lucide-react";
+import { Shield, Menu, LogOut, BookOpen, Brain, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { GlobalSearch } from "./GlobalSearch";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,7 +19,19 @@ const Navigation = () => {
       checkAuth();
     });
 
-    return () => subscription.unsubscribe();
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   const checkAuth = async () => {
@@ -74,9 +88,11 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+    <>
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link 
             to="/"
@@ -90,6 +106,20 @@ const Navigation = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
+            {isLoggedIn && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchOpen(true)}
+                className="gap-2"
+              >
+                <Search className="h-4 w-4" />
+                <span className="text-muted-foreground">Search</span>
+                <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                  <span className="text-xs">⌘</span>K
+                </kbd>
+              </Button>
+            )}
             <button 
               onClick={() => scrollToSection('features')}
               className="text-sm font-medium hover:text-accent transition-colors"
@@ -353,6 +383,7 @@ const Navigation = () => {
         )}
       </div>
     </nav>
+    </>
   );
 };
 
