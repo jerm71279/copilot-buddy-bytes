@@ -1,5 +1,6 @@
 import { Shield } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import oberaLogo from "@/assets/obera-logo.png";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -28,12 +29,13 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-accent flex items-center justify-center">
-                <Shield className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-bold">OberaConnect</span>
-            </div>
+            <Link to="/" className="flex items-center mb-4 hover:opacity-80 transition-opacity">
+              <img 
+                src={oberaLogo} 
+                alt="OberaConnect Logo" 
+                className="h-12 w-auto brightness-0 invert"
+              />
+            </Link>
             <p className="text-sm text-primary-foreground/70">
               Enterprise operational intelligence platform for modern businesses.
             </p>
