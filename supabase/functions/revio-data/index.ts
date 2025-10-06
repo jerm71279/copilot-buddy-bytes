@@ -49,6 +49,85 @@ serve(async (req) => {
           amount: 1500,
           timestamp: new Date().toISOString()
         }
+      ],
+      invoices: [
+        {
+          id: 'INV-001',
+          invoice_number: 'INV-2025-001',
+          customer_name: 'Acme Corporation',
+          customer_id: 'CUST-001',
+          amount: 15000,
+          status: 'paid',
+          issue_date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+          due_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+          paid_date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+          description: 'Monthly Managed Services - Enterprise Plan',
+          line_items: [
+            { description: 'Enterprise Support', quantity: 1, unit_price: 10000, total: 10000 },
+            { description: 'Premium SLA', quantity: 1, unit_price: 5000, total: 5000 }
+          ]
+        },
+        {
+          id: 'INV-002',
+          invoice_number: 'INV-2025-002',
+          customer_name: 'TechStart Inc',
+          customer_id: 'CUST-002',
+          amount: 7500,
+          status: 'pending',
+          issue_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+          due_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+          description: 'Monthly Managed Services - Professional Plan',
+          line_items: [
+            { description: 'Professional Support', quantity: 1, unit_price: 5000, total: 5000 },
+            { description: 'Cloud Services', quantity: 1, unit_price: 2500, total: 2500 }
+          ]
+        },
+        {
+          id: 'INV-003',
+          invoice_number: 'INV-2025-003',
+          customer_name: 'Global Systems LLC',
+          customer_id: 'CUST-003',
+          amount: 22000,
+          status: 'overdue',
+          issue_date: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+          due_date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+          description: 'Quarterly Enterprise Services',
+          line_items: [
+            { description: 'Enterprise Support (3 months)', quantity: 3, unit_price: 7000, total: 21000 },
+            { description: 'Setup Fee', quantity: 1, unit_price: 1000, total: 1000 }
+          ]
+        },
+        {
+          id: 'INV-004',
+          invoice_number: 'INV-2025-004',
+          customer_name: 'DataFlow Partners',
+          customer_id: 'CUST-004',
+          amount: 4500,
+          status: 'paid',
+          issue_date: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+          due_date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+          paid_date: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+          description: 'Monthly Managed Services - Standard Plan',
+          line_items: [
+            { description: 'Standard Support', quantity: 1, unit_price: 3000, total: 3000 },
+            { description: 'Monitoring Services', quantity: 1, unit_price: 1500, total: 1500 }
+          ]
+        },
+        {
+          id: 'INV-005',
+          invoice_number: 'INV-2025-005',
+          customer_name: 'Innovation Labs',
+          customer_id: 'CUST-005',
+          amount: 12500,
+          status: 'pending',
+          issue_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+          due_date: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
+          description: 'Monthly Managed Services - Professional Plan',
+          line_items: [
+            { description: 'Professional Support', quantity: 1, unit_price: 8000, total: 8000 },
+            { description: 'Security Services', quantity: 1, unit_price: 4500, total: 4500 }
+          ]
+        }
       ]
     };
 

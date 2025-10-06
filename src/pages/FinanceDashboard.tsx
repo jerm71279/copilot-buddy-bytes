@@ -11,6 +11,7 @@ import { LogOut, DollarSign, Users, TrendingUp, CreditCard, Info, Percent, Calen
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import { useRevioData } from "@/hooks/useRevioData";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import {
   DropdownMenu,
@@ -108,6 +109,7 @@ const FinanceDashboard = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [customers, setCustomers] = useState<any[]>([]);
   const [mcpServers, setMcpServers] = useState<any[]>([]);
+  const { data: revioData, loading: revioLoading } = useRevioData();
   const [stats, setStats] = useState<FinancialMetrics>({
     totalCustomers: 0,
     activeSubscriptions: 0,
@@ -603,6 +605,64 @@ Churn rate represents the percentage of customers who have cancelled or become i
                 ))}
               </TableBody>
             </Table>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Receipt className="h-5 w-5" />
+              Revio Invoices
+            </CardTitle>
+            <CardDescription>
+              {revioLoading ? "Loading invoice data..." : "Recent invoices from Revio billing system"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {revioLoading ? (
+              <div className="flex items-center justify-center py-8 text-muted-foreground">
+                Loading invoices...
+              </div>
+            ) : revioData?.invoices && revioData.invoices.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Invoice #</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Issue Date</TableHead>
+                    <TableHead>Due Date</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {revioData.invoices.map((invoice) => (
+                    <TableRow key={invoice.id}>
+                      <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
+                      <TableCell>{invoice.customer_name}</TableCell>
+                      <TableCell>${invoice.amount.toLocaleString()}</TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={
+                            invoice.status === 'paid' ? 'default' : 
+                            invoice.status === 'overdue' ? 'destructive' : 
+                            'secondary'
+                          }
+                        >
+                          {invoice.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{new Date(invoice.issue_date).toLocaleDateString()}</TableCell>
+                      <TableCell>{new Date(invoice.due_date).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="flex items-center justify-center py-8 text-muted-foreground">
+                No invoices available
+              </div>
+            )}
           </CardContent>
         </Card>
 

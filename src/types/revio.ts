@@ -44,10 +44,30 @@ export interface CustomerInteraction {
   details?: string;
 }
 
+export interface RevioInvoice {
+  id: string;
+  invoice_number: string;
+  customer_name: string;
+  customer_id: string;
+  amount: number;
+  status: 'paid' | 'pending' | 'overdue' | 'draft';
+  issue_date: string;
+  due_date: string;
+  paid_date?: string;
+  description: string;
+  line_items?: Array<{
+    description: string;
+    quantity: number;
+    unit_price: number;
+    total: number;
+  }>;
+}
+
 export interface RevioDataResponse {
   customers_by_ticket: CustomersByTicket[];
   customers_by_sla: CustomersBySLA[];
   customers_by_revenue: CustomersByRevenue[];
   subscriptions: SubscriptionStats;
   recent_interactions: CustomerInteraction[];
+  invoices: RevioInvoice[];
 }
