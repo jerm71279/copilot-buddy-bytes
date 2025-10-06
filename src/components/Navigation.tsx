@@ -99,7 +99,7 @@ const Navigation = () => {
               src={oberaLogo} 
               alt="OberaConnect Logo" 
               className="w-full h-auto object-contain"
-              style={{ minHeight: '80px', maxHeight: '120px', display: 'block' }}
+              style={{ minHeight: '40px', maxHeight: '60px', display: 'block' }}
             />
           </Link>
         </div>
