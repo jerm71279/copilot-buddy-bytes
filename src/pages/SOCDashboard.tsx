@@ -9,13 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   LogOut, Shield, AlertTriangle, Activity, Eye, Lock, 
   TrendingUp, Database, Users, FileWarning, CheckCircle2,
-  Clock, Zap, ChevronDown, FileText, Search, Server
+  Clock, Zap, ChevronDown, FileText, Search, Server, Globe
 } from "lucide-react";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { toast } from "sonner";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import { NetworkSecurityDiagram } from "@/components/NetworkSecurityDiagram";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -125,6 +126,7 @@ const SOCDashboard = () => {
   const [incidents, setIncidents] = useState<SecurityIncident[]>([]);
   const [anomalies, setAnomalies] = useState<any[]>([]);
   const [mcpServers, setMcpServers] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState("incidents");
 
   useEffect(() => {
     checkAccess();
@@ -345,6 +347,10 @@ const SOCDashboard = () => {
                 <Search className="h-4 w-4 mr-2" />
                 Threat Analysis
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setActiveTab('network')}>
+                <Globe className="h-4 w-4 mr-2" />
+                Network Security Diagram
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
@@ -495,10 +501,11 @@ const SOCDashboard = () => {
         </div>
 
         {/* Tabs for Different Views */}
-        <Tabs defaultValue="incidents" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="incidents">Security Incidents</TabsTrigger>
             <TabsTrigger value="anomalies">Anomaly Detection</TabsTrigger>
+            <TabsTrigger value="network">Network Security</TabsTrigger>
             <TabsTrigger value="compliance">Compliance Status</TabsTrigger>
           </TabsList>
 
@@ -596,6 +603,10 @@ const SOCDashboard = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="network" className="space-y-4">
+            <NetworkSecurityDiagram />
           </TabsContent>
 
           <TabsContent value="compliance" className="space-y-4">
