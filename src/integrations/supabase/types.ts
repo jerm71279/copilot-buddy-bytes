@@ -432,6 +432,482 @@ export type Database = {
         }
         Relationships: []
       }
+      change_approvals: {
+        Row: {
+          approval_level: number
+          approval_status: Database["public"]["Enums"]["approval_status"]
+          approver_id: string
+          approver_role: string | null
+          change_request_id: string
+          comments: string | null
+          conditions: string | null
+          created_at: string
+          decision_date: string | null
+          due_date: string | null
+          id: string
+          requested_at: string
+        }
+        Insert: {
+          approval_level: number
+          approval_status?: Database["public"]["Enums"]["approval_status"]
+          approver_id: string
+          approver_role?: string | null
+          change_request_id: string
+          comments?: string | null
+          conditions?: string | null
+          created_at?: string
+          decision_date?: string | null
+          due_date?: string | null
+          id?: string
+          requested_at?: string
+        }
+        Update: {
+          approval_level?: number
+          approval_status?: Database["public"]["Enums"]["approval_status"]
+          approver_id?: string
+          approver_role?: string | null
+          change_request_id?: string
+          comments?: string | null
+          conditions?: string | null
+          created_at?: string
+          decision_date?: string | null
+          due_date?: string | null
+          id?: string
+          requested_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_approvals_change_request_id_fkey"
+            columns: ["change_request_id"]
+            isOneToOne: false
+            referencedRelation: "change_request_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_approvals_change_request_id_fkey"
+            columns: ["change_request_id"]
+            isOneToOne: false
+            referencedRelation: "change_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      change_impact_analysis: {
+        Row: {
+          affected_ci_ids: string[] | null
+          affected_services: string[] | null
+          affected_workflows: string[] | null
+          ai_confidence_score: number | null
+          analysis_version: number | null
+          analyzed_at: string
+          business_impact_score: number | null
+          change_request_id: string
+          complexity_score: number | null
+          compliance_impact_score: number | null
+          critical_dependencies: string[] | null
+          customer_id: string
+          dependent_ci_count: number | null
+          estimated_downtime_minutes: number | null
+          estimated_user_impact: number | null
+          historical_incidents: number | null
+          id: string
+          mitigation_strategies: string[] | null
+          recommended_approach: string | null
+          recommended_timing: string | null
+          risk_factors: Json | null
+          security_impact_score: number | null
+          similar_changes_analyzed: number | null
+          similar_changes_success_rate: number | null
+          success_probability: number | null
+          technical_impact_score: number | null
+        }
+        Insert: {
+          affected_ci_ids?: string[] | null
+          affected_services?: string[] | null
+          affected_workflows?: string[] | null
+          ai_confidence_score?: number | null
+          analysis_version?: number | null
+          analyzed_at?: string
+          business_impact_score?: number | null
+          change_request_id: string
+          complexity_score?: number | null
+          compliance_impact_score?: number | null
+          critical_dependencies?: string[] | null
+          customer_id: string
+          dependent_ci_count?: number | null
+          estimated_downtime_minutes?: number | null
+          estimated_user_impact?: number | null
+          historical_incidents?: number | null
+          id?: string
+          mitigation_strategies?: string[] | null
+          recommended_approach?: string | null
+          recommended_timing?: string | null
+          risk_factors?: Json | null
+          security_impact_score?: number | null
+          similar_changes_analyzed?: number | null
+          similar_changes_success_rate?: number | null
+          success_probability?: number | null
+          technical_impact_score?: number | null
+        }
+        Update: {
+          affected_ci_ids?: string[] | null
+          affected_services?: string[] | null
+          affected_workflows?: string[] | null
+          ai_confidence_score?: number | null
+          analysis_version?: number | null
+          analyzed_at?: string
+          business_impact_score?: number | null
+          change_request_id?: string
+          complexity_score?: number | null
+          compliance_impact_score?: number | null
+          critical_dependencies?: string[] | null
+          customer_id?: string
+          dependent_ci_count?: number | null
+          estimated_downtime_minutes?: number | null
+          estimated_user_impact?: number | null
+          historical_incidents?: number | null
+          id?: string
+          mitigation_strategies?: string[] | null
+          recommended_approach?: string | null
+          recommended_timing?: string | null
+          risk_factors?: Json | null
+          security_impact_score?: number | null
+          similar_changes_analyzed?: number | null
+          similar_changes_success_rate?: number | null
+          success_probability?: number | null
+          technical_impact_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_impact_analysis_change_request_id_fkey"
+            columns: ["change_request_id"]
+            isOneToOne: false
+            referencedRelation: "change_request_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_impact_analysis_change_request_id_fkey"
+            columns: ["change_request_id"]
+            isOneToOne: false
+            referencedRelation: "change_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      change_requests: {
+        Row: {
+          actual_end_time: string | null
+          actual_start_time: string | null
+          affected_ci_ids: string[] | null
+          affected_services: string[] | null
+          affected_users: number | null
+          approved_at: string | null
+          approved_by: string[] | null
+          assigned_to: string | null
+          audit_trail: Json | null
+          automation_enabled: boolean | null
+          business_impact: string | null
+          change_number: string
+          change_status: Database["public"]["Enums"]["change_status"]
+          change_type: Database["public"]["Enums"]["change_type"]
+          completed_at: string | null
+          completion_notes: string | null
+          compliance_tags: string[] | null
+          created_at: string
+          customer_id: string
+          description: string
+          emergency_justification: string | null
+          estimated_downtime_minutes: number | null
+          id: string
+          implementation_notes: string | null
+          implementation_plan: string
+          implemented_by: string | null
+          justification: string
+          ml_recommendation: string | null
+          primary_ci_id: string | null
+          priority: Database["public"]["Enums"]["change_priority"]
+          requested_by: string
+          requested_end_time: string | null
+          requested_start_time: string | null
+          requires_emergency_approval: boolean | null
+          risk_factors: Json | null
+          risk_level: Database["public"]["Enums"]["change_risk"]
+          risk_score: number | null
+          rollback_plan: string
+          scheduled_end_time: string | null
+          scheduled_start_time: string | null
+          similar_changes_success_rate: number | null
+          submitted_at: string | null
+          success_criteria: string | null
+          technical_impact: string | null
+          testing_plan: string | null
+          title: string
+          updated_at: string
+          workflow_id: string | null
+        }
+        Insert: {
+          actual_end_time?: string | null
+          actual_start_time?: string | null
+          affected_ci_ids?: string[] | null
+          affected_services?: string[] | null
+          affected_users?: number | null
+          approved_at?: string | null
+          approved_by?: string[] | null
+          assigned_to?: string | null
+          audit_trail?: Json | null
+          automation_enabled?: boolean | null
+          business_impact?: string | null
+          change_number: string
+          change_status?: Database["public"]["Enums"]["change_status"]
+          change_type?: Database["public"]["Enums"]["change_type"]
+          completed_at?: string | null
+          completion_notes?: string | null
+          compliance_tags?: string[] | null
+          created_at?: string
+          customer_id: string
+          description: string
+          emergency_justification?: string | null
+          estimated_downtime_minutes?: number | null
+          id?: string
+          implementation_notes?: string | null
+          implementation_plan: string
+          implemented_by?: string | null
+          justification: string
+          ml_recommendation?: string | null
+          primary_ci_id?: string | null
+          priority?: Database["public"]["Enums"]["change_priority"]
+          requested_by: string
+          requested_end_time?: string | null
+          requested_start_time?: string | null
+          requires_emergency_approval?: boolean | null
+          risk_factors?: Json | null
+          risk_level?: Database["public"]["Enums"]["change_risk"]
+          risk_score?: number | null
+          rollback_plan: string
+          scheduled_end_time?: string | null
+          scheduled_start_time?: string | null
+          similar_changes_success_rate?: number | null
+          submitted_at?: string | null
+          success_criteria?: string | null
+          technical_impact?: string | null
+          testing_plan?: string | null
+          title: string
+          updated_at?: string
+          workflow_id?: string | null
+        }
+        Update: {
+          actual_end_time?: string | null
+          actual_start_time?: string | null
+          affected_ci_ids?: string[] | null
+          affected_services?: string[] | null
+          affected_users?: number | null
+          approved_at?: string | null
+          approved_by?: string[] | null
+          assigned_to?: string | null
+          audit_trail?: Json | null
+          automation_enabled?: boolean | null
+          business_impact?: string | null
+          change_number?: string
+          change_status?: Database["public"]["Enums"]["change_status"]
+          change_type?: Database["public"]["Enums"]["change_type"]
+          completed_at?: string | null
+          completion_notes?: string | null
+          compliance_tags?: string[] | null
+          created_at?: string
+          customer_id?: string
+          description?: string
+          emergency_justification?: string | null
+          estimated_downtime_minutes?: number | null
+          id?: string
+          implementation_notes?: string | null
+          implementation_plan?: string
+          implemented_by?: string | null
+          justification?: string
+          ml_recommendation?: string | null
+          primary_ci_id?: string | null
+          priority?: Database["public"]["Enums"]["change_priority"]
+          requested_by?: string
+          requested_end_time?: string | null
+          requested_start_time?: string | null
+          requires_emergency_approval?: boolean | null
+          risk_factors?: Json | null
+          risk_level?: Database["public"]["Enums"]["change_risk"]
+          risk_score?: number | null
+          rollback_plan?: string
+          scheduled_end_time?: string | null
+          scheduled_start_time?: string | null
+          similar_changes_success_rate?: number | null
+          submitted_at?: string | null
+          success_criteria?: string | null
+          technical_impact?: string | null
+          testing_plan?: string | null
+          title?: string
+          updated_at?: string
+          workflow_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_requests_primary_ci_id_fkey"
+            columns: ["primary_ci_id"]
+            isOneToOne: false
+            referencedRelation: "ci_overview"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_primary_ci_id_fkey"
+            columns: ["primary_ci_id"]
+            isOneToOne: false
+            referencedRelation: "configuration_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      change_schedules: {
+        Row: {
+          blackout_reason: string | null
+          change_request_id: string
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          customer_id: string
+          id: string
+          is_blackout_period: boolean | null
+          is_confirmed: boolean | null
+          maintenance_window_id: string | null
+          notification_recipients: string[] | null
+          notification_sent: boolean | null
+          reminder_sent: boolean | null
+          scheduled_date: string
+          scheduled_end_time: string
+          scheduled_start_time: string
+          time_zone: string
+        }
+        Insert: {
+          blackout_reason?: string | null
+          change_request_id: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_blackout_period?: boolean | null
+          is_confirmed?: boolean | null
+          maintenance_window_id?: string | null
+          notification_recipients?: string[] | null
+          notification_sent?: boolean | null
+          reminder_sent?: boolean | null
+          scheduled_date: string
+          scheduled_end_time: string
+          scheduled_start_time: string
+          time_zone?: string
+        }
+        Update: {
+          blackout_reason?: string | null
+          change_request_id?: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_blackout_period?: boolean | null
+          is_confirmed?: boolean | null
+          maintenance_window_id?: string | null
+          notification_recipients?: string[] | null
+          notification_sent?: boolean | null
+          reminder_sent?: boolean | null
+          scheduled_date?: string
+          scheduled_end_time?: string
+          scheduled_start_time?: string
+          time_zone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_schedules_change_request_id_fkey"
+            columns: ["change_request_id"]
+            isOneToOne: false
+            referencedRelation: "change_request_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_schedules_change_request_id_fkey"
+            columns: ["change_request_id"]
+            isOneToOne: false
+            referencedRelation: "change_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ci_relationships: {
+        Row: {
+          created_at: string
+          created_by: string
+          customer_id: string
+          description: string | null
+          discovered_by: string | null
+          id: string
+          is_critical: boolean | null
+          relationship_type: Database["public"]["Enums"]["relationship_type"]
+          source_ci_id: string
+          strength: string | null
+          target_ci_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          customer_id: string
+          description?: string | null
+          discovered_by?: string | null
+          id?: string
+          is_critical?: boolean | null
+          relationship_type: Database["public"]["Enums"]["relationship_type"]
+          source_ci_id: string
+          strength?: string | null
+          target_ci_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          description?: string | null
+          discovered_by?: string | null
+          id?: string
+          is_critical?: boolean | null
+          relationship_type?: Database["public"]["Enums"]["relationship_type"]
+          source_ci_id?: string
+          strength?: string | null
+          target_ci_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ci_relationships_source_ci_id_fkey"
+            columns: ["source_ci_id"]
+            isOneToOne: false
+            referencedRelation: "ci_overview"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ci_relationships_source_ci_id_fkey"
+            columns: ["source_ci_id"]
+            isOneToOne: false
+            referencedRelation: "configuration_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ci_relationships_target_ci_id_fkey"
+            columns: ["target_ci_id"]
+            isOneToOne: false
+            referencedRelation: "ci_overview"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ci_relationships_target_ci_id_fkey"
+            columns: ["target_ci_id"]
+            isOneToOne: false
+            referencedRelation: "configuration_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_onboarding_tasks: {
         Row: {
           actual_hours: number | null
@@ -754,6 +1230,132 @@ export type Database = {
           id?: string
           tag_name?: string
           tag_type?: string
+        }
+        Relationships: []
+      }
+      configuration_items: {
+        Row: {
+          asset_tag: string | null
+          assigned_to: string | null
+          attributes: Json | null
+          azure_resource_id: string | null
+          ci_name: string
+          ci_status: Database["public"]["Enums"]["ci_status"]
+          ci_subtype: string | null
+          ci_type: Database["public"]["Enums"]["ci_type"]
+          compliance_tags: string[] | null
+          cost_center: string | null
+          created_at: string
+          created_by: string
+          criticality: Database["public"]["Enums"]["ci_criticality"]
+          customer_id: string
+          department: string | null
+          description: string | null
+          eol_date: string | null
+          external_id: string | null
+          hostname: string | null
+          id: string
+          integration_source: string | null
+          ip_address: unknown | null
+          last_audit_date: string | null
+          location: string | null
+          mac_address: unknown | null
+          manufacturer: string | null
+          model: string | null
+          ninjaone_device_id: string | null
+          notes: string | null
+          operating_system: string | null
+          owner_user_id: string | null
+          purchase_date: string | null
+          requires_mfa: boolean | null
+          security_classification: string | null
+          serial_number: string | null
+          updated_at: string
+          updated_by: string | null
+          version: string | null
+          warranty_expiry: string | null
+        }
+        Insert: {
+          asset_tag?: string | null
+          assigned_to?: string | null
+          attributes?: Json | null
+          azure_resource_id?: string | null
+          ci_name: string
+          ci_status?: Database["public"]["Enums"]["ci_status"]
+          ci_subtype?: string | null
+          ci_type: Database["public"]["Enums"]["ci_type"]
+          compliance_tags?: string[] | null
+          cost_center?: string | null
+          created_at?: string
+          created_by: string
+          criticality?: Database["public"]["Enums"]["ci_criticality"]
+          customer_id: string
+          department?: string | null
+          description?: string | null
+          eol_date?: string | null
+          external_id?: string | null
+          hostname?: string | null
+          id?: string
+          integration_source?: string | null
+          ip_address?: unknown | null
+          last_audit_date?: string | null
+          location?: string | null
+          mac_address?: unknown | null
+          manufacturer?: string | null
+          model?: string | null
+          ninjaone_device_id?: string | null
+          notes?: string | null
+          operating_system?: string | null
+          owner_user_id?: string | null
+          purchase_date?: string | null
+          requires_mfa?: boolean | null
+          security_classification?: string | null
+          serial_number?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          version?: string | null
+          warranty_expiry?: string | null
+        }
+        Update: {
+          asset_tag?: string | null
+          assigned_to?: string | null
+          attributes?: Json | null
+          azure_resource_id?: string | null
+          ci_name?: string
+          ci_status?: Database["public"]["Enums"]["ci_status"]
+          ci_subtype?: string | null
+          ci_type?: Database["public"]["Enums"]["ci_type"]
+          compliance_tags?: string[] | null
+          cost_center?: string | null
+          created_at?: string
+          created_by?: string
+          criticality?: Database["public"]["Enums"]["ci_criticality"]
+          customer_id?: string
+          department?: string | null
+          description?: string | null
+          eol_date?: string | null
+          external_id?: string | null
+          hostname?: string | null
+          id?: string
+          integration_source?: string | null
+          ip_address?: unknown | null
+          last_audit_date?: string | null
+          location?: string | null
+          mac_address?: unknown | null
+          manufacturer?: string | null
+          model?: string | null
+          ninjaone_device_id?: string | null
+          notes?: string | null
+          operating_system?: string | null
+          owner_user_id?: string | null
+          purchase_date?: string | null
+          requires_mfa?: boolean | null
+          security_classification?: string | null
+          serial_number?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          version?: string | null
+          warranty_expiry?: string | null
         }
         Relationships: []
       }
@@ -2725,12 +3327,136 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      change_request_dashboard: {
+        Row: {
+          actual_end_time: string | null
+          actual_start_time: string | null
+          affected_ci_ids: string[] | null
+          affected_services: string[] | null
+          affected_users: number | null
+          approved_at: string | null
+          approved_by: string[] | null
+          approved_count: number | null
+          assigned_to: string | null
+          audit_trail: Json | null
+          automation_enabled: boolean | null
+          business_impact: string | null
+          business_impact_score: number | null
+          change_number: string | null
+          change_status: Database["public"]["Enums"]["change_status"] | null
+          change_type: Database["public"]["Enums"]["change_type"] | null
+          completed_at: string | null
+          completion_notes: string | null
+          compliance_tags: string[] | null
+          created_at: string | null
+          customer_id: string | null
+          description: string | null
+          emergency_justification: string | null
+          estimated_downtime_minutes: number | null
+          id: string | null
+          implementation_notes: string | null
+          implementation_plan: string | null
+          implemented_by: string | null
+          justification: string | null
+          ml_recommendation: string | null
+          pending_approvals: number | null
+          primary_ci_id: string | null
+          priority: Database["public"]["Enums"]["change_priority"] | null
+          requested_by: string | null
+          requested_by_name: string | null
+          requested_end_time: string | null
+          requested_start_time: string | null
+          requires_emergency_approval: boolean | null
+          risk_factors: Json | null
+          risk_level: Database["public"]["Enums"]["change_risk"] | null
+          risk_score: number | null
+          rollback_plan: string | null
+          scheduled_end_time: string | null
+          scheduled_start_time: string | null
+          similar_changes_success_rate: number | null
+          submitted_at: string | null
+          success_criteria: string | null
+          success_probability: number | null
+          technical_impact: string | null
+          testing_plan: string | null
+          title: string | null
+          total_approvals: number | null
+          updated_at: string | null
+          workflow_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_requests_primary_ci_id_fkey"
+            columns: ["primary_ci_id"]
+            isOneToOne: false
+            referencedRelation: "ci_overview"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_primary_ci_id_fkey"
+            columns: ["primary_ci_id"]
+            isOneToOne: false
+            referencedRelation: "configuration_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ci_overview: {
+        Row: {
+          asset_tag: string | null
+          assigned_to: string | null
+          attributes: Json | null
+          azure_resource_id: string | null
+          ci_name: string | null
+          ci_status: Database["public"]["Enums"]["ci_status"] | null
+          ci_subtype: string | null
+          ci_type: Database["public"]["Enums"]["ci_type"] | null
+          compliance_tags: string[] | null
+          cost_center: string | null
+          created_at: string | null
+          created_by: string | null
+          criticality: Database["public"]["Enums"]["ci_criticality"] | null
+          customer_id: string | null
+          department: string | null
+          description: string | null
+          eol_date: string | null
+          external_id: string | null
+          hostname: string | null
+          id: string | null
+          inbound_relationships: number | null
+          integration_source: string | null
+          ip_address: unknown | null
+          last_audit_date: string | null
+          location: string | null
+          mac_address: unknown | null
+          manufacturer: string | null
+          model: string | null
+          ninjaone_device_id: string | null
+          notes: string | null
+          operating_system: string | null
+          outbound_relationships: number | null
+          owner_user_id: string | null
+          pending_changes: number | null
+          purchase_date: string | null
+          requires_mfa: boolean | null
+          security_classification: string | null
+          serial_number: string | null
+          updated_at: string | null
+          updated_by: string | null
+          version: string | null
+          warranty_expiry: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       can_manage_roles: {
         Args: { _user_id: string }
         Returns: boolean
+      }
+      generate_change_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       get_integration_credential: {
         Args: { _customer_id: string; _integration_id: string }
@@ -2770,6 +3496,55 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "customer"
+      approval_status: "pending" | "approved" | "rejected" | "deferred"
+      change_priority: "critical" | "high" | "medium" | "low"
+      change_risk: "critical" | "high" | "medium" | "low"
+      change_status:
+        | "draft"
+        | "submitted"
+        | "pending_approval"
+        | "approved"
+        | "rejected"
+        | "scheduled"
+        | "in_progress"
+        | "implemented"
+        | "completed"
+        | "failed"
+        | "rolled_back"
+        | "cancelled"
+      change_type: "standard" | "normal" | "emergency" | "routine"
+      ci_criticality: "critical" | "high" | "medium" | "low"
+      ci_status:
+        | "active"
+        | "inactive"
+        | "maintenance"
+        | "retired"
+        | "planned"
+        | "under_review"
+      ci_type:
+        | "hardware"
+        | "software"
+        | "network_device"
+        | "server"
+        | "workstation"
+        | "mobile_device"
+        | "application"
+        | "database"
+        | "service"
+        | "virtual_machine"
+        | "cloud_resource"
+        | "security_device"
+      relationship_type:
+        | "depends_on"
+        | "uses"
+        | "hosts"
+        | "runs_on"
+        | "connects_to"
+        | "managed_by"
+        | "backs_up"
+        | "monitors"
+        | "protects"
+        | "integrates_with"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2898,6 +3673,59 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "customer"],
+      approval_status: ["pending", "approved", "rejected", "deferred"],
+      change_priority: ["critical", "high", "medium", "low"],
+      change_risk: ["critical", "high", "medium", "low"],
+      change_status: [
+        "draft",
+        "submitted",
+        "pending_approval",
+        "approved",
+        "rejected",
+        "scheduled",
+        "in_progress",
+        "implemented",
+        "completed",
+        "failed",
+        "rolled_back",
+        "cancelled",
+      ],
+      change_type: ["standard", "normal", "emergency", "routine"],
+      ci_criticality: ["critical", "high", "medium", "low"],
+      ci_status: [
+        "active",
+        "inactive",
+        "maintenance",
+        "retired",
+        "planned",
+        "under_review",
+      ],
+      ci_type: [
+        "hardware",
+        "software",
+        "network_device",
+        "server",
+        "workstation",
+        "mobile_device",
+        "application",
+        "database",
+        "service",
+        "virtual_machine",
+        "cloud_resource",
+        "security_device",
+      ],
+      relationship_type: [
+        "depends_on",
+        "uses",
+        "hosts",
+        "runs_on",
+        "connects_to",
+        "managed_by",
+        "backs_up",
+        "monitors",
+        "protects",
+        "integrates_with",
+      ],
     },
   },
 } as const

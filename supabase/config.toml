@@ -29,3 +29,6 @@ verify_jwt = true
 
 [functions.intelligent-assistant]
 verify_jwt = true
+
+[functions.change-impact-analyzer]
+verify_jwt = true

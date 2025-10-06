@@ -39,6 +39,8 @@ import WorkflowAutomation from "./pages/WorkflowAutomation";
 import WorkflowExecutionDetail from "./pages/WorkflowExecutionDetail";
 import NinjaOneIntegration from "./pages/NinjaOneIntegration";
 import PrivilegedAccessAudit from "./pages/PrivilegedAccessAudit";
+import CMDBDashboard from "./pages/CMDBDashboard";
+import ChangeManagement from "./pages/ChangeManagement";
 import TestWorkflowEvidence from "./pages/TestWorkflowEvidence";
 import ComprehensiveTestDashboard from "./pages/ComprehensiveTestDashboard";
 
@@ -197,6 +199,18 @@ const App = () => (
           <Route path="/ninjaone" element={
             <ProtectedRoute>
               <NinjaOneIntegration />
+            </ProtectedRoute>
+          } />
+          
+          {/* CMDB & Change Management - Protected */}
+          <Route path="/cmdb" element={
+            <ProtectedRoute>
+              <CMDBDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/change-management" element={
+            <ProtectedRoute>
+              <ChangeManagement />
             </ProtectedRoute>
           } />
           
