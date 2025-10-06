@@ -5,11 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { LogOut, Users, UserCheck, Clock, TrendingUp } from "lucide-react";
+import { LogOut, Users, UserCheck, Clock, TrendingUp, ChevronDown, FileText, ClipboardList, UserPlus } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const HRDashboard = () => {
   const navigate = useNavigate();
@@ -119,8 +127,59 @@ const HRDashboard = () => {
           ]}
         />
         
+        {/* Quick Access Menu Bar */}
+        <div className="flex gap-3 mb-6 flex-wrap">
+          {/* HR Tools Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Users className="h-4 w-4" />
+                HR Tools
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>HR Management</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/onboarding')}>
+                <UserPlus className="h-4 w-4 mr-2" />
+                Employee Onboarding
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/employees?department=hr')}>
+                <ClipboardList className="h-4 w-4 mr-2" />
+                Employee Records
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/performance-reviews?department=hr')}>
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Performance Reviews
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Reports Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Reports
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>HR Reports</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/analytics?department=hr')}>
+                HR Analytics
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/workforce-reports?department=hr')}>
+                Workforce Reports
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card 
+          <Card
             className="cursor-pointer hover:shadow-lg transition-shadow"
             onClick={() => navigate(`/workflow/employees?metric=Total Employees&department=hr`)}
           >

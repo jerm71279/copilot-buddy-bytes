@@ -9,11 +9,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   LogOut, Shield, AlertTriangle, Activity, Eye, Lock, 
   TrendingUp, Database, Users, FileWarning, CheckCircle2,
-  Clock, Zap
+  Clock, Zap, ChevronDown, FileText, Search
 } from "lucide-react";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface SecurityMetrics {
   totalIncidents: number;
@@ -233,7 +241,56 @@ const SOCDashboard = () => {
           ]}
         />
         
-        {/* Key Metrics Grid */}
+        {/* Quick Access Menu Bar */}
+        <div className="flex gap-3 mb-6 flex-wrap">
+          {/* Security Tools Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Shield className="h-4 w-4" />
+                Security Tools
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>SOC Management</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/privileged-access-audit')}>
+                <Lock className="h-4 w-4 mr-2" />
+                Privileged Access Audit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/anomalies?department=security')}>
+                <AlertTriangle className="h-4 w-4 mr-2" />
+                Anomaly Detection
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/threat-analysis?department=security')}>
+                <Search className="h-4 w-4 mr-2" />
+                Threat Analysis
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Reports Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Reports
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Security Reports</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/compliance/audit-reports?department=security')}>
+                Security Audit Reports
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/privileged-access-audit')}>
+                Access Audit Trail
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card 
             className="cursor-pointer hover:shadow-lg transition-shadow"

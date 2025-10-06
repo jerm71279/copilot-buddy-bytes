@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { LogOut, TrendingUp, Workflow, AlertTriangle, Lightbulb } from "lucide-react";
+import { LogOut, TrendingUp, Workflow, AlertTriangle, Lightbulb, ChevronDown, FileText, Settings, GitBranch } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import { WorkflowBuilder } from "@/components/WorkflowBuilder";
@@ -15,6 +15,14 @@ import { WorkflowTriggerManager } from "@/components/WorkflowTriggerManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const OperationsDashboard = () => {
   const navigate = useNavigate();
@@ -122,6 +130,57 @@ const OperationsDashboard = () => {
             { name: "SOC Dashboard", path: "/dashboard/soc" },
           ]}
         />
+        
+        {/* Quick Access Menu Bar */}
+        <div className="flex gap-3 mb-6 flex-wrap">
+          {/* Operations Tools Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Workflow className="h-4 w-4" />
+                Operations Tools
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Operations Management</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/workflow-builder')}>
+                <GitBranch className="h-4 w-4 mr-2" />
+                Workflow Builder
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow-automation')}>
+                <Settings className="h-4 w-4 mr-2" />
+                Trigger Manager
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/executions?department=operations')}>
+                <Workflow className="h-4 w-4 mr-2" />
+                Execution History
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Reports Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Reports
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Operations Reports</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/analytics?department=operations')}>
+                Operations Analytics
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/efficiency?department=operations')}>
+                Workflow Efficiency Reports
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card 

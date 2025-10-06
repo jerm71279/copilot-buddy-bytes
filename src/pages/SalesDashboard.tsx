@@ -6,11 +6,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { LogOut, TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar, AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { LogOut, TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar, AlertCircle, CheckCircle, Clock, ChevronDown, FileText, BarChart } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const SalesDashboard = () => {
   const navigate = useNavigate();
@@ -107,6 +115,58 @@ const SalesDashboard = () => {
             { name: "SOC Dashboard", path: "/dashboard/soc" },
           ]}
         />
+        
+        {/* Quick Access Menu Bar */}
+        <div className="flex gap-3 mb-6 flex-wrap">
+          {/* Sales Tools Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Sales Tools
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Sales Management</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/workflow/pipeline?department=sales')}>
+                <Target className="h-4 w-4 mr-2" />
+                Pipeline Management
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/customers?department=sales')}>
+                <Users className="h-4 w-4 mr-2" />
+                Customer Records
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/deals?department=sales')}>
+                <DollarSign className="h-4 w-4 mr-2" />
+                Active Deals
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Reports Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Reports
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Sales Reports</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/analytics?department=sales')}>
+                <BarChart className="h-4 w-4 mr-2" />
+                Sales Analytics
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/performance-reports?department=sales')}>
+                Performance Reports
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Sales Performance</h2>

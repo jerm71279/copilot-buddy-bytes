@@ -6,11 +6,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { LogOut, Shield, CheckCircle, AlertTriangle, FileText, FileCheck } from "lucide-react";
+import { LogOut, Shield, CheckCircle, AlertTriangle, FileText, FileCheck, ChevronDown, ClipboardList, FolderOpen } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const ComplianceDashboard = () => {
   const navigate = useNavigate();
@@ -124,15 +132,59 @@ const ComplianceDashboard = () => {
           ]}
         />
         
-        <div className="flex gap-2 mb-4">
-          <Button onClick={() => navigate('/compliance/audit-reports')}>
-            <FileCheck className="h-4 w-4 mr-2" />
-            Generate Audit Report
-          </Button>
-          <Button onClick={() => navigate('/compliance')} variant="outline">
-            <FileText className="h-4 w-4 mr-2" />
-            Compliance Portal
-          </Button>
+        {/* Quick Access Menu Bar */}
+        <div className="flex gap-3 mb-6 flex-wrap">
+          {/* Compliance Tools Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Shield className="h-4 w-4" />
+                Compliance Tools
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Compliance Management</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/compliance/audit-reports')}>
+                <FileCheck className="h-4 w-4 mr-2" />
+                Audit Reports
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/compliance/evidence-upload')}>
+                <FolderOpen className="h-4 w-4 mr-2" />
+                Evidence Upload
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/compliance/framework-records')}>
+                <ClipboardList className="h-4 w-4 mr-2" />
+                Framework Records
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/compliance')}>
+                <Shield className="h-4 w-4 mr-2" />
+                Compliance Portal
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Reports Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Reports
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Compliance Reports</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/compliance/audit-reports')}>
+                Compliance Audit Reports
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/compliance/framework-records')}>
+                Framework Status Reports
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         {/* Primary Compliance Frameworks - ISO27001 & SOC 2 */}

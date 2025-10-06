@@ -6,11 +6,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { LogOut, BarChart3, TrendingUp, Shield, Users, AlertCircle, CheckCircle } from "lucide-react";
+import { LogOut, BarChart3, TrendingUp, Shield, Users, AlertCircle, CheckCircle, ChevronDown, FileText, Building } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const ExecutiveDashboard = () => {
   const navigate = useNavigate();
@@ -122,8 +130,59 @@ const ExecutiveDashboard = () => {
           ]}
         />
         
+        {/* Quick Access Menu Bar */}
+        <div className="flex gap-3 mb-6 flex-wrap">
+          {/* Executive Tools Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Executive Tools
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Executive Management</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/admin')}>
+                <Building className="h-4 w-4 mr-2" />
+                Customer Management
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/analytics')}>
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Analytics Portal
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/compliance')}>
+                <Shield className="h-4 w-4 mr-2" />
+                Compliance Overview
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Reports Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Reports
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Executive Reports</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/analytics')}>
+                Performance Dashboard
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/compliance/audit-reports')}>
+                Compliance Reports
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          <Card 
+          <Card
             className="cursor-pointer hover:shadow-lg transition-shadow"
             onClick={() => navigate(`/workflow/customers?metric=Total Customers&department=executive`)}
           >

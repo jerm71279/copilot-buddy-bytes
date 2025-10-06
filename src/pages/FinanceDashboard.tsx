@@ -7,11 +7,19 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import { LogOut, DollarSign, Users, TrendingUp, CreditCard, Info, Percent, Calendar } from "lucide-react";
+import { LogOut, DollarSign, Users, TrendingUp, CreditCard, Info, Percent, Calendar, ChevronDown, FileText, Receipt } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface FinancialMetrics {
   totalCustomers: number;
@@ -254,6 +262,57 @@ Churn rate represents the percentage of customers who have cancelled or become i
             { name: "SOC Dashboard", path: "/dashboard/soc" },
           ]}
         />
+        
+        {/* Quick Access Menu Bar */}
+        <div className="flex gap-3 mb-6 flex-wrap">
+          {/* Finance Tools Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <DollarSign className="h-4 w-4" />
+                Finance Tools
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Finance Management</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/workflow/billing?department=finance')}>
+                <Receipt className="h-4 w-4 mr-2" />
+                Billing Management
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/invoices?department=finance')}>
+                <FileText className="h-4 w-4 mr-2" />
+                Invoices
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/subscriptions?department=finance')}>
+                <CreditCard className="h-4 w-4 mr-2" />
+                Subscriptions
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Reports Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Reports
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+              <DropdownMenuLabel>Financial Reports</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/analytics?department=finance')}>
+                Financial Analytics
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/workflow/revenue-reports?department=finance')}>
+                Revenue Reports
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         
         <TooltipProvider>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
