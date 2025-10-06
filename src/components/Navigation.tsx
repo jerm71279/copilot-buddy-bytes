@@ -254,7 +254,7 @@ const Navigation = () => {
 
         {/* Mobile Dropdown Menu - Positioned Below Button */}
         {isMenuOpen && (
-          <div className="md:hidden absolute left-4 top-full mt-2 w-64 bg-background border border-border rounded-lg shadow-lg z-50 py-2">
+          <div className="md:hidden absolute left-4 top-full mt-2 w-64 bg-background/100 border border-border rounded-lg shadow-xl z-[100] py-2">
             <div className="flex flex-col">
               <button 
                 onClick={() => scrollToSection('features')}
