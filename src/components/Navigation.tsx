@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Shield, Menu, LogOut, BookOpen, Brain, Search } from "lucide-react";
+import { Menu, LogOut, Brain, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { GlobalSearch } from "./GlobalSearch";
+import oberaLogo from "@/assets/obera-logo.png";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -98,10 +99,11 @@ const Navigation = () => {
             to="/"
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-accent flex items-center justify-center">
-              <Shield className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold">OberaConnect</span>
+            <img 
+              src={oberaLogo} 
+              alt="OberaConnect Logo" 
+              className="h-10 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}
