@@ -10,6 +10,61 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Zap, Play, Pause, Plus, Clock, CheckCircle2, GitBranch } from "lucide-react";
 
+/**
+ * Workflow Automation Data Flow
+ * 
+ * ```mermaid
+ * graph TD
+ *     A[User] -->|Visits /workflow-automation| B[WorkflowAutomation Component]
+ *     B -->|useEffect| C[checkAuthAndLoad]
+ *     C -->|Auth Check| D[supabase.auth.getSession]
+ *     
+ *     D -->|Authenticated| E[loadWorkflows]
+ *     E -->|Query| F[workflows Table]
+ *     F -->|Return Data| G[setWorkflows State]
+ *     
+ *     E -->|Query| H[workflow_executions Table]
+ *     H -->|Order by started_at| I[setExecutions State]
+ *     
+ *     G -->|Calculate Stats| J[Total, Active, Success Rate]
+ *     J -->|Update| K[Stats Cards UI]
+ *     
+ *     L[Create Workflow Button] -->|Navigate| M[/workflow-builder]
+ *     M -->|Build| N[Workflow Configuration]
+ *     N -->|Save| F
+ *     
+ *     O[View Workflow] -->|Click| P[/workflow/:id]
+ *     P -->|Load Detail| Q[Workflow Steps & Config]
+ *     Q -->|Query| R[workflow_steps Table]
+ *     
+ *     S[Execute Workflow] -->|Invoke| T[workflow-executor Edge Function]
+ *     T -->|Process Steps| U[Step-by-Step Execution]
+ *     U -->|Insert Record| H
+ *     
+ *     U -->|Generate Evidence| V[workflow-evidence-generator Edge Function]
+ *     V -->|AI Processing| W[Evidence Generation]
+ *     W -->|Store| X[evidence_files Table]
+ *     
+ *     Y[Trigger Manager] -->|Configure| Z[workflow_triggers Table]
+ *     Z -->|Schedule/Event| AA[Auto-Execute Workflows]
+ *     
+ *     AB[View Execution] -->|Click| AC[/workflow-execution/:id]
+ *     AC -->|Load Logs| AD[Execution Details & Logs]
+ *     
+ *     AE[Workflow Insights] -->|Invoke| AF[workflow-insights Edge Function]
+ *     AF -->|AI Analysis| AG[Optimization Recommendations]
+ *     
+ *     style A fill:#e1f5ff
+ *     style T fill:#fff4e6
+ *     style V fill:#fff4e6
+ *     style AF fill:#fff4e6
+ *     style F fill:#e6f7ff
+ *     style H fill:#e6f7ff
+ *     style R fill:#e6f7ff
+ *     style X fill:#e6f7ff
+ * ```
+ */
+
 interface Workflow {
   id: string;
   workflow_name: string;

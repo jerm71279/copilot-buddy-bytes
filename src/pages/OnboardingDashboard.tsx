@@ -10,6 +10,58 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Users, Clock, CheckCircle, AlertCircle } from "lucide-react";
 
+/**
+ * Onboarding Dashboard Data Flow
+ * 
+ * ```mermaid
+ * graph TD
+ *     A[User] -->|Visits /onboarding-dashboard| B[OnboardingDashboard Component]
+ *     B -->|useEffect| C[checkAuthAndLoad]
+ *     C -->|Auth Check| D[supabase.auth.getSession]
+ *     
+ *     D -->|Authenticated| E[loadOnboardings]
+ *     E -->|Query| F[client_onboardings Table]
+ *     F -->|Order by created_at| G[setOnboardings State]
+ *     
+ *     G -->|Calculate Stats| H[Total, In Progress, Completed, Overdue]
+ *     H -->|Update| I[Stats Cards UI]
+ *     
+ *     J[Create Onboarding Button] -->|Navigate| K[Onboarding Creation Modal]
+ *     K -->|Select Template| L[onboarding_templates Table]
+ *     L -->|Load Template| M[Template Tasks]
+ *     
+ *     M -->|Submit| N[Insert Onboarding]
+ *     N -->|Store| F
+ *     N -->|Copy Tasks| O[client_onboarding_tasks Table]
+ *     
+ *     P[View Onboarding] -->|Click| Q[Onboarding Detail Page]
+ *     Q -->|Load Tasks| O
+ *     O -->|Display| R[Task List with Status]
+ *     
+ *     R -->|Update Task| S[Change Status/Complete]
+ *     S -->|Update| O
+ *     S -->|Recalculate| T[completion_percentage]
+ *     T -->|Update| F
+ *     
+ *     U[Upload Document] -->|Task Action| V[File Upload]
+ *     V -->|Store Reference| W[uploaded_documents in Task]
+ *     
+ *     X[Assign Task] -->|Select User| Y[Update assigned_to]
+ *     Y -->|Notify| Z[User Notification]
+ *     
+ *     AA[Overdue Check] -->|Compare Dates| AB[target_completion_date]
+ *     AB -->|Flag Overdue| AC[stats.overdue]
+ *     
+ *     AD[Progress Tracking] -->|Real-time| AE[Progress Bars]
+ *     AE -->|Visual Feedback| AF[Color-coded Status]
+ *     
+ *     style A fill:#e1f5ff
+ *     style F fill:#e6f7ff
+ *     style L fill:#e6f7ff
+ *     style O fill:#e6f7ff
+ * ```
+ */
+
 interface ClientOnboarding {
   id: string;
   client_name: string;

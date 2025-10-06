@@ -20,6 +20,48 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+/**
+ * Change Management Dashboard Data Flow
+ * 
+ * ```mermaid
+ * graph TD
+ *     A[User] -->|Visits /change-management| B[ChangeManagement Component]
+ *     B -->|useEffect| C[checkAccess & loadChangeData]
+ *     C -->|Auth Check| D[supabase.auth.getUser]
+ *     
+ *     D -->|Authenticated| E[Query Changes]
+ *     E -->|Select All| F[change_requests Table]
+ *     F -->|Order by created_at| G[setChanges State]
+ *     
+ *     G -->|Calculate Stats| H[Status Counts]
+ *     H -->|Update UI| I[6 Stats Cards]
+ *     I -->|Display| J[Total, Pending, Approved, Scheduled, Completed, Failed]
+ *     
+ *     K[New Change Button] -->|Navigate| L[/change-management/new]
+ *     L -->|Form Submit| M[Create Change Request]
+ *     M -->|Insert| F
+ *     M -->|AI Analysis| N[change-impact-analyzer Edge Function]
+ *     N -->|ML Prediction| O[change_impact_analysis Table]
+ *     
+ *     O -->|Risk Score| P[Update change_requests]
+ *     P -->|Approval Flow| Q[change_approvals Table]
+ *     
+ *     G -->|Render List| R[Change Cards UI]
+ *     R -->|Click Change| S[Navigate to /change-management/:id]
+ *     S -->|Detail View| T[ChangeManagementDetail Component]
+ *     
+ *     T -->|NinjaOne Integration| U[Create Ticket]
+ *     U -->|API Call| V[ninjaone-ticket Edge Function]
+ *     
+ *     style A fill:#e1f5ff
+ *     style N fill:#fff4e6
+ *     style V fill:#ffe6e6
+ *     style F fill:#e6f7ff
+ *     style O fill:#e6f7ff
+ *     style Q fill:#e6f7ff
+ * ```
+ */
+
 interface ChangeRequest {
   id: string;
   change_number: string;

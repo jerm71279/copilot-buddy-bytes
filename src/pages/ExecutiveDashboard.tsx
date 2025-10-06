@@ -23,6 +23,54 @@ import {
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * Executive Dashboard Data Flow
+ * 
+ * ```mermaid
+ * graph TD
+ *     A[User/Executive] -->|Visits /dashboard/executive| B[ExecutiveDashboard Component]
+ *     B -->|useEffect| C[checkAccess & fetchStats]
+ *     C -->|Auth Check| D[supabase.auth.getSession]
+ *     D -->|Get Profile| E[user_profiles Table]
+ *     
+ *     C -->|Parallel Queries| F[fetchStats]
+ *     F -->|Count| G[customers Table]
+ *     F -->|Count| H[ml_insights Table]
+ *     F -->|Count| I[anomaly_detections Table]
+ *     
+ *     G -->|Set State| J[stats.customers]
+ *     H -->|Set State| K[stats.mlInsights]
+ *     I -->|Set State| L[stats.anomalies]
+ *     
+ *     B -->|Fetch MCP Servers| M[fetchMcpServers]
+ *     M -->|Query by Type| N[mcp_servers Table]
+ *     M -->|Filter: server_type=executive| O[Executive MCP Servers]
+ *     O -->|Display| P[MCP Dropdown Menu]
+ *     
+ *     Q[Click Revenue Metric] -->|Navigate| R[/workflow/revenue-analysis]
+ *     R -->|Invoke| S[workflow-executor Edge Function]
+ *     S -->|Process| T[AI Analysis]
+ *     T -->|Generate Insights| H
+ *     
+ *     U[Click Compliance Score] -->|Navigate| V[/compliance-dashboard]
+ *     
+ *     W[Reports Menu] -->|Navigate| X[Various Report Pages]
+ *     
+ *     Y[AI Assistant] -->|Invoke| Z[department-assistant Edge Function]
+ *     Z -->|Context: Executive| AA[Strategic Insights]
+ *     
+ *     AB[MCP Server Status] -->|Monitor| AC[Real-time Health]
+ *     
+ *     style A fill:#e1f5ff
+ *     style S fill:#fff4e6
+ *     style Z fill:#fff4e6
+ *     style G fill:#e6f7ff
+ *     style H fill:#e6f7ff
+ *     style I fill:#e6f7ff
+ *     style N fill:#e6f7ff
+ * ```
+ */
+
 const ExecutiveDashboard = () => {
   const navigate = useNavigate();
   const isPreviewMode = useDemoMode();

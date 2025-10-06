@@ -23,6 +23,55 @@ import {
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * Compliance Dashboard Data Flow
+ * 
+ * ```mermaid
+ * graph TD
+ *     A[User] -->|Visits /compliance-dashboard| B[ComplianceDashboard Component]
+ *     B -->|useEffect| C[checkAccess & fetchStats]
+ *     C -->|Auth Check| D[supabase.auth.getSession]
+ *     D -->|Get Profile| E[user_profiles Table]
+ *     
+ *     C -->|Parallel Queries| F[fetchStats]
+ *     F -->|Count| G[compliance_frameworks Table]
+ *     F -->|Count| H[compliance_controls Table]
+ *     F -->|Count| I[compliance_reports Table]
+ *     F -->|Count| J[evidence_files Table]
+ *     
+ *     G -->|Set State| K[stats.frameworks]
+ *     H -->|Set State| L[stats.controls]
+ *     I -->|Set State| M[stats.reports]
+ *     J -->|Set State| N[stats.evidenceFiles]
+ *     
+ *     K -->|Render| O[Framework Cards]
+ *     L -->|Render| P[Control Stats]
+ *     M -->|Render| Q[Report Count]
+ *     N -->|Render| R[Evidence Count]
+ *     
+ *     S[Click Framework Card] -->|Navigate| T[/workflow/compliance-score]
+ *     T -->|AI Processing| U[workflow-executor Edge Function]
+ *     U -->|Generate Evidence| V[workflow-evidence-generator]
+ *     V -->|Store| J
+ *     
+ *     W[MCP Servers Menu] -->|Query| X[mcp_servers Table]
+ *     X -->|Filter by Type| Y[server_type = 'compliance']
+ *     Y -->|Display| Z[Server Dropdown]
+ *     
+ *     AA[AI Assistant] -->|Query| AB[department-assistant Edge Function]
+ *     AB -->|Compliance Context| AC[AI Response]
+ *     
+ *     style A fill:#e1f5ff
+ *     style U fill:#fff4e6
+ *     style V fill:#fff4e6
+ *     style AB fill:#fff4e6
+ *     style G fill:#e6f7ff
+ *     style H fill:#e6f7ff
+ *     style I fill:#e6f7ff
+ *     style J fill:#e6f7ff
+ * ```
+ */
+
 const ComplianceDashboard = () => {
   const navigate = useNavigate();
   const isPreviewMode = useDemoMode();

@@ -20,6 +20,42 @@ import {
   TrendingUp
 } from "lucide-react";
 
+/**
+ * CIPP Dashboard Data Flow
+ * 
+ * ```mermaid
+ * graph TD
+ *     A[User] -->|Visits /cipp| B[CIPPDashboard Component]
+ *     B -->|useEffect| C[loadData Function]
+ *     C -->|Auth Check| D[supabase.auth.getUser]
+ *     D -->|Get Profile| E[user_profiles Table]
+ *     E -->|customer_id| F[Load Tenant Data]
+ *     
+ *     F -->|Query| G[cipp_tenants Table]
+ *     G -->|Return Tenants| H[setTenants State]
+ *     
+ *     F -->|Query| I[cipp_tenant_health Table]
+ *     I -->|Return Health Data| J[setHealthData State]
+ *     
+ *     K[Sync Button Click] -->|Invoke| L[cipp-sync Edge Function]
+ *     L -->|API Call| M[CIPP API]
+ *     M -->|Tenant Data| N[Store in DB]
+ *     N -->|Insert| G
+ *     N -->|Reload| C
+ *     
+ *     H -->|Render| O[Tenant Cards UI]
+ *     J -->|Render| P[Health Scores UI]
+ *     
+ *     O -->|User Clicks| Q[Navigate to Tenant Detail]
+ *     
+ *     style A fill:#e1f5ff
+ *     style L fill:#fff4e6
+ *     style M fill:#ffe6e6
+ *     style G fill:#e6f7ff
+ *     style I fill:#e6f7ff
+ * ```
+ */
+
 interface CIPPTenant {
   id: string;
   tenant_id: string;

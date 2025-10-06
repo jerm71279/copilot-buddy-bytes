@@ -23,6 +23,53 @@ import {
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * Sales Dashboard Data Flow
+ * 
+ * ```mermaid
+ * graph TD
+ *     A[Sales User] -->|Visits /dashboard/sales| B[SalesDashboard Component]
+ *     B -->|useEffect| C[checkAccess]
+ *     C -->|Auth Check| D[supabase.auth.getSession]
+ *     D -->|Get Profile| E[user_profiles Table]
+ *     
+ *     B -->|Fetch MCP Servers| F[fetchMcpServers]
+ *     F -->|Query| G[mcp_servers Table]
+ *     F -->|Filter: server_type=sales| H[Sales MCP Servers]
+ *     H -->|Display| I[MCP Server Dropdown]
+ *     
+ *     J[Stats Display] -->|Static Data| K[Revenue: $1.25M]
+ *     J -->|Static Data| L[Active Deals: 24]
+ *     J -->|Static Data| M[Customers: 187]
+ *     J -->|Static Data| N[Conversion: 32%]
+ *     
+ *     O[View Sales Portal] -->|Navigate| P[/sales-portal]
+ *     P -->|Load| Q[Sales CRM Interface]
+ *     
+ *     R[Revio Integration] -->|API Call| S[revio-data Edge Function]
+ *     S -->|Fetch| T[Revio API]
+ *     T -->|Return| U[Customer & Revenue Data]
+ *     
+ *     V[Click Deal Card] -->|Navigate| W[Deal Detail Page]
+ *     
+ *     X[Pipeline View] -->|Filter| Y[Deal Stages]
+ *     Y -->|Group by| Z[Stage Categories]
+ *     
+ *     AA[AI Assistant] -->|Invoke| AB[department-assistant Edge Function]
+ *     AB -->|Context: Sales| AC[Sales Insights & Recommendations]
+ *     
+ *     AD[Top Performers] -->|Query| E
+ *     AD -->|Calculate| AE[Sales Metrics by User]
+ *     
+ *     style A fill:#e1f5ff
+ *     style S fill:#fff4e6
+ *     style AB fill:#fff4e6
+ *     style T fill:#ffe6e6
+ *     style E fill:#e6f7ff
+ *     style G fill:#e6f7ff
+ * ```
+ */
+
 const SalesDashboard = () => {
   const navigate = useNavigate();
   const isPreviewMode = useDemoMode();

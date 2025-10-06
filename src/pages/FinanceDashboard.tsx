@@ -24,6 +24,59 @@ import {
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * Finance Dashboard Data Flow
+ * 
+ * ```mermaid
+ * graph TD
+ *     A[Finance User] -->|Visits /dashboard/finance| B[FinanceDashboard Component]
+ *     B -->|useEffect| C[checkAccess & fetchFinancialData]
+ *     C -->|Auth Check| D[supabase.auth.getSession]
+ *     D -->|Get Profile| E[user_profiles Table]
+ *     
+ *     C -->|Query Customers| F[customers Table]
+ *     F -->|Filter: status=active| G[Active Customers]
+ *     
+ *     G -->|Calculate MRR| H[Sum plan_mrr by plan_type]
+ *     H -->|Set State| I[metrics.mrr, revenueByPlan]
+ *     
+ *     G -->|Count| J[metrics.totalCustomers]
+ *     G -->|Count Active Subs| K[metrics.activeSubscriptions]
+ *     
+ *     H -->|Calculate ARPU| L[MRR / Active Customers]
+ *     L -->|Set State| M[metrics.arpu]
+ *     
+ *     N[Previous Month Data] -->|Compare| O[Calculate Growth]
+ *     O -->|Set State| P[metrics.growth]
+ *     
+ *     Q[Churn Calculation] -->|Inactive/Total| R[metrics.churnRate]
+ *     
+ *     B -->|Fetch MCP Servers| S[fetchMcpServers]
+ *     S -->|Query| T[mcp_servers Table]
+ *     S -->|Filter: server_type=finance| U[Finance MCP Servers]
+ *     U -->|Display| V[MCP Dropdown Menu]
+ *     
+ *     W[Revio Integration] -->|Invoke| X[revio-data Edge Function]
+ *     X -->|API Call| Y[Revio API]
+ *     Y -->|Sync| Z[Customer Financial Data]
+ *     Z -->|Update| F
+ *     
+ *     AA[Export Data] -->|Format| AB[CSV/Excel Export]
+ *     
+ *     AC[AI Assistant] -->|Invoke| AD[department-assistant Edge Function]
+ *     AD -->|Context: Finance| AE[Financial Analysis & Forecasts]
+ *     
+ *     AF[Detailed Breakdown] -->|Tooltips| AG[Show Calculations]
+ *     
+ *     style A fill:#e1f5ff
+ *     style X fill:#fff4e6
+ *     style AD fill:#fff4e6
+ *     style Y fill:#ffe6e6
+ *     style F fill:#e6f7ff
+ *     style T fill:#e6f7ff
+ * ```
+ */
+
 interface FinancialMetrics {
   totalCustomers: number;
   activeSubscriptions: number;

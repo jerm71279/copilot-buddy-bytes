@@ -28,6 +28,64 @@ import {
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * SOC Dashboard Data Flow
+ * 
+ * ```mermaid
+ * graph TD
+ *     A[SOC Analyst] -->|Visits /dashboard/soc| B[SOCDashboard Component]
+ *     B -->|useEffect| C[checkAccess & fetchStats]
+ *     C -->|Auth Check| D[supabase.auth.getSession]
+ *     D -->|Get Profile| E[user_profiles Table]
+ *     
+ *     C -->|Parallel Queries| F[fetchSecurityData]
+ *     F -->|Query| G[anomaly_detections Table]
+ *     G -->|Filter: severity=critical| H[Critical Alerts]
+ *     G -->|Filter: status=new| I[Active Threats]
+ *     G -->|Filter: status=resolved| J[Resolved Incidents]
+ *     
+ *     H -->|Set State| K[metrics.criticalAlerts]
+ *     I -->|Set State| L[metrics.activeThreats]
+ *     J -->|Set State| M[metrics.resolvedIncidents]
+ *     
+ *     B -->|Fetch MCP Servers| N[fetchMcpServers]
+ *     N -->|Query| O[mcp_servers Table]
+ *     N -->|Filter: server_type=soc| P[SOC MCP Servers]
+ *     P -->|Display| Q[MCP Dropdown Menu]
+ *     
+ *     R[Real-time Monitoring] -->|Subscribe| S[anomaly_detections Realtime]
+ *     S -->|New Event| T[Update Dashboard]
+ *     
+ *     U[Privileged Access] -->|Navigate| V[/privileged-access-audit]
+ *     V -->|Load| W[audit_logs Table]
+ *     W -->|Filter: compliance_tags=privileged_access| X[Access Logs]
+ *     
+ *     Y[View Incident] -->|Click| Z[Incident Detail Modal]
+ *     Z -->|Display| AA[Full Incident Context]
+ *     
+ *     AB[Threat Intelligence] -->|External API| AC[Threat Feeds]
+ *     AC -->|Enrich| G
+ *     
+ *     AD[SIEM Integration] -->|API| AE[Security Information]
+ *     AE -->|Store| G
+ *     
+ *     AF[AI Assistant] -->|Invoke| AG[department-assistant Edge Function]
+ *     AG -->|Context: SOC| AH[Threat Analysis & Recommendations]
+ *     
+ *     AI[Compliance Score] -->|Calculate| AJ[Based on Framework Requirements]
+ *     
+ *     AK[Response Time] -->|Track| AL[Incident Timestamps]
+ *     
+ *     style A fill:#e1f5ff
+ *     style AG fill:#fff4e6
+ *     style AC fill:#ffe6e6
+ *     style AE fill:#ffe6e6
+ *     style G fill:#e6f7ff
+ *     style O fill:#e6f7ff
+ *     style W fill:#e6f7ff
+ * ```
+ */
+
 interface SecurityMetrics {
   totalIncidents: number;
   criticalAlerts: number;

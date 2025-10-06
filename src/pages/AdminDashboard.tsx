@@ -24,6 +24,49 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * Admin Dashboard Data Flow
+ * 
+ * ```mermaid
+ * graph TD
+ *     A[User] -->|Visits /admin| B[AdminDashboard Component]
+ *     B -->|useEffect| C[checkAdminAccess]
+ *     C -->|Auth Check| D[supabase.auth.getSession]
+ *     
+ *     D -->|Check Admin Role| E[user_roles Table]
+ *     E -->|Query roles| F[roles Table JOIN]
+ *     F -->|Verify Admin/Super Admin| G{Has Admin?}
+ *     
+ *     G -->|No| H[Redirect to /]
+ *     G -->|Yes| I[Get customer_id]
+ *     
+ *     I -->|Query| J[user_profiles Table]
+ *     J -->|Set State| K[userCustomerId]
+ *     
+ *     C -->|Load Customers| L[fetchCustomers]
+ *     L -->|Query| M[customers Table]
+ *     M -->|Return Data| N[setCustomers State]
+ *     
+ *     N -->|Render| O[Customer Table UI]
+ *     O -->|Edit Action| P[Navigate to Customer Detail]
+ *     
+ *     Q[MCP Server Tab] -->|Display| R[MCPServerStatus Component]
+ *     R -->|Query| S[mcp_servers Table]
+ *     
+ *     T[AI MCP Generator] -->|Invoke| U[ai-mcp-generator Edge Function]
+ *     U -->|Generate Config| V[AI Model Processing]
+ *     V -->|Store| S
+ *     
+ *     W[Test Dashboard Tab] -->|Navigate| X[/test-dashboard]
+ *     
+ *     style A fill:#e1f5ff
+ *     style U fill:#fff4e6
+ *     style M fill:#e6f7ff
+ *     style S fill:#e6f7ff
+ *     style G fill:#ffe6e6
+ * ```
+ */
+
 type Customer = {
   id: string;
   company_name: string;

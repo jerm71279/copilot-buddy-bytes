@@ -25,6 +25,45 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+/**
+ * CMDB Dashboard Data Flow
+ * 
+ * ```mermaid
+ * graph TD
+ *     A[User] -->|Visits /cmdb| B[CMDBDashboard Component]
+ *     B -->|useEffect| C[checkAccess & loadCMDBData]
+ *     C -->|Auth Check| D[supabase.auth.getUser]
+ *     
+ *     D -->|Authenticated| E[Query CIs]
+ *     E -->|Filter by Type| F[configuration_items Table]
+ *     E -->|Filter by Status| F
+ *     F -->|Return CIs| G[setCis State]
+ *     
+ *     G -->|Calculate| H[Stats: total, critical, active, synced]
+ *     H -->|Update| I[Stats Cards UI]
+ *     
+ *     J[NinjaOne Sync Button] -->|Invoke| K[ninjaone-sync Edge Function]
+ *     K -->|API Call| L[NinjaOne API]
+ *     L -->|Device Data| M[Transform to CI Format]
+ *     M -->|Upsert| F
+ *     M -->|Reload| E
+ *     
+ *     N[Add CI Button] -->|Navigate| O[/cmdb/add]
+ *     
+ *     G -->|Search Filter| P[filteredCis]
+ *     P -->|Render| Q[CI Cards UI]
+ *     Q -->|Click CI| R[Navigate to /cmdb/:id]
+ *     
+ *     S[Azure Sync] -.->|Future| F
+ *     
+ *     style A fill:#e1f5ff
+ *     style K fill:#fff4e6
+ *     style L fill:#e6ffe6
+ *     style F fill:#e6f7ff
+ *     style Q fill:#f0f0f0
+ * ```
+ */
+
 interface ConfigurationItem {
   id: string;
   ci_name: string;
