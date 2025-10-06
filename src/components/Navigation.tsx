@@ -101,7 +101,8 @@ const Navigation = () => {
             <img 
               src={oberaLogo} 
               alt="OberaConnect Logo" 
-              className="h-20 md:h-24 w-[95%] object-contain"
+              className="h-20 md:h-24 w-[98%] object-contain"
+              style={{ objectPosition: 'center' }}
             />
           </Link>
         </div>
