@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
@@ -17,14 +17,10 @@ interface AuditData {
   records: any[];
 }
 
-const FRAMEWORKS = [
-  { value: "ISO27001", label: "ISO 27001" },
-  { value: "SOC2", label: "SOC 2 Type II" },
-  { value: "HIPAA", label: "HIPAA" },
-  { value: "GDPR", label: "GDPR" },
-  { value: "PCI-DSS", label: "PCI-DSS" },
-  { value: "general", label: "General Compliance" }
-];
+interface Framework {
+  value: string;
+  label: string;
+}
 
 const TIME_RANGES = [
   { value: "24h", label: "Last 24 Hours", hours: 24 },
@@ -35,11 +31,41 @@ const TIME_RANGES = [
 
 export default function ComplianceAuditReports() {
   const navigate = useNavigate();
-  const [selectedFramework, setSelectedFramework] = useState<string>("ISO27001");
+  const [frameworks, setFrameworks] = useState<Framework[]>([]);
+  const [selectedFramework, setSelectedFramework] = useState<string>("");
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>("24h");
   const [isGenerating, setIsGenerating] = useState(false);
   const [auditData, setAuditData] = useState<AuditData[]>([]);
   const [reportGenerated, setReportGenerated] = useState(false);
+
+  useEffect(() => {
+    loadFrameworks();
+  }, []);
+
+  const loadFrameworks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('compliance_frameworks')
+        .select('framework_code, framework_name')
+        .eq('is_active', true)
+        .order('framework_name');
+
+      if (error) throw error;
+
+      const frameworkOptions = data?.map(f => ({
+        value: f.framework_code,
+        label: f.framework_name
+      })) || [];
+
+      setFrameworks(frameworkOptions);
+      if (frameworkOptions.length > 0 && !selectedFramework) {
+        setSelectedFramework(frameworkOptions[0].value);
+      }
+    } catch (error) {
+      console.error('Error loading frameworks:', error);
+      toast.error('Failed to load compliance frameworks');
+    }
+  };
 
   const generateReport = async () => {
     setIsGenerating(true);
@@ -173,7 +199,7 @@ export default function ComplianceAuditReports() {
     }
 
     const timeRange = TIME_RANGES.find(t => t.value === selectedTimeRange);
-    const framework = FRAMEWORKS.find(f => f.value === selectedFramework);
+    const framework = frameworks.find(f => f.value === selectedFramework);
     
     let csvContent = `Compliance Audit Report\n`;
     csvContent += `Framework: ${framework?.label}\n`;
@@ -257,7 +283,7 @@ export default function ComplianceAuditReports() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {FRAMEWORKS.map(framework => (
+                    {frameworks.map(framework => (
                       <SelectItem key={framework.value} value={framework.value}>
                         {framework.label}
                       </SelectItem>
@@ -315,7 +341,7 @@ export default function ComplianceAuditReports() {
               <CardHeader>
                 <CardTitle>Report Summary</CardTitle>
                 <CardDescription>
-                  {FRAMEWORKS.find(f => f.value === selectedFramework)?.label} compliance audit for{' '}
+                  {frameworks.find(f => f.value === selectedFramework)?.label} compliance audit for{' '}
                   {TIME_RANGES.find(t => t.value === selectedTimeRange)?.label.toLowerCase()}
                 </CardDescription>
               </CardHeader>
