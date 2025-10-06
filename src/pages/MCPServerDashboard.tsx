@@ -100,18 +100,20 @@ const MCPServerDashboard = () => {
         />
 
         <Tabs defaultValue="all" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="all">All Servers</TabsTrigger>
-            <TabsTrigger value="compliance">Compliance</TabsTrigger>
-            <TabsTrigger value="executive">Executive</TabsTrigger>
-            <TabsTrigger value="finance">Finance</TabsTrigger>
-            <TabsTrigger value="hr">HR</TabsTrigger>
-            <TabsTrigger value="it">IT</TabsTrigger>
-            <TabsTrigger value="operations">Operations</TabsTrigger>
-            <TabsTrigger value="sales">Sales</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
-            <TabsTrigger value="configure">Configure New</TabsTrigger>
-          </TabsList>
+          <div className="bg-card border-b border-border -mx-4 px-4 mb-4">
+            <TabsList className="w-full justify-start overflow-x-auto flex-nowrap h-auto p-0 bg-transparent border-0">
+              <TabsTrigger value="all" className="whitespace-nowrap shrink-0">All Servers</TabsTrigger>
+              <TabsTrigger value="compliance" className="whitespace-nowrap shrink-0">Compliance</TabsTrigger>
+              <TabsTrigger value="executive" className="whitespace-nowrap shrink-0">Executive</TabsTrigger>
+              <TabsTrigger value="finance" className="whitespace-nowrap shrink-0">Finance</TabsTrigger>
+              <TabsTrigger value="hr" className="whitespace-nowrap shrink-0">HR</TabsTrigger>
+              <TabsTrigger value="it" className="whitespace-nowrap shrink-0">IT</TabsTrigger>
+              <TabsTrigger value="operations" className="whitespace-nowrap shrink-0">Operations</TabsTrigger>
+              <TabsTrigger value="sales" className="whitespace-nowrap shrink-0">Sales</TabsTrigger>
+              <TabsTrigger value="security" className="whitespace-nowrap shrink-0">Security</TabsTrigger>
+              <TabsTrigger value="configure" className="whitespace-nowrap shrink-0">Configure New</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="all" className="space-y-4">
             <MCPServerStatus customerId={userCustomerId} />
