@@ -41,3 +41,6 @@ verify_jwt = true
 
 [functions.change-impact-analyzer]
 verify_jwt = true
+
+[functions.cipp-sync]
+verify_jwt = true

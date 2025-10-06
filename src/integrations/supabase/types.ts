@@ -923,6 +923,279 @@ export type Database = {
           },
         ]
       }
+      cipp_audit_logs: {
+        Row: {
+          action_description: string
+          action_type: string
+          created_at: string
+          customer_id: string
+          details: Json | null
+          id: string
+          performed_by: string | null
+          result: string | null
+          target_resource: string | null
+          tenant_id: string | null
+        }
+        Insert: {
+          action_description: string
+          action_type: string
+          created_at?: string
+          customer_id: string
+          details?: Json | null
+          id?: string
+          performed_by?: string | null
+          result?: string | null
+          target_resource?: string | null
+          tenant_id?: string | null
+        }
+        Update: {
+          action_description?: string
+          action_type?: string
+          created_at?: string
+          customer_id?: string
+          details?: Json | null
+          id?: string
+          performed_by?: string | null
+          result?: string | null
+          target_resource?: string | null
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cipp_audit_logs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cipp_audit_logs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "cipp_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cipp_policies: {
+        Row: {
+          compliance_tags: string[] | null
+          configuration: Json
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          id: string
+          last_applied_at: string | null
+          policy_id: string | null
+          policy_name: string
+          policy_type: string
+          status: string | null
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          compliance_tags?: string[] | null
+          configuration?: Json
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          id?: string
+          last_applied_at?: string | null
+          policy_id?: string | null
+          policy_name: string
+          policy_type: string
+          status?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          compliance_tags?: string[] | null
+          configuration?: Json
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          id?: string
+          last_applied_at?: string | null
+          policy_id?: string | null
+          policy_name?: string
+          policy_type?: string
+          status?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cipp_policies_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cipp_policies_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "cipp_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cipp_security_baselines: {
+        Row: {
+          applied_to_tenants: string[] | null
+          baseline_name: string
+          baseline_type: string
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          settings: Json
+          updated_at: string
+        }
+        Insert: {
+          applied_to_tenants?: string[] | null
+          baseline_name: string
+          baseline_type: string
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          settings?: Json
+          updated_at?: string
+        }
+        Update: {
+          applied_to_tenants?: string[] | null
+          baseline_name?: string
+          baseline_type?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          settings?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cipp_security_baselines_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cipp_tenant_health: {
+        Row: {
+          alerts: Json | null
+          compliance_score: number | null
+          created_at: string
+          health_score: number | null
+          id: string
+          last_checked_at: string
+          recommendations: Json | null
+          security_score: number | null
+          tenant_id: string
+        }
+        Insert: {
+          alerts?: Json | null
+          compliance_score?: number | null
+          created_at?: string
+          health_score?: number | null
+          id?: string
+          last_checked_at?: string
+          recommendations?: Json | null
+          security_score?: number | null
+          tenant_id: string
+        }
+        Update: {
+          alerts?: Json | null
+          compliance_score?: number | null
+          created_at?: string
+          health_score?: number | null
+          id?: string
+          last_checked_at?: string
+          recommendations?: Json | null
+          security_score?: number | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cipp_tenant_health_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "cipp_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cipp_tenants: {
+        Row: {
+          cipp_relationship_id: string | null
+          created_at: string
+          customer_id: string
+          default_domain_name: string
+          display_name: string | null
+          id: string
+          last_sync_at: string | null
+          metadata: Json | null
+          status: string
+          sync_error: string | null
+          sync_status: string | null
+          tenant_id: string
+          tenant_name: string
+          tenant_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          cipp_relationship_id?: string | null
+          created_at?: string
+          customer_id: string
+          default_domain_name: string
+          display_name?: string | null
+          id?: string
+          last_sync_at?: string | null
+          metadata?: Json | null
+          status?: string
+          sync_error?: string | null
+          sync_status?: string | null
+          tenant_id: string
+          tenant_name: string
+          tenant_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cipp_relationship_id?: string | null
+          created_at?: string
+          customer_id?: string
+          default_domain_name?: string
+          display_name?: string | null
+          id?: string
+          last_sync_at?: string | null
+          metadata?: Json | null
+          status?: string
+          sync_error?: string | null
+          sync_status?: string | null
+          tenant_id?: string
+          tenant_name?: string
+          tenant_type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cipp_tenants_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_onboarding_tasks: {
         Row: {
           actual_hours: number | null

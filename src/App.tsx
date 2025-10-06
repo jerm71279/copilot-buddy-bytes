@@ -54,6 +54,7 @@ import SystemValidationDashboard from "./pages/SystemValidationDashboard";
 import WorkflowBuilder from "./pages/WorkflowBuilder";
 import MCPServerDashboard from "./pages/MCPServerDashboard";
 import SalesPortal from "./pages/SalesPortal";
+import CIPPDashboard from "./pages/CIPPDashboard";
 
 const queryClient = new QueryClient();
 
@@ -324,6 +325,13 @@ const App = () => (
           <Route path="/mcp-servers" element={
             <ProtectedRoute>
               <MCPServerDashboard />
+            </ProtectedRoute>
+          } />
+          
+          {/* CIPP Dashboard - Protected */}
+          <Route path="/cipp" element={
+            <ProtectedRoute>
+              <CIPPDashboard />
             </ProtectedRoute>
           } />
           
