@@ -163,25 +163,25 @@ const Navigation = () => {
                   >
                     Onboarding
                   </Link>
-              <Link 
-                to="/compliance"
-                className="text-sm font-medium hover:text-accent transition-colors"
-              >
-                Compliance
-              </Link>
-              <Link 
-                to="/change-management"
-                className="text-sm font-medium hover:text-accent transition-colors"
-              >
-                Change Management
-              </Link>
-              <Link 
-                to="/workflows"
-                className="text-sm font-medium hover:text-accent transition-colors"
-              >
-                Workflows
-              </Link>
                   <Link 
+                    to="/compliance"
+                    className="text-sm font-medium hover:text-accent transition-colors"
+                  >
+                    Compliance
+                  </Link>
+                  <Link 
+                    to="/change-management"
+                    className="text-sm font-medium hover:text-accent transition-colors"
+                  >
+                    Change Management
+                  </Link>
+                  <Link 
+                    to="/workflows"
+                    className="text-sm font-medium hover:text-accent transition-colors"
+                  >
+                    Workflows
+                  </Link>
+                  <Link
                     to="/ninjaone"
                     className="text-sm font-medium hover:text-accent transition-colors"
                   >
@@ -297,28 +297,28 @@ const Navigation = () => {
                   >
                     Onboarding
                   </Link>
-              <Link 
-                to="/compliance"
-                className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Compliance
-              </Link>
-              <Link 
-                to="/change-management"
-                className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Change Management
-              </Link>
-              <Link 
-                to="/workflows"
-                className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Workflows
-              </Link>
                   <Link 
+                    to="/compliance"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Compliance
+                  </Link>
+                  <Link 
+                    to="/change-management"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Change Management
+                  </Link>
+                  <Link 
+                    to="/workflows"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Workflows
+                  </Link>
+                  <Link
                     to="/ninjaone"
                     className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
                     onClick={() => setIsMenuOpen(false)}
