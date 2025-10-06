@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { LogOut, TrendingUp, Workflow, AlertTriangle, Lightbulb, ChevronDown, FileText, Settings, GitBranch } from "lucide-react";
+import { LogOut, TrendingUp, Workflow, AlertTriangle, Lightbulb, ChevronDown, FileText, Settings, GitBranch, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import { WorkflowBuilder } from "@/components/WorkflowBuilder";
@@ -157,6 +157,17 @@ const OperationsDashboard = () => {
                 <Workflow className="h-4 w-4 mr-2" />
                 Execution History
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => {
+                const assistantTab = document.querySelector('[value="assistant"]') as HTMLElement;
+                assistantTab?.click();
+                setTimeout(() => {
+                  document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}>
+                <Server className="h-4 w-4 mr-2" />
+                MCP Servers
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -303,7 +314,9 @@ const OperationsDashboard = () => {
           </TabsContent>
 
           <TabsContent value="assistant" className="space-y-4">
-            <MCPServerStatus filterByServerType="operations" />
+            <div id="mcp-section">
+              <MCPServerStatus filterByServerType="operations" />
+            </div>
             
             <DepartmentAIAssistant 
               department="operations" 

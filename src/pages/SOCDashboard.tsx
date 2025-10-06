@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   LogOut, Shield, AlertTriangle, Activity, Eye, Lock, 
   TrendingUp, Database, Users, FileWarning, CheckCircle2,
-  Clock, Zap, ChevronDown, FileText, Search
+  Clock, Zap, ChevronDown, FileText, Search, Server
 } from "lucide-react";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
@@ -266,6 +266,11 @@ const SOCDashboard = () => {
               <DropdownMenuItem onClick={() => navigate('/workflow/threat-analysis?department=security')}>
                 <Search className="h-4 w-4 mr-2" />
                 Threat Analysis
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Server className="h-4 w-4 mr-2" />
+                MCP Servers
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -537,6 +542,18 @@ const SOCDashboard = () => {
         </Tabs>
 
         {/* Quick Actions */}
+        <div id="mcp-section">
+          <Card>
+            <CardHeader>
+              <CardTitle>MCP Security Servers</CardTitle>
+              <CardDescription>AI-powered security monitoring servers</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Security MCP servers integration coming soon...</p>
+            </CardContent>
+          </Card>
+        </div>
+
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
