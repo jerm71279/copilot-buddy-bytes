@@ -1,5 +1,8 @@
 project_id = "olrpexessehcijdvogxo"
 
+[functions.ninjaone-sync]
+verify_jwt = true
+
 [functions.mcp-server]
 verify_jwt = false
 

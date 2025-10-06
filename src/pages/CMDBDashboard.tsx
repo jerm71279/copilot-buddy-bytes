@@ -106,7 +106,29 @@ const CMDBDashboard = () => {
   };
 
   const syncNinjaOneDevices = async () => {
-    toast.info("NinjaOne sync starting... (Integration coming soon)");
+    try {
+      setLoading(true);
+      toast.info('Starting NinjaOne sync...');
+      
+      const { data, error } = await supabase.functions.invoke('ninjaone-sync');
+      
+      if (error) throw error;
+      
+      if (data.success) {
+        toast.success(data.message);
+        console.log('Sync stats:', data.stats);
+        
+        // Reload the CMDB data after sync
+        await loadCMDBData();
+      } else {
+        toast.error(data.error || 'Sync failed');
+      }
+    } catch (error) {
+      console.error('NinjaOne sync error:', error);
+      toast.error('Failed to sync with NinjaOne');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getTypeIcon = (type: string) => {
