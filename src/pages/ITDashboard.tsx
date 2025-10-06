@@ -17,6 +17,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
 const ITDashboard = () => {
@@ -30,10 +33,24 @@ const ITDashboard = () => {
     mcpServers: 0,
     anomalies: 0
   });
+  const [mcpServersList, setMcpServersList] = useState<any[]>([]);
+  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
 
   useEffect(() => {
     checkAccess();
+    fetchMcpServersList();
   }, []);
+
+  const fetchMcpServersList = async () => {
+    const { data } = await supabase
+      .from("mcp_servers")
+      .select("id, server_name, server_type")
+      .eq("server_type", "it")
+      .eq("status", "active")
+      .order("server_name");
+    
+    if (data) setMcpServersList(data);
+  };
 
   const checkAccess = async () => {
     if (isPreviewMode) {
@@ -157,10 +174,26 @@ const ITDashboard = () => {
                 Integrations
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' })}>
-                <Server className="h-4 w-4 mr-2" />
-                MCP Servers
-              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Server className="h-4 w-4 mr-2" />
+                  MCP Servers
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="bg-background">
+                  {mcpServersList.length === 0 ? (
+                    <DropdownMenuItem disabled>No servers available</DropdownMenuItem>
+                  ) : (
+                    mcpServersList.map((server) => (
+                      <DropdownMenuItem
+                        key={server.id}
+                        onClick={() => setSelectedServerId(server.id)}
+                      >
+                        {server.server_name}
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -283,49 +316,72 @@ const ITDashboard = () => {
           </Card>
         </div>
 
-        <div id="mcp-section">
-          <MCPServerStatus filterByServerType="it" />
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>System Integrations</CardTitle>
-            <CardDescription>Connected systems and their status</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Zap className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Workday HCM</p>
-                    <p className="text-sm text-muted-foreground">HR System</p>
-                  </div>
-                </div>
-                <Badge>Active</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Server className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Salesforce</p>
-                    <p className="text-sm text-muted-foreground">CRM</p>
-                  </div>
-                </div>
-                <Badge>Active</Badge>
-              </div>
+        {selectedServerId ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>MCP Server Details</CardTitle>
+              <CardDescription>
+                {mcpServersList.find(s => s.id === selectedServerId)?.server_name}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MCPServerStatus customerId={userProfile?.customer_id} />
+              <Button 
+                variant="outline" 
+                className="mt-4"
+                onClick={() => setSelectedServerId(null)}
+              >
+                Back to All Servers
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <div id="mcp-section">
+              <MCPServerStatus filterByServerType="it" />
             </div>
-          </CardContent>
-        </Card>
 
-        <DepartmentAIAssistant 
-          department="it" 
-          departmentLabel="IT & Security" 
-        />
+            <Card>
+              <CardHeader>
+                <CardTitle>System Integrations</CardTitle>
+                <CardDescription>Connected systems and their status</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Zap className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Workday HCM</p>
+                        <p className="text-sm text-muted-foreground">HR System</p>
+                      </div>
+                    </div>
+                    <Badge>Active</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Server className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Salesforce</p>
+                        <p className="text-sm text-muted-foreground">CRM</p>
+                      </div>
+                    </div>
+                    <Badge>Active</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <DepartmentAIAssistant 
+              department="it" 
+              departmentLabel="IT & Security" 
+            />
+          </>
+        )}
       </div>
     </div>
   );

@@ -19,6 +19,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
 interface FinancialMetrics {
@@ -51,6 +54,8 @@ const FinanceDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [customers, setCustomers] = useState<any[]>([]);
+  const [mcpServers, setMcpServers] = useState<any[]>([]);
+  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
   const [stats, setStats] = useState<FinancialMetrics>({
     totalCustomers: 0,
     activeSubscriptions: 0,
@@ -77,7 +82,19 @@ const FinanceDashboard = () => {
 
   useEffect(() => {
     checkAccess();
+    fetchMcpServers();
   }, []);
+
+  const fetchMcpServers = async () => {
+    const { data } = await supabase
+      .from("mcp_servers")
+      .select("id, server_name, server_type")
+      .eq("server_type", "finance")
+      .eq("status", "active")
+      .order("server_name");
+    
+    if (data) setMcpServers(data);
+  };
 
   const checkAccess = async () => {
     if (isPreviewMode) {
@@ -291,10 +308,26 @@ Churn rate represents the percentage of customers who have cancelled or become i
                 Subscriptions
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' })}>
-                <Server className="h-4 w-4 mr-2" />
-                MCP Servers
-              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Server className="h-4 w-4 mr-2" />
+                  MCP Servers
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="bg-background">
+                  {mcpServers.length === 0 ? (
+                    <DropdownMenuItem disabled>No servers available</DropdownMenuItem>
+                  ) : (
+                    mcpServers.map((server) => (
+                      <DropdownMenuItem
+                        key={server.id}
+                        onClick={() => setSelectedServerId(server.id)}
+                      >
+                        {server.server_name}
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -516,14 +549,37 @@ Churn rate represents the percentage of customers who have cancelled or become i
           </CardContent>
         </Card>
 
-        <div id="mcp-section">
-          <MCPServerStatus filterByServerType="finance" />
-        </div>
+        {selectedServerId ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>MCP Server Details</CardTitle>
+              <CardDescription>
+                {mcpServers.find(s => s.id === selectedServerId)?.server_name}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MCPServerStatus customerId={userProfile?.customer_id} />
+              <Button 
+                variant="outline" 
+                className="mt-4"
+                onClick={() => setSelectedServerId(null)}
+              >
+                Back to All Servers
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <div id="mcp-section">
+              <MCPServerStatus filterByServerType="finance" />
+            </div>
 
-        <DepartmentAIAssistant 
-          department="finance" 
-          departmentLabel="Finance" 
-        />
+            <DepartmentAIAssistant 
+              department="finance" 
+              departmentLabel="Finance" 
+            />
+          </>
+        )}
       </div>
     </div>
   );

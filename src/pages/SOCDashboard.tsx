@@ -14,6 +14,8 @@ import {
 import { useDemoMode } from "@/hooks/useDemoMode";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { toast } from "sonner";
+import MCPServerStatus from "@/components/MCPServerStatus";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +23,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
 interface SecurityMetrics {
@@ -61,10 +66,24 @@ const SOCDashboard = () => {
   });
   const [incidents, setIncidents] = useState<SecurityIncident[]>([]);
   const [anomalies, setAnomalies] = useState<any[]>([]);
+  const [mcpServers, setMcpServers] = useState<any[]>([]);
+  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
 
   useEffect(() => {
     checkAccess();
+    fetchMcpServers();
   }, []);
+
+  const fetchMcpServers = async () => {
+    const { data } = await supabase
+      .from("mcp_servers")
+      .select("id, server_name, server_type")
+      .eq("server_type", "security")
+      .eq("status", "active")
+      .order("server_name");
+    
+    if (data) setMcpServers(data);
+  };
 
   const checkAccess = async () => {
     if (isPreviewMode) {
@@ -269,10 +288,26 @@ const SOCDashboard = () => {
                 Threat Analysis
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' })}>
-                <Server className="h-4 w-4 mr-2" />
-                MCP Servers
-              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Server className="h-4 w-4 mr-2" />
+                  MCP Servers
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="bg-background">
+                  {mcpServers.length === 0 ? (
+                    <DropdownMenuItem disabled>No servers available</DropdownMenuItem>
+                  ) : (
+                    mcpServers.map((server) => (
+                      <DropdownMenuItem
+                        key={server.id}
+                        onClick={() => setSelectedServerId(server.id)}
+                      >
+                        {server.server_name}
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -544,17 +579,45 @@ const SOCDashboard = () => {
         </Tabs>
 
         {/* Quick Actions */}
-        <div id="mcp-section">
+        {selectedServerId ? (
           <Card>
             <CardHeader>
-              <CardTitle>MCP Security Servers</CardTitle>
-              <CardDescription>AI-powered security monitoring servers</CardDescription>
+              <CardTitle>MCP Server Details</CardTitle>
+              <CardDescription>
+                {mcpServers.find(s => s.id === selectedServerId)?.server_name}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Security MCP servers integration coming soon...</p>
+              <MCPServerStatus customerId={userProfile?.customer_id} />
+              <Button 
+                variant="outline" 
+                className="mt-4"
+                onClick={() => setSelectedServerId(null)}
+              >
+                Back to All Servers
+              </Button>
             </CardContent>
           </Card>
-        </div>
+        ) : (
+          <>
+            <div id="mcp-section">
+              <Card>
+                <CardHeader>
+                  <CardTitle>MCP Security Servers</CardTitle>
+                  <CardDescription>AI-powered security monitoring servers</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">Security MCP servers integration coming soon...</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <DepartmentAIAssistant 
+              department="security" 
+              departmentLabel="Security Operations" 
+            />
+          </>
+        )}
 
         <Card>
           <CardHeader>

@@ -22,6 +22,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
 const OperationsDashboard = () => {
@@ -35,10 +38,24 @@ const OperationsDashboard = () => {
     efficiency: 87,
     bottlenecks: 3
   });
+  const [mcpServers, setMcpServers] = useState<any[]>([]);
+  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
 
   useEffect(() => {
     checkAccess();
+    fetchMcpServers();
   }, []);
+
+  const fetchMcpServers = async () => {
+    const { data } = await supabase
+      .from("mcp_servers")
+      .select("id, server_name, server_type")
+      .eq("server_type", "operations")
+      .eq("status", "active")
+      .order("server_name");
+    
+    if (data) setMcpServers(data);
+  };
 
   const checkAccess = async () => {
     if (isPreviewMode) {
@@ -159,16 +176,30 @@ const OperationsDashboard = () => {
                 Execution History
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => {
-                const assistantTab = document.querySelector('[value="assistant"]') as HTMLElement;
-                assistantTab?.click();
-                setTimeout(() => {
-                  document.getElementById('mcp-section')?.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-              }}>
-                <Server className="h-4 w-4 mr-2" />
-                MCP Servers
-              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Server className="h-4 w-4 mr-2" />
+                  MCP Servers
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="bg-background">
+                  {mcpServers.length === 0 ? (
+                    <DropdownMenuItem disabled>No servers available</DropdownMenuItem>
+                  ) : (
+                    mcpServers.map((server) => (
+                      <DropdownMenuItem
+                        key={server.id}
+                        onClick={() => {
+                          setSelectedServerId(server.id);
+                          const assistantTab = document.querySelector('[value="assistant"]') as HTMLElement;
+                          assistantTab?.click();
+                        }}
+                      >
+                        {server.server_name}
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -316,14 +347,34 @@ const OperationsDashboard = () => {
           </TabsContent>
 
           <TabsContent value="assistant" className="space-y-4">
-            <div id="mcp-section">
-              <MCPServerStatus filterByServerType="operations" />
-            </div>
-            
-            <DepartmentAIAssistant 
-              department="operations" 
-              departmentLabel="Operations" 
-            />
+            {selectedServerId ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>MCP Server Details</CardTitle>
+                  <CardDescription>
+                    {mcpServers.find(s => s.id === selectedServerId)?.server_name}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <MCPServerStatus customerId={userProfile?.customer_id || "demo-customer"} />
+                  <Button 
+                    variant="outline" 
+                    className="mt-4"
+                    onClick={() => setSelectedServerId(null)}
+                  >
+                    Back to All Servers
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                <MCPServerStatus filterByServerType="operations" />
+                <DepartmentAIAssistant 
+                  department="operations" 
+                  departmentLabel="Operations" 
+                />
+              </>
+            )}
           </TabsContent>
         </Tabs>
       </div>
