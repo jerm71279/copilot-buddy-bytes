@@ -53,6 +53,7 @@ import SystemValidationDashboard from "./pages/SystemValidationDashboard";
 
 import WorkflowBuilder from "./pages/WorkflowBuilder";
 import MCPServerDashboard from "./pages/MCPServerDashboard";
+import SalesPortal from "./pages/SalesPortal";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,13 @@ const App = () => (
           <Route path="/analytics" element={
             <ProtectedRoute>
               <AnalyticsPortal />
+            </ProtectedRoute>
+          } />
+          
+          {/* Sales Portal - Protected but no admin required */}
+          <Route path="/sales-portal" element={
+            <ProtectedRoute>
+              <SalesPortal />
             </ProtectedRoute>
           } />
           

@@ -120,6 +120,7 @@ const SalesDashboard = () => {
           dashboards={[
             { name: "Admin Dashboard", path: "/admin" },
             { name: "Employee Portal", path: "/portal" },
+            { name: "Sales Portal", path: "/sales-portal" },
             { name: "Analytics Portal", path: "/analytics" },
             { name: "Compliance Portal", path: "/compliance" },
             { name: "Executive Dashboard", path: "/dashboard/executive" },
