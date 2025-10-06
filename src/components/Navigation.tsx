@@ -91,23 +91,28 @@ const Navigation = () => {
   return (
     <>
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-24">
-          {/* Logo */}
-          <Link 
-            to="/"
-            className="flex items-center hover:opacity-80 transition-opacity"
-          >
-            <img 
-              src={oberaLogo} 
-              alt="OberaConnect Logo" 
-              className="h-16 md:h-20 w-auto"
-            />
-          </Link>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border">
+        {/* Logo Banner */}
+        <div className="w-full bg-gradient-to-r from-background via-accent/5 to-background border-b border-border/50">
+          <div className="container mx-auto px-4 py-3">
+            <Link 
+              to="/"
+              className="flex items-center justify-center hover:opacity-90 transition-opacity"
+            >
+              <img 
+                src={oberaLogo} 
+                alt="OberaConnect Logo" 
+                className="h-14 md:h-16 w-auto max-w-full"
+              />
+            </Link>
+          </div>
+        </div>
 
+        {/* Navigation Menu */}
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-14">
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center justify-center flex-1 gap-6">
             {isLoggedIn && (
               <Button
                 variant="outline"
@@ -189,7 +194,7 @@ const Navigation = () => {
           </div>
 
           {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-3 ml-auto">
             {isLoggedIn ? (
               <>
                 <Link to="/portal">
@@ -243,7 +248,7 @@ const Navigation = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 hover:bg-accent/10 rounded-lg transition-colors"
+            className="md:hidden p-2 hover:bg-accent/10 rounded-lg transition-colors ml-auto"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <Menu className="h-6 w-6" />
@@ -252,7 +257,7 @@ const Navigation = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border">
+          <div className="md:hidden py-4 border-t border-border px-4">
             <div className="flex flex-col gap-3">
               <button 
                 onClick={() => scrollToSection('features')}
