@@ -55,6 +55,7 @@ import WorkflowBuilder from "./pages/WorkflowBuilder";
 import MCPServerDashboard from "./pages/MCPServerDashboard";
 import SalesPortal from "./pages/SalesPortal";
 import CIPPDashboard from "./pages/CIPPDashboard";
+import DataFlowPortal from "./pages/DataFlowPortal";
 
 const queryClient = new QueryClient();
 
@@ -332,6 +333,13 @@ const App = () => (
           <Route path="/cipp" element={
             <ProtectedRoute>
               <CIPPDashboard />
+            </ProtectedRoute>
+          } />
+          
+          {/* Data Flow Portal - Protected */}
+          <Route path="/data-flows" element={
+            <ProtectedRoute>
+              <DataFlowPortal />
             </ProtectedRoute>
           } />
           

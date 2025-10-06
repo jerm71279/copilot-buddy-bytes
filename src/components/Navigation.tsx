@@ -187,6 +187,12 @@ const Navigation = () => {
                   >
                     Monitoring
                   </Link>
+                  <Link
+                    to="/data-flows"
+                    className="text-sm font-medium hover:text-accent transition-colors"
+                  >
+                    Data Flows
+                  </Link>
                 </>
               )}
               <button
@@ -324,6 +330,13 @@ const Navigation = () => {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Monitoring
+                  </Link>
+                  <Link
+                    to="/data-flows"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Data Flows
                   </Link>
                 </>
               )}
