@@ -40,6 +40,8 @@ import WorkflowExecutionDetail from "./pages/WorkflowExecutionDetail";
 import NinjaOneIntegration from "./pages/NinjaOneIntegration";
 import PrivilegedAccessAudit from "./pages/PrivilegedAccessAudit";
 import CMDBDashboard from "./pages/CMDBDashboard";
+import CMDBItemDetail from "./pages/CMDBItemDetail";
+import CMDBAddItem from "./pages/CMDBAddItem";
 import ChangeManagement from "./pages/ChangeManagement";
 import TestWorkflowEvidence from "./pages/TestWorkflowEvidence";
 import ComprehensiveTestDashboard from "./pages/ComprehensiveTestDashboard";
@@ -206,6 +208,16 @@ const App = () => (
           <Route path="/cmdb" element={
             <ProtectedRoute>
               <CMDBDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/cmdb/add" element={
+            <ProtectedRoute>
+              <CMDBAddItem />
+            </ProtectedRoute>
+          } />
+          <Route path="/cmdb/:id" element={
+            <ProtectedRoute>
+              <CMDBItemDetail />
             </ProtectedRoute>
           } />
           <Route path="/change-management" element={
