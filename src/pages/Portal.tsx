@@ -10,6 +10,7 @@ import ExternalSystemsBar from "@/components/ExternalSystemsBar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Microsoft365Integration } from "@/components/Microsoft365Integration";
 import { AppLauncher } from "@/components/AppLauncher";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 const Portal = () => {
   const navigate = useNavigate();
@@ -162,6 +163,22 @@ const Portal = () => {
       <ExternalSystemsBar />
 
       <div className="container mx-auto px-4 py-8">
+        <DashboardNavigation 
+          dashboards={[
+            { name: "Admin Dashboard", path: "/admin" },
+            { name: "Employee Portal", path: "/portal" },
+            { name: "Analytics Portal", path: "/analytics" },
+            { name: "Compliance Portal", path: "/compliance" },
+            { name: "Change Management", path: "/change-management" },
+            { name: "Executive Dashboard", path: "/dashboard/executive" },
+            { name: "Finance Dashboard", path: "/dashboard/finance" },
+            { name: "HR Dashboard", path: "/dashboard/hr" },
+            { name: "IT Dashboard", path: "/dashboard/it" },
+            { name: "Operations Dashboard", path: "/dashboard/operations" },
+            { name: "Sales Dashboard", path: "/dashboard/sales" },
+            { name: "SOC Dashboard", path: "/dashboard/soc" },
+          ]}
+        />
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="mb-8">
             <TabsTrigger value="overview">Overview</TabsTrigger>
