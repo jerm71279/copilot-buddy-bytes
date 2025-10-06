@@ -9,10 +9,6 @@ import { toast } from "sonner";
 import { LogOut, TrendingUp, Workflow, AlertTriangle, Lightbulb, ChevronDown, FileText, Settings, GitBranch, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
-import { WorkflowBuilder } from "@/components/WorkflowBuilder";
-import { WorkflowExecutionHistory } from "@/components/WorkflowExecutionHistory";
-import { WorkflowTriggerManager } from "@/components/WorkflowTriggerManager";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import {
@@ -325,33 +321,10 @@ const OperationsDashboard = () => {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="workflows" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="workflows">Workflow Builder</TabsTrigger>
-            <TabsTrigger value="triggers">Triggers</TabsTrigger>
-            <TabsTrigger value="history">Execution History</TabsTrigger>
-            <TabsTrigger value="assistant">AI Assistant</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="workflows" className="space-y-4">
-            <WorkflowBuilder customerId={userProfile?.customer_id || "demo-customer"} />
-          </TabsContent>
-
-          <TabsContent value="triggers" className="space-y-4">
-            <WorkflowTriggerManager customerId={userProfile?.customer_id || "demo-customer"} />
-          </TabsContent>
-
-          <TabsContent value="history" className="space-y-4">
-            <WorkflowExecutionHistory customerId={userProfile?.customer_id || "demo-customer"} />
-          </TabsContent>
-
-          <TabsContent value="assistant" className="space-y-4">
-            <DepartmentAIAssistant 
-              department="operations" 
-              departmentLabel="Operations" 
-            />
-          </TabsContent>
-        </Tabs>
+        <DepartmentAIAssistant 
+          department="operations" 
+          departmentLabel="Operations" 
+        />
       </div>
     </div>
   );
