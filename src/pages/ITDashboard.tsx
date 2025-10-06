@@ -281,43 +281,20 @@ const ITDashboard = () => {
           </Card>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Security Operations</CardTitle>
-              <CardDescription>Access advanced security monitoring and threat detection</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link to="/dashboard/soc">
-                <Button className="w-full" variant="outline" size="lg">
-                  <Shield className="h-5 w-5 mr-2" />
-                  Open Security Operations Center (SOC)
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>CMDB & Change Management</CardTitle>
-              <CardDescription>Configuration management and change control</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Link to="/cmdb">
-                <Button className="w-full" variant="outline">
-                  <Server className="h-4 w-4 mr-2" />
-                  CMDB Dashboard
-                </Button>
-              </Link>
-              <Link to="/change-management">
-                <Button className="w-full" variant="outline">
-                  <Activity className="h-4 w-4 mr-2" />
-                  Change Management
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Security Operations</CardTitle>
+            <CardDescription>Access advanced security monitoring and threat detection</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to="/dashboard/soc">
+              <Button className="w-full" variant="outline" size="lg">
+                <Shield className="h-5 w-5 mr-2" />
+                Open Security Operations Center (SOC)
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
 
         <DepartmentAIAssistant 
           department="it" 
