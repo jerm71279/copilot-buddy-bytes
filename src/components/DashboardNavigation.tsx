@@ -42,54 +42,49 @@ const DashboardNavigation = ({ title, showTitle = false, dashboardPath = '/porta
   };
 
   return (
-    <div className="flex items-center gap-3 mb-6">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleBack}
-        className="gap-2"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
-      </Button>
-      {dashboards && dashboards.length > 0 ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              <LayoutDashboard className="h-4 w-4" />
-              Dashboards
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-            {dashboards.map((dashboard) => (
-              <DropdownMenuItem
-                key={dashboard.path}
-                onClick={() => navigate(dashboard.path)}
-                className="cursor-pointer"
-              >
-                {dashboard.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : (
+    <div className="mb-6">
+      <div className="flex items-center gap-3 mb-3">
         <Button
           variant="outline"
           size="sm"
-          onClick={handleDashboards}
+          onClick={handleBack}
           className="gap-2"
         >
-          <LayoutDashboard className="h-4 w-4" />
-          Dashboards
+          <ArrowLeft className="h-4 w-4" />
+          Back
         </Button>
-      )}
-      {showTitle && title && (
-        <h1 className="text-2xl font-bold ml-4">{title}</h1>
+        {!dashboards && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDashboards}
+            className="gap-2"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Dashboards
+          </Button>
+        )}
+        {showTitle && title && (
+          <h1 className="text-2xl font-bold ml-4">{title}</h1>
+        )}
+      </div>
+      
+      {dashboards && dashboards.length > 0 && (
+        <div className="bg-card border-b border-border -mx-4 px-4">
+          <div className="flex gap-3 py-3 overflow-x-auto">
+            {dashboards.map((dashboard) => (
+              <Button
+                key={dashboard.path}
+                variant={location.pathname === dashboard.path ? "default" : "outline"}
+                size="sm"
+                onClick={() => navigate(dashboard.path)}
+                className="whitespace-nowrap shrink-0"
+              >
+                {dashboard.name}
+              </Button>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,6 +1,13 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const frameworks = [
   {
@@ -34,6 +41,8 @@ const frameworks = [
 ];
 
 const Frameworks = () => {
+  const [openFramework, setOpenFramework] = useState<number | null>(null);
+
   return (
     <section className="py-24 bg-secondary/30">
       <div className="container mx-auto px-4">
@@ -47,30 +56,81 @@ const Frameworks = () => {
           </p>
         </div>
 
-        {/* Frameworks Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        {/* Frameworks List */}
+        <div className="space-y-4 mb-12">
           {frameworks.map((framework, index) => (
-            <Card key={index} className="border-border hover:shadow-elevated transition-all duration-300">
-              <CardHeader>
-                <div className="flex items-start justify-between mb-3">
-                  <div className={`w-3 h-3 rounded-full ${framework.color}`} />
-                  <Badge variant="outline" className="bg-success/10 text-success border-success/20">
-                    <CheckCircle2 className="h-3 w-3 mr-1" />
-                    {framework.status}
-                  </Badge>
-                </div>
-                <CardTitle className="text-xl">{framework.name}</CardTitle>
-                <CardDescription>{framework.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-accent mb-1">
-                  {framework.clauses}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Mapped Clauses
-                </div>
-              </CardContent>
-            </Card>
+            <Collapsible
+              key={index}
+              open={openFramework === index}
+              onOpenChange={(isOpen) => setOpenFramework(isOpen ? index : null)}
+            >
+              <Card className="border-border hover:shadow-elevated transition-all duration-300">
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className={`w-3 h-3 rounded-full ${framework.color}`} />
+                        <div>
+                          <CardTitle className="text-xl">{framework.name}</CardTitle>
+                          <CardDescription>{framework.description}</CardDescription>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          {framework.status}
+                        </Badge>
+                        <Button variant="ghost" size="sm">
+                          {openFramework === index ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent className="pt-0">
+                    <div className="bg-muted/50 rounded-lg p-6 space-y-4">
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div>
+                          <div className="text-3xl font-bold text-accent mb-1">
+                            {framework.clauses}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Mapped Clauses
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-3xl font-bold text-primary mb-1">
+                            100%
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Coverage
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-3xl font-bold text-success mb-1">
+                            Active
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Status
+                          </div>
+                        </div>
+                      </div>
+                      <div className="pt-4 border-t border-border">
+                        <p className="text-sm text-muted-foreground">
+                          All controls and requirements are mapped to your operational workflows, 
+                          ensuring continuous compliance monitoring and automated evidence collection.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
           ))}
         </div>
 
