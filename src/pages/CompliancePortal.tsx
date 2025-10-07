@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, FileCheck, AlertTriangle, TrendingUp, Plus } from "lucide-react";
+import { Shield, FileCheck, AlertTriangle, TrendingUp, Plus, ArrowLeft } from "lucide-react";
 
 interface Framework {
   id: string;
@@ -114,41 +114,29 @@ export default function CompliancePortal() {
       
       <main className="container mx-auto px-4 pt-28 pb-8">
         
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Compliance Management</h1>
-            <p className="text-muted-foreground">Track compliance frameworks and evidence collection</p>
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={() => navigate('/compliance/audit-reports')}>
-              <FileCheck className="mr-2 h-4 w-4" />
-              Generate Audit Report
-            </Button>
-            <Button onClick={() => navigate('/compliance/evidence/upload')} variant="outline">
-              <Plus className="mr-2 h-4 w-4" />
-              Upload Evidence
-            </Button>
-          </div>
+        <div className="mb-6">
+          <h1 className="text-4xl font-bold mb-2">Compliance Management</h1>
+          <p className="text-muted-foreground">Track compliance frameworks and evidence collection</p>
         </div>
 
-        <div className="mt-2">
-          <DashboardNavigation 
-            title="Compliance Management"
-            dashboards={[
-              { name: "Admin Dashboard", path: "/admin" },
-              { name: "Employee Portal", path: "/portal" },
-              { name: "Analytics Portal", path: "/analytics" },
-              { name: "Compliance Portal", path: "/compliance" },
-              { name: "Change Management", path: "/change-management" },
-              { name: "Executive Dashboard", path: "/dashboard/executive" },
-              { name: "Finance Dashboard", path: "/dashboard/finance" },
-              { name: "HR Dashboard", path: "/dashboard/hr" },
-              { name: "IT Dashboard", path: "/dashboard/it" },
-              { name: "Operations Dashboard", path: "/dashboard/operations" },
-              { name: "Sales Dashboard", path: "/dashboard/sales" },
-              { name: "SOC Dashboard", path: "/dashboard/soc" },
-            ]}
-          />
+        <div className="flex items-center gap-3 mb-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          <Button size="sm" onClick={() => navigate('/compliance/audit-reports')}>
+            <FileCheck className="mr-2 h-4 w-4" />
+            Generate Audit Report
+          </Button>
+          <Button size="sm" onClick={() => navigate('/compliance/evidence/upload')} variant="outline">
+            <Plus className="mr-2 h-4 w-4" />
+            Upload Evidence
+          </Button>
         </div>
 
         <Tabs defaultValue="frameworks" className="space-y-4">
