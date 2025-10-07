@@ -25,12 +25,13 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Search across multiple tables
-    const [workflows, compliance, cmdb, knowledge, changeRecords] = await Promise.all([
+    const [workflows, compliance, cmdb, knowledge, changeRecords, anomalies] = await Promise.all([
       supabase.from("workflow_executions").select("*").ilike("workflow_name", `%${query}%`).limit(5),
       supabase.from("compliance_audit_reports").select("*").ilike("report_title", `%${query}%`).limit(5),
       supabase.from("cmdb_items").select("*").or(`name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
       supabase.from("knowledge_articles").select("*").or(`title.ilike.%${query}%,content.ilike.%${query}%`).limit(5),
       supabase.from("change_requests").select("*").or(`title.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
+      supabase.from("anomaly_detections").select("*").or(`description.ilike.%${query}%,system_name.ilike.%${query}%,anomaly_type.ilike.%${query}%`).limit(5),
     ]);
 
     // Use AI to rank and contextualize results
@@ -42,6 +43,7 @@ serve(async (req) => {
       ...(cmdb.data || []).map(i => ({ type: "cmdb", data: i, title: i.name, url: `/cmdb/items/${i.id}` })),
       ...(knowledge.data || []).map(k => ({ type: "knowledge", data: k, title: k.title, url: `/knowledge/${k.id}` })),
       ...(changeRecords.data || []).map(cr => ({ type: "change", data: cr, title: cr.title, url: `/change-management/${cr.id}` })),
+      ...(anomalies.data || []).map(a => ({ type: "anomaly", data: a, title: `${a.anomaly_type} - ${a.system_name}`, url: `/dashboard/soc` })),
     ];
 
     if (LOVABLE_API_KEY && allResults.length > 0) {
