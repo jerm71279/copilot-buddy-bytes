@@ -359,7 +359,7 @@ export default function ComplianceAuditReports() {
                   </div>
                   <div className="text-center p-4 bg-muted rounded-lg">
                     <div className="text-3xl font-bold text-primary">
-                      {frameworks.find(f => f.value === selectedFramework)?.label}
+                      {selectedFramework}
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">Framework</div>
                   </div>
