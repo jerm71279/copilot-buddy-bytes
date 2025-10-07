@@ -204,7 +204,7 @@ const CIPPDashboard = () => {
       <Navigation />
       <ExternalSystemsBar />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 pt-28 pb-8">
         <DashboardNavigation 
           dashboards={[
             { name: "CIPP Dashboard", path: "/cipp" },

@@ -97,7 +97,7 @@ export default function ComplianceFrameworkDetail() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 pt-28 pb-8">
         <DashboardNavigation 
           title="Framework Detail"
           dashboards={[
