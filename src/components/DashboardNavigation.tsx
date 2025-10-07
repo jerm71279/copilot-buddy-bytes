@@ -42,7 +42,7 @@ const DashboardNavigation = ({ title, showTitle = false, dashboardPath = '/porta
   };
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 pt-2">
       <div className="flex items-center gap-3 mb-3">
         <Button
           variant="outline"
