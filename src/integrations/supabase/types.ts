@@ -3185,6 +3185,60 @@ export type Database = {
           },
         ]
       }
+      task_repetition_analysis: {
+        Row: {
+          action_type: string
+          created_at: string
+          customer_id: string
+          first_occurrence: string
+          id: string
+          last_occurrence: string
+          repetition_count: number
+          status: string
+          suggested_workflow: Json | null
+          suggestion_confidence: number | null
+          system_name: string
+          task_context: Json | null
+          task_signature: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          customer_id: string
+          first_occurrence?: string
+          id?: string
+          last_occurrence?: string
+          repetition_count?: number
+          status?: string
+          suggested_workflow?: Json | null
+          suggestion_confidence?: number | null
+          system_name: string
+          task_context?: Json | null
+          task_signature: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          customer_id?: string
+          first_occurrence?: string
+          id?: string
+          last_occurrence?: string
+          repetition_count?: number
+          status?: string
+          suggested_workflow?: Json | null
+          suggestion_confidence?: number | null
+          system_name?: string
+          task_context?: Json | null
+          task_signature?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
           author_name: string

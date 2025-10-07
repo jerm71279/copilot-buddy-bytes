@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Microsoft365Integration } from "@/components/Microsoft365Integration";
 import { AppLauncher } from "@/components/AppLauncher";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import AutomationSuggestions from "@/components/AutomationSuggestions";
 
 const Portal = () => {
   const navigate = useNavigate();
@@ -197,6 +198,9 @@ const Portal = () => {
                 Access your tools, knowledge, and insights all in one place
               </p>
             </div>
+
+            {/* Automation Suggestions */}
+            <AutomationSuggestions />
 
             {/* Quick Access Tools - PRIMARY */}
             <section className="mb-12">

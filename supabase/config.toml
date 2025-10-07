@@ -44,3 +44,9 @@ verify_jwt = true
 
 [functions.cipp-sync]
 verify_jwt = true
+
+[functions.repetitive-task-detector]
+verify_jwt = true
+
+[functions.automation-suggester]
+verify_jwt = true
