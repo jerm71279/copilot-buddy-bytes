@@ -192,7 +192,7 @@ const AnalyticsPortal = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 pt-28 pb-8">
+      <div className="container mx-auto px-4 pt-6 pb-8">
         {/* Back Button and Insights Dashboards Dropdown */}
         <div className="flex items-center gap-3 mb-8">
           <Button
