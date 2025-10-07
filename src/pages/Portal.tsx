@@ -13,7 +13,7 @@ import { AppLauncher } from "@/components/AppLauncher";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import AutomationSuggestions from "@/components/AutomationSuggestions";
 import { RepetitiveTaskTester } from "@/components/RepetitiveTaskTester";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 
 const Portal = () => {
@@ -208,62 +208,63 @@ const Portal = () => {
             {/* Automation Suggestions */}
             <AutomationSuggestions />
 
-            {/* Quick Access Tools - PRIMARY */}
+            {/* Combined Menu - Quick Access & Recent Activity */}
             <section className="mb-12">
               <div className="flex items-center gap-4 mb-6">
-                <h3 className="text-2xl font-semibold">Quick Access</h3>
+                <h3 className="text-2xl font-semibold">My Tools & Activity</h3>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
-                      View Tools <ChevronDown className="ml-2 h-4 w-4" />
+                      View Menu <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-80">
-                    {quickAccessTools.map((tool) => (
-                      <DropdownMenuItem key={tool.name} asChild>
-                        <Link to={tool.path} className="flex items-center gap-3 cursor-pointer">
-                          <tool.icon className="h-4 w-4" />
-                          <div className="flex-1">
-                            <p className="font-medium">{tool.name}</p>
-                            <p className="text-xs text-muted-foreground">{tool.description}</p>
-                          </div>
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </section>
-
-            {/* Recent Activity - Dropdown */}
-            <section className="mb-12">
-              <div className="flex items-center gap-4 mb-6">
-                <h3 className="text-2xl font-semibold">Recent Activity</h3>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      View Items <ChevronDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-80">
-                    <DropdownMenuItem asChild>
-                      <Link to="/knowledge" className="flex items-center gap-2 cursor-pointer">
-                        <BookOpen className="h-4 w-4" />
-                        <div className="flex-1">
-                          <p className="font-medium">Recent Documentation</p>
-                          <p className="text-xs text-muted-foreground">View all knowledge articles</p>
-                        </div>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/workflow/automation" className="flex items-center gap-2 cursor-pointer">
-                        <Workflow className="h-4 w-4" />
-                        <div className="flex-1">
-                          <p className="font-medium">Recent Workflows</p>
-                          <p className="text-xs text-muted-foreground">View workflow executions</p>
-                        </div>
-                      </Link>
-                    </DropdownMenuItem>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <Zap className="mr-2 h-4 w-4" />
+                        Quick Access
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        {quickAccessTools.map((tool) => (
+                          <DropdownMenuItem key={tool.name} asChild>
+                            <Link to={tool.path} className="flex items-center gap-3 cursor-pointer">
+                              <tool.icon className="h-4 w-4" />
+                              <div className="flex-1">
+                                <p className="font-medium">{tool.name}</p>
+                                <p className="text-xs text-muted-foreground">{tool.description}</p>
+                              </div>
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                    
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <Activity className="mr-2 h-4 w-4" />
+                        Recent Activity
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem asChild>
+                          <Link to="/knowledge" className="flex items-center gap-2 cursor-pointer">
+                            <BookOpen className="h-4 w-4" />
+                            <div className="flex-1">
+                              <p className="font-medium">Recent Documentation</p>
+                              <p className="text-xs text-muted-foreground">View all knowledge articles</p>
+                            </div>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/workflow/automation" className="flex items-center gap-2 cursor-pointer">
+                            <Workflow className="h-4 w-4" />
+                            <div className="flex-1">
+                              <p className="font-medium">Recent Workflows</p>
+                              <p className="text-xs text-muted-foreground">View workflow executions</p>
+                            </div>
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
