@@ -359,13 +359,13 @@ export default function ComplianceAuditReports() {
                   </div>
                   <div className="text-center p-4 bg-muted rounded-lg">
                     <div className="text-3xl font-bold text-primary">
-                      {selectedFramework}
+                      {frameworks.find(f => f.value === selectedFramework)?.label}
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">Framework</div>
                   </div>
                   <div className="text-center p-4 bg-muted rounded-lg">
                     <div className="text-3xl font-bold text-primary">
-                      {TIME_RANGES.find(t => t.value === selectedTimeRange)?.label.split(' ')[1]}
+                      {TIME_RANGES.find(t => t.value === selectedTimeRange)?.label}
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">Time Period</div>
                   </div>
