@@ -182,6 +182,7 @@ const ChangeManagement = () => {
             { name: "Compliance Portal", path: "/compliance" },
             { name: "Change Management", path: "/change-management" },
             { name: "CMDB Dashboard", path: "/cmdb" },
+            { name: "Onboarding Dashboard", path: "/onboarding-dashboard" },
             { name: "Executive Dashboard", path: "/dashboard/executive" },
             { name: "Finance Dashboard", path: "/dashboard/finance" },
             { name: "HR Dashboard", path: "/dashboard/hr" },

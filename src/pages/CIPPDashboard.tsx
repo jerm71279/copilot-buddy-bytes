@@ -210,6 +210,7 @@ const CIPPDashboard = () => {
             { name: "CIPP Dashboard", path: "/cipp" },
             { name: "Admin Dashboard", path: "/admin" },
             { name: "Change Management", path: "/change-management" },
+            { name: "Onboarding Dashboard", path: "/onboarding-dashboard" },
             { name: "Compliance Portal", path: "/compliance" },
           ]}
         />
