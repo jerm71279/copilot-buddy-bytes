@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, FileCheck, AlertTriangle, TrendingUp, Plus } from "lucide-react";
 
@@ -225,27 +226,50 @@ export default function CompliancePortal() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {frameworks.map((framework) => (
-                  <Card 
-                    key={framework.id}
-                    className="cursor-pointer hover:shadow-md transition-shadow"
-                    onClick={() => navigate(`/compliance/frameworks/${framework.id}`)}
-                  >
-                    <CardHeader>
-                      <CardTitle className="text-lg">{framework.framework_name}</CardTitle>
-                      <CardDescription>
-                        {framework.framework_code} • {framework.industry}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {framework.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <>
+                <Card className="mb-4">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Quick Framework Access</CardTitle>
+                    <CardDescription>Select a framework to view details</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Select onValueChange={(value) => navigate(`/compliance/frameworks/${value}`)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a compliance framework..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {frameworks.map((framework) => (
+                          <SelectItem key={framework.id} value={framework.id}>
+                            {framework.framework_name} ({framework.framework_code})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </CardContent>
+                </Card>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {frameworks.map((framework) => (
+                    <Card 
+                      key={framework.id}
+                      className="cursor-pointer hover:shadow-md transition-shadow"
+                      onClick={() => navigate(`/compliance/frameworks/${framework.id}`)}
+                    >
+                      <CardHeader>
+                        <CardTitle className="text-lg">{framework.framework_name}</CardTitle>
+                        <CardDescription>
+                          {framework.framework_code} • {framework.industry}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {framework.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </>
             )}
           </TabsContent>
 
