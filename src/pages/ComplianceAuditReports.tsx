@@ -346,24 +346,24 @@ export default function ComplianceAuditReports() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-4 bg-muted rounded-lg">
+                <div className="flex gap-4 overflow-x-auto pb-2">
+                  <div className="text-center p-4 bg-muted rounded-lg min-w-[180px] flex-shrink-0">
                     <div className="text-3xl font-bold text-primary">{totalRecords}</div>
                     <div className="text-sm text-muted-foreground mt-1">Total Records</div>
                   </div>
-                  <div className="text-center p-4 bg-muted rounded-lg">
+                  <div className="text-center p-4 bg-muted rounded-lg min-w-[180px] flex-shrink-0">
                     <div className="text-3xl font-bold text-primary">
                       {auditData.filter(d => d.count > 0).length}
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">Data Sources</div>
                   </div>
-                  <div className="text-center p-4 bg-muted rounded-lg">
+                  <div className="text-center p-4 bg-muted rounded-lg min-w-[180px] flex-shrink-0">
                     <div className="text-3xl font-bold text-primary">
                       {selectedFramework}
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">Framework</div>
                   </div>
-                  <div className="text-center p-4 bg-muted rounded-lg">
+                  <div className="text-center p-4 bg-muted rounded-lg min-w-[180px] flex-shrink-0">
                     <div className="text-3xl font-bold text-primary">
                       {TIME_RANGES.find(t => t.value === selectedTimeRange)?.label}
                     </div>
