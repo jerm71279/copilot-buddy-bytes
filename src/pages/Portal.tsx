@@ -210,29 +210,28 @@ const Portal = () => {
 
             {/* Quick Access Tools - PRIMARY */}
             <section className="mb-12">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4 mb-6">
                 <h3 className="text-2xl font-semibold">Quick Access</h3>
-              </div>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {quickAccessTools.map((tool) => (
-                  <Link key={tool.name} to={tool.path}>
-                    <Card className="hover:shadow-lg transition-all hover:border-primary cursor-pointer h-full">
-                      <CardHeader>
-                        <div className="flex items-center gap-3">
-                          <div className="p-3 rounded-lg bg-primary/10">
-                            <tool.icon className="h-6 w-6 text-primary" />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      View Tools <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-80">
+                    {quickAccessTools.map((tool) => (
+                      <DropdownMenuItem key={tool.name} asChild>
+                        <Link to={tool.path} className="flex items-center gap-3 cursor-pointer">
+                          <tool.icon className="h-4 w-4" />
+                          <div className="flex-1">
+                            <p className="font-medium">{tool.name}</p>
+                            <p className="text-xs text-muted-foreground">{tool.description}</p>
                           </div>
-                          <CardTitle className="text-lg">{tool.name}</CardTitle>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground">
-                          {tool.description}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </section>
 
