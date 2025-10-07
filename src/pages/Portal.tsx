@@ -215,7 +215,7 @@ const Portal = () => {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
-                      View Menu <ChevronDown className="ml-2 h-4 w-4" />
+                      Tools and Activities <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-80">
