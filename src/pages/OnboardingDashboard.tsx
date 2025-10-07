@@ -177,7 +177,7 @@ export default function OnboardingDashboard() {
           </Button>
           <Button onClick={() => navigate('/onboarding/new')}>
             <Plus className="mr-2 h-4 w-4" />
-            Onboard Client
+            New Onboarding
           </Button>
         </div>
 
@@ -237,11 +237,7 @@ export default function OnboardingDashboard() {
             <CardContent className="py-12 text-center">
               <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">No client onboardings yet</h3>
-              <p className="text-muted-foreground mb-4">Start onboarding your first client</p>
-              <Button onClick={() => navigate('/onboarding/new')}>
-                <Plus className="mr-2 h-4 w-4" />
-                New Onboarding
-              </Button>
+              <p className="text-muted-foreground">Use the "New Onboarding" button above to start onboarding your first client</p>
             </CardContent>
           </Card>
         ) : (
