@@ -270,30 +270,11 @@ const Portal = () => {
               </div>
             </section>
 
-            {/* Analytics & Insights - Dropdown */}
+            {/* Analytics & Insights */}
             <section id="dashboards-section">
-              <div className="flex items-center gap-4 mb-6">
+              <div className="mb-6">
                 <h3 className="text-2xl font-semibold">Analytics & Insights</h3>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      View Dashboards <ChevronDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-80">
-                    {analyticsDashboards.map((dashboard) => (
-                      <DropdownMenuItem key={dashboard.name} asChild>
-                        <Link to={dashboard.path} className="flex items-center gap-3 cursor-pointer">
-                          <dashboard.icon className="h-4 w-4" />
-                          <div className="flex-1">
-                            <p className="font-medium">{dashboard.name}</p>
-                            <p className="text-xs text-muted-foreground">{dashboard.description}</p>
-                          </div>
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <p className="text-sm text-muted-foreground mt-1">Explore detailed metrics and reports</p>
               </div>
             </section>
             </TabsContent>
