@@ -136,8 +136,8 @@ const DataFlowPortal = () => {
                     <div className="space-y-3">
                       <h3 className="text-lg font-semibold text-purple-600 dark:text-purple-400">Flow Steps</h3>
                       <FlowStep color="purple" title="Authentication" description="Verify user session → Load customer context" />
-                      <FlowStep color="purple" title="Data Query" description="Query cmdb_items table → Apply filters and search criteria → Display asset inventory" />
-                      <FlowStep color="purple" title="CRUD Operations" description="Add/Edit/Delete assets → Update cmdb_items table → Refresh asset list" />
+                      <FlowStep color="purple" title="Data Query" description="Query configuration_items table → Apply filters and search criteria → Display asset inventory" />
+                      <FlowStep color="purple" title="CRUD Operations" description="Add/Edit/Delete assets → Update configuration_items table → Refresh asset list" />
                       <FlowStep color="purple" title="NinjaOne Sync" description="Call ninjaone-sync function → Fetch from NinjaOne API → Update CMDB" />
                     </div>
                   </CardContent>
@@ -226,10 +226,10 @@ const DataFlowPortal = () => {
                     <CardDescription>IT operations and asset management</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <FlowStep color="cyan" title="Asset Query" description="Query cmdb_items for IT assets → Query change_requests → Calculate metrics" />
-                    <FlowStep color="cyan" title="NinjaOne Integration" description="Query NinjaOne via edge function → Display monitoring data" />
-                    <FlowStep color="cyan" title="Ticket Creation" description="Call ninjaone-ticket function → Create ticket in NinjaOne → Log to audit_logs" />
-                    <FlowStep color="cyan" title="Navigation" description="Quick access to CMDB and Change Management" />
+                      <FlowStep color="cyan" title="Asset Query" description="Query configuration_items for IT assets → Query change_requests → Calculate metrics" />
+                      <FlowStep color="cyan" title="NinjaOne Integration" description="Query NinjaOne via edge function → Display monitoring data" />
+                      <FlowStep color="cyan" title="Ticket Creation" description="Call ninjaone-ticket function → Create ticket in NinjaOne → Log to audit_logs" />
+                      <FlowStep color="cyan" title="Navigation" description="Quick access to CMDB and Change Management" />
                   </CardContent>
                 </Card>
               </TabsContent>
