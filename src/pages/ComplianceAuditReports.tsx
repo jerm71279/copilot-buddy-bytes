@@ -280,7 +280,7 @@ export default function ComplianceAuditReports() {
                 <label className="text-sm font-medium">Compliance Framework</label>
                 <Select value={selectedFramework} onValueChange={setSelectedFramework}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select framework to generate report..." />
                   </SelectTrigger>
                   <SelectContent>
                     {frameworks.map(framework => (
