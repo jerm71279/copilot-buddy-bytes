@@ -14,9 +14,16 @@ import {
   Clock,
   AlertTriangle,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  ArrowLeft,
+  ChevronDown
 } from "lucide-react";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const AnalyticsPortal = () => {
   const navigate = useNavigate();
@@ -186,25 +193,39 @@ const AnalyticsPortal = () => {
       </header>
 
       <div className="container mx-auto px-4 pt-28 pb-8">
-        <DashboardNavigation 
-          title="Analytics & Insights Portal" 
-          dashboardPath="/analytics"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Onboarding Dashboard", path: "/onboarding" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
+        {/* Back Button and Insights Dashboards Dropdown */}
+        <div className="flex items-center gap-3 mb-8">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                Insights Dashboards <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-80">
+              {analyticsDashboards.map((dashboard) => (
+                <DropdownMenuItem key={dashboard.name} asChild>
+                  <Link to={dashboard.path} className="flex items-center gap-3 cursor-pointer">
+                    <dashboard.icon className={`h-4 w-4 ${dashboard.color}`} />
+                    <div className="flex-1">
+                      <p className="font-medium">{dashboard.name}</p>
+                      <p className="text-xs text-muted-foreground">{dashboard.description}</p>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         
         {/* Key Metrics */}
         <section className="mb-12">
@@ -349,34 +370,6 @@ const AnalyticsPortal = () => {
           </div>
         </section>
 
-        {/* Analytics Dashboards */}
-        <section>
-          <h2 className="text-2xl font-semibold mb-6">Detailed Analytics Dashboards</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {analyticsDashboards.map((dashboard) => (
-              <Link key={dashboard.name} to={dashboard.path}>
-                <Card className="hover:shadow-lg transition-all hover:border-primary cursor-pointer h-full group">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-lg bg-primary/10">
-                          <dashboard.icon className={`h-6 w-6 ${dashboard.color}`} />
-                        </div>
-                        <CardTitle className="text-base">{dashboard.name}</CardTitle>
-                      </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      {dashboard.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </section>
       </div>
     </div>
   );
