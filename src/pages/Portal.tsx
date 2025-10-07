@@ -12,6 +12,7 @@ import { Microsoft365Integration } from "@/components/Microsoft365Integration";
 import { AppLauncher } from "@/components/AppLauncher";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import AutomationSuggestions from "@/components/AutomationSuggestions";
+import { RepetitiveTaskTester } from "@/components/RepetitiveTaskTester";
 
 const Portal = () => {
   const navigate = useNavigate();
@@ -198,6 +199,9 @@ const Portal = () => {
                 Access your tools, knowledge, and insights all in one place
               </p>
             </div>
+
+            {/* Task Detection Tester - For Validation */}
+            <RepetitiveTaskTester />
 
             {/* Automation Suggestions */}
             <AutomationSuggestions />
