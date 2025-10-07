@@ -25,13 +25,34 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Search across multiple tables
-    const [workflows, compliance, cmdb, knowledge, changeRecords, anomalies] = await Promise.all([
+    const [
+      workflows, 
+      compliance, 
+      cmdb, 
+      knowledge, 
+      changeRecords, 
+      anomalies,
+      auditLogs,
+      users,
+      applications,
+      tenants,
+      onboardings,
+      complianceFrameworks,
+      aiInteractions
+    ] = await Promise.all([
       supabase.from("workflow_executions").select("*").ilike("workflow_name", `%${query}%`).limit(5),
       supabase.from("compliance_audit_reports").select("*").ilike("report_title", `%${query}%`).limit(5),
       supabase.from("cmdb_items").select("*").or(`name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
       supabase.from("knowledge_articles").select("*").or(`title.ilike.%${query}%,content.ilike.%${query}%`).limit(5),
       supabase.from("change_requests").select("*").or(`title.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
       supabase.from("anomaly_detections").select("*").or(`description.ilike.%${query}%,system_name.ilike.%${query}%,anomaly_type.ilike.%${query}%`).limit(5),
+      supabase.from("audit_logs").select("*").or(`system_name.ilike.%${query}%,action_type.ilike.%${query}%`).limit(5),
+      supabase.from("user_profiles").select("*").or(`full_name.ilike.%${query}%,department.ilike.%${query}%`).limit(5),
+      supabase.from("applications").select("*").or(`name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
+      supabase.from("cipp_tenants").select("*").or(`tenant_name.ilike.%${query}%,display_name.ilike.%${query}%`).limit(5),
+      supabase.from("client_onboardings").select("*").or(`client_name.ilike.%${query}%,client_contact_name.ilike.%${query}%`).limit(5),
+      supabase.from("compliance_frameworks").select("*").or(`framework_name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
+      supabase.from("ai_interactions").select("*").or(`user_query.ilike.%${query}%,ai_response.ilike.%${query}%`).limit(5),
     ]);
 
     // Use AI to rank and contextualize results
@@ -44,6 +65,13 @@ serve(async (req) => {
       ...(knowledge.data || []).map(k => ({ type: "knowledge", data: k, title: k.title, url: `/knowledge/${k.id}` })),
       ...(changeRecords.data || []).map(cr => ({ type: "change", data: cr, title: cr.title, url: `/change-management/${cr.id}` })),
       ...(anomalies.data || []).map(a => ({ type: "anomaly", data: a, title: `${a.anomaly_type} - ${a.system_name}`, url: `/dashboard/soc` })),
+      ...(auditLogs.data || []).map(al => ({ type: "audit", data: al, title: `${al.action_type} - ${al.system_name}`, url: `/compliance/audit-reports` })),
+      ...(users.data || []).map(u => ({ type: "user", data: u, title: u.full_name, url: `/admin` })),
+      ...(applications.data || []).map(app => ({ type: "application", data: app, title: app.name, url: `/admin/applications` })),
+      ...(tenants.data || []).map(t => ({ type: "tenant", data: t, title: t.tenant_name, url: `/cipp` })),
+      ...(onboardings.data || []).map(o => ({ type: "onboarding", data: o, title: `${o.client_name} Onboarding`, url: `/onboarding` })),
+      ...(complianceFrameworks.data || []).map(cf => ({ type: "framework", data: cf, title: cf.framework_name, url: `/compliance/frameworks/${cf.id}` })),
+      ...(aiInteractions.data || []).map(ai => ({ type: "ai-chat", data: ai, title: ai.user_query.substring(0, 50) + "...", url: `/intelligent-assistant` })),
     ];
 
     if (LOVABLE_API_KEY && allResults.length > 0) {
