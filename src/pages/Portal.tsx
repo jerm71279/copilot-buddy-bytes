@@ -167,23 +167,80 @@ const Portal = () => {
       <ExternalSystemsBar />
 
       <div className="container mx-auto px-4 py-8">
-        <DashboardNavigation 
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Onboarding Dashboard", path: "/onboarding" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
+        <div className="flex items-center gap-4 mb-8">
+          <DashboardNavigation 
+            dashboards={[
+              { name: "Admin Dashboard", path: "/admin" },
+              { name: "Employee Portal", path: "/portal" },
+              { name: "Analytics Portal", path: "/analytics" },
+              { name: "Compliance Portal", path: "/compliance" },
+              { name: "Change Management", path: "/change-management" },
+              { name: "Onboarding Dashboard", path: "/onboarding" },
+              { name: "Executive Dashboard", path: "/dashboard/executive" },
+              { name: "Finance Dashboard", path: "/dashboard/finance" },
+              { name: "HR Dashboard", path: "/dashboard/hr" },
+              { name: "IT Dashboard", path: "/dashboard/it" },
+              { name: "Operations Dashboard", path: "/dashboard/operations" },
+              { name: "Sales Dashboard", path: "/dashboard/sales" },
+              { name: "SOC Dashboard", path: "/dashboard/soc" },
+            ]}
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                Tools and Activities <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-80">
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Zap className="mr-2 h-4 w-4" />
+                  Quick Access
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  {quickAccessTools.map((tool) => (
+                    <DropdownMenuItem key={tool.name} asChild>
+                      <Link to={tool.path} className="flex items-center gap-3 cursor-pointer">
+                        <tool.icon className="h-4 w-4" />
+                        <div className="flex-1">
+                          <p className="font-medium">{tool.name}</p>
+                          <p className="text-xs text-muted-foreground">{tool.description}</p>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+              
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Activity className="mr-2 h-4 w-4" />
+                  Recent Activity
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem asChild>
+                    <Link to="/knowledge" className="flex items-center gap-2 cursor-pointer">
+                      <BookOpen className="h-4 w-4" />
+                      <div className="flex-1">
+                        <p className="font-medium">Recent Documentation</p>
+                        <p className="text-xs text-muted-foreground">View all knowledge articles</p>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/workflow/automation" className="flex items-center gap-2 cursor-pointer">
+                      <Workflow className="h-4 w-4" />
+                      <div className="flex-1">
+                        <p className="font-medium">Recent Workflows</p>
+                        <p className="text-xs text-muted-foreground">View workflow executions</p>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="mb-8">
             <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -207,67 +264,6 @@ const Portal = () => {
 
             {/* Automation Suggestions */}
             <AutomationSuggestions />
-
-            {/* Combined Menu - Quick Access & Recent Activity */}
-            <section className="mb-12">
-              <div className="flex items-center gap-4 mb-6">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      Tools and Activities <ChevronDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-80">
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger>
-                        <Zap className="mr-2 h-4 w-4" />
-                        Quick Access
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent>
-                        {quickAccessTools.map((tool) => (
-                          <DropdownMenuItem key={tool.name} asChild>
-                            <Link to={tool.path} className="flex items-center gap-3 cursor-pointer">
-                              <tool.icon className="h-4 w-4" />
-                              <div className="flex-1">
-                                <p className="font-medium">{tool.name}</p>
-                                <p className="text-xs text-muted-foreground">{tool.description}</p>
-                              </div>
-                            </Link>
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                    
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger>
-                        <Activity className="mr-2 h-4 w-4" />
-                        Recent Activity
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent>
-                        <DropdownMenuItem asChild>
-                          <Link to="/knowledge" className="flex items-center gap-2 cursor-pointer">
-                            <BookOpen className="h-4 w-4" />
-                            <div className="flex-1">
-                              <p className="font-medium">Recent Documentation</p>
-                              <p className="text-xs text-muted-foreground">View all knowledge articles</p>
-                            </div>
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link to="/workflow/automation" className="flex items-center gap-2 cursor-pointer">
-                            <Workflow className="h-4 w-4" />
-                            <div className="flex-1">
-                              <p className="font-medium">Recent Workflows</p>
-                              <p className="text-xs text-muted-foreground">View workflow executions</p>
-                            </div>
-                          </Link>
-                        </DropdownMenuItem>
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </section>
 
             {/* Analytics & Insights - Dropdown */}
             <section id="dashboards-section">
