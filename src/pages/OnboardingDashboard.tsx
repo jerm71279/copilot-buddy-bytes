@@ -170,21 +170,20 @@ export default function OnboardingDashboard() {
           ]}
         />
         
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Client Onboarding</h1>
-            <p className="text-muted-foreground">Manage and track customer onboarding processes</p>
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={() => navigate('/onboarding/templates')}>
-              <Users className="mr-2 h-4 w-4" />
-              Templates
-            </Button>
-            <Button onClick={() => navigate('/onboarding/new')}>
-              <Plus className="mr-2 h-4 w-4" />
-              New Onboarding
-            </Button>
-          </div>
+        <div className="flex justify-end gap-2 mb-6">
+          <Button onClick={() => navigate('/onboarding/templates')}>
+            <Users className="mr-2 h-4 w-4" />
+            Templates
+          </Button>
+          <Button onClick={() => navigate('/onboarding/new')}>
+            <Plus className="mr-2 h-4 w-4" />
+            Onboard Client
+          </Button>
+        </div>
+
+        <div className="mb-6">
+          <h1 className="text-4xl font-bold mb-2">Client Onboarding</h1>
+          <p className="text-muted-foreground">Manage and track customer onboarding processes</p>
         </div>
 
         {/* Stats Cards */}
