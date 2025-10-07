@@ -226,50 +226,26 @@ export default function CompliancePortal() {
                 </CardContent>
               </Card>
             ) : (
-              <>
-                <Card className="mb-4">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Quick Framework Access</CardTitle>
-                    <CardDescription>Select a framework to view details</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Select onValueChange={(value) => navigate(`/compliance/frameworks/${value}`)}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a compliance framework..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {frameworks.map((framework) => (
-                          <SelectItem key={framework.id} value={framework.id}>
-                            {framework.framework_name} ({framework.framework_code})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </CardContent>
-                </Card>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {frameworks.map((framework) => (
-                    <Card 
-                      key={framework.id}
-                      className="cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => navigate(`/compliance/frameworks/${framework.id}`)}
-                    >
-                      <CardHeader>
-                        <CardTitle className="text-lg">{framework.framework_name}</CardTitle>
-                        <CardDescription>
-                          {framework.framework_code} • {framework.industry}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {framework.description}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Select Compliance Framework</CardTitle>
+                  <CardDescription>Choose a framework to view details and manage compliance</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Select onValueChange={(value) => navigate(`/compliance/frameworks/${value}`)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a compliance framework..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {frameworks.map((framework) => (
+                        <SelectItem key={framework.id} value={framework.id}>
+                          {framework.framework_name} ({framework.framework_code})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
             )}
           </TabsContent>
 
