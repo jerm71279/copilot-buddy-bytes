@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Activity, Clock, FileText, BookOpen, Workflow, BarChart3, Settings, ExternalLink, Brain, Zap, Calendar, MessagesSquare } from "lucide-react";
+import { Shield, Activity, Clock, FileText, BookOpen, Workflow, BarChart3, Settings, ExternalLink, Brain, Zap, Calendar, MessagesSquare, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import EmployeeToolbar from "@/components/EmployeeToolbar";
@@ -166,25 +166,130 @@ const Portal = () => {
       {/* External Systems Bar */}
       <ExternalSystemsBar />
 
+      {/* Dashboard Navigation Bar */}
+      <div className="bg-card border-b border-border">
+        <div className="container mx-auto px-4">
+          <div className="flex gap-3 py-3 overflow-x-auto">
+            <Button
+              variant={location.pathname === "/admin" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/admin")}
+              className="whitespace-nowrap shrink-0"
+            >
+              Admin Dashboard
+            </Button>
+            <Button
+              variant={location.pathname === "/portal" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/portal")}
+              className="whitespace-nowrap shrink-0"
+            >
+              Employee Portal
+            </Button>
+            <Button
+              variant={location.pathname === "/analytics" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/analytics")}
+              className="whitespace-nowrap shrink-0"
+            >
+              Analytics Portal
+            </Button>
+            <Button
+              variant={location.pathname === "/compliance" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/compliance")}
+              className="whitespace-nowrap shrink-0"
+            >
+              Compliance Portal
+            </Button>
+            <Button
+              variant={location.pathname === "/change-management" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/change-management")}
+              className="whitespace-nowrap shrink-0"
+            >
+              Change Management
+            </Button>
+            <Button
+              variant={location.pathname === "/onboarding" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/onboarding")}
+              className="whitespace-nowrap shrink-0"
+            >
+              Onboarding Dashboard
+            </Button>
+            <Button
+              variant={location.pathname === "/dashboard/executive" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/dashboard/executive")}
+              className="whitespace-nowrap shrink-0"
+            >
+              Executive Dashboard
+            </Button>
+            <Button
+              variant={location.pathname === "/dashboard/finance" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/dashboard/finance")}
+              className="whitespace-nowrap shrink-0"
+            >
+              Finance Dashboard
+            </Button>
+            <Button
+              variant={location.pathname === "/dashboard/hr" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/dashboard/hr")}
+              className="whitespace-nowrap shrink-0"
+            >
+              HR Dashboard
+            </Button>
+            <Button
+              variant={location.pathname === "/dashboard/it" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/dashboard/it")}
+              className="whitespace-nowrap shrink-0"
+            >
+              IT Dashboard
+            </Button>
+            <Button
+              variant={location.pathname === "/dashboard/operations" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/dashboard/operations")}
+              className="whitespace-nowrap shrink-0"
+            >
+              Operations Dashboard
+            </Button>
+            <Button
+              variant={location.pathname === "/dashboard/sales" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/dashboard/sales")}
+              className="whitespace-nowrap shrink-0"
+            >
+              Sales Dashboard
+            </Button>
+            <Button
+              variant={location.pathname === "/dashboard/soc" ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigate("/dashboard/soc")}
+              className="whitespace-nowrap shrink-0"
+            >
+              SOC Dashboard
+            </Button>
+          </div>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <DashboardNavigation 
-            dashboards={[
-              { name: "Admin Dashboard", path: "/admin" },
-              { name: "Employee Portal", path: "/portal" },
-              { name: "Analytics Portal", path: "/analytics" },
-              { name: "Compliance Portal", path: "/compliance" },
-              { name: "Change Management", path: "/change-management" },
-              { name: "Onboarding Dashboard", path: "/onboarding" },
-              { name: "Executive Dashboard", path: "/dashboard/executive" },
-              { name: "Finance Dashboard", path: "/dashboard/finance" },
-              { name: "HR Dashboard", path: "/dashboard/hr" },
-              { name: "IT Dashboard", path: "/dashboard/it" },
-              { name: "Operations Dashboard", path: "/dashboard/operations" },
-              { name: "Sales Dashboard", path: "/dashboard/sales" },
-              { name: "SOC Dashboard", path: "/dashboard/soc" },
-            ]}
-          />
+        {/* Back Button and Activity Dropdown */}
+        <div className="flex items-center gap-3 mb-8">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
