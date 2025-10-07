@@ -337,6 +337,41 @@ export default function ComplianceAuditReports() {
         {/* Report Results */}
         {reportGenerated && (
           <>
+            {/* Data Breakdown */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              {auditData.map((data) => (
+                <Card 
+                  key={data.source_table}
+                  className={data.count > 0 ? "cursor-pointer hover:border-primary transition-colors" : ""}
+                  onClick={() => {
+                    if (data.count > 0) {
+                      navigate(`/compliance/framework/${selectedFramework}/records?source=${encodeURIComponent(data.source_table)}&timeRange=${selectedTimeRange}`);
+                    }
+                  }}
+                >
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg flex items-center justify-between">
+                      {data.source_table}
+                      <Badge variant={data.count > 0 ? "default" : "secondary"}>
+                        {data.count}
+                      </Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {data.count > 0 ? (
+                      <div className="text-sm text-primary font-medium">
+                        Click to view {data.count} {data.count === 1 ? 'record' : 'records'} →
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground">
+                        No records in this time period
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
             <Card className="mb-6">
               <CardHeader>
                 <CardTitle>Report Summary</CardTitle>
@@ -372,41 +407,6 @@ export default function ComplianceAuditReports() {
                 </div>
               </CardContent>
             </Card>
-
-            {/* Data Breakdown */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {auditData.map((data) => (
-                <Card 
-                  key={data.source_table}
-                  className={data.count > 0 ? "cursor-pointer hover:border-primary transition-colors" : ""}
-                  onClick={() => {
-                    if (data.count > 0) {
-                      navigate(`/compliance/framework/${selectedFramework}/records?source=${encodeURIComponent(data.source_table)}&timeRange=${selectedTimeRange}`);
-                    }
-                  }}
-                >
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg flex items-center justify-between">
-                      {data.source_table}
-                      <Badge variant={data.count > 0 ? "default" : "secondary"}>
-                        {data.count}
-                      </Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {data.count > 0 ? (
-                      <div className="text-sm text-primary font-medium">
-                        Click to view {data.count} {data.count === 1 ? 'record' : 'records'} →
-                      </div>
-                    ) : (
-                      <div className="text-sm text-muted-foreground">
-                        No records in this time period
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
           </>
         )}
 
