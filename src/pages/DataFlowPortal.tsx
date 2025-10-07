@@ -10,6 +10,7 @@ import cmdbDiagram from "@/assets/dataflow-cmdb.png";
 import changeDiagram from "@/assets/dataflow-change.png";
 import complianceDiagram from "@/assets/dataflow-compliance.png";
 import workflowDiagram from "@/assets/dataflow-workflow.png";
+import FlowDiagram from "@/components/FlowDiagram";
 
 const FlowStep = ({ color, title, description }: { color: string; title: string; description: string }) => (
   <div className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border border-border">
@@ -105,7 +106,24 @@ const DataFlowPortal = () => {
                   <CardContent className="space-y-6">
                     <div className="bg-background/80 p-4 rounded-lg border border-blue-500/20">
                       <h3 className="text-lg font-semibold mb-3 text-blue-600 dark:text-blue-400">Visual Flow Diagram</h3>
-                      <img src={cippDiagram} alt="CIPP Dashboard Data Flow" className="w-full rounded-lg" />
+                      <FlowDiagram
+                        title="CIPP Dashboard Diagram"
+                        accent="blue"
+                        width={800}
+                        height={260}
+                        nodes={[
+                          { id: "auth", label: "Authentication", x: 150, y: 60 },
+                          { id: "data", label: "Data Loading\nTenant Health\nTenant List", x: 150, y: 160, h: 90, w: 220 },
+                          { id: "sync", label: "Sync Action", x: 520, y: 110, w: 200 },
+                          { id: "details", label: "Select Details", x: 520, y: 190, w: 200 },
+                        ]}
+                        edges={[
+                          { from: "auth", to: "data" },
+                          { from: "data", to: "sync" },
+                          { from: "sync", to: "data" },
+                          { from: "sync", to: "details" },
+                        ]}
+                      />
                     </div>
                     <div className="space-y-3">
                       <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400">Flow Steps</h3>
@@ -131,7 +149,29 @@ const DataFlowPortal = () => {
                   <CardContent className="space-y-6">
                     <div className="bg-background/80 p-4 rounded-lg border border-purple-500/20">
                       <h3 className="text-lg font-semibold mb-3 text-purple-600 dark:text-purple-400">Visual Flow Diagram</h3>
-                      <img src={cmdbDiagram} alt="CMDB Dashboard Data Flow" className="w-full rounded-lg" />
+                      <FlowDiagram
+                        title="CMDB Dashboard Diagram"
+                        accent="purple"
+                        width={800}
+                        height={260}
+                        nodes={[
+                          { id: "session", label: "User Session Verification", x: 120, y: 60 },
+                          { id: "context", label: "Load Customer Context", x: 120, y: 140 },
+                          { id: "query", label: "Query Configuration Items", x: 120, y: 220 },
+                          { id: "edit", label: "Add/Edit Asset", x: 400, y: 140, w: 200 },
+                          { id: "filters", label: "User Filters", x: 640, y: 110, w: 160 },
+                          { id: "update", label: "Update CMDB", x: 640, y: 170, w: 160 },
+                          { id: "refresh", label: "Refresh Asset List", x: 640, y: 230, w: 180 },
+                        ]}
+                        edges={[
+                          { from: "session", to: "context" },
+                          { from: "context", to: "edit" },
+                          { from: "query", to: "edit" },
+                          { from: "edit", to: "filters" },
+                          { from: "edit", to: "update" },
+                          { from: "update", to: "refresh" },
+                        ]}
+                      />
                     </div>
                     <div className="space-y-3">
                       <h3 className="text-lg font-semibold text-purple-600 dark:text-purple-400">Flow Steps</h3>
@@ -157,7 +197,28 @@ const DataFlowPortal = () => {
                   <CardContent className="space-y-6">
                     <div className="bg-background/80 p-4 rounded-lg border border-orange-500/20">
                       <h3 className="text-lg font-semibold mb-3 text-orange-600 dark:text-orange-400">Visual Flow Diagram</h3>
-                      <img src={changeDiagram} alt="Change Management Data Flow" className="w-full rounded-lg" />
+                      <FlowDiagram
+                        title="Change Management Diagram"
+                        accent="orange"
+                        width={800}
+                        height={260}
+                        nodes={[
+                          { id: "load", label: "Load Changes", x: 140, y: 90 },
+                          { id: "apply", label: "Apply Status Filter", x: 400, y: 90, w: 200 },
+                          { id: "impact", label: "Impact Analysis", x: 640, y: 110, w: 180 },
+                          { id: "clear", label: "Clear Status Filters", x: 140, y: 190, w: 200 },
+                          { id: "create", label: "Create/Update Change", x: 400, y: 210, w: 220 },
+                          { id: "status", label: "Change Status", x: 640, y: 210, w: 180 },
+                        ]}
+                        edges={[
+                          { from: "load", to: "apply" },
+                          { from: "apply", to: "impact" },
+                          { from: "load", to: "clear" },
+                          { from: "clear", to: "create" },
+                          { from: "impact", to: "status" },
+                          { from: "create", to: "status" },
+                        ]}
+                      />
                     </div>
                     <div className="space-y-3">
                       <h3 className="text-lg font-semibold text-orange-600 dark:text-orange-400">Flow Steps</h3>
@@ -183,7 +244,23 @@ const DataFlowPortal = () => {
                   <CardContent className="space-y-6">
                     <div className="bg-background/80 p-4 rounded-lg border border-green-500/20">
                       <h3 className="text-lg font-semibold mb-3 text-green-600 dark:text-green-400">Visual Flow Diagram</h3>
-                      <img src={complianceDiagram} alt="Compliance Dashboard Data Flow" className="w-full rounded-lg" />
+                      <FlowDiagram
+                        title="Compliance Dashboard Diagram"
+                        accent="green"
+                        width={800}
+                        height={260}
+                        nodes={[
+                          { id: "frameworks", label: "Load Frameworks", x: 160, y: 120 },
+                          { id: "audit", label: "Audit Logs", x: 160, y: 200 },
+                          { id: "score", label: "Score Calculation", x: 400, y: 160, w: 200 },
+                          { id: "evidence", label: "Evidence Upload", x: 640, y: 180, w: 200 },
+                        ]}
+                        edges={[
+                          { from: "frameworks", to: "score" },
+                          { from: "audit", to: "score" },
+                          { from: "evidence", to: "score" },
+                        ]}
+                      />
                     </div>
                     <div className="space-y-3">
                       <h3 className="text-lg font-semibold text-green-600 dark:text-green-400">Flow Steps</h3>
@@ -361,7 +438,23 @@ const DataFlowPortal = () => {
                   <CardContent className="space-y-6">
                     <div className="bg-background/80 p-4 rounded-lg border border-yellow-500/20">
                       <h3 className="text-lg font-semibold mb-3 text-yellow-600 dark:text-yellow-400">Visual Flow Diagram</h3>
-                      <img src={workflowDiagram} alt="Workflow Automation Data Flow" className="w-full rounded-lg" />
+                      <FlowDiagram
+                        title="Workflow Automation Diagram"
+                        accent="yellow"
+                        width={800}
+                        height={260}
+                        nodes={[
+                          { id: "load", label: "Load Workflows", x: 140, y: 90 },
+                          { id: "exec", label: "Execution", x: 400, y: 90, w: 180 },
+                          { id: "monitor", label: "Monitoring", x: 400, y: 170, w: 180 },
+                          { id: "evidence", label: "Evidence Generation", x: 640, y: 130, w: 220 },
+                        ]}
+                        edges={[
+                          { from: "load", to: "exec" },
+                          { from: "exec", to: "evidence" },
+                          { from: "monitor", to: "evidence" },
+                        ]}
+                      />
                     </div>
                     <div className="space-y-3">
                       <h3 className="text-lg font-semibold text-yellow-600 dark:text-yellow-400">Flow Steps</h3>
