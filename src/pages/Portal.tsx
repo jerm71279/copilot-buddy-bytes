@@ -211,7 +211,6 @@ const Portal = () => {
             {/* Combined Menu - Quick Access & Recent Activity */}
             <section className="mb-12">
               <div className="flex items-center gap-4 mb-6">
-                <h3 className="text-2xl font-semibold">Tools and Activities</h3>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -273,7 +272,6 @@ const Portal = () => {
             {/* Analytics & Insights - Dropdown */}
             <section id="dashboards-section">
               <div className="flex items-center gap-4 mb-6">
-                <h3 className="text-2xl font-semibold">Analytics & Insights</h3>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
