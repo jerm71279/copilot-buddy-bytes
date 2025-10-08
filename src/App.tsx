@@ -12,6 +12,7 @@ import AnalyticsPortal from "./pages/AnalyticsPortal";
 import WorkflowDetail from "./pages/WorkflowDetail";
 import KnowledgeBase from "./pages/KnowledgeBase";
 import KnowledgeArticle from "./pages/KnowledgeArticle";
+import KnowledgeUpload from "./pages/KnowledgeUpload";
 import AdminDashboard from "./pages/AdminDashboard";
 import ComplianceDashboard from "./pages/ComplianceDashboard";
 import ITDashboard from "./pages/ITDashboard";
@@ -99,6 +100,11 @@ const App = () => (
           <Route path="/knowledge" element={
             <ProtectedRoute>
               <KnowledgeBase />
+            </ProtectedRoute>
+          } />
+          <Route path="/knowledge/upload" element={
+            <ProtectedRoute>
+              <KnowledgeUpload />
             </ProtectedRoute>
           } />
           <Route path="/knowledge/:id" element={
