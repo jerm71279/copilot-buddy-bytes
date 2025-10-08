@@ -20,8 +20,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, UserPlus, UserMinus, Search } from "lucide-react";
+import { Shield, UserPlus, UserMinus, Search, Plus } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 
 interface UserProfile {
@@ -41,6 +52,9 @@ export default function RBACPortal() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState<string>("");
+  const [isCreateRoleOpen, setIsCreateRoleOpen] = useState(false);
+  const [newRoleName, setNewRoleName] = useState("");
+  const [newRoleDescription, setNewRoleDescription] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -146,6 +160,35 @@ export default function RBACPortal() {
     },
   });
 
+  // Create role mutation
+  const createRoleMutation = useMutation({
+    mutationFn: async ({ name, description }: { name: string; description: string }) => {
+      const { error } = await supabase.from("roles").insert({
+        name,
+        description,
+      });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
+      toast({
+        title: "Role created",
+        description: "The new role has been successfully created.",
+      });
+      setIsCreateRoleOpen(false);
+      setNewRoleName("");
+      setNewRoleDescription("");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create role",
+        variant: "destructive",
+      });
+    },
+  });
+
   const filteredUsers = users.filter(
     (user) =>
       user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -160,6 +203,15 @@ export default function RBACPortal() {
 
   const handleRemoveRole = (userId: string, roleId: string) => {
     removeRoleMutation.mutate({ userId, roleId });
+  };
+
+  const handleCreateRole = () => {
+    if (newRoleName.trim()) {
+      createRoleMutation.mutate({
+        name: newRoleName.trim(),
+        description: newRoleDescription.trim(),
+      });
+    }
   };
 
   return (
@@ -316,7 +368,59 @@ export default function RBACPortal() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Available Roles</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>Available Roles</CardTitle>
+              <Dialog open={isCreateRoleOpen} onOpenChange={setIsCreateRoleOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Role
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create New Role</DialogTitle>
+                    <DialogDescription>
+                      Add a new role to assign to users in your organization.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="role-name">Role Name</Label>
+                      <Input
+                        id="role-name"
+                        placeholder="e.g. Project Manager"
+                        value={newRoleName}
+                        onChange={(e) => setNewRoleName(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="role-description">Description</Label>
+                      <Textarea
+                        id="role-description"
+                        placeholder="Describe the role and its responsibilities..."
+                        value={newRoleDescription}
+                        onChange={(e) => setNewRoleDescription(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsCreateRoleOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleCreateRole}
+                      disabled={!newRoleName.trim() || createRoleMutation.isPending}
+                    >
+                      Create Role
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
