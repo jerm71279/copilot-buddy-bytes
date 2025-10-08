@@ -57,6 +57,8 @@ import MCPServerDashboard from "./pages/MCPServerDashboard";
 import SalesPortal from "./pages/SalesPortal";
 import CIPPDashboard from "./pages/CIPPDashboard";
 import DataFlowPortal from "./pages/DataFlowPortal";
+import RBACPortal from "./pages/RBACPortal";
+import PredictiveInsights from "./pages/PredictiveInsights";
 
 const queryClient = new QueryClient();
 
@@ -265,6 +267,20 @@ const App = () => (
           <Route path="/audit/privileged-access" element={
             <ProtectedRoute requireAdmin>
               <PrivilegedAccessAudit />
+            </ProtectedRoute>
+          } />
+          
+          {/* RBAC Portal - Admin Only */}
+          <Route path="/rbac" element={
+            <ProtectedRoute requireAdmin>
+              <RBACPortal />
+            </ProtectedRoute>
+          } />
+          
+          {/* Predictive Insights - Protected */}
+          <Route path="/predictive-insights" element={
+            <ProtectedRoute>
+              <PredictiveInsights />
             </ProtectedRoute>
           } />
           
