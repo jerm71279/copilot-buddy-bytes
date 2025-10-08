@@ -8,8 +8,8 @@
     <style>
         @media print {
             @page {
-                margin: 0.75in;
-                size: letter;
+                margin: 0.5in;
+                size: landscape;
             }
             
             body {
@@ -28,13 +28,23 @@
             pre, .mermaid {
                 page-break-inside: avoid;
             }
+            
+            .mermaid {
+                min-height: auto;
+                page-break-before: always;
+                padding: 20px;
+            }
+            
+            .zoom-controls {
+                display: none;
+            }
         }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 8.5in;
+            max-width: 100%;
             margin: 0 auto;
             padding: 20px;
             background: white;
@@ -94,10 +104,18 @@
         
         .mermaid {
             background: white;
-            padding: 20px;
+            padding: 40px;
             border-radius: 8px;
             border: 1px solid #e5e7eb;
-            margin: 20px 0;
+            margin: 30px 0;
+            min-height: 1200px;
+            overflow: visible;
+        }
+        
+        .mermaid svg {
+            max-width: 100% !important;
+            height: auto !important;
+            min-height: 1000px;
         }
         
         ul, ol {
@@ -162,6 +180,42 @@
             color: #6b7280;
             font-size: 0.9em;
         }
+        
+        .zoom-controls {
+            position: sticky;
+            top: 20px;
+            right: 20px;
+            float: right;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .zoom-btn {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 0 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        .zoom-btn:hover {
+            background: #7c3aed;
+        }
+        
+        .diagram-container {
+            position: relative;
+            width: 100%;
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -179,7 +233,15 @@
 
     <h3>Complete System Architecture</h3>
     
-    <div class="mermaid">
+    <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomDiagram(1.2)">Zoom In</button>
+        <button class="zoom-btn" onclick="zoomDiagram(0.8)">Zoom Out</button>
+        <button class="zoom-btn" onclick="resetZoom()">Reset</button>
+        <button class="zoom-btn" onclick="window.print()">Print</button>
+    </div>
+    
+    <div class="diagram-container">
+        <div class="mermaid" id="mainDiagram">
 graph TB
     subgraph "Frontend Layer (React + Vite)"
         Landing[Landing Page]
@@ -300,6 +362,7 @@ graph TB
     style LovableAI fill:#f59e0b,stroke:#d97706,color:#fff
     style M365 fill:#0078d4,stroke:#106ebe,color:#fff
     style Revio fill:#3b82f6,stroke:#2563eb,color:#fff
+    </div>
     </div>
 
     <div class="architecture-layer">
@@ -619,13 +682,36 @@ graph TB
     </div>
 
     <script>
+        let currentZoom = 1;
+        
+        function zoomDiagram(factor) {
+            currentZoom *= factor;
+            const diagram = document.getElementById('mainDiagram');
+            diagram.style.transform = `scale(${currentZoom})`;
+            diagram.style.transformOrigin = 'top left';
+        }
+        
+        function resetZoom() {
+            currentZoom = 1;
+            const diagram = document.getElementById('mainDiagram');
+            diagram.style.transform = 'scale(1)';
+        }
+        
         mermaid.initialize({ 
             startOnLoad: true,
             theme: 'default',
+            securityLevel: 'loose',
             flowchart: {
-                useMaxWidth: true,
+                useMaxWidth: false,
                 htmlLabels: true,
-                curve: 'basis'
+                curve: 'basis',
+                padding: 30,
+                nodeSpacing: 80,
+                rankSpacing: 100
+            },
+            themeVariables: {
+                fontSize: '18px',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
             }
         });
     </script>
