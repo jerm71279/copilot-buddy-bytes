@@ -51,24 +51,100 @@ npm run dev
 src/
 ├── components/          # Reusable UI components
 │   ├── ui/             # Base UI components (shadcn)
-│   └── [feature]/      # Feature-specific components
-├── pages/              # Route-level pages
+│   ├── rbac/           # Role-based access control
+│   ├── AIMCPGenerator.tsx
+│   ├── AppLauncher.tsx
+│   ├── AutomationSuggestions.tsx
+│   ├── CallToAction.tsx
+│   ├── DashboardNavigation.tsx
+│   ├── DepartmentAIAssistant.tsx
+│   ├── EvidenceUpload.tsx
+│   ├── ExternalSystemsBar.tsx
+│   ├── FlowDiagram.tsx
+│   ├── GlobalSearch.tsx
+│   ├── Hero.tsx
+│   ├── MCPServerStatus.tsx
+│   ├── Microsoft365Integration.tsx
+│   ├── Navigation.tsx
+│   ├── RepetitiveTaskTester.tsx
+│   ├── WorkflowBuilder.tsx
+│   └── WorkflowExecutionHistory.tsx
+├── pages/              # Route-level pages (61+ pages)
 │   ├── Auth.tsx        # Authentication
 │   ├── Index.tsx       # Landing page
-│   ├── *Dashboard.tsx  # Department dashboards
-│   └── IntegrationsPage.tsx
+│   ├── Portal.tsx      # Main employee portal
+│   ├── *Dashboard.tsx  # 9 department dashboards
+│   ├── AdminDashboard.tsx
+│   ├── AnalyticsPortal.tsx
+│   ├── CIPPDashboard.tsx
+│   ├── CMDBDashboard.tsx
+│   ├── ChangeManagement.tsx
+│   ├── ClientPortal.tsx
+│   ├── CompliancePortal.tsx
+│   ├── CustomReportBuilder.tsx
+│   ├── IncidentsDashboard.tsx
+│   ├── IntegrationsPage.tsx
+│   ├── KnowledgeBase.tsx
+│   ├── MCPServerDashboard.tsx
+│   ├── NetworkMonitoring.tsx  # NEW - SNMP/Syslog monitoring
+│   ├── OnboardingDashboard.tsx
+│   ├── RBACPortal.tsx
+│   ├── SalesPortal.tsx
+│   ├── SystemValidationDashboard.tsx
+│   ├── WorkflowAutomation.tsx
+│   └── [55+ other pages]
 ├── hooks/              # Custom React hooks
 │   ├── useCustomerCustomization.tsx
-│   └── useDemoMode.tsx
+│   ├── useDemoMode.tsx
+│   ├── useAuditLog.tsx
+│   ├── useRepetitiveTaskDetection.tsx
+│   └── useRevioData.tsx
 ├── integrations/       # External service integrations
 │   └── supabase/       # Supabase client & types
-└── lib/                # Utility functions
+├── lib/                # Utility functions
+│   └── utils.ts
+└── types/              # TypeScript type definitions
+    ├── cipp.ts
+    └── revio.ts
 
 supabase/
-├── functions/          # Edge functions
-│   ├── department-assistant/  # AI assistant endpoints
-│   └── mcp-server/            # MCP server integration
-└── migrations/         # Database migrations
+├── functions/          # Edge functions (26 total)
+│   ├── ai-mcp-generator/           # AI-powered MCP config generation
+│   ├── analytics-processor/        # Analytics data processing
+│   ├── auto-remediation/           # Automated incident remediation
+│   ├── automation-suggester/       # Automation recommendations
+│   ├── batch-evidence-generator/   # Compliance evidence generation
+│   ├── change-impact-analyzer/     # Change impact analysis
+│   ├── cipp-sync/                  # CIPP tenant synchronization
+│   ├── client-portal/              # Client self-service portal
+│   ├── comprehensive-test-data-generator/  # Test data generation
+│   ├── custom-report-engine/       # Custom report builder
+│   ├── customer-management/        # Customer CRUD operations
+│   ├── database-flow-logger/       # Database flow tracing
+│   ├── department-assistant/       # Department-specific AI chat
+│   ├── device-poller/              # Network device SNMP polling (NEW)
+│   ├── global-search/              # Cross-system search
+│   ├── graph-api/                  # Microsoft 365 Graph API
+│   ├── input-fuzzer/               # Security fuzz testing
+│   ├── intelligent-assistant/      # General AI assistant
+│   ├── knowledge-processor/        # Knowledge base AI processing
+│   ├── mcp-server/                 # MCP protocol server
+│   ├── ninjaone-sync/              # NinjaOne device sync
+│   ├── ninjaone-ticket/            # NinjaOne ticket creation
+│   ├── ninjaone-webhook/           # NinjaOne webhook receiver
+│   ├── predictive-insights/        # Predictive analytics
+│   ├── repetitive-task-detector/   # Task automation detection
+│   ├── revio-data/                 # Revio billing integration
+│   ├── sharepoint-sync/            # SharePoint document sync
+│   ├── snmp-collector/             # SNMP trap collection (NEW)
+│   ├── syslog-collector/           # Syslog message analysis (NEW)
+│   ├── workflow-evidence-generator/  # Workflow evidence automation
+│   ├── workflow-executor/          # Workflow execution engine
+│   ├── workflow-insights/          # Workflow analytics
+│   ├── workflow-orchestrator/      # Multi-workflow coordination
+│   └── workflow-webhook/           # Workflow webhook triggers
+├── migrations/         # Database migrations (93 tables)
+└── config.toml         # Supabase configuration
 ```
 
 ## 🔑 Key Features
