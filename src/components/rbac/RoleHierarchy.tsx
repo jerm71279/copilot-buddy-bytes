@@ -35,7 +35,7 @@ export default function RoleHierarchy() {
     queryKey: ["role-hierarchy"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("role_hierarchy")
+        .from("role_hierarchy" as any)
         .select(`
           *,
           parent_role:roles!role_hierarchy_parent_role_id_fkey(name),
@@ -51,7 +51,7 @@ export default function RoleHierarchy() {
   const addHierarchyMutation = useMutation({
     mutationFn: async (data: any) => {
       const { error } = await supabase
-        .from("role_hierarchy")
+        .from("role_hierarchy" as any)
         .insert(data);
       if (error) throw error;
     },
@@ -72,7 +72,7 @@ export default function RoleHierarchy() {
   const deleteHierarchyMutation = useMutation({
     mutationFn: async (hierarchyId: string) => {
       const { error } = await supabase
-        .from("role_hierarchy")
+        .from("role_hierarchy" as any)
         .delete()
         .eq("id", hierarchyId);
       if (error) throw error;

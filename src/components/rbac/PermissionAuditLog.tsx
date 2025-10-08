@@ -14,7 +14,7 @@ export default function PermissionAuditLog() {
     queryKey: ["permission-audit-log"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("permission_audit_log")
+        .from("permission_audit_log" as any)
         .select(`
           *,
           user:user_profiles!permission_audit_log_user_id_fkey(full_name),

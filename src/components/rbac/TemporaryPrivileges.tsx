@@ -52,7 +52,7 @@ export default function TemporaryPrivileges() {
     queryKey: ["temporary-privileges"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("temporary_privileges")
+        .from("temporary_privileges" as any)
         .select(`
           *,
           role:roles(name),
@@ -75,7 +75,7 @@ export default function TemporaryPrivileges() {
       validUntil.setHours(validUntil.getHours() + parseInt(data.validHours));
 
       const { error } = await supabase
-        .from("temporary_privileges")
+        .from("temporary_privileges" as any)
         .insert({
           user_id: data.userId,
           role_id: data.roleId,
@@ -106,7 +106,7 @@ export default function TemporaryPrivileges() {
       if (!user) throw new Error("Not authenticated");
 
       const { error } = await supabase
-        .from("temporary_privileges")
+        .from("temporary_privileges" as any)
         .update({
           is_active: false,
           revoked_at: new Date().toISOString(),

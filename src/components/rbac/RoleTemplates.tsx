@@ -24,7 +24,7 @@ export default function RoleTemplates() {
     queryKey: ["role-templates"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("role_templates")
+        .from("role_templates" as any)
         .select("*")
         .order("template_name");
       if (error) throw error;
