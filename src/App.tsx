@@ -61,6 +61,7 @@ import RBACPortal from "./pages/RBACPortal";
 import PredictiveInsights from "./pages/PredictiveInsights";
 import WorkflowOrchestration from "./pages/WorkflowOrchestration";
 import VisualWorkflowBuilder from "./pages/VisualWorkflowBuilder";
+import CustomerAdmin from "./pages/CustomerAdmin";
 
 const queryClient = new QueryClient();
 
@@ -383,6 +384,13 @@ const App = () => (
           <Route path="/analytics-portal" element={
             <ProtectedRoute>
               <AnalyticsPortal />
+            </ProtectedRoute>
+          } />
+          
+          {/* Customer Administration - Protected */}
+          <Route path="/customer-admin" element={
+            <ProtectedRoute>
+              <CustomerAdmin />
             </ProtectedRoute>
           } />
           

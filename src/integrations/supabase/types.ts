@@ -1647,6 +1647,99 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_activity_log: {
+        Row: {
+          activity_description: string
+          activity_type: string
+          created_at: string
+          customer_id: string
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_description: string
+          activity_type: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_description?: string
+          activity_type?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      customer_billing: {
+        Row: {
+          billing_period_end: string
+          billing_period_start: string
+          created_at: string
+          currency: string
+          customer_id: string
+          due_date: string | null
+          id: string
+          invoice_number: string | null
+          invoice_url: string | null
+          line_items: Json | null
+          notes: string | null
+          paid_at: string | null
+          payment_method: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          billing_period_end: string
+          billing_period_start: string
+          created_at?: string
+          currency?: string
+          customer_id: string
+          due_date?: string | null
+          id?: string
+          invoice_number?: string | null
+          invoice_url?: string | null
+          line_items?: Json | null
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          billing_period_end?: string
+          billing_period_start?: string
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          due_date?: string | null
+          id?: string
+          invoice_number?: string | null
+          invoice_url?: string | null
+          line_items?: Json | null
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customer_customizations: {
         Row: {
           accent_color: string | null
@@ -1703,6 +1796,138 @@ export type Database = {
           },
         ]
       }
+      customer_details: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          billing_email: string | null
+          city: string | null
+          company_name: string
+          company_size: string | null
+          country: string | null
+          created_at: string
+          customer_id: string
+          id: string
+          industry: string | null
+          is_trial: boolean | null
+          logo_url: string | null
+          metadata: Json | null
+          postal_code: string | null
+          primary_contact_email: string | null
+          primary_contact_name: string | null
+          primary_contact_phone: string | null
+          settings: Json | null
+          state: string | null
+          status: string
+          subscription_end_date: string | null
+          subscription_start_date: string | null
+          subscription_tier: string | null
+          timezone: string | null
+          trial_end_date: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          billing_email?: string | null
+          city?: string | null
+          company_name: string
+          company_size?: string | null
+          country?: string | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          industry?: string | null
+          is_trial?: boolean | null
+          logo_url?: string | null
+          metadata?: Json | null
+          postal_code?: string | null
+          primary_contact_email?: string | null
+          primary_contact_name?: string | null
+          primary_contact_phone?: string | null
+          settings?: Json | null
+          state?: string | null
+          status?: string
+          subscription_end_date?: string | null
+          subscription_start_date?: string | null
+          subscription_tier?: string | null
+          timezone?: string | null
+          trial_end_date?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          billing_email?: string | null
+          city?: string | null
+          company_name?: string
+          company_size?: string | null
+          country?: string | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          industry?: string | null
+          is_trial?: boolean | null
+          logo_url?: string | null
+          metadata?: Json | null
+          postal_code?: string | null
+          primary_contact_email?: string | null
+          primary_contact_name?: string | null
+          primary_contact_phone?: string | null
+          settings?: Json | null
+          state?: string | null
+          status?: string
+          subscription_end_date?: string | null
+          subscription_start_date?: string | null
+          subscription_tier?: string | null
+          timezone?: string | null
+          trial_end_date?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      customer_features: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          disabled_at: string | null
+          enabled_at: string | null
+          feature_name: string
+          id: string
+          is_enabled: boolean
+          settings: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          disabled_at?: string | null
+          enabled_at?: string | null
+          feature_name: string
+          id?: string
+          is_enabled?: boolean
+          settings?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          disabled_at?: string | null
+          enabled_at?: string | null
+          feature_name?: string
+          id?: string
+          is_enabled?: boolean
+          settings?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customer_frameworks: {
         Row: {
           created_at: string
@@ -1744,6 +1969,123 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      customer_health: {
+        Row: {
+          adoption_score: number | null
+          calculated_at: string
+          created_at: string
+          customer_id: string
+          engagement_score: number | null
+          health_factors: Json | null
+          health_score: number
+          id: string
+          last_activity_at: string | null
+          recommendations: Json | null
+          risk_level: string
+          satisfaction_score: number | null
+        }
+        Insert: {
+          adoption_score?: number | null
+          calculated_at?: string
+          created_at?: string
+          customer_id: string
+          engagement_score?: number | null
+          health_factors?: Json | null
+          health_score: number
+          id?: string
+          last_activity_at?: string | null
+          recommendations?: Json | null
+          risk_level?: string
+          satisfaction_score?: number | null
+        }
+        Update: {
+          adoption_score?: number | null
+          calculated_at?: string
+          created_at?: string
+          customer_id?: string
+          engagement_score?: number | null
+          health_factors?: Json | null
+          health_score?: number
+          id?: string
+          last_activity_at?: string | null
+          recommendations?: Json | null
+          risk_level?: string
+          satisfaction_score?: number | null
+        }
+        Relationships: []
+      }
+      customer_notes: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string
+          customer_id: string
+          id: string
+          is_important: boolean | null
+          note_type: string
+          subject: string | null
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by: string
+          customer_id: string
+          id?: string
+          is_important?: boolean | null
+          note_type?: string
+          subject?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          id?: string
+          is_important?: boolean | null
+          note_type?: string
+          subject?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      customer_usage: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          metric_type: string
+          metric_value: number
+          quota_limit: number | null
+          usage_date: string
+          usage_details: Json | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          metric_type: string
+          metric_value?: number
+          quota_limit?: number | null
+          usage_date: string
+          usage_details?: Json | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          metric_type?: string
+          metric_value?: number
+          quota_limit?: number | null
+          usage_date?: string
+          usage_details?: Json | null
+        }
+        Relationships: []
       }
       customers: {
         Row: {
@@ -3138,6 +3480,66 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          category: string | null
+          created_at: string
+          created_by: string
+          customer_id: string
+          description: string
+          id: string
+          metadata: Json | null
+          priority: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          subject: string
+          tags: string[] | null
+          ticket_number: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          category?: string | null
+          created_at?: string
+          created_by: string
+          customer_id: string
+          description: string
+          id?: string
+          metadata?: Json | null
+          priority?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          subject: string
+          tags?: string[] | null
+          ticket_number: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: string | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          description?: string
+          id?: string
+          metadata?: Json | null
+          priority?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          subject?: string
+          tags?: string[] | null
+          ticket_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       system_access_logs: {
         Row: {
           access_type: string
@@ -3797,6 +4199,10 @@ export type Database = {
         Returns: boolean
       }
       generate_change_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_ticket_number: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
