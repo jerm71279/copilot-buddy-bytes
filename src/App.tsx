@@ -66,6 +66,7 @@ import IncidentsDashboard from "./pages/IncidentsDashboard";
 import RemediationRules from "./pages/RemediationRules";
 import ClientPortal from "./pages/ClientPortal";
 import CustomReportBuilder from "./pages/CustomReportBuilder";
+import NetworkMonitoring from "./pages/NetworkMonitoring";
 
 const queryClient = new QueryClient();
 
@@ -421,6 +422,13 @@ const App = () => (
           <Route path="/reports/builder" element={
             <ProtectedRoute>
               <CustomReportBuilder />
+            </ProtectedRoute>
+          } />
+          
+          {/* Network Monitoring - Protected */}
+          <Route path="/network-monitoring" element={
+            <ProtectedRoute>
+              <NetworkMonitoring />
             </ProtectedRoute>
           } />
           

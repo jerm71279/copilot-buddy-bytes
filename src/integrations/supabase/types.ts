@@ -2405,6 +2405,59 @@ export type Database = {
         }
         Relationships: []
       }
+      device_metrics: {
+        Row: {
+          additional_data: Json | null
+          created_at: string
+          customer_id: string
+          device_id: string
+          id: string
+          interface_name: string | null
+          metric_name: string
+          metric_type: string
+          metric_unit: string | null
+          metric_value: number | null
+          oid: string | null
+          polled_at: string
+        }
+        Insert: {
+          additional_data?: Json | null
+          created_at?: string
+          customer_id: string
+          device_id: string
+          id?: string
+          interface_name?: string | null
+          metric_name: string
+          metric_type: string
+          metric_unit?: string | null
+          metric_value?: number | null
+          oid?: string | null
+          polled_at?: string
+        }
+        Update: {
+          additional_data?: Json | null
+          created_at?: string
+          customer_id?: string
+          device_id?: string
+          id?: string
+          interface_name?: string | null
+          metric_name?: string
+          metric_type?: string
+          metric_unit?: string | null
+          metric_value?: number | null
+          oid?: string | null
+          polled_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_metrics_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "network_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       evidence_files: {
         Row: {
           compliance_tags: string[] | null
@@ -3235,6 +3288,206 @@ export type Database = {
           },
         ]
       }
+      network_alert_rules: {
+        Row: {
+          auto_remediation_workflow_id: string | null
+          conditions: Json
+          created_at: string
+          created_by: string
+          customer_id: string
+          description: string | null
+          id: string
+          is_enabled: boolean | null
+          notification_channels: string[] | null
+          rule_name: string
+          rule_type: string
+          severity: string
+          updated_at: string
+        }
+        Insert: {
+          auto_remediation_workflow_id?: string | null
+          conditions: Json
+          created_at?: string
+          created_by: string
+          customer_id: string
+          description?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          notification_channels?: string[] | null
+          rule_name: string
+          rule_type: string
+          severity: string
+          updated_at?: string
+        }
+        Update: {
+          auto_remediation_workflow_id?: string | null
+          conditions?: Json
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          description?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          notification_channels?: string[] | null
+          rule_name?: string
+          rule_type?: string
+          severity?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      network_alerts: {
+        Row: {
+          alert_type: string
+          assigned_to: string | null
+          auto_remediation_triggered: boolean | null
+          correlation_id: string | null
+          created_at: string
+          customer_id: string
+          description: string
+          device_id: string | null
+          id: string
+          incident_id: string | null
+          notes: string | null
+          remediation_action: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          source_data: Json | null
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          alert_type: string
+          assigned_to?: string | null
+          auto_remediation_triggered?: boolean | null
+          correlation_id?: string | null
+          created_at?: string
+          customer_id: string
+          description: string
+          device_id?: string | null
+          id?: string
+          incident_id?: string | null
+          notes?: string | null
+          remediation_action?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          source_data?: Json | null
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          alert_type?: string
+          assigned_to?: string | null
+          auto_remediation_triggered?: boolean | null
+          correlation_id?: string | null
+          created_at?: string
+          customer_id?: string
+          description?: string
+          device_id?: string | null
+          id?: string
+          incident_id?: string | null
+          notes?: string | null
+          remediation_action?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          source_data?: Json | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "network_alerts_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "network_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      network_devices: {
+        Row: {
+          ci_id: string | null
+          created_at: string
+          created_by: string
+          customer_id: string
+          description: string | null
+          device_name: string
+          device_type: string
+          id: string
+          ip_address: unknown
+          last_poll_at: string | null
+          last_syslog_at: string | null
+          location: string | null
+          metadata: Json | null
+          model: string | null
+          polling_enabled: boolean | null
+          polling_interval_seconds: number | null
+          snmp_community: string | null
+          snmp_port: number | null
+          snmp_version: string | null
+          status: string | null
+          syslog_enabled: boolean | null
+          updated_at: string
+          vendor: string | null
+        }
+        Insert: {
+          ci_id?: string | null
+          created_at?: string
+          created_by: string
+          customer_id: string
+          description?: string | null
+          device_name: string
+          device_type: string
+          id?: string
+          ip_address: unknown
+          last_poll_at?: string | null
+          last_syslog_at?: string | null
+          location?: string | null
+          metadata?: Json | null
+          model?: string | null
+          polling_enabled?: boolean | null
+          polling_interval_seconds?: number | null
+          snmp_community?: string | null
+          snmp_port?: number | null
+          snmp_version?: string | null
+          status?: string | null
+          syslog_enabled?: boolean | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Update: {
+          ci_id?: string | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          description?: string | null
+          device_name?: string
+          device_type?: string
+          id?: string
+          ip_address?: unknown
+          last_poll_at?: string | null
+          last_syslog_at?: string | null
+          location?: string | null
+          metadata?: Json | null
+          model?: string | null
+          polling_enabled?: boolean | null
+          polling_interval_seconds?: number | null
+          snmp_community?: string | null
+          snmp_port?: number | null
+          snmp_version?: string | null
+          status?: string | null
+          syslog_enabled?: boolean | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -3976,6 +4229,71 @@ export type Database = {
           },
         ]
       }
+      snmp_traps: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          created_at: string
+          created_incident_id: string | null
+          customer_id: string
+          device_id: string | null
+          id: string
+          is_acknowledged: boolean | null
+          processed: boolean | null
+          raw_data: Json | null
+          received_at: string
+          severity: string | null
+          source_ip: unknown
+          trap_oid: string
+          trap_type: string | null
+          varbinds: Json | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          created_at?: string
+          created_incident_id?: string | null
+          customer_id: string
+          device_id?: string | null
+          id?: string
+          is_acknowledged?: boolean | null
+          processed?: boolean | null
+          raw_data?: Json | null
+          received_at?: string
+          severity?: string | null
+          source_ip: unknown
+          trap_oid: string
+          trap_type?: string | null
+          varbinds?: Json | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          created_at?: string
+          created_incident_id?: string | null
+          customer_id?: string
+          device_id?: string | null
+          id?: string
+          is_acknowledged?: boolean | null
+          processed?: boolean | null
+          raw_data?: Json | null
+          received_at?: string
+          severity?: string | null
+          source_ip?: unknown
+          trap_oid?: string
+          trap_type?: string | null
+          varbinds?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "snmp_traps_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "network_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscription_plans: {
         Row: {
           created_at: string
@@ -4080,6 +4398,89 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      syslog_messages: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          app_name: string | null
+          created_at: string
+          created_incident_id: string | null
+          customer_id: string
+          device_id: string | null
+          facility: number | null
+          hostname: string | null
+          id: string
+          is_acknowledged: boolean | null
+          is_security_event: boolean | null
+          message: string
+          msg_id: string | null
+          priority: number | null
+          proc_id: string | null
+          received_at: string
+          severity: number | null
+          source_ip: unknown
+          structured_data: Json | null
+          tags: string[] | null
+          timestamp: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          app_name?: string | null
+          created_at?: string
+          created_incident_id?: string | null
+          customer_id: string
+          device_id?: string | null
+          facility?: number | null
+          hostname?: string | null
+          id?: string
+          is_acknowledged?: boolean | null
+          is_security_event?: boolean | null
+          message: string
+          msg_id?: string | null
+          priority?: number | null
+          proc_id?: string | null
+          received_at?: string
+          severity?: number | null
+          source_ip: unknown
+          structured_data?: Json | null
+          tags?: string[] | null
+          timestamp?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          app_name?: string | null
+          created_at?: string
+          created_incident_id?: string | null
+          customer_id?: string
+          device_id?: string | null
+          facility?: number | null
+          hostname?: string | null
+          id?: string
+          is_acknowledged?: boolean | null
+          is_security_event?: boolean | null
+          message?: string
+          msg_id?: string | null
+          priority?: number | null
+          proc_id?: string | null
+          received_at?: string
+          severity?: number | null
+          source_ip?: unknown
+          structured_data?: Json | null
+          tags?: string[] | null
+          timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "syslog_messages_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "network_devices"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       system_access_logs: {
         Row: {

@@ -192,6 +192,12 @@ const Navigation = () => {
                     Monitoring
                   </Link>
                   <Link
+                    to="/network-monitoring"
+                    className="text-sm font-medium hover:text-accent transition-colors"
+                  >
+                    Network
+                  </Link>
+                  <Link
                     to="/data-flows"
                     className="text-sm font-medium hover:text-accent transition-colors"
                   >
