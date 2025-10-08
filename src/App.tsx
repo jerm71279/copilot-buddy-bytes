@@ -59,6 +59,8 @@ import CIPPDashboard from "./pages/CIPPDashboard";
 import DataFlowPortal from "./pages/DataFlowPortal";
 import RBACPortal from "./pages/RBACPortal";
 import PredictiveInsights from "./pages/PredictiveInsights";
+import WorkflowOrchestration from "./pages/WorkflowOrchestration";
+import VisualWorkflowBuilder from "./pages/VisualWorkflowBuilder";
 
 const queryClient = new QueryClient();
 
@@ -281,6 +283,18 @@ const App = () => (
           <Route path="/predictive-insights" element={
             <ProtectedRoute>
               <PredictiveInsights />
+            </ProtectedRoute>
+          } />
+          
+          {/* Workflow Orchestration - Protected */}
+          <Route path="/workflow-orchestration" element={
+            <ProtectedRoute>
+              <WorkflowOrchestration />
+            </ProtectedRoute>
+          } />
+          <Route path="/workflows/visual-builder" element={
+            <ProtectedRoute>
+              <VisualWorkflowBuilder />
             </ProtectedRoute>
           } />
           
