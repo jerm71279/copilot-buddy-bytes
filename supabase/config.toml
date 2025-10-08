@@ -50,3 +50,12 @@ verify_jwt = true
 
 [functions.automation-suggester]
 verify_jwt = true
+
+[functions.predictive-insights]
+verify_jwt = true
+
+[functions.workflow-orchestrator]
+verify_jwt = true
+
+[functions.analytics-processor]
+verify_jwt = true
