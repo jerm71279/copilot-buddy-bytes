@@ -62,6 +62,10 @@ import PredictiveInsights from "./pages/PredictiveInsights";
 import WorkflowOrchestration from "./pages/WorkflowOrchestration";
 import VisualWorkflowBuilder from "./pages/VisualWorkflowBuilder";
 import CustomerAdmin from "./pages/CustomerAdmin";
+import IncidentsDashboard from "./pages/IncidentsDashboard";
+import RemediationRules from "./pages/RemediationRules";
+import ClientPortal from "./pages/ClientPortal";
+import CustomReportBuilder from "./pages/CustomReportBuilder";
 
 const queryClient = new QueryClient();
 
@@ -391,6 +395,32 @@ const App = () => (
           <Route path="/customer-admin" element={
             <ProtectedRoute>
               <CustomerAdmin />
+            </ProtectedRoute>
+          } />
+          
+          {/* Incidents & Auto-Remediation - Protected */}
+          <Route path="/incidents" element={
+            <ProtectedRoute>
+              <IncidentsDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/remediation-rules" element={
+            <ProtectedRoute>
+              <RemediationRules />
+            </ProtectedRoute>
+          } />
+          
+          {/* Client Portal - Protected */}
+          <Route path="/client-portal" element={
+            <ProtectedRoute>
+              <ClientPortal />
+            </ProtectedRoute>
+          } />
+          
+          {/* Custom Reports - Protected */}
+          <Route path="/reports/builder" element={
+            <ProtectedRoute>
+              <CustomReportBuilder />
             </ProtectedRoute>
           } />
           
