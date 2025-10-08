@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Activity, Clock, FileText, BookOpen, Workflow, BarChart3, Settings, ExternalLink, Brain, Zap, Calendar, MessagesSquare, ArrowLeft } from "lucide-react";
+import { Shield, Activity, Clock, FileText, BookOpen, Workflow, BarChart3, Settings, ExternalLink, Brain, Zap, Calendar, MessagesSquare, ArrowLeft, AlertTriangle, Users, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import EmployeeToolbar from "@/components/EmployeeToolbar";
@@ -121,6 +121,10 @@ const Portal = () => {
     { name: "Workflows", icon: Workflow, path: "/workflow/automation", description: "Process automation and execution" },
     { name: "AI Assistant", icon: Brain, path: "/portal", description: "Get AI-powered help and insights" },
     { name: "Integrations", icon: Zap, path: "/integrations", description: "Connected systems and tools" },
+    { name: "CMDB", icon: Database, path: "/cmdb", description: "Configuration items and assets" },
+    { name: "Incidents & Auto-Remediation", icon: AlertTriangle, path: "/incidents", description: "Monitor and resolve incidents" },
+    { name: "Client Portal", icon: Users, path: "/client-portal", description: "Support tickets and services" },
+    { name: "Custom Reports", icon: FileText, path: "/reports/builder", description: "Build and schedule reports" },
   ];
 
   // Analytics/Dashboards - Secondary access

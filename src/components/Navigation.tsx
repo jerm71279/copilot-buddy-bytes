@@ -197,6 +197,24 @@ const Navigation = () => {
                   >
                     Data Flows
                   </Link>
+                  <Link
+                    to="/incidents"
+                    className="text-sm font-medium hover:text-accent transition-colors"
+                  >
+                    Incidents
+                  </Link>
+                  <Link
+                    to="/client-portal"
+                    className="text-sm font-medium hover:text-accent transition-colors"
+                  >
+                    Client Portal
+                  </Link>
+                  <Link
+                    to="/reports/builder"
+                    className="text-sm font-medium hover:text-accent transition-colors"
+                  >
+                    Reports
+                  </Link>
                 </>
               )}
               <button
@@ -341,6 +359,27 @@ const Navigation = () => {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Data Flows
+                  </Link>
+                  <Link
+                    to="/incidents"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Incidents
+                  </Link>
+                  <Link
+                    to="/client-portal"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Client Portal
+                  </Link>
+                  <Link
+                    to="/reports/builder"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Reports
                   </Link>
                 </>
               )}
