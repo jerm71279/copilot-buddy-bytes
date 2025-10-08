@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -222,10 +223,13 @@ const AdminDashboard = () => {
           ]}
         />
         
-        <div className="flex items-center gap-2 mb-6">
-          <Users className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-          {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <Users className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+            {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
+          </div>
+          <DashboardSettingsMenu dashboardName="Admin" />
         </div>
 
         {/* Quick Access Menu Bar */}

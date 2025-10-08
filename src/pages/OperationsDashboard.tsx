@@ -12,6 +12,7 @@ import { useDemoMode } from "@/hooks/useDemoMode";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -186,6 +187,11 @@ const OperationsDashboard = () => {
             { name: "SOC Dashboard", path: "/dashboard/soc" },
           ]}
         />
+
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Operations Dashboard</h1>
+          <DashboardSettingsMenu dashboardName="Operations" />
+        </div>
         
         {/* Quick Access Menu Bar */}
         <div className="bg-card border-b border-border -mx-4 px-4">

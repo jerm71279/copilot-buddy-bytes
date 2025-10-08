@@ -17,6 +17,7 @@ import DashboardNavigation from "@/components/DashboardNavigation";
 import { toast } from "sonner";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 
 import {
   DropdownMenu,
@@ -302,6 +303,11 @@ const SOCDashboard = () => {
             { name: "SOC Dashboard", path: "/dashboard/soc" },
           ]}
         />
+
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Security Operations Center</h1>
+          <DashboardSettingsMenu dashboardName="SOC" />
+        </div>
         
         {/* Quick Access Menu Bar */}
         <div className="bg-card border-b border-border -mx-4 px-4">

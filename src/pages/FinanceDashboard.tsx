@@ -14,6 +14,7 @@ import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { useRevioData } from "@/hooks/useRevioData";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -321,6 +322,11 @@ Churn rate represents the percentage of customers who have cancelled or become i
             { name: "SOC Dashboard", path: "/dashboard/soc" },
           ]}
         />
+
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Finance Dashboard</h1>
+          <DashboardSettingsMenu dashboardName="Finance" />
+        </div>
         
         {/* Quick Access Menu Bar */}
         <div className="bg-card border-b border-border -mx-4 px-4">
