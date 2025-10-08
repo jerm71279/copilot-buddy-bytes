@@ -1358,6 +1358,113 @@ export type Database = {
           },
         ]
       }
+      client_portal_users: {
+        Row: {
+          company_name: string
+          created_at: string
+          customer_id: string
+          email: string
+          full_name: string
+          id: string
+          is_active: boolean | null
+          last_login_at: string | null
+          phone: string | null
+          portal_role: string
+          updated_at: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          customer_id: string
+          email: string
+          full_name: string
+          id?: string
+          is_active?: boolean | null
+          last_login_at?: string | null
+          phone?: string | null
+          portal_role?: string
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          customer_id?: string
+          email?: string
+          full_name?: string
+          id?: string
+          is_active?: boolean | null
+          last_login_at?: string | null
+          phone?: string | null
+          portal_role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      client_tickets: {
+        Row: {
+          assigned_to: string | null
+          category: string
+          created_at: string
+          customer_id: string
+          description: string
+          first_response_at: string | null
+          id: string
+          priority: string
+          resolution: string | null
+          resolved_at: string | null
+          sla_breach: boolean | null
+          status: string
+          subject: string
+          submitted_by: string
+          ticket_number: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          category: string
+          created_at?: string
+          customer_id: string
+          description: string
+          first_response_at?: string | null
+          id?: string
+          priority?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          sla_breach?: boolean | null
+          status?: string
+          subject: string
+          submitted_by: string
+          ticket_number: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: string
+          created_at?: string
+          customer_id?: string
+          description?: string
+          first_response_at?: string | null
+          id?: string
+          priority?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          sla_breach?: boolean | null
+          status?: string
+          subject?: string
+          submitted_by?: string
+          ticket_number?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_tickets_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "client_portal_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_controls: {
         Row: {
           automation_level: string
@@ -1644,6 +1751,72 @@ export type Database = {
           updated_by?: string | null
           version?: string | null
           warranty_expiry?: string | null
+        }
+        Relationships: []
+      }
+      custom_reports: {
+        Row: {
+          chart_config: Json | null
+          columns: Json | null
+          created_at: string
+          created_by: string
+          customer_id: string
+          data_sources: Json
+          description: string | null
+          filters: Json | null
+          id: string
+          is_favorite: boolean | null
+          is_public: boolean | null
+          is_scheduled: boolean | null
+          last_run_at: string | null
+          layout: Json | null
+          recipients: string[] | null
+          report_name: string
+          report_type: string
+          schedule_cron: string | null
+          updated_at: string
+        }
+        Insert: {
+          chart_config?: Json | null
+          columns?: Json | null
+          created_at?: string
+          created_by: string
+          customer_id: string
+          data_sources: Json
+          description?: string | null
+          filters?: Json | null
+          id?: string
+          is_favorite?: boolean | null
+          is_public?: boolean | null
+          is_scheduled?: boolean | null
+          last_run_at?: string | null
+          layout?: Json | null
+          recipients?: string[] | null
+          report_name: string
+          report_type: string
+          schedule_cron?: string | null
+          updated_at?: string
+        }
+        Update: {
+          chart_config?: Json | null
+          columns?: Json | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          data_sources?: Json
+          description?: string | null
+          filters?: Json | null
+          id?: string
+          is_favorite?: boolean | null
+          is_public?: boolean | null
+          is_scheduled?: boolean | null
+          last_run_at?: string | null
+          layout?: Json | null
+          recipients?: string[] | null
+          report_name?: string
+          report_type?: string
+          schedule_cron?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -2294,6 +2467,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      incidents: {
+        Row: {
+          affected_ci_ids: string[] | null
+          affected_services: string[] | null
+          assigned_to: string | null
+          auto_remediated: boolean | null
+          created_at: string
+          created_by: string
+          customer_id: string
+          description: string
+          detected_at: string
+          detection_method: string
+          id: string
+          incident_number: string
+          incident_type: string
+          remediation_applied: string | null
+          resolution_time_minutes: number | null
+          resolved_at: string | null
+          root_cause: string | null
+          severity: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affected_ci_ids?: string[] | null
+          affected_services?: string[] | null
+          assigned_to?: string | null
+          auto_remediated?: boolean | null
+          created_at?: string
+          created_by: string
+          customer_id: string
+          description: string
+          detected_at?: string
+          detection_method: string
+          id?: string
+          incident_number: string
+          incident_type: string
+          remediation_applied?: string | null
+          resolution_time_minutes?: number | null
+          resolved_at?: string | null
+          root_cause?: string | null
+          severity: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affected_ci_ids?: string[] | null
+          affected_services?: string[] | null
+          assigned_to?: string | null
+          auto_remediated?: boolean | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          description?: string
+          detected_at?: string
+          detection_method?: string
+          id?: string
+          incident_number?: string
+          incident_type?: string
+          remediation_applied?: string | null
+          resolution_time_minutes?: number | null
+          resolved_at?: string | null
+          root_cause?: string | null
+          severity?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       integration_credentials: {
         Row: {
@@ -3273,6 +3518,173 @@ export type Database = {
           },
         ]
       }
+      remediation_executions: {
+        Row: {
+          actions_taken: Json
+          customer_id: string
+          error_message: string | null
+          executed_at: string
+          executed_by: string | null
+          execution_duration_ms: number | null
+          execution_type: string
+          id: string
+          incident_id: string
+          rule_id: string | null
+          success: boolean
+        }
+        Insert: {
+          actions_taken: Json
+          customer_id: string
+          error_message?: string | null
+          executed_at?: string
+          executed_by?: string | null
+          execution_duration_ms?: number | null
+          execution_type: string
+          id?: string
+          incident_id: string
+          rule_id?: string | null
+          success: boolean
+        }
+        Update: {
+          actions_taken?: Json
+          customer_id?: string
+          error_message?: string | null
+          executed_at?: string
+          executed_by?: string | null
+          execution_duration_ms?: number | null
+          execution_type?: string
+          id?: string
+          incident_id?: string
+          rule_id?: string | null
+          success?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "remediation_executions_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "remediation_executions_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "remediation_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      remediation_rules: {
+        Row: {
+          approval_threshold: string | null
+          auto_execute: boolean | null
+          conditions: Json
+          created_at: string
+          created_by: string
+          customer_id: string
+          description: string | null
+          execution_count: number | null
+          id: string
+          incident_pattern: Json
+          is_active: boolean | null
+          last_executed_at: string | null
+          remediation_actions: Json
+          requires_approval: boolean | null
+          rule_name: string
+          success_rate: number | null
+          updated_at: string
+        }
+        Insert: {
+          approval_threshold?: string | null
+          auto_execute?: boolean | null
+          conditions: Json
+          created_at?: string
+          created_by: string
+          customer_id: string
+          description?: string | null
+          execution_count?: number | null
+          id?: string
+          incident_pattern: Json
+          is_active?: boolean | null
+          last_executed_at?: string | null
+          remediation_actions: Json
+          requires_approval?: boolean | null
+          rule_name: string
+          success_rate?: number | null
+          updated_at?: string
+        }
+        Update: {
+          approval_threshold?: string | null
+          auto_execute?: boolean | null
+          conditions?: Json
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          description?: string | null
+          execution_count?: number | null
+          id?: string
+          incident_pattern?: Json
+          is_active?: boolean | null
+          last_executed_at?: string | null
+          remediation_actions?: Json
+          requires_approval?: boolean | null
+          rule_name?: string
+          success_rate?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      report_executions: {
+        Row: {
+          created_at: string
+          customer_id: string
+          error_message: string | null
+          executed_by: string | null
+          execution_time_ms: number | null
+          execution_type: string
+          id: string
+          output_file_url: string | null
+          report_id: string
+          result_count: number | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          error_message?: string | null
+          executed_by?: string | null
+          execution_time_ms?: number | null
+          execution_type: string
+          id?: string
+          output_file_url?: string | null
+          report_id: string
+          result_count?: number | null
+          status: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          error_message?: string | null
+          executed_by?: string | null
+          execution_time_ms?: number | null
+          execution_type?: string
+          id?: string
+          output_file_url?: string | null
+          report_id?: string
+          result_count?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_executions_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "custom_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       role_permissions: {
         Row: {
           created_at: string
@@ -3331,6 +3743,135 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      service_catalog: {
+        Row: {
+          approval_workflow_id: string | null
+          category: string
+          created_at: string
+          customer_id: string
+          description: string
+          display_order: number | null
+          estimated_delivery_days: number | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          request_form_schema: Json
+          requires_approval: boolean | null
+          service_name: string
+          sla_hours: number | null
+          updated_at: string
+        }
+        Insert: {
+          approval_workflow_id?: string | null
+          category: string
+          created_at?: string
+          customer_id: string
+          description: string
+          display_order?: number | null
+          estimated_delivery_days?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          request_form_schema?: Json
+          requires_approval?: boolean | null
+          service_name: string
+          sla_hours?: number | null
+          updated_at?: string
+        }
+        Update: {
+          approval_workflow_id?: string | null
+          category?: string
+          created_at?: string
+          customer_id?: string
+          description?: string
+          display_order?: number | null
+          estimated_delivery_days?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          request_form_schema?: Json
+          requires_approval?: boolean | null
+          service_name?: string
+          sla_hours?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      service_requests: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          description: string
+          due_date: string | null
+          form_data: Json | null
+          id: string
+          priority: string
+          request_number: string
+          requested_by: string
+          service_id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_id: string
+          description: string
+          due_date?: string | null
+          form_data?: Json | null
+          id?: string
+          priority?: string
+          request_number: string
+          requested_by: string
+          service_id: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          description?: string
+          due_date?: string | null
+          form_data?: Json | null
+          id?: string
+          priority?: string
+          request_number?: string
+          requested_by?: string
+          service_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_requests_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "client_portal_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_requests_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "service_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sharepoint_sync_config: {
         Row: {
@@ -3682,6 +4223,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      ticket_comments: {
+        Row: {
+          attachments: Json | null
+          author_id: string
+          author_type: string
+          comment: string
+          created_at: string
+          id: string
+          is_internal: boolean | null
+          ticket_id: string
+        }
+        Insert: {
+          attachments?: Json | null
+          author_id: string
+          author_type: string
+          comment: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          ticket_id: string
+        }
+        Update: {
+          attachments?: Json | null
+          author_id?: string
+          author_type?: string
+          comment?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_comments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "client_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       use_cases: {
         Row: {
@@ -4199,6 +4781,18 @@ export type Database = {
         Returns: boolean
       }
       generate_change_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_client_ticket_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_incident_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_service_request_number: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
