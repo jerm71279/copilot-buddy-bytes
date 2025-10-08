@@ -11,45 +11,55 @@ Implemented a unified dropdown menu pattern across all department dashboards for
 ## Dashboards Updated
 
 ### 1. Admin Dashboard
+- **Settings Menu**: Notifications, Appearance, Data Management (Export/Import), Privacy & Security
 - **MCP Tools** dropdown: Server Status, Logs, Configure, AI Generator
 - **Testing & Validation** dropdown: System Validation, Data & Security Tests
 - Direct buttons: Applications, CMDB, Change Management
 
 ### 2. Compliance Dashboard
+- **Settings Menu**: Notifications, Appearance, Data Management (Export/Import), Privacy & Security
 - **Compliance Tools** dropdown: Audit Reports, Evidence Upload, Framework Records, Portal
 - **Reports** dropdown: Compliance Audit Reports, Framework Status Reports
 
 ### 3. SOC Dashboard
+- **Settings Menu**: Notifications, Appearance, Data Management (Export/Import), Privacy & Security
 - **Security Tools** dropdown: Privileged Access Audit, Anomaly Detection, Threat Analysis
 - **Reports** dropdown: Security Audit Reports, Access Audit Trail
 
 ### 4. Executive Dashboard
+- **Settings Menu**: Notifications, Appearance, Data Management (Export/Import), Privacy & Security
 - **Executive Tools** dropdown: Customer Management, Analytics Portal, Compliance Overview
 - **Reports** dropdown: Performance Dashboard, Compliance Reports
 
 ### 5. HR Dashboard
+- **Settings Menu**: Notifications, Appearance, Data Management (Export/Import), Privacy & Security
 - **HR Tools** dropdown: Employee Onboarding, Employee Records, Performance Reviews
 - **Reports** dropdown: HR Analytics, Workforce Reports
 
 ### 6. Sales Dashboard
+- **Settings Menu**: Notifications, Appearance, Data Management (Export/Import), Privacy & Security
 - **Sales Tools** dropdown: Pipeline Management, Customer Records, Active Deals
 - **Reports** dropdown: Sales Analytics, Performance Reports
 
 ### 7. Finance Dashboard
+- **Settings Menu**: Notifications, Appearance, Data Management (Export/Import), Privacy & Security
 - **Finance Tools** dropdown: Billing Management, Invoices, Subscriptions
 - **Reports** dropdown: Financial Analytics, Revenue Reports
 
 ### 8. IT Dashboard
+- **Settings Menu**: Notifications, Appearance, Data Management (Export/Import), Privacy & Security
 - **IT Tools** dropdown: CMDB Dashboard, Change Management, Integrations
 - **Reports** dropdown: IT Analytics, System Health Reports
 - **Redundancy removed**: Deleted duplicate CMDB/Change Management card buttons (now only in dropdown)
 
 ### 9. Operations Dashboard
+- **Settings Menu**: Notifications, Appearance, Data Management (Export/Import), Privacy & Security
 - **Operations Tools** dropdown: Workflow Builder, Trigger Manager, Execution History
 - **Reports** dropdown: Operations Analytics, Workflow Efficiency Reports
 - **Redundancy removed**: Deleted entire tabs section that duplicated dropdown items
 
 ### 10. Sales Portal (NEW)
+- **Settings Menu**: Notifications, Appearance, Data Management (Export/Import), Privacy & Security
 - **Personal Performance**: Active Deals, Monthly Revenue, Quota Progress, Closed Deals
 - **My Pipeline**: Active deals with status badges and close dates
 - **Activities**: Recent sales activities (calls, proposals, demos)
@@ -59,8 +69,34 @@ Implemented a unified dropdown menu pattern across all department dashboards for
 - **Route**: `/sales-portal` (protected, no admin required)
 - **Access**: Accessible from Sales Dashboard via "Sales Portal" button
 
+### 11. SOC Dashboard
+- **Settings Menu**: Notifications, Appearance, Data Management (Export/Import), Privacy & Security
+- **Security Operations**: Threat monitoring, incident response, security analysis
+- **Access**: Accessible from main navigation
+
 ## Design Pattern
 
+### Settings Menu Component
+```tsx
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
+
+// In dashboard header
+<div className="flex items-center justify-between">
+  <h1 className="text-2xl font-bold">[Dashboard Name]</h1>
+  <DashboardSettingsMenu dashboardName="[Dashboard]" />
+</div>
+```
+
+**Features**:
+- **Notifications**: Configure dashboard-specific alerts
+- **Appearance**: Theme customization options
+- **Data Management**: Export/Import dashboard data with sub-menu
+  - Export Data
+  - Import Data
+  - Data Preferences
+- **Privacy & Security**: Access control and privacy settings
+
+### Quick Access Menu Bar
 ```tsx
 <div className="flex gap-3 mb-6 flex-wrap">
   <DropdownMenu>
@@ -115,16 +151,19 @@ Implemented a unified dropdown menu pattern across all department dashboards for
 
 ## Files Modified
 
+### Settings Menu Component (NEW)
+- `src/components/DashboardSettingsMenu.tsx` - Reusable settings menu component
+
 ### Dropdown Menu Implementation (All Dashboards)
-- `src/pages/AdminDashboard.tsx`
-- `src/pages/ComplianceDashboard.tsx`
-- `src/pages/SOCDashboard.tsx`
-- `src/pages/ExecutiveDashboard.tsx`
-- `src/pages/HRDashboard.tsx`
-- `src/pages/SalesDashboard.tsx`
-- `src/pages/FinanceDashboard.tsx`
-- `src/pages/ITDashboard.tsx`
-- `src/pages/OperationsDashboard.tsx`
+- `src/pages/AdminDashboard.tsx` - Added settings menu
+- `src/pages/ComplianceDashboard.tsx` - Added settings menu
+- `src/pages/SOCDashboard.tsx` - Added settings menu
+- `src/pages/ExecutiveDashboard.tsx` - Added settings menu
+- `src/pages/HRDashboard.tsx` - Added settings menu
+- `src/pages/SalesDashboard.tsx` - Added settings menu
+- `src/pages/FinanceDashboard.tsx` - Added settings menu
+- `src/pages/ITDashboard.tsx` - Added settings menu
+- `src/pages/OperationsDashboard.tsx` - Added settings menu
 
 ### Navigation Component Updates
 - `src/components/DashboardNavigation.tsx` - Added horizontal scroll for dashboard links

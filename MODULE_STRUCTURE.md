@@ -91,13 +91,21 @@ const { customization, isLoading } = useCustomerCustomization(customerId);
 ---
 
 ### 3. Dashboard Module
-**Location**: `src/pages/*Dashboard.tsx`
+**Location**: `src/pages/*Dashboard.tsx`, `src/components/DashboardSettingsMenu.tsx`
 
 **Responsibilities**:
 - Department-specific data display
 - Role-based access control
 - Stats cards and data visualization
 - AI assistant integration per department
+- Dashboard-specific settings and preferences
+
+**Common Components**:
+- `DashboardSettingsMenu`: Reusable settings dropdown for all dashboards
+  - Notifications configuration
+  - Appearance/theme settings
+  - Data management (export/import)
+  - Privacy & security controls
 
 **Sub-modules**:
 
