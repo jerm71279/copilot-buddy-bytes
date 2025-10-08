@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { LogOut, Users, ChevronDown, Server, TestTube } from "lucide-react";
+import { LogOut, Users, ChevronDown, Server, TestTube, Shield } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { MCPServerConfig } from "@/components/MCPServerConfig";
 import { AIMCPGenerator } from "@/components/AIMCPGenerator";
@@ -280,6 +280,10 @@ const AdminDashboard = () => {
           </DropdownMenu>
 
             {/* Admin Cards */}
+            <Button variant="outline" onClick={() => navigate('/admin/rbac')} className="whitespace-nowrap gap-2">
+              <Shield className="h-4 w-4" />
+              RBAC Portal
+            </Button>
             <Button variant="outline" onClick={() => navigate('/admin/applications')} className="whitespace-nowrap">
               Application Management
             </Button>
