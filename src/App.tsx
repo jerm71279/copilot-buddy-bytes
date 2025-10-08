@@ -56,7 +56,6 @@ import MCPServerDashboard from "./pages/MCPServerDashboard";
 import SalesPortal from "./pages/SalesPortal";
 import CIPPDashboard from "./pages/CIPPDashboard";
 import DataFlowPortal from "./pages/DataFlowPortal";
-import RBACPortal from "./pages/RBACPortal";
 
 const queryClient = new QueryClient();
 
@@ -341,13 +340,6 @@ const App = () => (
           <Route path="/data-flows" element={
             <ProtectedRoute>
               <DataFlowPortal />
-            </ProtectedRoute>
-          } />
-          
-          {/* RBAC Portal - Admin Only */}
-          <Route path="/admin/rbac" element={
-            <ProtectedRoute requireAdmin>
-              <RBACPortal />
             </ProtectedRoute>
           } />
           
