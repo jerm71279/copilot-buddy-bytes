@@ -702,6 +702,252 @@ const CIPPTenantManager = () => {
 
 ---
 
+### 13. `snmp-collector` - SNMP Trap Collection
+
+**Endpoint**: POST `/functions/v1/snmp-collector`  
+**Auth**: ❌ Public webhook endpoint  
+**Purpose**: Receives and processes SNMP trap notifications from network devices
+
+**Request Body**:
+```typescript
+{
+  device_ip: string;          // Source device IP
+  trap_oid: string;           // SNMP trap OID
+  trap_type: string;          // Trap type (e.g., 'linkDown', 'authenticationFailure')
+  severity: string;           // 'critical' | 'high' | 'medium' | 'low' | 'info'
+  message: string;            // Human-readable trap description
+  varbinds?: Array<{          // Optional variable bindings
+    oid: string;
+    type: string;
+    value: any;
+  }>;
+  customer_id: string;        // Customer UUID
+}
+```
+
+**Response**:
+```typescript
+{
+  success: boolean;
+  message: string;
+  trap_id?: string;           // Created trap record UUID
+  alert_id?: string;          // Created alert UUID (if rules matched)
+  matched_rules?: number;     // Number of alert rules matched
+}
+```
+
+**Example Usage**:
+```typescript
+// Called from network monitoring system
+const response = await fetch('https://your-project.supabase.co/functions/v1/snmp-collector', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    device_ip: '192.168.1.1',
+    trap_oid: '1.3.6.1.6.3.1.1.5.3',
+    trap_type: 'linkDown',
+    severity: 'critical',
+    message: 'Interface GigabitEthernet0/1 is down',
+    varbinds: [
+      { oid: '1.3.6.1.2.1.2.2.1.1', type: 'INTEGER', value: 1 }
+    ],
+    customer_id: 'customer-uuid'
+  })
+});
+```
+
+---
+
+### 14. `syslog-collector` - Syslog Message Collection
+
+**Endpoint**: POST `/functions/v1/syslog-collector`  
+**Auth**: ❌ Public webhook endpoint  
+**Purpose**: Receives and analyzes syslog messages from network devices and servers
+
+**Request Body**:
+```typescript
+{
+  device_ip: string;          // Source device IP
+  facility: string;           // Syslog facility (e.g., 'kern', 'user', 'daemon')
+  severity: string;           // 'emergency' | 'alert' | 'critical' | 'error' | 'warning' | 'notice' | 'info' | 'debug'
+  message: string;            // Syslog message content
+  timestamp?: string;         // ISO timestamp (defaults to now())
+  hostname?: string;          // Source hostname
+  app_name?: string;          // Application name
+  proc_id?: string;           // Process ID
+  msg_id?: string;            // Message ID
+  customer_id: string;        // Customer UUID
+}
+```
+
+**Response**:
+```typescript
+{
+  success: boolean;
+  message: string;
+  syslog_id?: string;         // Created syslog record UUID
+  alert_id?: string;          // Created alert UUID (if patterns matched)
+  security_pattern?: boolean; // True if security pattern detected
+  matched_rules?: number;     // Number of alert rules matched
+}
+```
+
+**Security Pattern Detection**:
+- Authentication failures: `failed.*auth|authentication.*failed|invalid.*password`
+- Unauthorized access: `denied|unauthorized|forbidden|access.*denied`
+- Configuration changes: `config.*change|configuration.*modified`
+- Critical system events: `shutdown|reboot|kernel.*panic|system.*crash`
+
+**Example Usage**:
+```typescript
+// Called from syslog forwarder
+const response = await fetch('https://your-project.supabase.co/functions/v1/syslog-collector', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    device_ip: '192.168.1.10',
+    facility: 'auth',
+    severity: 'warning',
+    message: 'Failed password for user admin from 10.0.0.5',
+    hostname: 'firewall01',
+    customer_id: 'customer-uuid'
+  })
+});
+```
+
+---
+
+### 15. `device-poller` - Network Device SNMP Polling
+
+**Endpoint**: POST `/functions/v1/device-poller`  
+**Auth**: ✅ JWT Required  
+**Purpose**: Polls network devices for metrics via SNMP and generates alerts based on thresholds
+
+**Request Body**:
+```typescript
+{
+  device_id?: string;         // Poll specific device (UUID)
+  customer_id?: string;       // Poll all devices for customer
+  metrics?: string[];         // Specific metrics to poll ['cpu', 'memory', 'interfaces']
+}
+```
+
+**Response**:
+```typescript
+{
+  success: boolean;
+  message: string;
+  results: Array<{
+    device_id: string;
+    device_name: string;
+    device_ip: string;
+    status: 'success' | 'error';
+    metrics?: {
+      cpu_usage?: number;
+      memory_usage?: number;
+      interface_status?: Record<string, 'up' | 'down'>;
+      uptime?: number;
+    };
+    alerts_generated?: number;
+    error?: string;
+  }>;
+  total_polled: number;
+  total_alerts: number;
+}
+```
+
+**Automatic Alert Generation**:
+- CPU usage > 90%: Critical alert
+- CPU usage > 80%: High alert
+- Memory usage > 90%: Critical alert
+- Memory usage > 85%: High alert
+- Interface down: Medium alert
+
+**Example Usage**:
+```typescript
+// Poll all devices for a customer
+const { data, error } = await supabase.functions.invoke('device-poller', {
+  body: {
+    customer_id: 'customer-uuid',
+    metrics: ['cpu', 'memory', 'interfaces']
+  },
+  headers: {
+    Authorization: `Bearer ${session.access_token}`
+  }
+});
+
+// Poll specific device
+const { data, error } = await supabase.functions.invoke('device-poller', {
+  body: {
+    device_id: 'device-uuid'
+  },
+  headers: {
+    Authorization: `Bearer ${session.access_token}`
+  }
+});
+```
+
+**Database Integration**:
+```typescript
+// Fetch network devices
+const { data: devices } = await supabase
+  .from('network_devices')
+  .select('*')
+  .eq('customer_id', customerId)
+  .eq('status', 'active');
+
+// Fetch recent SNMP traps
+const { data: traps } = await supabase
+  .from('snmp_traps')
+  .select('*')
+  .eq('customer_id', customerId)
+  .order('timestamp', { ascending: false })
+  .limit(100);
+
+// Fetch syslog messages with filtering
+const { data: syslogs } = await supabase
+  .from('syslog_messages')
+  .select('*')
+  .eq('customer_id', customerId)
+  .gte('severity_level', 3)  // Warning and above
+  .order('timestamp', { ascending: false })
+  .limit(100);
+
+// Fetch active alerts
+const { data: alerts } = await supabase
+  .from('network_alerts')
+  .select('*')
+  .eq('customer_id', customerId)
+  .eq('status', 'active')
+  .order('created_at', { ascending: false });
+
+// Fetch device metrics
+const { data: metrics } = await supabase
+  .from('device_metrics')
+  .select('*')
+  .eq('device_id', deviceId)
+  .order('timestamp', { ascending: false })
+  .limit(100);
+
+// Configure alert rules
+const { data } = await supabase
+  .from('network_alert_rules')
+  .insert({
+    customer_id: customerId,
+    rule_name: 'High CPU Usage',
+    rule_type: 'threshold',
+    severity: 'high',
+    conditions: {
+      metric: 'cpu_usage',
+      operator: '>',
+      threshold: 80
+    },
+    is_enabled: true
+  });
+```
+
+---
+
 ## 🛡️ Row Level Security (RLS)
 
 All tables have RLS policies enforcing data isolation.

@@ -650,6 +650,232 @@ CREATE TABLE workflow_conditions (
 
 ---
 
+### 8. Network Monitoring Module
+**Location**: `src/pages/NetworkMonitoring.tsx`, `supabase/functions/snmp-collector/`, `supabase/functions/syslog-collector/`, `supabase/functions/device-poller/`
+
+**Responsibilities**:
+- Real-time SNMP trap collection and classification
+- Syslog message ingestion and analysis with RFC 5424 parsing
+- Scheduled network device polling via SNMP
+- Intelligent alerting based on configurable rules
+- Security pattern detection in syslog messages
+- Network device inventory and health monitoring
+
+**Frontend Component**:
+```typescript
+const NetworkMonitoring = () => {
+  // Device inventory management
+  // Real-time alert dashboard
+  // SNMP trap history viewer
+  // Syslog message search and filtering
+  // Alert rule configuration
+  // Device polling on-demand
+};
+```
+
+**Backend Edge Functions**:
+
+#### snmp-collector
+```typescript
+// supabase/functions/snmp-collector/index.ts
+serve(async (req) => {
+  // Receive SNMP trap from network device
+  // Classify trap type and severity
+  // Store in snmp_traps table
+  // Match against alert rules
+  // Generate alerts if thresholds exceeded
+  // Return trap_id and alert_id
+});
+```
+
+#### syslog-collector
+```typescript
+// supabase/functions/syslog-collector/index.ts
+serve(async (req) => {
+  // Receive syslog message (RFC 5424 format)
+  // Parse facility, severity, message
+  // Detect security patterns (auth failures, config changes)
+  // Store in syslog_messages table
+  // Match against alert rules
+  // Generate security alerts if patterns detected
+  // Return syslog_id and alert_id
+});
+```
+
+**Security Pattern Detection**:
+- Authentication failures: `failed.*auth|authentication.*failed`
+- Unauthorized access: `denied|unauthorized|forbidden`
+- Configuration changes: `config.*change|configuration.*modified`
+- Critical events: `shutdown|reboot|kernel.*panic`
+
+#### device-poller
+```typescript
+// supabase/functions/device-poller/index.ts
+serve(async (req) => {
+  // Poll network devices via SNMP
+  // Collect CPU usage, memory usage, interface status
+  // Store metrics in device_metrics table
+  // Evaluate thresholds (CPU > 90%, Memory > 85%)
+  // Generate alerts for threshold breaches
+  // Return polling results and alert count
+});
+```
+
+**Database Tables**:
+
+```sql
+-- Network device inventory
+CREATE TABLE network_devices (
+  id UUID PRIMARY KEY,
+  customer_id UUID NOT NULL,
+  device_name TEXT NOT NULL,
+  device_type TEXT NOT NULL,  -- 'router', 'switch', 'firewall', 'server'
+  device_ip INET NOT NULL,
+  snmp_community TEXT,  -- SNMP v2c community string (encrypted)
+  snmp_version TEXT DEFAULT 'v2c',  -- 'v1', 'v2c', 'v3'
+  location TEXT,
+  status TEXT DEFAULT 'active',  -- 'active', 'inactive', 'maintenance'
+  last_seen TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- SNMP trap collection
+CREATE TABLE snmp_traps (
+  id UUID PRIMARY KEY,
+  customer_id UUID NOT NULL,
+  device_id UUID REFERENCES network_devices,
+  device_ip INET NOT NULL,
+  trap_oid TEXT NOT NULL,
+  trap_type TEXT NOT NULL,
+  severity TEXT NOT NULL,  -- 'critical', 'high', 'medium', 'low', 'info'
+  message TEXT NOT NULL,
+  varbinds JSONB,  -- Variable bindings from trap
+  timestamp TIMESTAMPTZ DEFAULT now()
+);
+
+-- Syslog message collection
+CREATE TABLE syslog_messages (
+  id UUID PRIMARY KEY,
+  customer_id UUID NOT NULL,
+  device_id UUID REFERENCES network_devices,
+  device_ip INET NOT NULL,
+  facility TEXT NOT NULL,
+  severity TEXT NOT NULL,
+  severity_level INTEGER NOT NULL,  -- 0-7 (RFC 5424)
+  message TEXT NOT NULL,
+  hostname TEXT,
+  app_name TEXT,
+  proc_id TEXT,
+  msg_id TEXT,
+  is_security_related BOOLEAN DEFAULT false,
+  timestamp TIMESTAMPTZ DEFAULT now()
+);
+
+-- Device performance metrics
+CREATE TABLE device_metrics (
+  id UUID PRIMARY KEY,
+  customer_id UUID NOT NULL,
+  device_id UUID REFERENCES network_devices,
+  metric_type TEXT NOT NULL,  -- 'cpu', 'memory', 'interface'
+  metric_value NUMERIC NOT NULL,
+  metric_unit TEXT,
+  interface_name TEXT,  -- For interface metrics
+  timestamp TIMESTAMPTZ DEFAULT now()
+);
+
+-- Network alerts
+CREATE TABLE network_alerts (
+  id UUID PRIMARY KEY,
+  customer_id UUID NOT NULL,
+  device_id UUID REFERENCES network_devices,
+  alert_type TEXT NOT NULL,  -- 'snmp_trap', 'syslog', 'threshold'
+  severity TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  source_type TEXT NOT NULL,  -- 'snmp', 'syslog', 'polling'
+  source_id UUID,  -- References snmp_traps, syslog_messages, or device_metrics
+  status TEXT DEFAULT 'active',  -- 'active', 'acknowledged', 'resolved'
+  acknowledged_by UUID,
+  acknowledged_at TIMESTAMPTZ,
+  resolved_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Alert rule configuration
+CREATE TABLE network_alert_rules (
+  id UUID PRIMARY KEY,
+  customer_id UUID NOT NULL,
+  rule_name TEXT NOT NULL,
+  rule_type TEXT NOT NULL,  -- 'snmp_trap', 'syslog_pattern', 'threshold'
+  severity TEXT NOT NULL,
+  conditions JSONB NOT NULL,  -- Rule matching conditions
+  actions JSONB,  -- Alert actions (email, webhook, etc.)
+  is_enabled BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+**Dependencies**:
+- Database tables: `network_devices`, `snmp_traps`, `syslog_messages`, `device_metrics`, `network_alerts`, `network_alert_rules`
+- Edge functions: `snmp-collector`, `syslog-collector`, `device-poller`
+- SNMP libraries (for v3 support in future)
+- RFC 5424 syslog parsing
+
+**Integration Points**:
+- **CMDB**: Sync network devices with configuration_items
+- **SOC Dashboard**: Display network security alerts
+- **Incidents Module**: Auto-create incidents from critical alerts
+- **Compliance**: Audit trail of network changes and access
+
+**Alert Rule Examples**:
+```typescript
+// SNMP Trap Rule
+{
+  rule_type: 'snmp_trap',
+  conditions: {
+    trap_oid: '1.3.6.1.6.3.1.1.5.3',  // linkDown trap
+    severity: 'critical'
+  }
+}
+
+// Syslog Pattern Rule
+{
+  rule_type: 'syslog_pattern',
+  conditions: {
+    pattern: 'authentication failed',
+    facility: 'auth',
+    min_severity_level: 4  // Warning and above
+  }
+}
+
+// Threshold Rule
+{
+  rule_type: 'threshold',
+  conditions: {
+    metric_type: 'cpu',
+    operator: '>',
+    threshold: 90,
+    duration_minutes: 5
+  }
+}
+```
+
+**Use Cases**:
+1. **Real-time Monitoring**: Continuous network device health tracking
+2. **Security Monitoring**: Detect authentication failures, unauthorized access
+3. **Capacity Planning**: Track CPU, memory trends over time
+4. **Incident Response**: Auto-create tickets from critical network events
+5. **Compliance**: Audit trail of network configuration changes
+
+**Testing**:
+- Send test SNMP trap to collector endpoint
+- Forward test syslog messages to collector
+- Poll test device and verify metrics collection
+- Configure alert rules and verify notifications
+- Check device inventory and status updates
+
+---
+
 ## 🔗 Module Dependencies
 
 ### Dependency Graph
@@ -882,6 +1108,8 @@ Each module should have:
 | Integration | External system registry | `Integrations.tsx`, `IntegrationsPage.tsx` |
 | AI | Department assistants | `DepartmentAIAssistant.tsx`, `department-assistant/index.ts` |
 | MCP Server | Advanced AI capabilities | `MCPServerStatus.tsx`, `mcp-server/index.ts` |
+| Workflow Engine | Cross-system automation | `WorkflowBuilder.tsx`, `workflow-executor/index.ts` |
+| Network Monitoring | SNMP/Syslog infrastructure | `NetworkMonitoring.tsx`, `snmp-collector/index.ts`, `syslog-collector/index.ts`, `device-poller/index.ts` |
 
 ---
 
