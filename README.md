@@ -112,6 +112,7 @@ supabase/
 - **Finance**: Revenue, subscriptions, customer data
 - **Sales**: Pipeline, deals, forecasting with dedicated Sales Portal
 - **Executive**: KPIs, compliance metrics, strategic overview
+- **Network Monitoring**: Real-time SNMP trap collection, syslog analysis, device polling, and intelligent alerting (NEW)
 - **Privileged Access Audit**: Comprehensive audit logging for RMM and privileged system access with compliance tracking
 
 **NEW - Sales Portal** (`/sales-portal`):
@@ -141,7 +142,8 @@ supabase/
 ### Integration Management
 - **Microsoft 365**: Calendar, Email, Teams, OneDrive (ACTIVE)
 - **CIPP**: Centralized M365 tenant management and security automation (ACTIVE)
-- **Revio**: Billing & Revenue data (Infrastructure complete, live API pending OneBill migration) (NEW)
+- **Network Monitoring**: SNMP trap collection, syslog analysis, device polling, and intelligent alerting (NEW)
+- **Revio**: Billing & Revenue data (Infrastructure complete, live API pending OneBill migration)
 - OneBill (Current billing system, migration to Revio in progress)
 - Azure, Lighthouse (Cloud & Identity)
 - SonicWall, UniFi, MikroTik (Network Security)
@@ -172,6 +174,12 @@ supabase/
 - `cipp_policies` - CIPP policy management (NEW)
 - `cipp_tenant_health` - CIPP health monitoring (NEW)
 - `cipp_audit_logs` - CIPP action audit trail (NEW)
+- `network_devices` - Network device inventory (NEW)
+- `snmp_traps` - SNMP trap collection (NEW)
+- `syslog_messages` - Syslog message collection (NEW)
+- `device_metrics` - Device performance metrics (NEW)
+- `network_alerts` - Network alert management (NEW)
+- `network_alert_rules` - Alert rule configuration (NEW)
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed schema documentation.
 
@@ -198,6 +206,7 @@ Navigate to Project > Settings > Domains and click Connect Domain.
 - [**URGENT_NEXT_STEPS.md**](./URGENT_NEXT_STEPS.md) - **Critical blockers and immediate action items**
 - [**MICROSOFT365_INTEGRATION.md**](./MICROSOFT365_INTEGRATION.md) - **Microsoft 365 technical documentation**
 - [**CIPP_INTEGRATION_GUIDE.md**](./CIPP_INTEGRATION_GUIDE.md) - **CIPP tenant management guide**
+- [**SNMP_SYSLOG_IMPLEMENTATION.md**](./SNMP_SYSLOG_IMPLEMENTATION.md) - **Network monitoring infrastructure guide** (NEW)
 
 ### Architecture & Development
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture and design decisions
@@ -211,6 +220,7 @@ Navigate to Project > Settings > Domains and click Connect Domain.
 - [MICROSOFT365_INTEGRATION.md](./MICROSOFT365_INTEGRATION.md) - Microsoft 365 OAuth and Graph API
 - [CIPP_INTEGRATION_GUIDE.md](./CIPP_INTEGRATION_GUIDE.md) - CIPP tenant management and security automation
 - [REVIO_INTEGRATION_GUIDE.md](./REVIO_INTEGRATION_GUIDE.md) - Revio billing and revenue data
+- [SNMP_SYSLOG_IMPLEMENTATION.md](./SNMP_SYSLOG_IMPLEMENTATION.md) - Network monitoring with SNMP/Syslog (NEW)
 
 ## 🔄 Development Workflow
 
