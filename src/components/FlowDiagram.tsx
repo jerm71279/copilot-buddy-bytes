@@ -102,6 +102,9 @@ export default function FlowDiagram({
             y2 = to.y;
           }
 
+          // Don't show arrows on edges ending at small junction nodes (< 20px)
+          const isJunction = tw < 20 && th < 20;
+
           return (
             <line
               key={`edge-${idx}`}
@@ -111,7 +114,7 @@ export default function FlowDiagram({
               y2={y2}
               stroke={stroke}
               strokeWidth={2}
-              markerEnd="url(#arrow)"
+              markerEnd={isJunction ? undefined : "url(#arrow)"}
             />
           );
         })}
