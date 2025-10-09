@@ -72,6 +72,11 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Resources</h4>
             <ul className="space-y-2 text-sm text-primary-foreground/70">
+              <li>
+                <Link to="/developers" className="hover:text-primary-foreground transition-colors">
+                  Developer Portal
+                </Link>
+              </li>
               <li><a href="#docs" className="hover:text-primary-foreground transition-colors">Documentation</a></li>
               <li><a href="#blog" className="hover:text-primary-foreground transition-colors">Blog</a></li>
               <li><a href="#guides" className="hover:text-primary-foreground transition-colors">Compliance Guides</a></li>
