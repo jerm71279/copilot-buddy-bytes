@@ -44,6 +44,7 @@ import CMDBDashboard from "./pages/CMDBDashboard";
 import CMDBItemDetail from "./pages/CMDBItemDetail";
 import CMDBAddItem from "./pages/CMDBAddItem";
 import CMDBEditItem from "./pages/CMDBEditItem";
+import CMDBReconciliation from "./pages/CMDBReconciliation";
 import ChangeManagement from "./pages/ChangeManagement";
 import ChangeManagementNew from "./pages/ChangeManagementNew";
 import ChangeManagementDetail from "./pages/ChangeManagementDetail";
@@ -244,6 +245,11 @@ const App = () => (
           <Route path="/cmdb/add" element={
             <ProtectedRoute>
               <CMDBAddItem />
+            </ProtectedRoute>
+          } />
+          <Route path="/cmdb/reconciliation" element={
+            <ProtectedRoute>
+              <CMDBReconciliation />
             </ProtectedRoute>
           } />
           <Route path="/cmdb/:id/edit" element={

@@ -19,9 +19,13 @@ import {
   Network,
 } from "lucide-react";
 import { toast } from "sonner";
+import CIAuditLog from "@/components/CIAuditLog";
+import CIHealthScore from "@/components/CIHealthScore";
+import CIRelationshipMap from "@/components/CIRelationshipMap";
 
 interface ConfigurationItem {
   id: string;
+  customer_id: string;
   ci_name: string;
   ci_type: string;
   ci_status: string;
@@ -211,9 +215,12 @@ const CMDBItemDetail = () => {
         <Tabs defaultValue="details" className="space-y-6">
           <TabsList>
             <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="health">Health & Metrics</TabsTrigger>
             <TabsTrigger value="relationships">
               Relationships ({relationships.length})
             </TabsTrigger>
+            <TabsTrigger value="relationship-map">Relationship Map</TabsTrigger>
+            <TabsTrigger value="audit">Audit Log</TabsTrigger>
             <TabsTrigger value="changes">
               Change History ({changeRequests.length})
             </TabsTrigger>
@@ -377,6 +384,10 @@ const CMDBItemDetail = () => {
             </div>
           </TabsContent>
 
+          <TabsContent value="health">
+            <CIHealthScore ciId={id!} customerId={ci.customer_id} />
+          </TabsContent>
+
           <TabsContent value="relationships">
             <Card>
               <CardHeader>
@@ -418,6 +429,14 @@ const CMDBItemDetail = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="relationship-map">
+            <CIRelationshipMap ciId={id!} ciName={ci.ci_name} />
+          </TabsContent>
+
+          <TabsContent value="audit">
+            <CIAuditLog ciId={id!} />
           </TabsContent>
 
           <TabsContent value="changes">

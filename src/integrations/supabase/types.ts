@@ -852,6 +852,140 @@ export type Database = {
           },
         ]
       }
+      ci_audit_log: {
+        Row: {
+          change_reason: string | null
+          change_type: string
+          changed_by: string
+          ci_id: string
+          created_at: string
+          customer_id: string
+          field_name: string | null
+          id: string
+          new_value: Json | null
+          old_value: Json | null
+          source: string | null
+        }
+        Insert: {
+          change_reason?: string | null
+          change_type: string
+          changed_by: string
+          ci_id: string
+          created_at?: string
+          customer_id: string
+          field_name?: string | null
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          source?: string | null
+        }
+        Update: {
+          change_reason?: string | null
+          change_type?: string
+          changed_by?: string
+          ci_id?: string
+          created_at?: string
+          customer_id?: string
+          field_name?: string | null
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ci_audit_log_ci_id_fkey"
+            columns: ["ci_id"]
+            isOneToOne: false
+            referencedRelation: "ci_overview"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ci_audit_log_ci_id_fkey"
+            columns: ["ci_id"]
+            isOneToOne: false
+            referencedRelation: "configuration_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ci_audit_log_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ci_health_metrics: {
+        Row: {
+          alert_count: number | null
+          calculated_at: string
+          ci_id: string
+          compliance_score: number | null
+          critical_alerts: number | null
+          customer_id: string
+          failed_scans_count: number | null
+          health_score: number | null
+          id: string
+          last_scan_date: string | null
+          metrics_data: Json | null
+          relationship_health: number | null
+          uptime_percentage: number | null
+        }
+        Insert: {
+          alert_count?: number | null
+          calculated_at?: string
+          ci_id: string
+          compliance_score?: number | null
+          critical_alerts?: number | null
+          customer_id: string
+          failed_scans_count?: number | null
+          health_score?: number | null
+          id?: string
+          last_scan_date?: string | null
+          metrics_data?: Json | null
+          relationship_health?: number | null
+          uptime_percentage?: number | null
+        }
+        Update: {
+          alert_count?: number | null
+          calculated_at?: string
+          ci_id?: string
+          compliance_score?: number | null
+          critical_alerts?: number | null
+          customer_id?: string
+          failed_scans_count?: number | null
+          health_score?: number | null
+          id?: string
+          last_scan_date?: string | null
+          metrics_data?: Json | null
+          relationship_health?: number | null
+          uptime_percentage?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ci_health_metrics_ci_id_fkey"
+            columns: ["ci_id"]
+            isOneToOne: false
+            referencedRelation: "ci_overview"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ci_health_metrics_ci_id_fkey"
+            columns: ["ci_id"]
+            isOneToOne: false
+            referencedRelation: "configuration_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ci_health_metrics_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ci_relationships: {
         Row: {
           created_at: string
@@ -5357,6 +5491,10 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_ci_health: {
+        Args: { ci_id_param: string }
+        Returns: number
+      }
       can_manage_roles: {
         Args: { _user_id: string }
         Returns: boolean

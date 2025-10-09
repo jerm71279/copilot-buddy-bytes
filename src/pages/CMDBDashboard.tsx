@@ -236,6 +236,10 @@ const CMDBDashboard = () => {
                 <CardDescription>Manage your IT assets and infrastructure components</CardDescription>
               </div>
               <div className="flex gap-2">
+                <Button onClick={() => navigate("/cmdb/reconciliation")} variant="outline">
+                  <GitBranch className="h-4 w-4 mr-2" />
+                  Reconciliation
+                </Button>
                 <Button onClick={syncNinjaOneDevices} variant="outline">
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Sync NinjaOne
