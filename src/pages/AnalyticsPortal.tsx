@@ -259,23 +259,41 @@ export default function AnalyticsPortal() {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-4">
             <Button
-              onClick={() => aggregateMetricsMutation.mutate()}
-              disabled={!customerId || aggregateMetricsMutation.isPending}
+              onClick={() => {
+                if (!customerId) {
+                  toast.error('Please assign a customer to your profile first');
+                  return;
+                }
+                aggregateMetricsMutation.mutate();
+              }}
+              disabled={aggregateMetricsMutation.isPending}
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Aggregate Metrics
             </Button>
             <Button
-              onClick={() => generateReportMutation.mutate()}
-              disabled={!customerId || generateReportMutation.isPending}
+              onClick={() => {
+                if (!customerId) {
+                  toast.error('Please assign a customer to your profile first');
+                  return;
+                }
+                generateReportMutation.mutate();
+              }}
+              disabled={generateReportMutation.isPending}
               variant="outline"
             >
               <FileText className="h-4 w-4 mr-2" />
               Generate Report
             </Button>
             <Button
-              onClick={() => checkBenchmarksMutation.mutate()}
-              disabled={!customerId || checkBenchmarksMutation.isPending}
+              onClick={() => {
+                if (!customerId) {
+                  toast.error('Please assign a customer to your profile first');
+                  return;
+                }
+                checkBenchmarksMutation.mutate();
+              }}
+              disabled={checkBenchmarksMutation.isPending}
               variant="outline"
             >
               <Target className="h-4 w-4 mr-2" />
