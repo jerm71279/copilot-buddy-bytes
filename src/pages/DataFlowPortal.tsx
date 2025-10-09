@@ -256,9 +256,9 @@ const DataFlowPortal = () => {
                           { id: "score", label: "Score\nCalculation", x: 420, y: 160, w: 160, h: 70 },
                           { id: "evidence", label: "Evidence\nUpload", x: 640, y: 160, w: 140, h: 70 },
                           { id: "junction", label: "", x: 640, y: 60, w: 16, h: 16 },
-                          { id: "split", label: "", x: 300, y: 60, w: 16, h: 16 },
-                          { id: "toFrameworks", label: "", x: 230, y: 60, w: 16, h: 16, hidden: true },
-                          { id: "toAudit", label: "", x: 230, y: 220, w: 16, h: 16, hidden: true },
+                          { id: "split", label: "", x: 80, y: 60, w: 16, h: 16 },
+                          { id: "toFrameworks", label: "", x: 80, y: 100, w: 16, h: 16, hidden: true },
+                          { id: "toAudit", label: "", x: 80, y: 220, w: 16, h: 16, hidden: true },
                         ]}
                         edges={[
                           { from: "frameworks", to: "score" },
