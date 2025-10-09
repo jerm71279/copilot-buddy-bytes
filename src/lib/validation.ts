@@ -132,9 +132,6 @@ export const networkDeviceSchema = z.object({
   device_name: createTextSchema("Device name", 200),
   device_type: z.enum(["router", "switch", "firewall", "access_point", "load_balancer", "other"]),
   ip_address: z.string().ip({ version: "v4", message: "Invalid IPv4 address" }),
-  mac_address: z.string().regex(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/, {
-    message: "Invalid MAC address format",
-  }).optional(),
   location: createTextSchema("Location", 200, false),
   snmp_community: createTextSchema("SNMP community", 100, false),
   snmp_version: z.enum(["v1", "v2c", "v3"]).optional(),

@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Ticket, ShoppingCart, MessageSquare } from "lucide-react";
+import { clientTicketSchema, sanitizeText } from "@/lib/validation";
+import { z } from "zod";
 
 export default function ClientPortal() {
   const queryClient = useQueryClient();
@@ -63,6 +65,14 @@ export default function ClientPortal() {
 
   const createTicket = useMutation({
     mutationFn: async (ticket: typeof newTicket) => {
+      // Validate ticket data
+      const validatedData = clientTicketSchema.parse({
+        subject: ticket.subject,
+        description: ticket.description,
+        category: ticket.category as any,
+        priority: ticket.priority as any,
+      });
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -70,14 +80,17 @@ export default function ClientPortal() {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       const { data, error } = await supabase.functions.invoke("client-portal", {
         body: {
           action: "create_ticket",
           customerId: profile?.customer_id,
           submittedBy: user.id,
-          ...ticket
+          subject: validatedData.subject,
+          description: sanitizeText(validatedData.description),
+          category: validatedData.category,
+          priority: validatedData.priority,
         },
       });
       if (error) throw error;
@@ -88,6 +101,14 @@ export default function ClientPortal() {
       toast.success("Support ticket created successfully");
       setIsTicketOpen(false);
       setNewTicket({ subject: "", description: "", priority: "medium", category: "general" });
+    },
+    onError: (error: any) => {
+      if (error instanceof z.ZodError) {
+        const firstError = error.errors[0];
+        toast.error(`${firstError.path.join(".")}: ${firstError.message}`);
+      } else {
+        toast.error(error.message || "Failed to create ticket");
+      }
     },
   });
 

@@ -67,6 +67,7 @@ import RemediationRules from "./pages/RemediationRules";
 import ClientPortal from "./pages/ClientPortal";
 import CustomReportBuilder from "./pages/CustomReportBuilder";
 import NetworkMonitoring from "./pages/NetworkMonitoring";
+import NetworkDeviceNew from "./pages/NetworkDeviceNew";
 
 const queryClient = new QueryClient();
 
@@ -429,6 +430,11 @@ const App = () => (
           <Route path="/network-monitoring" element={
             <ProtectedRoute>
               <NetworkMonitoring />
+            </ProtectedRoute>
+          } />
+          <Route path="/network-monitoring/devices/new" element={
+            <ProtectedRoute>
+              <NetworkDeviceNew />
             </ProtectedRoute>
           } />
           
