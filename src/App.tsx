@@ -72,6 +72,7 @@ import NetworkDeviceNew from "./pages/NetworkDeviceNew";
 import ProductsAdmin from "./pages/ProductsAdmin";
 import Developers from "./pages/Developers";
 import ArchitectureDiagram from "./pages/ArchitectureDiagram";
+import ArchitectureCanvas from "./pages/ArchitectureCanvas";
 
 const queryClient = new QueryClient();
 
@@ -86,6 +87,7 @@ const App = () => (
           <Route path="/integrations" element={<IntegrationsPage />} />
           <Route path="/developers" element={<Developers />} />
           <Route path="/architecture-diagram" element={<ArchitectureDiagram />} />
+          <Route path="/architecture/canvas" element={<ArchitectureCanvas />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/demo" element={<DemoSelector />} />
           
