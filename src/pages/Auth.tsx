@@ -12,17 +12,38 @@ import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
 
-// Validation schemas
+// Enhanced validation schemas with security requirements
 const loginSchema = z.object({
-  email: z.string().trim().email("Invalid email address").max(255, "Email too long"),
-  password: z.string().min(6, "Password must be at least 6 characters").max(128, "Password too long"),
+  email: z.string()
+    .trim()
+    .email("Invalid email address")
+    .max(255, "Email must be less than 255 characters"),
+  password: z.string()
+    .min(1, "Password is required")
+    .max(128, "Password must be less than 128 characters"),
 });
 
 const signupSchema = z.object({
-  fullName: z.string().trim().min(1, "Full name is required").max(100, "Name too long"),
-  companyName: z.string().trim().min(1, "Company name is required").max(100, "Company name too long"),
-  email: z.string().trim().email("Invalid email address").max(255, "Email too long"),
-  password: z.string().min(6, "Password must be at least 6 characters").max(128, "Password too long"),
+  fullName: z.string()
+    .trim()
+    .min(2, "Full name must be at least 2 characters")
+    .max(100, "Full name must be less than 100 characters")
+    .regex(/^[a-zA-Z\s'-]+$/, "Full name can only contain letters, spaces, hyphens and apostrophes"),
+  companyName: z.string()
+    .trim()
+    .min(2, "Company name must be at least 2 characters")
+    .max(100, "Company name must be less than 100 characters"),
+  email: z.string()
+    .trim()
+    .email("Invalid email address")
+    .max(255, "Email must be less than 255 characters"),
+  password: z.string()
+    .min(12, "Password must be at least 12 characters")
+    .max(128, "Password must be less than 128 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character"),
 });
 
 const Auth = () => {
@@ -111,13 +132,23 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      const validatedEmail = z.string().email().parse(resetEmail);
+      const validatedEmail = z.string().trim().email().parse(resetEmail);
       
       const { error } = await supabase.auth.resetPasswordForEmail(validatedEmail, {
         redirectTo: `${window.location.origin}/auth`,
       });
 
       if (error) throw error;
+
+      // Log security event
+      await supabase.from('audit_logs').insert({
+        user_id: '00000000-0000-0000-0000-000000000000',
+        customer_id: '00000000-0000-0000-0000-000000000000',
+        system_name: 'auth',
+        action_type: 'password_reset_requested',
+        action_details: { email: validatedEmail, requested_at: new Date().toISOString() },
+        compliance_tags: ['security', 'authentication']
+      });
 
       toast.success("Password reset email sent! Check your inbox.");
       setShowResetForm(false);
@@ -144,14 +175,41 @@ const Auth = () => {
         password: loginPassword,
       });
 
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: validatedData.email,
         password: validatedData.password,
       });
 
       if (error) {
-        toast.error(error.message);
+        // Log failed login attempt
+        await supabase.from('audit_logs').insert({
+          user_id: '00000000-0000-0000-0000-000000000000',
+          customer_id: '00000000-0000-0000-0000-000000000000',
+          system_name: 'auth',
+          action_type: 'login_failed',
+          action_details: { 
+            email: validatedData.email, 
+            error: error.message,
+            timestamp: new Date().toISOString() 
+          },
+          compliance_tags: ['security', 'authentication']
+        });
+        toast.error(error.message === 'Invalid login credentials' ? 'Invalid email or password' : error.message);
       } else {
+        // Log successful login
+        if (data.user) {
+          await supabase.from('audit_logs').insert({
+            user_id: data.user.id,
+            customer_id: '00000000-0000-0000-0000-000000000000',
+            system_name: 'auth',
+            action_type: 'login_success',
+            action_details: { 
+              email: validatedData.email,
+              timestamp: new Date().toISOString() 
+            },
+            compliance_tags: ['security', 'authentication']
+          });
+        }
         toast.success("Logged in successfully");
       }
     } catch (error) {
@@ -210,7 +268,22 @@ const Auth = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        // Log failed signup
+        await supabase.from('audit_logs').insert({
+          user_id: '00000000-0000-0000-0000-000000000000',
+          customer_id: '00000000-0000-0000-0000-000000000000',
+          system_name: 'auth',
+          action_type: 'signup_failed',
+          action_details: { 
+            email: validatedData.email, 
+            error: error.message,
+            timestamp: new Date().toISOString() 
+          },
+          compliance_tags: ['security', 'authentication']
+        });
+        throw error;
+      }
       
       if (data.user) {
         // Create customer record
@@ -252,13 +325,30 @@ const Auth = () => {
 
         if (profileError) throw profileError;
 
+        // Log successful signup
+        await supabase.from('audit_logs').insert({
+          user_id: data.user.id,
+          customer_id: customerData.id,
+          system_name: 'auth',
+          action_type: 'signup_success',
+          action_details: { 
+            email: validatedData.email,
+            company_name: validatedData.companyName,
+            timestamp: new Date().toISOString() 
+          },
+          compliance_tags: ['security', 'authentication']
+        });
+
         toast.success("Account created successfully! Redirecting to your dashboard...");
       }
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else {
-        toast.error(error.message || "An error occurred during signup");
+        const errorMessage = error.message?.includes('already registered')
+          ? 'An account with this email already exists'
+          : error.message || "An error occurred during signup";
+        toast.error(errorMessage);
       }
     } finally {
       setIsLoading(false);
@@ -431,7 +521,7 @@ const Auth = () => {
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
                       required
-                      minLength={6}
+                      minLength={12}
                     />
                     <Button
                       type="button"
@@ -443,6 +533,9 @@ const Auth = () => {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    Must be 12+ characters with uppercase, lowercase, number, and special character
+                  </p>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Creating account..." : "Create Account"}
