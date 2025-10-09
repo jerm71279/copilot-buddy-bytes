@@ -7,6 +7,7 @@ type Node = {
   y: number;
   w?: number;
   h?: number;
+  hidden?: boolean; // when true, node is used only for routing (no rect/text)
 };
 
 type Edge = {
@@ -73,22 +74,31 @@ export default function FlowDiagram({
           const tw = to.w ?? DEFAULT_NODE_W;
           const th = to.h ?? DEFAULT_NODE_H;
           
-          // Determine if nodes are stacked vertically (similar x, different y)
-          const isVertical = Math.abs(from.x - to.x) < 50 && to.y > from.y;
+          // Determine if connection is primarily vertical (similar x)
+          const isVertical = Math.abs(from.x - to.x) < 50;
           
           let x1, y1, x2, y2;
           
           if (isVertical) {
-            // Vertical flow: bottom of from to top of to
-            x1 = from.x;
-            y1 = from.y + fh / 2;  // bottom of from
-            x2 = to.x;
-            y2 = to.y - th / 2;    // top of to
+            // Vertical flow: connect top/bottom centers based on direction
+            if (to.y >= from.y) {
+              // downwards: bottom of from to top of to
+              x1 = from.x;
+              y1 = from.y + fh / 2;
+              x2 = to.x;
+              y2 = to.y - th / 2;
+            } else {
+              // upwards: top of from to bottom of to
+              x1 = from.x;
+              y1 = from.y - fh / 2;
+              x2 = to.x;
+              y2 = to.y + th / 2;
+            }
           } else {
             // Horizontal flow: right of from to left of to
-            x1 = from.x + fw / 2;  // right center of from
+            x1 = from.x + fw / 2;
             y1 = from.y;
-            x2 = to.x - tw / 2;    // left center of to
+            x2 = to.x - tw / 2;
             y2 = to.y;
           }
 

@@ -248,22 +248,20 @@ const DataFlowPortal = () => {
                       <FlowDiagram
                         title="Compliance Dashboard Diagram"
                         accent="green"
-                        width={900}
-                        height={340}
+                        width={800}
+                        height={300}
                         nodes={[
-                          { id: "frameworks", label: "Load\nFrameworks", x: 160, y: 80, w: 140, h: 70 },
-                          { id: "audit", label: "Audit\nLogs", x: 160, y: 200, w: 140, h: 70 },
-                          { id: "score", label: "Score\nCalculation", x: 420, y: 140, w: 160, h: 70 },
-                          { id: "evidence", label: "Evidence\nUpload", x: 680, y: 240, w: 160, h: 70 },
-                          { id: "junction", label: "Update", x: 680, y: 140, w: 100, h: 50 },
+                          { id: "frameworks", label: "Load\nFrameworks", x: 160, y: 100, w: 140, h: 70 },
+                          { id: "audit", label: "Audit\nLogs", x: 160, y: 220, w: 140, h: 70 },
+                          { id: "score", label: "Score\nCalculation", x: 420, y: 160, w: 160, h: 70 },
+                          { id: "evidence", label: "Evidence\nUpload", x: 640, y: 160, w: 140, h: 70 },
                         ]}
                         edges={[
                           { from: "frameworks", to: "score" },
                           { from: "audit", to: "score" },
                           { from: "score", to: "evidence" },
-                          { from: "evidence", to: "junction" },
-                          { from: "junction", to: "frameworks" },
-                          { from: "junction", to: "audit" },
+                          { from: "evidence", to: "frameworks" },
+                          { from: "evidence", to: "audit" },
                         ]}
                       />
                     </div>
