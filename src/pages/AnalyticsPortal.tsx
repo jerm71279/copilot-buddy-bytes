@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { toast } from "sonner";
 import { 
   BarChart3, 
@@ -186,7 +187,7 @@ export default function AnalyticsPortal() {
               Real-time monitoring and comprehensive reporting
             </p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-4">
             <Select value={period} onValueChange={setPeriod}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
@@ -197,6 +198,7 @@ export default function AnalyticsPortal() {
                 <SelectItem value="monthly">Monthly</SelectItem>
               </SelectContent>
             </Select>
+            <DashboardSettingsMenu dashboardName="Analytics" />
           </div>
         </div>
 
