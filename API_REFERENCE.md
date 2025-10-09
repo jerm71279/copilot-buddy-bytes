@@ -1,11 +1,34 @@
 # OberaConnect API Reference
 
+**Last Updated:** October 9, 2025  
+**API Version:** 2.0  
+**Total Edge Functions:** 17
+
+## 🆕 Recent Updates (October 9, 2025)
+
+### New Database Tables
+- **`products`**: Product catalog with pricing, features, and billing cycles
+- **`customer_subscriptions`**: Customer product subscription management
+- **`applications`**: New app added - Keeper Security for password management
+
+### New Hooks
+- **`useProducts`**: Complete CRUD operations for product management
+
+### Enhanced Features
+- Products Admin page for catalog management
+- Keeper Security integration in employee portal
+- Updated audit logging for product changes
+
+---
+
 ## 🌐 Overview
 
 OberaConnect uses **Supabase** as its backend platform, providing:
-- **PostgreSQL Database**: Accessed via Supabase client
-- **Edge Functions**: Serverless functions for custom logic and AI integration
-- **Authentication**: Managed by Supabase Auth
+- **PostgreSQL Database**: Accessed via Supabase client (55+ tables)
+- **Edge Functions**: Serverless functions for custom logic and AI integration (17 functions)
+- **Authentication**: Managed by Supabase Auth (Email + OAuth)
+- **Storage**: File storage with secure buckets
+- **Realtime**: Real-time subscriptions for live data
 
 All API access is authenticated and protected by Row Level Security (RLS) policies.
 
@@ -91,6 +114,83 @@ const { data, error } = await supabase
   })
   .select()
   .single();
+```
+
+#### Products **NEW**
+```typescript
+// Fetch all active products
+const { data, error } = await supabase
+  .from('products')
+  .select('*')
+  .eq('is_active', true)
+  .order('created_at', { ascending: false });
+
+// Create product
+const { data, error } = await supabase
+  .from('products')
+  .insert({
+    product_name: 'Enterprise Plan',
+    base_price: 199.99,
+    billing_cycle: 'monthly',
+    enabled_features: ['compliance', 'workflows', 'ai'],
+    max_users: 100,
+    max_storage_gb: 1000,
+    is_active: true
+  })
+  .select()
+  .single();
+
+// Update product
+const { data, error } = await supabase
+  .from('products')
+  .update({ base_price: 249.99 })
+  .eq('id', productId)
+  .select()
+  .single();
+```
+
+#### Customer Subscriptions **NEW**
+```typescript
+// Fetch customer's active subscriptions
+const { data, error } = await supabase
+  .from('customer_subscriptions')
+  .select(`
+    *,
+    product:products(*)
+  `)
+  .eq('customer_id', customerId)
+  .eq('status', 'active');
+
+// Create subscription
+const { data, error } = await supabase
+  .from('customer_subscriptions')
+  .insert({
+    customer_id: customerId,
+    product_id: productId,
+    status: 'active',
+    start_date: new Date().toISOString(),
+    auto_renew: true
+  })
+  .select()
+  .single();
+```
+
+#### Applications **UPDATED**
+```typescript
+// Fetch all active applications
+const { data, error } = await supabase
+  .from('applications')
+  .select('*')
+  .eq('is_active', true)
+  .order('display_order');
+
+// NEW: Keeper Security application added
+// Fetch security applications
+const { data, error } = await supabase
+  .from('applications')
+  .select('*')
+  .eq('category', 'security')
+  .eq('is_active', true);
 ```
 
 #### User Profiles
