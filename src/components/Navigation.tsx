@@ -153,6 +153,12 @@ const Navigation = () => {
               >
                 Integrations
               </Link>
+              <Link 
+                to="/developers"
+                className="text-sm font-medium hover:text-accent transition-colors"
+              >
+                Developers
+              </Link>
               {isLoggedIn && (
                 <>
                   <Link 
@@ -314,6 +320,13 @@ const Navigation = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Integrations
+              </Link>
+              <Link 
+                to="/developers"
+                className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Developers
               </Link>
               {isLoggedIn && (
                 <>
