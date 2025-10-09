@@ -2456,6 +2456,13 @@ export type Database = {
             referencedRelation: "network_devices"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "device_metrics_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "soc_engineer_network_devices"
+            referencedColumns: ["id"]
+          },
         ]
       }
       evidence_files: {
@@ -3408,6 +3415,13 @@ export type Database = {
             referencedRelation: "network_devices"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "network_alerts_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "soc_engineer_network_devices"
+            referencedColumns: ["id"]
+          },
         ]
       }
       network_devices: {
@@ -4292,6 +4306,13 @@ export type Database = {
             referencedRelation: "network_devices"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "snmp_traps_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "soc_engineer_network_devices"
+            referencedColumns: ["id"]
+          },
         ]
       }
       subscription_plans: {
@@ -4478,6 +4499,13 @@ export type Database = {
             columns: ["device_id"]
             isOneToOne: false
             referencedRelation: "network_devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "syslog_messages_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "soc_engineer_network_devices"
             referencedColumns: ["id"]
           },
         ]
@@ -5175,6 +5203,158 @@ export type Database = {
         }
         Relationships: []
       }
+      soc_engineer_alert_rules: {
+        Row: {
+          auto_remediation_workflow_id: string | null
+          conditions: Json | null
+          created_at: string | null
+          created_by: string | null
+          created_by_name: string | null
+          customer_id: string | null
+          description: string | null
+          id: string | null
+          is_enabled: boolean | null
+          notification_channels: string[] | null
+          rule_name: string | null
+          rule_type: string | null
+          severity: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
+      soc_engineer_device_metrics: {
+        Row: {
+          additional_data: Json | null
+          created_at: string | null
+          customer_id: string | null
+          device_id: string | null
+          device_location: string | null
+          device_name: string | null
+          device_type: string | null
+          id: string | null
+          interface_name: string | null
+          metric_name: string | null
+          metric_type: string | null
+          metric_unit: string | null
+          metric_value: number | null
+          model: string | null
+          oid: string | null
+          polled_at: string | null
+          vendor: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_metrics_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "network_devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "device_metrics_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "soc_engineer_network_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      soc_engineer_network_alerts: {
+        Row: {
+          alert_type: string | null
+          assigned_to: string | null
+          assigned_to_name: string | null
+          auto_remediation_triggered: boolean | null
+          correlation_id: string | null
+          created_at: string | null
+          customer_id: string | null
+          description: string | null
+          device_id: string | null
+          device_location: string | null
+          device_name: string | null
+          device_type: string | null
+          id: string | null
+          incident_id: string | null
+          notes: string | null
+          remediation_action: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          resolved_by_name: string | null
+          severity: string | null
+          source_data: Json | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "network_alerts_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "network_devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "network_alerts_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "soc_engineer_network_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      soc_engineer_network_devices: {
+        Row: {
+          assigned_department: string | null
+          assigned_to: string | null
+          assigned_to_name: string | null
+          ci_id: string | null
+          ci_name: string | null
+          created_at: string | null
+          created_by: string | null
+          customer_id: string | null
+          description: string | null
+          device_name: string | null
+          device_type: string | null
+          id: string | null
+          ip_address: unknown | null
+          last_poll_at: string | null
+          last_syslog_at: string | null
+          location: string | null
+          metadata: Json | null
+          model: string | null
+          polling_enabled: boolean | null
+          polling_interval_seconds: number | null
+          snmp_community: string | null
+          snmp_port: number | null
+          snmp_version: string | null
+          status: string | null
+          syslog_enabled: boolean | null
+          updated_at: string | null
+          vendor: string | null
+        }
+        Relationships: []
+      }
+      soc_engineer_network_monitoring: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          created_at: string | null
+          customer_id: string | null
+          device_name: string | null
+          device_type: string | null
+          event_identifier: string | null
+          event_type: string | null
+          hostname: string | null
+          id: string | null
+          is_acknowledged: boolean | null
+          message: string | null
+          monitor_type: string | null
+          severity: string | null
+          source_ip: unknown | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       can_manage_roles: {
@@ -5217,6 +5397,15 @@ export type Database = {
         Returns: string
       }
       has_permission: {
+        Args: {
+          _min_permission?: string
+          _resource_name: string
+          _resource_type: string
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      has_resource_permission: {
         Args: {
           _min_permission?: string
           _resource_name: string

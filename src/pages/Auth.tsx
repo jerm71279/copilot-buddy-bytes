@@ -12,6 +12,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
 
+import { userProfileSchema, sanitizeText } from "@/lib/validation";
+
 // Enhanced validation schemas with security requirements
 const loginSchema = z.object({
   email: z.string()
@@ -44,6 +46,13 @@ const signupSchema = z.object({
     .regex(/[a-z]/, "Password must contain at least one lowercase letter")
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character"),
+});
+
+const resetPasswordSchema = z.object({
+  email: z.string()
+    .trim()
+    .email("Invalid email address")
+    .max(255, "Email must be less than 255 characters"),
 });
 
 const Auth = () => {

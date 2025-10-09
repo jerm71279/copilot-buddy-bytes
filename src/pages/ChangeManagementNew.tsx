@@ -116,6 +116,24 @@ const ChangeManagementNew = () => {
     try {
       setLoading(true);
 
+      // Validate input data
+      const validatedData = changeRequestSchema.parse({
+        title: formData.title,
+        description: formData.description,
+        change_type: formData.change_type,
+        priority: formData.priority,
+        risk_level: formData.risk_level,
+        justification: formData.justification,
+        implementation_plan: formData.implementation_plan,
+        rollback_plan: formData.rollback_plan,
+        testing_plan: formData.testing_plan || undefined,
+        affected_ci_ids: formData.affected_ci_ids?.length > 0 ? formData.affected_ci_ids : undefined,
+        estimated_downtime_minutes: formData.estimated_downtime_minutes || undefined,
+        affected_users: formData.affected_users || undefined,
+        requested_start_time: formData.requested_start_time || undefined,
+        requested_end_time: formData.requested_end_time || undefined,
+      });
+
       // Validate form data
       const validatedData = changeRequestSchema.parse({
         ...formData,
