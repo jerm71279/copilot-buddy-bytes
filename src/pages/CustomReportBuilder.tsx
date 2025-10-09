@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import Navigation from "@/components/Navigation";
+import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -114,12 +116,31 @@ export default function CustomReportBuilder() {
   });
 
   return (
-    <div className="container mx-auto p-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Custom Report Builder</h1>
-          <p className="text-muted-foreground">Create and execute custom reports from your data</p>
-        </div>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <div className="container mx-auto px-4 pt-28 pb-8 space-y-6">
+        <DashboardNavigation 
+          title="Custom Report Builder"
+          dashboards={[
+            { name: "Admin Dashboard", path: "/admin" },
+            { name: "Employee Portal", path: "/portal" },
+            { name: "Analytics Portal", path: "/analytics" },
+            { name: "Compliance Portal", path: "/compliance" },
+            { name: "Change Management", path: "/change-management" },
+            { name: "Executive Dashboard", path: "/dashboard/executive" },
+            { name: "Finance Dashboard", path: "/dashboard/finance" },
+            { name: "HR Dashboard", path: "/dashboard/hr" },
+            { name: "IT Dashboard", path: "/dashboard/it" },
+            { name: "Operations Dashboard", path: "/dashboard/operations" },
+            { name: "Sales Dashboard", path: "/dashboard/sales" },
+            { name: "SOC Dashboard", path: "/dashboard/soc" },
+          ]}
+        />
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Custom Report Builder</h1>
+            <p className="text-muted-foreground">Create and execute custom reports from your data</p>
+          </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -293,6 +314,7 @@ export default function CustomReportBuilder() {
           </Table>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
