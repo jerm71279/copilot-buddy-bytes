@@ -1,9 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
+import mermaid from "mermaid";
 
 const ArchitectureCanvas = () => {
   const [zoom, setZoom] = useState(1);
+  const mermaidRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    mermaid.initialize({ 
+      startOnLoad: true,
+      theme: 'default',
+      securityLevel: 'loose',
+    });
+  }, []);
+
+  useEffect(() => {
+    if (mermaidRef.current) {
+      mermaid.contentLoaded();
+    }
+  }, [zoom]);
 
   const mermaidDiagram = `
 graph TB
@@ -247,11 +263,9 @@ graph TB
               minWidth: '2000px'
             }}
           >
-            <div 
-              dangerouslySetInnerHTML={{ 
-                __html: `<lov-mermaid>${mermaidDiagram}</lov-mermaid>` 
-              }} 
-            />
+            <div ref={mermaidRef} className="mermaid">
+              {mermaidDiagram}
+            </div>
           </div>
         </div>
 
