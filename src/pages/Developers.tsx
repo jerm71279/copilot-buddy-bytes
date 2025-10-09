@@ -3,7 +3,8 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Github, BookOpen, Code2, Database, FileText, ExternalLink, Workflow, Shield, Zap } from "lucide-react";
+import { Github, BookOpen, Code2, Database, FileText, ExternalLink, Workflow, Shield, Zap, Network } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Developers = () => {
   const docs = [
@@ -12,7 +13,8 @@ const Developers = () => {
       description: "Complete system architecture and design patterns",
       icon: Database,
       file: "ARCHITECTURE.md",
-      category: "Core"
+      category: "Core",
+      diagram: true
     },
     {
       title: "API Reference",
@@ -170,17 +172,27 @@ const Developers = () => {
                       <CardDescription>{doc.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <a 
-                        href={`https://github.com/yourusername/oberaconnect/blob/main/${doc.file}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Button variant="outline" className="w-full">
-                          <FileText className="mr-2 h-4 w-4" />
-                          View Documentation
-                          <ExternalLink className="ml-2 h-4 w-4" />
-                        </Button>
-                      </a>
+                      <div className="space-y-2">
+                        <a 
+                          href={`https://github.com/yourusername/oberaconnect/blob/main/${doc.file}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button variant="outline" className="w-full">
+                            <FileText className="mr-2 h-4 w-4" />
+                            View Documentation
+                            <ExternalLink className="ml-2 h-4 w-4" />
+                          </Button>
+                        </a>
+                        {doc.diagram && (
+                          <Link to="/architecture-diagram">
+                            <Button variant="secondary" className="w-full">
+                              <Network className="mr-2 h-4 w-4" />
+                              View Full Diagram
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 );

@@ -71,6 +71,7 @@ import NetworkMonitoring from "./pages/NetworkMonitoring";
 import NetworkDeviceNew from "./pages/NetworkDeviceNew";
 import ProductsAdmin from "./pages/ProductsAdmin";
 import Developers from "./pages/Developers";
+import ArchitectureDiagram from "./pages/ArchitectureDiagram";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/integrations" element={<IntegrationsPage />} />
           <Route path="/developers" element={<Developers />} />
+          <Route path="/architecture-diagram" element={<ArchitectureDiagram />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/demo" element={<DemoSelector />} />
           
