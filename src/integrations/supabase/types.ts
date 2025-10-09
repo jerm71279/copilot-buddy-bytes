@@ -2361,6 +2361,75 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_subscriptions: {
+        Row: {
+          created_at: string
+          currency: string | null
+          current_price: number | null
+          customer_id: string
+          end_date: string | null
+          id: string
+          metadata: Json | null
+          notes: string | null
+          product_id: string
+          renewal_date: string | null
+          revio_customer_id: string | null
+          revio_subscription_id: string | null
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          current_price?: number | null
+          customer_id: string
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          product_id: string
+          renewal_date?: string | null
+          revio_customer_id?: string | null
+          revio_subscription_id?: string | null
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          current_price?: number | null
+          customer_id?: string
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          product_id?: string
+          renewal_date?: string | null
+          revio_customer_id?: string | null
+          revio_subscription_id?: string | null
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_subscriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_subscriptions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_usage: {
         Row: {
           created_at: string
@@ -2658,6 +2727,47 @@ export type Database = {
             columns: ["framework_id"]
             isOneToOne: false
             referencedRelation: "compliance_frameworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_access_log: {
+        Row: {
+          access_granted: boolean
+          accessed_at: string
+          customer_id: string
+          denial_reason: string | null
+          feature_name: string
+          id: string
+          integration_name: string | null
+          user_id: string
+        }
+        Insert: {
+          access_granted: boolean
+          accessed_at?: string
+          customer_id: string
+          denial_reason?: string | null
+          feature_name: string
+          id?: string
+          integration_name?: string | null
+          user_id: string
+        }
+        Update: {
+          access_granted?: boolean
+          accessed_at?: string
+          customer_id?: string
+          denial_reason?: string | null
+          feature_name?: string
+          id?: string
+          integration_name?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_access_log_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
         ]
@@ -3919,6 +4029,57 @@ export type Database = {
           },
         ]
       }
+      products: {
+        Row: {
+          base_price: number | null
+          billing_frequency: string | null
+          category: string
+          created_at: string
+          description: string | null
+          enabled_features: string[] | null
+          enabled_integrations: string[] | null
+          feature_limits: Json | null
+          id: string
+          is_active: boolean | null
+          product_code: string
+          product_name: string
+          service_tier: string | null
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number | null
+          billing_frequency?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          enabled_features?: string[] | null
+          enabled_integrations?: string[] | null
+          feature_limits?: Json | null
+          id?: string
+          is_active?: boolean | null
+          product_code: string
+          product_name: string
+          service_tier?: string | null
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number | null
+          billing_frequency?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          enabled_features?: string[] | null
+          enabled_integrations?: string[] | null
+          feature_limits?: Json | null
+          id?: string
+          is_active?: boolean | null
+          product_code?: string
+          product_name?: string
+          service_tier?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       remediation_executions: {
         Row: {
           actions_taken: Json
@@ -4273,6 +4434,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      service_tier_packages: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          included_integrations: string[] | null
+          included_products: string[] | null
+          is_active: boolean | null
+          max_storage_gb: number | null
+          max_users: number | null
+          support_level: string | null
+          tier_level: number
+          tier_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          included_integrations?: string[] | null
+          included_products?: string[] | null
+          is_active?: boolean | null
+          max_storage_gb?: number | null
+          max_users?: number | null
+          support_level?: string | null
+          tier_level: number
+          tier_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          included_integrations?: string[] | null
+          included_products?: string[] | null
+          is_active?: boolean | null
+          max_storage_gb?: number | null
+          max_users?: number | null
+          support_level?: string | null
+          tier_level?: number
+          tier_name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       sharepoint_sync_config: {
         Row: {
@@ -5497,6 +5703,10 @@ export type Database = {
       }
       can_manage_roles: {
         Args: { _user_id: string }
+        Returns: boolean
+      }
+      customer_has_feature: {
+        Args: { _customer_id: string; _feature_name: string }
         Returns: boolean
       }
       generate_change_number: {
