@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
+import Navigation from "@/components/Navigation";
 import { toast } from "sonner";
 import { 
   BarChart3, 
@@ -179,6 +180,7 @@ export default function AnalyticsPortal() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Navigation />
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
           <div>
