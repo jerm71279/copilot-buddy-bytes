@@ -248,17 +248,17 @@ const DataFlowPortal = () => {
                       <FlowDiagram
                         title="Compliance Dashboard Diagram"
                         accent="green"
-                        width={800}
-                        height={300}
+                        width={820}
+                        height={340}
                         nodes={[
-                          { id: "frameworks", label: "Load\nFrameworks", x: 160, y: 100, w: 140, h: 70 },
-                          { id: "audit", label: "Audit\nLogs", x: 160, y: 220, w: 140, h: 70 },
-                          { id: "score", label: "Score\nCalculation", x: 420, y: 160, w: 160, h: 70 },
-                          { id: "evidence", label: "Evidence\nUpload", x: 640, y: 160, w: 140, h: 70 },
-                          { id: "junction", label: "", x: 640, y: 60, w: 16, h: 16 },
-                          { id: "split", label: "", x: 80, y: 60, w: 16, h: 16 },
-                          { id: "toFrameworks", label: "", x: 80, y: 100, w: 16, h: 16, hidden: true },
-                          { id: "toAudit", label: "", x: 80, y: 220, w: 16, h: 16, hidden: true },
+                          { id: "frameworks", label: "Load\nFrameworks", x: 180, y: 120, w: 140, h: 70 },
+                          { id: "audit", label: "Audit\nLogs", x: 180, y: 240, w: 140, h: 70 },
+                          { id: "score", label: "Score\nCalculation", x: 440, y: 180, w: 160, h: 70 },
+                          { id: "evidence", label: "Evidence\nUpload", x: 660, y: 180, w: 140, h: 70 },
+                          { id: "junction", label: "", x: 660, y: 60, w: 12, h: 12 },
+                          { id: "split", label: "", x: 80, y: 60, w: 12, h: 12 },
+                          { id: "toFrameworks", label: "", x: 80, y: 120, w: 12, h: 12 },
+                          { id: "toAudit", label: "", x: 80, y: 240, w: 12, h: 12 },
                         ]}
                         edges={[
                           { from: "frameworks", to: "score" },
