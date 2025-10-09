@@ -239,6 +239,13 @@ Each subsystem is independently testable, replaceable, and documented:
 - **AI Module**: Department assistants and MCP server integration (enhancement layer)
 - **Workflow Module**: Universal automation engine
 - **Compliance Module**: Framework tracking and audit logging
+  - **Scorecard Architecture**: Compliance scores are calculated by comparing framework requirements (from `compliance_frameworks` and `compliance_controls` tables) against actual compliance activities logged in `audit_logs`
+  - **Data Flow**: 
+    1. Load frameworks to define required compliance controls
+    2. Query audit logs to retrieve historical compliance actions (tagged with `compliance_tags`)
+    3. Calculate score by comparing completed actions vs. required controls
+    4. Evidence uploads create new audit log entries, feeding back into next score calculation
+  - **Tables**: `compliance_frameworks`, `compliance_controls`, `compliance_evidence`, `compliance_reports`, `audit_logs`
 
 ### 3. Data Isolation
 - **Row Level Security (RLS)**: All tables enforce customer/user isolation

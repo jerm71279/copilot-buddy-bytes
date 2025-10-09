@@ -69,6 +69,15 @@ graph TD
 
 ## Compliance Dashboard
 
+### Scorecard Architecture
+The compliance scorecard is calculated by comparing **framework requirements** (what controls need to be met) against **audit logs** (past compliance actions taken). The score measures actual compliance activities performed versus required framework controls.
+
+**Data Flow:**
+1. **Load Frameworks** - Defines required compliance controls and standards
+2. **Load Audit Logs** - Shows historical compliance actions and activities
+3. **Score Calculation** - Compares audit log entries (tagged with compliance activities) against framework's required controls to generate compliance percentage
+4. **Evidence Upload** - Creates new audit log entries that feed back into the next score calculation
+
 ```mermaid
 graph TD
     A[User Opens Compliance Dashboard] --> B{Authenticated?}
@@ -76,18 +85,20 @@ graph TD
     B -->|Yes| D[Load User Profile]
     D --> E[Fetch Customer ID]
     E --> F[Query compliance_frameworks Table]
-    F --> G[Query compliance_controls Table]
-    G --> H[Calculate Compliance Score]
-    H --> I[Query audit_logs Table]
-    I --> J[Display Dashboard]
-    J --> K{User Action}
-    K -->|Select Framework| L[Navigate to Framework Detail]
-    K -->|View Control| M[Navigate to Control Detail]
-    K -->|Upload Evidence| N[Navigate to Evidence Upload]
-    N --> O[Upload to Storage Bucket]
-    O --> P[Create compliance_evidence Record]
+    E --> G[Query audit_logs Table]
+    F --> H[Calculate Compliance Score]
+    G --> H
+    H --> I[Display Dashboard with Score]
+    I --> J{User Action}
+    J -->|Select Framework| K[Navigate to Framework Detail]
+    J -->|View Control| L[Navigate to Control Detail]
+    J -->|Upload Evidence| M[Navigate to Evidence Upload]
+    M --> N[Upload to Storage Bucket]
+    N --> O[Create compliance_evidence Record]
+    O --> P[Create audit_log Entry]
     P --> Q[Update Control Status]
     Q --> R[Recalculate Compliance Score]
+    R --> I
 ```
 
 ## Admin Dashboard
