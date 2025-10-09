@@ -149,16 +149,8 @@ const Auth = () => {
 
       if (error) throw error;
 
-      // Log security event
-      await supabase.from('audit_logs').insert({
-        user_id: '00000000-0000-0000-0000-000000000000',
-        customer_id: '00000000-0000-0000-0000-000000000000',
-        system_name: 'auth',
-        action_type: 'password_reset_requested',
-        action_details: { email: validatedEmail, requested_at: new Date().toISOString() },
-        compliance_tags: ['security', 'authentication']
-      });
-
+      // Log security event - no customer_id available for password reset
+      // Skip audit log to avoid foreign key constraint
       toast.success("Password reset email sent! Check your inbox.");
       setShowResetForm(false);
       setResetEmail("");
@@ -190,34 +182,31 @@ const Auth = () => {
       });
 
       if (error) {
-        // Log failed login attempt
-        await supabase.from('audit_logs').insert({
-          user_id: '00000000-0000-0000-0000-000000000000',
-          customer_id: '00000000-0000-0000-0000-000000000000',
-          system_name: 'auth',
-          action_type: 'login_failed',
-          action_details: { 
-            email: validatedData.email, 
-            error: error.message,
-            timestamp: new Date().toISOString() 
-          },
-          compliance_tags: ['security', 'authentication']
-        });
+        // Log failed login attempt - no customer_id available yet
+        // Skip audit log for failed login to avoid foreign key constraint
         toast.error(error.message === 'Invalid login credentials' ? 'Invalid email or password' : error.message);
       } else {
-        // Log successful login
+        // Log successful login - fetch customer_id first
         if (data.user) {
-          await supabase.from('audit_logs').insert({
-            user_id: data.user.id,
-            customer_id: '00000000-0000-0000-0000-000000000000',
-            system_name: 'auth',
-            action_type: 'login_success',
-            action_details: { 
-              email: validatedData.email,
-              timestamp: new Date().toISOString() 
-            },
-            compliance_tags: ['security', 'authentication']
-          });
+          const { data: profileData } = await supabase
+            .from('user_profiles')
+            .select('customer_id')
+            .eq('user_id', data.user.id)
+            .single();
+
+          if (profileData?.customer_id) {
+            await supabase.from('audit_logs').insert({
+              user_id: data.user.id,
+              customer_id: profileData.customer_id,
+              system_name: 'auth',
+              action_type: 'login_success',
+              action_details: { 
+                email: validatedData.email,
+                timestamp: new Date().toISOString() 
+              },
+              compliance_tags: ['security', 'authentication']
+            });
+          }
         }
         toast.success("Logged in successfully");
       }
@@ -278,19 +267,9 @@ const Auth = () => {
       });
 
       if (error) {
-        // Log failed signup
-        await supabase.from('audit_logs').insert({
-          user_id: '00000000-0000-0000-0000-000000000000',
-          customer_id: '00000000-0000-0000-0000-000000000000',
-          system_name: 'auth',
-          action_type: 'signup_failed',
-          action_details: { 
-            email: validatedData.email, 
-            error: error.message,
-            timestamp: new Date().toISOString() 
-          },
-          compliance_tags: ['security', 'authentication']
-        });
+        // Log failed signup - no customer_id available yet
+        // Skip audit log to avoid foreign key constraint
+        toast.error(error.message);
         throw error;
       }
       
