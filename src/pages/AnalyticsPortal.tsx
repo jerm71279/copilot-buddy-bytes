@@ -58,12 +58,12 @@ export default function AnalyticsPortal() {
   });
 
   const { data: alerts } = useQuery({
-    queryKey: ['real-time-alerts', customerId],
+    queryKey: ['network-alerts', customerId],
     enabled: !!customerId,
     refetchInterval: 30000,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('real_time_alerts' as any)
+        .from('network_alerts' as any)
         .select('*')
         .eq('customer_id', customerId)
         .eq('is_resolved', false)
