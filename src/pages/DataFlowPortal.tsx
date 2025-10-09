@@ -109,19 +109,20 @@ const DataFlowPortal = () => {
                       <FlowDiagram
                         title="CIPP Dashboard Diagram"
                         accent="blue"
-                        width={800}
-                        height={260}
+                        width={900}
+                        height={300}
                         nodes={[
-                          { id: "auth", label: "Authentication", x: 150, y: 60 },
-                          { id: "data", label: "Data Loading\nTenant Health\nTenant List", x: 150, y: 160, h: 90, w: 220 },
-                          { id: "sync", label: "Sync Action", x: 520, y: 110, w: 200 },
-                          { id: "details", label: "Select Details", x: 520, y: 190, w: 200 },
+                          { id: "auth", label: "User Auth\nCheck", x: 120, y: 80, w: 140, h: 70 },
+                          { id: "profile", label: "Load Profile\n& Customer ID", x: 120, y: 200, w: 160, h: 70 },
+                          { id: "query", label: "Query Tenants\n& Health Data", x: 380, y: 140, w: 160, h: 70 },
+                          { id: "display", label: "Display\nDashboard", x: 640, y: 80, w: 140, h: 70 },
+                          { id: "sync", label: "Sync Tenants\nAction", x: 640, y: 200, w: 140, h: 70 },
                         ]}
                         edges={[
-                          { from: "auth", to: "data" },
-                          { from: "data", to: "sync" },
-                          { from: "sync", to: "data" },
-                          { from: "sync", to: "details" },
+                          { from: "auth", to: "profile" },
+                          { from: "profile", to: "query" },
+                          { from: "query", to: "display" },
+                          { from: "display", to: "sync" },
                         ]}
                       />
                     </div>
