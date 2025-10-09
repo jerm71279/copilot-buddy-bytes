@@ -185,7 +185,7 @@ const Navigation = () => {
                         <Link to="/cipp" className="w-full cursor-pointer">CIPP Dashboard</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/compliance-dashboard" className="w-full cursor-pointer">Compliance Dashboard</Link>
+                        <Link to="/dashboard/compliance" className="w-full cursor-pointer">Compliance Dashboard</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link to="/dashboard/executive" className="w-full cursor-pointer">Executive Dashboard</Link>
@@ -393,7 +393,7 @@ const Navigation = () => {
                     <Link to="/cipp" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
                       CIPP Dashboard
                     </Link>
-                    <Link to="/compliance-dashboard" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                    <Link to="/dashboard/compliance" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
                       Compliance Dashboard
                     </Link>
                     <Link to="/dashboard/executive" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
