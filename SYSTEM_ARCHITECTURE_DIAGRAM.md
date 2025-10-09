@@ -174,6 +174,11 @@ graph TB
     CompReports --> Customers
     AuditLogs --> Users
     
+    %% Compliance Integration Points
+    CompControls --> Workflows
+    CompReports --> AuditLogs
+    CompFrameworks --> Customers
+    
     %% RLS Protection
     RLS -.->|Protects| Users
     RLS -.->|Protects| Customers
