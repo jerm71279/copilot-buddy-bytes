@@ -60,21 +60,6 @@ const CMDBAddItem = () => {
     try {
       setLoading(true);
 
-      // Validate input data
-      const validatedData = configurationItemSchema.parse({
-        ci_name: formData.ci_name,
-        ci_type: formData.ci_type,
-        ci_subtype: formData.ci_subtype || undefined,
-        serial_number: formData.serial_number || undefined,
-        asset_tag: formData.asset_tag || undefined,
-        ip_address: formData.ip_address || undefined,
-        mac_address: formData.mac_address || undefined,
-        hostname: formData.hostname || undefined,
-        location: formData.location || undefined,
-        department: formData.department || undefined,
-        criticality: formData.criticality || undefined,
-      });
-
       // Validate form data
       const validatedData = ciSchema.parse(formData);
 
