@@ -118,6 +118,7 @@ export default function FlowDiagram({
 
         {/* Nodes */}
         {nodes.map((n) => {
+          if (n.hidden) return null; // Skip rendering hidden routing nodes
           const w = n.w ?? DEFAULT_NODE_W;
           const h = n.h ?? DEFAULT_NODE_H;
           const x = n.x - w / 2;

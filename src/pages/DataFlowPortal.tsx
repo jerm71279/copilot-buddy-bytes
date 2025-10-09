@@ -255,13 +255,17 @@ const DataFlowPortal = () => {
                           { id: "audit", label: "Audit\nLogs", x: 160, y: 220, w: 140, h: 70 },
                           { id: "score", label: "Score\nCalculation", x: 420, y: 160, w: 160, h: 70 },
                           { id: "evidence", label: "Evidence\nUpload", x: 640, y: 160, w: 140, h: 70 },
+                          { id: "route1", label: "", x: 640, y: 60, w: 20, h: 20, hidden: true },
+                          { id: "route2", label: "", x: 300, y: 60, w: 20, h: 20, hidden: true },
                         ]}
                         edges={[
                           { from: "frameworks", to: "score" },
                           { from: "audit", to: "score" },
                           { from: "score", to: "evidence" },
-                          { from: "evidence", to: "frameworks" },
-                          { from: "evidence", to: "audit" },
+                          { from: "evidence", to: "route1" },
+                          { from: "route1", to: "route2" },
+                          { from: "route2", to: "frameworks" },
+                          { from: "route2", to: "audit" },
                         ]}
                       />
                     </div>
