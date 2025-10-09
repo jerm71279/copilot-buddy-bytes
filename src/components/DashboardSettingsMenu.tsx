@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Settings, Bell, Palette, Lock, Database, Download, Upload, Sun, Moon } from "lucide-react";
+import { AccessHistoryDialog } from "./AccessHistoryDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +32,7 @@ interface DashboardSettingsMenuProps {
 export const DashboardSettingsMenu = ({ dashboardName, onExportData }: DashboardSettingsMenuProps) => {
   const [notificationDialogOpen, setNotificationDialogOpen] = useState(false);
   const [privacyDialogOpen, setPrivacyDialogOpen] = useState(false);
+  const [accessHistoryOpen, setAccessHistoryOpen] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(false);
   const [weeklyReports, setWeeklyReports] = useState(true);
@@ -226,13 +228,26 @@ export const DashboardSettingsMenu = ({ dashboardName, onExportData }: Dashboard
             </div>
             <div className="space-y-2">
               <h4 className="font-medium">Access Logs</h4>
-              <Button variant="outline" className="w-full" onClick={() => toast.info("Access logs feature coming soon")}>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={() => {
+                  setPrivacyDialogOpen(false);
+                  setAccessHistoryOpen(true);
+                }}
+              >
                 View Access History
               </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Access History Dialog */}
+      <AccessHistoryDialog 
+        open={accessHistoryOpen} 
+        onOpenChange={setAccessHistoryOpen}
+      />
     </>
   );
 };
