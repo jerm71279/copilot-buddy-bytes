@@ -69,6 +69,7 @@ import ClientPortal from "./pages/ClientPortal";
 import CustomReportBuilder from "./pages/CustomReportBuilder";
 import NetworkMonitoring from "./pages/NetworkMonitoring";
 import NetworkDeviceNew from "./pages/NetworkDeviceNew";
+import ProductsAdmin from "./pages/ProductsAdmin";
 
 const queryClient = new QueryClient();
 
@@ -441,6 +442,13 @@ const App = () => (
           <Route path="/network-monitoring/devices/new" element={
             <ProtectedRoute>
               <NetworkDeviceNew />
+            </ProtectedRoute>
+          } />
+          
+          {/* Products Admin - Admin Only */}
+          <Route path="/admin/products" element={
+            <ProtectedRoute requireAdmin>
+              <ProductsAdmin />
             </ProtectedRoute>
           } />
           
