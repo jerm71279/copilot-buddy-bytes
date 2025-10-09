@@ -72,10 +72,25 @@ export default function FlowDiagram({
           const fh = from.h ?? DEFAULT_NODE_H;
           const tw = to.w ?? DEFAULT_NODE_W;
           const th = to.h ?? DEFAULT_NODE_H;
-          const x1 = from.x + fw / 2; // right center of from
-          const y1 = from.y;          // vertical center (since y is center)
-          const x2 = to.x - tw / 2;   // left center of to
-          const y2 = to.y;
+          
+          // Determine if nodes are stacked vertically (similar x, different y)
+          const isVertical = Math.abs(from.x - to.x) < 50 && to.y > from.y;
+          
+          let x1, y1, x2, y2;
+          
+          if (isVertical) {
+            // Vertical flow: bottom of from to top of to
+            x1 = from.x;
+            y1 = from.y + fh / 2;  // bottom of from
+            x2 = to.x;
+            y2 = to.y - th / 2;    // top of to
+          } else {
+            // Horizontal flow: right of from to left of to
+            x1 = from.x + fw / 2;  // right center of from
+            y1 = from.y;
+            x2 = to.x - tw / 2;    // left center of to
+            y2 = to.y;
+          }
 
           return (
             <line
