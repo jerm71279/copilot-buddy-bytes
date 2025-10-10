@@ -62,7 +62,7 @@ export const DashboardPortalLanes = () => {
   }
 
   return (
-    <div className="w-full bg-background border-b border-border">
+    <div className="w-full bg-background border-b border-border mt-24 md:mt-28">
       {/* Back Button */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-1.5">
