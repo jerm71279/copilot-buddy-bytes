@@ -331,27 +331,37 @@ export default function DashboardPortalLanes() {
                             </Button>
                           </CollapsibleTrigger>
                         </div>
-                        <CollapsibleContent forceMount className="fixed inset-0 z-[10000]">
-                          <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={closeAll} />
-                          <div className="bg-popover border border-border rounded-md shadow-xl p-6 container mx-auto px-4 mt-[var(--lanes-bottom)]">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                {portal.children.map((child) => (
-                                  <Link
-                                    key={child.path}
-                                    to={child.path}
-                                    onClick={closeAll}
-                                    className={cn(
-                                      "block px-3 py-2 text-sm rounded-md transition-colors",
-                                      currentPath === child.path
-                                        ? "bg-primary text-primary-foreground"
-                                        : "text-foreground hover:bg-muted"
-                                    )}
-                                  >
-                                    {child.name}
-                                  </Link>
-                                ))}
-                            </div>
-                          </div>
+                        <CollapsibleContent className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
+                          {isOpen && (
+                            <>
+                              <div 
+                                className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[10000]" 
+                                onClick={closeAll}
+                              />
+                              <div 
+                                className="fixed left-1/2 -translate-x-1/2 z-[10001] bg-popover border border-border rounded-lg shadow-2xl p-6 max-w-4xl w-[90vw]"
+                                style={{ top: 'var(--lanes-bottom)' }}
+                              >
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                  {portal.children.map((child) => (
+                                    <Link
+                                      key={child.path}
+                                      to={child.path}
+                                      onClick={closeAll}
+                                      className={cn(
+                                        "block px-4 py-3 text-sm rounded-md transition-colors",
+                                        currentPath === child.path
+                                          ? "bg-primary text-primary-foreground font-medium"
+                                          : "text-foreground hover:bg-muted"
+                                      )}
+                                    >
+                                      {child.name}
+                                    </Link>
+                                  ))}
+                                </div>
+                              </div>
+                            </>
+                          )}
                         </CollapsibleContent>
                       </Collapsible>
                     ) : (
@@ -415,27 +425,37 @@ export default function DashboardPortalLanes() {
                           </Button>
                         </CollapsibleTrigger>
                       </div>
-                      <CollapsibleContent forceMount className="fixed inset-0 z-[10000]">
-                        <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={closeAll} />
-                        <div className="bg-popover border border-border rounded-md shadow-xl p-6 container mx-auto px-4 mt-[var(--lanes-bottom)]">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                              {category.dashboards.map((dashboard) => (
-                                <Link
-                                  key={dashboard.path}
-                                  to={dashboard.path}
-                                  onClick={closeAll}
-                                  className={cn(
-                                    "block px-3 py-2 text-sm rounded-md transition-colors",
-                                    currentPath === dashboard.path
-                                      ? "bg-primary text-primary-foreground"
-                                      : "text-foreground hover:bg-muted"
-                                  )}
-                                >
-                                  {dashboard.name}
-                                </Link>
-                              ))}
-                          </div>
-                        </div>
+                      <CollapsibleContent className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
+                        {isOpen && (
+                          <>
+                            <div 
+                              className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[10000]" 
+                              onClick={closeAll}
+                            />
+                            <div 
+                              className="fixed left-1/2 -translate-x-1/2 z-[10001] bg-popover border border-border rounded-lg shadow-2xl p-6 max-w-4xl w-[90vw]"
+                              style={{ top: 'var(--lanes-bottom)' }}
+                            >
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {category.dashboards.map((dashboard) => (
+                                  <Link
+                                    key={dashboard.path}
+                                    to={dashboard.path}
+                                    onClick={closeAll}
+                                    className={cn(
+                                      "block px-4 py-3 text-sm rounded-md transition-colors",
+                                      currentPath === dashboard.path
+                                        ? "bg-primary text-primary-foreground font-medium"
+                                        : "text-foreground hover:bg-muted"
+                                    )}
+                                  >
+                                    {dashboard.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </CollapsibleContent>
                     </Collapsible>
                   </div>
