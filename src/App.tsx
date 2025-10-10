@@ -493,6 +493,36 @@ const App = () => (
               <ContractManagement />
             </ProtectedRoute>
           } />
+          <Route path="/purchase-orders" element={
+            <ProtectedRoute>
+              <PurchaseOrders />
+            </ProtectedRoute>
+          } />
+          <Route path="/expenses" element={
+            <ProtectedRoute>
+              <ExpenseManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/budgets" element={
+            <ProtectedRoute>
+              <BudgetTracking />
+            </ProtectedRoute>
+          } />
+          <Route path="/invoices" element={
+            <ProtectedRoute>
+              <InvoiceManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/asset-financials" element={
+            <ProtectedRoute>
+              <AssetFinancials />
+            </ProtectedRoute>
+          } />
+          <Route path="/financial-reports" element={
+            <ProtectedRoute>
+              <FinancialReporting />
+            </ProtectedRoute>
+          } />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
