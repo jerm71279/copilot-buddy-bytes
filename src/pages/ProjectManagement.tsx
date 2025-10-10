@@ -18,11 +18,11 @@ const ProjectManagement = () => {
     queryKey: ["projects-all"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("projects")
+        .from("projects" as any)
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -31,10 +31,10 @@ const ProjectManagement = () => {
     queryKey: ["project-tasks-summary"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("project_tasks")
+        .from("project_tasks" as any)
         .select("project_id, status, estimated_hours, actual_hours");
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -47,8 +47,8 @@ const ProjectManagement = () => {
     switch (status) {
       case 'active': return 'default';
       case 'planning': return 'secondary';
-      case 'completed': return 'success';
-      case 'on_hold': return 'warning';
+      case 'completed': return 'default';
+      case 'on_hold': return 'outline';
       case 'cancelled': return 'destructive';
       default: return 'default';
     }
@@ -157,7 +157,7 @@ const ProjectManagement = () => {
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
                               <CardTitle className="text-xl">{project.project_name}</CardTitle>
-                              <Badge variant={getStatusColor(project.status)}>
+                              <Badge variant={getStatusColor(project.status) as any}>
                                 {project.status}
                               </Badge>
                               <Badge variant="outline">{project.project_type}</Badge>

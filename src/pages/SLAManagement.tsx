@@ -18,12 +18,12 @@ const SLAManagement = () => {
     queryKey: ["sla-definitions"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("sla_definitions")
+        .from("sla_definitions" as any)
         .select("*")
         .eq("is_active", true)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -32,13 +32,13 @@ const SLAManagement = () => {
     queryKey: ["sla-metrics-active"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("sla_metrics")
+        .from("sla_metrics" as any)
         .select("*")
         .eq("status", "active")
         .order("start_time", { ascending: false })
         .limit(20);
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -47,12 +47,12 @@ const SLAManagement = () => {
     queryKey: ["sla-breaches-recent"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("sla_breaches")
+        .from("sla_breaches" as any)
         .select("*")
         .order("breach_start", { ascending: false })
         .limit(10);
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -158,7 +158,7 @@ const SLAManagement = () => {
                             </p>
                           </div>
                         </div>
-                        <Badge variant={metric.is_breached ? "destructive" : "success"}>
+                        <Badge variant={metric.is_breached ? "destructive" : "default"}>
                           {metric.status}
                         </Badge>
                       </div>

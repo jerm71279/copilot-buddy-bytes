@@ -27,12 +27,12 @@ const TimeTracking = () => {
     queryKey: ["projects"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("projects")
+        .from("projects" as any)
         .select("*")
         .eq("status", "active")
         .order("project_name");
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -45,13 +45,13 @@ const TimeTracking = () => {
       if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from("time_entries")
+        .from("time_entries" as any)
         .select("*, projects(project_name)")
         .eq("user_id", user.id)
         .eq("entry_date", today)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -66,16 +66,16 @@ const TimeTracking = () => {
       weekStart.setDate(weekStart.getDate() - weekStart.getDay());
       
       const { data, error } = await supabase
-        .from("time_entries")
+        .from("time_entries" as any)
         .select("hours, is_billable, billing_rate")
         .eq("user_id", user.id)
         .gte("entry_date", weekStart.toISOString().split('T')[0]);
       
       if (error) throw error;
 
-      const totalHours = data.reduce((sum, entry) => sum + Number(entry.hours), 0);
-      const billableHours = data.filter(e => e.is_billable).reduce((sum, entry) => sum + Number(entry.hours), 0);
-      const revenue = data.reduce((sum, entry) => {
+      const totalHours = data.reduce((sum: number, entry: any) => sum + Number(entry.hours), 0);
+      const billableHours = data.filter((e: any) => e.is_billable).reduce((sum: number, entry: any) => sum + Number(entry.hours), 0);
+      const revenue = data.reduce((sum: number, entry: any) => {
         if (entry.is_billable && entry.billing_rate) {
           return sum + (Number(entry.hours) * Number(entry.billing_rate));
         }
@@ -92,7 +92,7 @@ const TimeTracking = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase.from("time_entries").insert({
+      const { error } = await supabase.from("time_entries" as any).insert({
         ...entry,
         user_id: user.id,
       });

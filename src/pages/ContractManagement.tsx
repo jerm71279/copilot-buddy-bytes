@@ -16,11 +16,11 @@ const ContractManagement = () => {
     queryKey: ["contracts"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("contracts")
+        .from("contracts" as any)
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -29,10 +29,10 @@ const ContractManagement = () => {
     queryKey: ["contract-terms"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("contract_terms")
+        .from("contract_terms" as any)
         .select("*");
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -41,12 +41,12 @@ const ContractManagement = () => {
     queryKey: ["contract-renewals"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("contract_renewals")
+        .from("contract_renewals" as any)
         .select("*, contracts(contract_name)")
         .eq("renewal_status", "upcoming")
         .order("renewal_date");
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -171,11 +171,11 @@ const ContractManagement = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <CardTitle className="text-xl">{contract.contract_name}</CardTitle>
-                            <Badge variant={getStatusColor(contract.status)}>
+                            <Badge variant={getStatusColor(contract.status) as any}>
                               {contract.status}
                             </Badge>
                             {expiring && (
-                              <Badge variant="warning">
+                              <Badge variant="outline" className="border-warning text-warning">
                                 <AlertTriangle className="h-3 w-3 mr-1" />
                                 Expiring in {daysUntilExpiry} days
                               </Badge>
