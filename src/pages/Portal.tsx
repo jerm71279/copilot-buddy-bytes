@@ -152,14 +152,11 @@ const Portal = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Link to="/analytics">
-                <Button variant="outline">Analytics Portal</Button>
-              </Link>
-              <Button variant="outline" onClick={handleSignOut}>
-                Sign Out
-              </Button>
-            </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={handleSignOut}>
+                  Sign Out
+                </Button>
+              </div>
           </div>
         </div>
       </header>

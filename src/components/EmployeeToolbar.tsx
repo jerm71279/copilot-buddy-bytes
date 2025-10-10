@@ -46,7 +46,7 @@ const EmployeeToolbar = () => {
     { name: "Finance", icon: CreditCard, path: "/dashboard/finance", description: "Expenses and reimbursements" },
     { name: "Revio", icon: DollarSign, path: "/dashboard/sales", description: "Customer billing and revenue" },
     { name: "Compliance", icon: Shield, path: "/dashboard/compliance", description: "Training and certifications" },
-    { name: "Analytics", icon: BarChart3, path: "/analytics", description: "Reports and insights" },
+    
   ];
 
   return (
