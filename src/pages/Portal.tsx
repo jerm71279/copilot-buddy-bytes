@@ -138,7 +138,7 @@ const Portal = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card">
+      <header className="border-b bg-card" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -167,7 +167,7 @@ const Portal = () => {
       {/* External Systems Bar */}
       <ExternalSystemsBar />
 
-      <div className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+      <div className="container mx-auto px-4 pb-8 pt-8">
         {/* Tools and Activities Dropdown */}
         <div className="flex items-center gap-3 mb-8">
           
