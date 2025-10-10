@@ -212,7 +212,7 @@ const CMDBDashboard = () => {
         <Button
           onClick={() => navigate("/cmdb/add")}
           className="fixed -right-8 hover:right-0 transition-all duration-300 rounded-l-lg rounded-r-none shadow-lg z-50 px-4 py-6 bg-primary hover:bg-primary/90"
-          style={{ top: 'calc(var(--lanes-height, 0px) + 0.5rem)' }}
+          style={{ top: 'calc(var(--lanes-height, 0px) + 3rem)' }}
           title="Add Configuration Item"
         >
           <Plus className="h-5 w-5" />
