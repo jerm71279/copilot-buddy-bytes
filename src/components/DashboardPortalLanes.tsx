@@ -314,8 +314,8 @@ export default function DashboardPortalLanes() {
                             </Button>
                           </CollapsibleTrigger>
                         </div>
-                        <CollapsibleContent className="absolute z-[9999] mt-1">
-                          <div className="bg-popover border border-border rounded-md shadow-lg p-1 min-w-[200px]">
+                        <CollapsibleContent className="absolute z-[10000] mt-1">
+                          <div className="bg-popover/95 backdrop-blur-sm border border-border rounded-md shadow-xl p-1 min-w-[200px]">
                             {portal.children.map((child) => (
                               <Link
                                 key={child.path}
@@ -324,7 +324,7 @@ export default function DashboardPortalLanes() {
                                   "block px-3 py-2 text-sm rounded-md transition-colors",
                                   currentPath === child.path
                                     ? "bg-primary text-primary-foreground"
-                                    : "hover:bg-muted"
+                                    : "text-foreground hover:bg-muted"
                                 )}
                               >
                                 {child.name}
@@ -395,8 +395,8 @@ export default function DashboardPortalLanes() {
                           </Button>
                         </CollapsibleTrigger>
                       </div>
-                      <CollapsibleContent className="absolute mt-1 z-[9999]">
-                        <div className="bg-popover border border-border rounded-md shadow-lg p-1 min-w-[200px]">
+                      <CollapsibleContent className="absolute mt-1 z-[10000]">
+                        <div className="bg-popover/95 backdrop-blur-sm border border-border rounded-md shadow-xl p-1 min-w-[200px]">
                           {category.dashboards.map((dashboard) => (
                             <Link
                               key={dashboard.path}
@@ -405,7 +405,7 @@ export default function DashboardPortalLanes() {
                                 "block px-3 py-2 text-sm rounded-md transition-colors",
                                 currentPath === dashboard.path
                                   ? "bg-primary text-primary-foreground"
-                                  : "hover:bg-muted"
+                                  : "text-foreground hover:bg-muted"
                               )}
                             >
                               {dashboard.name}
