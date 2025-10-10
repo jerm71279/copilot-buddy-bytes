@@ -56,6 +56,11 @@ const ExternalSystemsBar = () => {
       url: "https://login.salesforce.com", 
       description: "CRM and customer management" 
     },
+    { 
+      name: "Revio", 
+      url: "https://app.revio.com", 
+      description: "Billing and subscription management" 
+    },
   ];
 
   return (
