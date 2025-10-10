@@ -88,6 +88,9 @@ import FinancialReporting from "./pages/FinancialReporting";
 import VendorManagement from "./pages/VendorManagement";
 import InventoryManagement from "./pages/InventoryManagement";
 import WarehouseManagement from "./pages/WarehouseManagement";
+import LeadManagement from "./pages/LeadManagement";
+import SalesOpportunities from "./pages/SalesOpportunities";
+import SalesQuotes from "./pages/SalesQuotes";
 
 const queryClient = new QueryClient();
 
@@ -539,6 +542,21 @@ const App = () => (
           <Route path="/warehouses" element={
             <ProtectedRoute>
               <WarehouseManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/leads" element={
+            <ProtectedRoute>
+              <LeadManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/opportunities" element={
+            <ProtectedRoute>
+              <SalesOpportunities />
+            </ProtectedRoute>
+          } />
+          <Route path="/quotes" element={
+            <ProtectedRoute>
+              <SalesQuotes />
             </ProtectedRoute>
           } />
           

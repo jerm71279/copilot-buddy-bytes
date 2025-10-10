@@ -4924,6 +4924,289 @@ export type Database = {
         }
         Relationships: []
       }
+      sales_activities: {
+        Row: {
+          activity_status: string
+          activity_type: string
+          assigned_to: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: string | null
+          related_to_id: string | null
+          related_to_type: string | null
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          activity_status?: string
+          activity_type: string
+          assigned_to: string
+          completed_at?: string | null
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string | null
+          related_to_id?: string | null
+          related_to_type?: string | null
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          activity_status?: string
+          activity_type?: string
+          assigned_to?: string
+          completed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string | null
+          related_to_id?: string | null
+          related_to_type?: string | null
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sales_leads: {
+        Row: {
+          assigned_to: string | null
+          company_name: string
+          company_size: string | null
+          contact_email: string | null
+          contact_name: string
+          contact_phone: string | null
+          converted_at: string | null
+          converted_to_opportunity_id: string | null
+          created_at: string
+          customer_id: string
+          estimated_value: number | null
+          id: string
+          industry: string | null
+          lead_number: string
+          lead_score: number | null
+          lead_source: string | null
+          lead_status: string
+          next_follow_up: string | null
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          company_name: string
+          company_size?: string | null
+          contact_email?: string | null
+          contact_name: string
+          contact_phone?: string | null
+          converted_at?: string | null
+          converted_to_opportunity_id?: string | null
+          created_at?: string
+          customer_id: string
+          estimated_value?: number | null
+          id?: string
+          industry?: string | null
+          lead_number: string
+          lead_score?: number | null
+          lead_source?: string | null
+          lead_status?: string
+          next_follow_up?: string | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          company_name?: string
+          company_size?: string | null
+          contact_email?: string | null
+          contact_name?: string
+          contact_phone?: string | null
+          converted_at?: string | null
+          converted_to_opportunity_id?: string | null
+          created_at?: string
+          customer_id?: string
+          estimated_value?: number | null
+          id?: string
+          industry?: string | null
+          lead_number?: string
+          lead_score?: number | null
+          lead_source?: string | null
+          lead_status?: string
+          next_follow_up?: string | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sales_opportunities: {
+        Row: {
+          account_name: string
+          actual_close_date: string | null
+          amount: number
+          assigned_to: string | null
+          competitors: string[] | null
+          contact_email: string | null
+          contact_name: string
+          created_at: string
+          customer_id: string
+          expected_close_date: string | null
+          id: string
+          key_decision_makers: Json | null
+          lead_id: string | null
+          loss_reason: string | null
+          notes: string | null
+          opportunity_name: string
+          opportunity_number: string
+          opportunity_type: string | null
+          probability: number | null
+          stage: string
+          updated_at: string
+        }
+        Insert: {
+          account_name: string
+          actual_close_date?: string | null
+          amount: number
+          assigned_to?: string | null
+          competitors?: string[] | null
+          contact_email?: string | null
+          contact_name: string
+          created_at?: string
+          customer_id: string
+          expected_close_date?: string | null
+          id?: string
+          key_decision_makers?: Json | null
+          lead_id?: string | null
+          loss_reason?: string | null
+          notes?: string | null
+          opportunity_name: string
+          opportunity_number: string
+          opportunity_type?: string | null
+          probability?: number | null
+          stage?: string
+          updated_at?: string
+        }
+        Update: {
+          account_name?: string
+          actual_close_date?: string | null
+          amount?: number
+          assigned_to?: string | null
+          competitors?: string[] | null
+          contact_email?: string | null
+          contact_name?: string
+          created_at?: string
+          customer_id?: string
+          expected_close_date?: string | null
+          id?: string
+          key_decision_makers?: Json | null
+          lead_id?: string | null
+          loss_reason?: string | null
+          notes?: string | null
+          opportunity_name?: string
+          opportunity_number?: string
+          opportunity_type?: string | null
+          probability?: number | null
+          stage?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_opportunities_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "sales_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_quotes: {
+        Row: {
+          accepted_at: string | null
+          account_name: string
+          contact_email: string | null
+          contact_name: string
+          created_at: string
+          created_by: string
+          customer_id: string
+          discount_amount: number | null
+          expiry_date: string | null
+          id: string
+          line_items: Json
+          notes: string | null
+          opportunity_id: string | null
+          quote_date: string
+          quote_name: string
+          quote_number: string
+          quote_status: string
+          subtotal: number
+          tax_amount: number | null
+          terms_conditions: string | null
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          account_name: string
+          contact_email?: string | null
+          contact_name: string
+          created_at?: string
+          created_by: string
+          customer_id: string
+          discount_amount?: number | null
+          expiry_date?: string | null
+          id?: string
+          line_items?: Json
+          notes?: string | null
+          opportunity_id?: string | null
+          quote_date?: string
+          quote_name: string
+          quote_number: string
+          quote_status?: string
+          subtotal?: number
+          tax_amount?: number | null
+          terms_conditions?: string | null
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          account_name?: string
+          contact_email?: string | null
+          contact_name?: string
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          discount_amount?: number | null
+          expiry_date?: string | null
+          id?: string
+          line_items?: Json
+          notes?: string | null
+          opportunity_id?: string | null
+          quote_date?: string
+          quote_name?: string
+          quote_number?: string
+          quote_status?: string
+          subtotal?: number
+          tax_amount?: number | null
+          terms_conditions?: string | null
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_quotes_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "sales_opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_catalog: {
         Row: {
           approval_workflow_id: string | null
@@ -6601,7 +6884,19 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      generate_lead_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_opportunity_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       generate_po_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_quote_number: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
