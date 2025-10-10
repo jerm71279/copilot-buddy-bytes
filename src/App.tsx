@@ -79,6 +79,12 @@ import SLAManagement from "./pages/SLAManagement";
 import TimeTracking from "./pages/TimeTracking";
 import ProjectManagement from "./pages/ProjectManagement";
 import ContractManagement from "./pages/ContractManagement";
+import PurchaseOrders from "./pages/PurchaseOrders";
+import ExpenseManagement from "./pages/ExpenseManagement";
+import BudgetTracking from "./pages/BudgetTracking";
+import InvoiceManagement from "./pages/InvoiceManagement";
+import AssetFinancials from "./pages/AssetFinancials";
+import FinancialReporting from "./pages/FinancialReporting";
 
 const queryClient = new QueryClient();
 

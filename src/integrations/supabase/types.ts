@@ -272,6 +272,72 @@ export type Database = {
         }
         Relationships: []
       }
+      asset_financials: {
+        Row: {
+          acquisition_date: string | null
+          ci_id: string
+          created_at: string
+          current_value: number | null
+          customer_id: string
+          depreciation_method: string | null
+          depreciation_rate: number | null
+          disposal_date: string | null
+          id: string
+          insurance_cost: number | null
+          lease_end_date: string | null
+          lease_monthly_cost: number | null
+          lease_start_date: string | null
+          maintenance_cost_ytd: number | null
+          purchase_price: number | null
+          salvage_value: number | null
+          total_cost_ownership: number | null
+          updated_at: string
+          useful_life_years: number | null
+        }
+        Insert: {
+          acquisition_date?: string | null
+          ci_id: string
+          created_at?: string
+          current_value?: number | null
+          customer_id: string
+          depreciation_method?: string | null
+          depreciation_rate?: number | null
+          disposal_date?: string | null
+          id?: string
+          insurance_cost?: number | null
+          lease_end_date?: string | null
+          lease_monthly_cost?: number | null
+          lease_start_date?: string | null
+          maintenance_cost_ytd?: number | null
+          purchase_price?: number | null
+          salvage_value?: number | null
+          total_cost_ownership?: number | null
+          updated_at?: string
+          useful_life_years?: number | null
+        }
+        Update: {
+          acquisition_date?: string | null
+          ci_id?: string
+          created_at?: string
+          current_value?: number | null
+          customer_id?: string
+          depreciation_method?: string | null
+          depreciation_rate?: number | null
+          disposal_date?: string | null
+          id?: string
+          insurance_cost?: number | null
+          lease_end_date?: string | null
+          lease_monthly_cost?: number | null
+          lease_start_date?: string | null
+          maintenance_cost_ytd?: number | null
+          purchase_price?: number | null
+          salvage_value?: number | null
+          total_cost_ownership?: number | null
+          updated_at?: string
+          useful_life_years?: number | null
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action_details: Json | null
@@ -368,6 +434,122 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      budget_transactions: {
+        Row: {
+          amount: number
+          budget_id: string
+          created_at: string
+          customer_id: string
+          description: string | null
+          id: string
+          reference_id: string | null
+          reference_type: string | null
+          transaction_date: string
+          transaction_type: string
+        }
+        Insert: {
+          amount: number
+          budget_id: string
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          transaction_date?: string
+          transaction_type: string
+        }
+        Update: {
+          amount?: number
+          budget_id?: string
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          transaction_date?: string
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_transactions_budget_id_fkey"
+            columns: ["budget_id"]
+            isOneToOne: false
+            referencedRelation: "budgets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budgets: {
+        Row: {
+          alert_threshold: number | null
+          allocated_amount: number
+          budget_name: string
+          budget_type: string
+          category: string | null
+          committed_amount: number | null
+          created_at: string
+          customer_id: string
+          department: string | null
+          fiscal_year: number
+          id: string
+          notes: string | null
+          owner_id: string | null
+          period_end: string
+          period_start: string
+          remaining_amount: number | null
+          spent_amount: number | null
+          status: string
+          updated_at: string
+          utilization_percentage: number | null
+        }
+        Insert: {
+          alert_threshold?: number | null
+          allocated_amount: number
+          budget_name: string
+          budget_type: string
+          category?: string | null
+          committed_amount?: number | null
+          created_at?: string
+          customer_id: string
+          department?: string | null
+          fiscal_year: number
+          id?: string
+          notes?: string | null
+          owner_id?: string | null
+          period_end: string
+          period_start: string
+          remaining_amount?: number | null
+          spent_amount?: number | null
+          status?: string
+          updated_at?: string
+          utilization_percentage?: number | null
+        }
+        Update: {
+          alert_threshold?: number | null
+          allocated_amount?: number
+          budget_name?: string
+          budget_type?: string
+          category?: string | null
+          committed_amount?: number | null
+          created_at?: string
+          customer_id?: string
+          department?: string | null
+          fiscal_year?: number
+          id?: string
+          notes?: string | null
+          owner_id?: string | null
+          period_end?: string
+          period_start?: string
+          remaining_amount?: number | null
+          spent_amount?: number | null
+          status?: string
+          updated_at?: string
+          utilization_percentage?: number | null
+        }
+        Relationships: []
       }
       case_studies: {
         Row: {
@@ -2731,6 +2913,87 @@ export type Database = {
           },
         ]
       }
+      expenses: {
+        Row: {
+          amount: number
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
+          billable: boolean | null
+          category: string
+          created_at: string
+          currency: string
+          customer_id: string
+          description: string | null
+          expense_date: string
+          expense_number: string
+          id: string
+          merchant: string
+          notes: string | null
+          paid_at: string | null
+          payment_method: string | null
+          project_id: string | null
+          receipt_url: string | null
+          reimbursement_status: string
+          submitted_at: string | null
+          submitted_by: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          billable?: boolean | null
+          category: string
+          created_at?: string
+          currency?: string
+          customer_id: string
+          description?: string | null
+          expense_date: string
+          expense_number: string
+          id?: string
+          merchant: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          project_id?: string | null
+          receipt_url?: string | null
+          reimbursement_status?: string
+          submitted_at?: string | null
+          submitted_by: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          billable?: boolean | null
+          category?: string
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          description?: string | null
+          expense_date?: string
+          expense_number?: string
+          id?: string
+          merchant?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          project_id?: string | null
+          receipt_url?: string | null
+          reimbursement_status?: string
+          submitted_at?: string | null
+          submitted_by?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       feature_access_log: {
         Row: {
           access_granted: boolean
@@ -2941,6 +3204,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      invoices: {
+        Row: {
+          client_id: string | null
+          client_name: string
+          created_at: string
+          created_by: string
+          currency: string
+          customer_id: string
+          discount_amount: number | null
+          due_date: string
+          id: string
+          invoice_number: string
+          issue_date: string
+          line_items: Json | null
+          notes: string | null
+          paid_date: string | null
+          payment_method: string | null
+          payment_terms: string | null
+          project_id: string | null
+          purchase_order_id: string | null
+          sent_at: string | null
+          status: string
+          subtotal: number
+          tax_amount: number | null
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          client_name: string
+          created_at?: string
+          created_by: string
+          currency?: string
+          customer_id: string
+          discount_amount?: number | null
+          due_date: string
+          id?: string
+          invoice_number: string
+          issue_date: string
+          line_items?: Json | null
+          notes?: string | null
+          paid_date?: string | null
+          payment_method?: string | null
+          payment_terms?: string | null
+          project_id?: string | null
+          purchase_order_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number | null
+          total_amount: number
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          client_name?: string
+          created_at?: string
+          created_by?: string
+          currency?: string
+          customer_id?: string
+          discount_amount?: number | null
+          due_date?: string
+          id?: string
+          invoice_number?: string
+          issue_date?: string
+          line_items?: Json | null
+          notes?: string | null
+          paid_date?: string | null
+          payment_method?: string | null
+          payment_terms?: string | null
+          project_id?: string | null
+          purchase_order_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number | null
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       knowledge_access_logs: {
         Row: {
@@ -4077,6 +4421,87 @@ export type Database = {
           product_name?: string
           service_tier?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      purchase_orders: {
+        Row: {
+          approval_workflow: Json | null
+          approved_at: string | null
+          approved_by: string | null
+          attachments: Json | null
+          billing_address: string | null
+          created_at: string
+          currency: string
+          customer_id: string
+          delivery_date: string | null
+          id: string
+          items: Json | null
+          notes: string | null
+          payment_terms: string | null
+          po_number: string
+          priority: string
+          received_at: string | null
+          requested_by: string
+          shipping_address: string | null
+          status: string
+          submitted_at: string | null
+          total_amount: number
+          updated_at: string
+          vendor_id: string | null
+          vendor_name: string
+        }
+        Insert: {
+          approval_workflow?: Json | null
+          approved_at?: string | null
+          approved_by?: string | null
+          attachments?: Json | null
+          billing_address?: string | null
+          created_at?: string
+          currency?: string
+          customer_id: string
+          delivery_date?: string | null
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          payment_terms?: string | null
+          po_number: string
+          priority?: string
+          received_at?: string | null
+          requested_by: string
+          shipping_address?: string | null
+          status?: string
+          submitted_at?: string | null
+          total_amount?: number
+          updated_at?: string
+          vendor_id?: string | null
+          vendor_name: string
+        }
+        Update: {
+          approval_workflow?: Json | null
+          approved_at?: string | null
+          approved_by?: string | null
+          attachments?: Json | null
+          billing_address?: string | null
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          delivery_date?: string | null
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          payment_terms?: string | null
+          po_number?: string
+          priority?: string
+          received_at?: string | null
+          requested_by?: string
+          shipping_address?: string | null
+          status?: string
+          submitted_at?: string | null
+          total_amount?: number
+          updated_at?: string
+          vendor_id?: string | null
+          vendor_name?: string
         }
         Relationships: []
       }
@@ -5717,7 +6142,19 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      generate_expense_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       generate_incident_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_invoice_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_po_number: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
