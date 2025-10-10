@@ -92,13 +92,23 @@ Data analytics and workflow automation:
 
 **File:** `src/components/DashboardPortalLanes.tsx`
 
+**UI Pattern:**
+- File tab aesthetic with modern design
+- Spinning arrow indicators for expandable categories
+- Grid-based overlay menus (backdrop + centered positioning)
+- 3-column responsive grid layout (mobile: 1 col, tablet: 2 cols, desktop: 3 cols)
+- One-at-a-time menu interaction pattern
+
 **Features:**
 - Horizontal scrolling for each category
+- Collapsible dropdown menus with grid layout
 - Active route highlighting
-- Responsive design
+- Responsive design (1-3 columns based on screen size)
 - Icon-based category identification
 - Back button for sub-pages
 - Auth-aware visibility
+- Smooth animations for expand/collapse
+- Backdrop overlay for focus
 
 ---
 

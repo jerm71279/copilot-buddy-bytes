@@ -29,7 +29,7 @@ OberaConnect is a clause-aware, multi-tenant SaaS platform that provides AI-powe
 - **50+ React Components** in component library
 - **7 External Integrations** (M365, CIPP, NinjaOne, Revio, SharePoint)
 - **10+ Custom Hooks** for business logic
-- **6-Category Navigation** for organized access
+- **6-Category Navigation** with grid-based overlay menus
 
 ## 🏗️ Architecture Philosophy
 

@@ -292,7 +292,7 @@
 
 ### New 6-Category Navigation System (October 10, 2025)
 
-The platform now features an organized 6-category horizontal scrolling navigation with all features categorized:
+The platform features an organized 6-category horizontal scrolling navigation with grid-based overlay menus. Each category expands into a 3-column responsive grid layout for easy access to all features:
 
 #### 1. Operations & IT
 - Operations Dashboard, IT Dashboard, CMDB, Change Management

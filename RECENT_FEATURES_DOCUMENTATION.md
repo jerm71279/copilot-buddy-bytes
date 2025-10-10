@@ -9,21 +9,27 @@
 **Status:** ✅ Implemented and Deployed
 
 **Description:**
-Implemented global horizontal scrollable navigation lanes that appear on all authenticated pages, providing quick access to all dashboards and portals.
+Implemented global horizontal scrollable navigation lanes with grid-based overlay menus that appear on all authenticated pages, providing quick access to all dashboards and portals organized by category.
 
 **Components Created:**
-- **`src/components/DashboardPortalLanes.tsx`** - Two-lane navigation system
-  - Dashboard Lane: 13 dashboards with horizontal scroll
-  - Portal Lane: 7 portals with horizontal scroll
+- **`src/components/DashboardPortalLanes.tsx`** - 6-category navigation system
+  - Operations & IT, Compliance & Security, Business & Sales, Finance, HR & People, Analytics & Automation
+  - Horizontal scrollable navigation with collapsible menus
+  - Grid-based overlay dropdowns (3-column responsive layout)
+  - File tab aesthetic with spinning arrow indicators
   - Active route highlighting
   - Authentication-aware visibility
   - Hidden on landing/auth pages
 
 **Features:**
-- Horizontal scrollable navigation
+- Horizontal scrollable navigation with 6 organized categories
+- Grid-based overlay menus (1-3 columns responsive)
 - Active route highlighting with primary color
-- Muted background for inactive items
-- Icons for visual identification (LayoutDashboard, Globe)
+- Collapsible category dropdowns with smooth animations
+- File tab aesthetic with spinning arrow indicators
+- Backdrop overlay for focused navigation
+- One-menu-at-a-time interaction pattern
+- Icons for category identification
 - Responsive design with container constraints
 - Automatic authentication check
 
