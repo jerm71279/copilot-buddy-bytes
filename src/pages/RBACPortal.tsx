@@ -74,32 +74,34 @@ export default function RBACPortal() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="roles" className="gap-2">
-              <Users className="h-4 w-4" />
-              Roles
-            </TabsTrigger>
-            <TabsTrigger value="permissions" className="gap-2">
-              <Shield className="h-4 w-4" />
-              Permissions
-            </TabsTrigger>
-            <TabsTrigger value="hierarchy" className="gap-2">
-              <GitBranch className="h-4 w-4" />
-              Hierarchy
-            </TabsTrigger>
-            <TabsTrigger value="temporary" className="gap-2">
-              <Clock className="h-4 w-4" />
-              Temporary
-            </TabsTrigger>
-            <TabsTrigger value="audit" className="gap-2">
-              <FileText className="h-4 w-4" />
-              Audit Log
-            </TabsTrigger>
-            <TabsTrigger value="templates" className="gap-2">
-              <Layout className="h-4 w-4" />
-              Templates
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto">
+            <TabsList className="inline-flex w-auto min-w-full">
+              <TabsTrigger value="roles" className="gap-2">
+                <Users className="h-4 w-4" />
+                Roles
+              </TabsTrigger>
+              <TabsTrigger value="permissions" className="gap-2">
+                <Shield className="h-4 w-4" />
+                Permissions
+              </TabsTrigger>
+              <TabsTrigger value="hierarchy" className="gap-2">
+                <GitBranch className="h-4 w-4" />
+                Hierarchy
+              </TabsTrigger>
+              <TabsTrigger value="temporary" className="gap-2">
+                <Clock className="h-4 w-4" />
+                Temporary
+              </TabsTrigger>
+              <TabsTrigger value="audit" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Audit Log
+              </TabsTrigger>
+              <TabsTrigger value="templates" className="gap-2">
+                <Layout className="h-4 w-4" />
+                Templates
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="roles">
             <RoleManagement />
