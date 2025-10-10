@@ -302,6 +302,13 @@ export default function DashboardPortalLanes() {
     setOpenCategories(categories.reduce((acc, c) => ({ ...acc, [c.name]: false }), {}));
   };
 
+  // Calculate grid columns based on item count (minimum space for 4 items)
+  const getGridColumns = (itemCount: number): string => {
+    if (itemCount <= 4) return "grid-cols-1 sm:grid-cols-2";
+    if (itemCount <= 8) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+    return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+  };
+
   // Check if current page is a main portal/dashboard page
   const allPages = [
     ...portals.map(p => p.path),
@@ -362,7 +369,7 @@ export default function DashboardPortalLanes() {
                                 className="fixed left-1/2 -translate-x-1/2 z-[10001] bg-popover border border-border rounded-lg shadow-2xl p-6 max-w-4xl w-[90vw]"
                                 style={{ top: 'var(--lanes-bottom)' }}
                               >
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div className={cn("grid gap-3", getGridColumns(portal.children.length))}>
                                   {portal.children.map((child) => (
                                     <Link
                                       key={child.path}
@@ -456,7 +463,7 @@ export default function DashboardPortalLanes() {
                               className="fixed left-1/2 -translate-x-1/2 z-[10001] bg-popover border border-border rounded-lg shadow-2xl p-6 max-w-4xl w-[90vw]"
                               style={{ top: 'var(--lanes-bottom)' }}
                             >
-                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                              <div className={cn("grid gap-3", getGridColumns(category.dashboards.length))}>
                                 {category.dashboards.map((dashboard) => (
                                   <Link
                                     key={dashboard.path}
