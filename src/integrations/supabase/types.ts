@@ -8441,6 +8441,10 @@ export type Database = {
         Args: { _user_id: string }
         Returns: boolean
       }
+      create_employee_onboarding_template: {
+        Args: { _created_by: string; _customer_id: string }
+        Returns: string
+      }
       customer_has_feature: {
         Args: { _customer_id: string; _feature_name: string }
         Returns: boolean

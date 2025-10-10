@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, FileText, Edit, Trash2 } from "lucide-react";
+import { Plus, FileText, Edit, Trash2, Users } from "lucide-react";
 
 interface Template {
   id: string;
@@ -144,6 +144,44 @@ export default function OnboardingTemplates() {
     }
   };
 
+  const handleCreateEmployeeTemplate = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('customer_id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!profile?.customer_id) throw new Error("No customer profile found");
+
+      // Call the function to create employee onboarding template
+      const { data, error } = await supabase
+        .rpc('create_employee_onboarding_template', {
+          _customer_id: profile.customer_id,
+          _created_by: user.id
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Employee onboarding template created with 12 pre-configured tasks"
+      });
+
+      await loadTemplates();
+    } catch (error) {
+      console.error('Error creating employee template:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create employee template",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
@@ -168,11 +206,19 @@ export default function OnboardingTemplates() {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-4xl font-bold mb-2">Onboarding Templates</h1>
-            <p className="text-muted-foreground">Create and manage reusable onboarding checklists</p>
+            <p className="text-muted-foreground">Create and manage reusable onboarding checklists for clients and employees</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => navigate('/onboarding')}>
               Back to Dashboard
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleCreateEmployeeTemplate}
+              className="gap-2"
+            >
+              <Users className="h-4 w-4" />
+              Add Employee Template
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
@@ -258,11 +304,17 @@ export default function OnboardingTemplates() {
             <CardContent className="py-12 text-center">
               <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">No templates yet</h3>
-              <p className="text-muted-foreground mb-4">Create your first onboarding template</p>
-              <Button onClick={() => setIsDialogOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                New Template
-              </Button>
+              <p className="text-muted-foreground mb-4">Create your first onboarding template or use our pre-built employee template</p>
+              <div className="flex gap-2 justify-center">
+                <Button onClick={() => setIsDialogOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  New Custom Template
+                </Button>
+                <Button variant="outline" onClick={handleCreateEmployeeTemplate}>
+                  <Users className="mr-2 h-4 w-4" />
+                  Add Employee Template
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ) : (
