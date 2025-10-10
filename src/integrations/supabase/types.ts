@@ -3205,6 +3205,188 @@ export type Database = {
           },
         ]
       }
+      inventory_items: {
+        Row: {
+          attributes: Json | null
+          barcode: string | null
+          batch_numbers: string[] | null
+          bin_location: string | null
+          category: string
+          created_at: string
+          current_quantity: number
+          customer_id: string
+          description: string | null
+          expiry_date: string | null
+          id: string
+          images: string[] | null
+          item_name: string
+          last_count_date: string | null
+          last_restock_date: string | null
+          lead_time_days: number | null
+          location: string | null
+          maximum_quantity: number | null
+          minimum_quantity: number | null
+          reorder_point: number | null
+          reorder_quantity: number | null
+          serial_numbers: string[] | null
+          sku: string
+          status: string
+          subcategory: string | null
+          unit_cost: number | null
+          unit_of_measure: string
+          unit_price: number | null
+          updated_at: string
+          vendor_id: string | null
+          warehouse_id: string | null
+        }
+        Insert: {
+          attributes?: Json | null
+          barcode?: string | null
+          batch_numbers?: string[] | null
+          bin_location?: string | null
+          category: string
+          created_at?: string
+          current_quantity?: number
+          customer_id: string
+          description?: string | null
+          expiry_date?: string | null
+          id?: string
+          images?: string[] | null
+          item_name: string
+          last_count_date?: string | null
+          last_restock_date?: string | null
+          lead_time_days?: number | null
+          location?: string | null
+          maximum_quantity?: number | null
+          minimum_quantity?: number | null
+          reorder_point?: number | null
+          reorder_quantity?: number | null
+          serial_numbers?: string[] | null
+          sku: string
+          status?: string
+          subcategory?: string | null
+          unit_cost?: number | null
+          unit_of_measure?: string
+          unit_price?: number | null
+          updated_at?: string
+          vendor_id?: string | null
+          warehouse_id?: string | null
+        }
+        Update: {
+          attributes?: Json | null
+          barcode?: string | null
+          batch_numbers?: string[] | null
+          bin_location?: string | null
+          category?: string
+          created_at?: string
+          current_quantity?: number
+          customer_id?: string
+          description?: string | null
+          expiry_date?: string | null
+          id?: string
+          images?: string[] | null
+          item_name?: string
+          last_count_date?: string | null
+          last_restock_date?: string | null
+          lead_time_days?: number | null
+          location?: string | null
+          maximum_quantity?: number | null
+          minimum_quantity?: number | null
+          reorder_point?: number | null
+          reorder_quantity?: number | null
+          serial_numbers?: string[] | null
+          sku?: string
+          status?: string
+          subcategory?: string | null
+          unit_cost?: number | null
+          unit_of_measure?: string
+          unit_price?: number | null
+          updated_at?: string
+          vendor_id?: string | null
+          warehouse_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_items_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_transactions: {
+        Row: {
+          created_at: string
+          customer_id: string
+          from_location: string | null
+          id: string
+          inventory_item_id: string
+          notes: string | null
+          performed_by: string
+          quantity: number
+          reason: string | null
+          reference_id: string | null
+          reference_type: string | null
+          to_location: string | null
+          total_cost: number | null
+          transaction_date: string
+          transaction_type: string
+          unit_cost: number | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          from_location?: string | null
+          id?: string
+          inventory_item_id: string
+          notes?: string | null
+          performed_by: string
+          quantity: number
+          reason?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          to_location?: string | null
+          total_cost?: number | null
+          transaction_date?: string
+          transaction_type: string
+          unit_cost?: number | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          from_location?: string | null
+          id?: string
+          inventory_item_id?: string
+          notes?: string | null
+          performed_by?: string
+          quantity?: number
+          reason?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          to_location?: string | null
+          total_cost?: number | null
+          transaction_date?: string
+          transaction_type?: string
+          unit_cost?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_transactions_inventory_item_id_fkey"
+            columns: ["inventory_item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_transactions_inventory_item_id_fkey"
+            columns: ["inventory_item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_reorder_alerts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           client_id: string | null
@@ -4449,6 +4631,7 @@ export type Database = {
           total_amount: number
           updated_at: string
           vendor_id: string | null
+          vendor_id_fk: string | null
           vendor_name: string
         }
         Insert: {
@@ -4475,6 +4658,7 @@ export type Database = {
           total_amount?: number
           updated_at?: string
           vendor_id?: string | null
+          vendor_id_fk?: string | null
           vendor_name: string
         }
         Update: {
@@ -4501,9 +4685,18 @@ export type Database = {
           total_amount?: number
           updated_at?: string
           vendor_id?: string | null
+          vendor_id_fk?: string | null
           vendor_name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "purchase_orders_vendor_id_fk_fkey"
+            columns: ["vendor_id_fk"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       remediation_executions: {
         Row: {
@@ -5636,6 +5829,233 @@ export type Database = {
           },
         ]
       }
+      vendor_performance: {
+        Row: {
+          comments: string | null
+          communication_score: number | null
+          created_at: string
+          customer_id: string
+          delivery_score: number | null
+          evaluation_date: string
+          evaluator_id: string
+          id: string
+          issues_reported: string | null
+          overall_score: number | null
+          pricing_score: number | null
+          quality_score: number | null
+          vendor_id: string
+        }
+        Insert: {
+          comments?: string | null
+          communication_score?: number | null
+          created_at?: string
+          customer_id: string
+          delivery_score?: number | null
+          evaluation_date: string
+          evaluator_id: string
+          id?: string
+          issues_reported?: string | null
+          overall_score?: number | null
+          pricing_score?: number | null
+          quality_score?: number | null
+          vendor_id: string
+        }
+        Update: {
+          comments?: string | null
+          communication_score?: number | null
+          created_at?: string
+          customer_id?: string
+          delivery_score?: number | null
+          evaluation_date?: string
+          evaluator_id?: string
+          id?: string
+          issues_reported?: string | null
+          overall_score?: number | null
+          pricing_score?: number | null
+          quality_score?: number | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_performance_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendors: {
+        Row: {
+          address: string | null
+          certifications: Json | null
+          city: string | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          contract_end_date: string | null
+          contract_start_date: string | null
+          country: string | null
+          created_at: string
+          created_by: string
+          credit_limit: number | null
+          current_balance: number | null
+          customer_id: string
+          id: string
+          insurance_info: Json | null
+          notes: string | null
+          on_time_delivery_rate: number | null
+          payment_terms: string | null
+          performance_score: number | null
+          postal_code: string | null
+          preferred_payment_method: string | null
+          quality_rating: number | null
+          state: string | null
+          status: string
+          tags: string[] | null
+          tax_id: string | null
+          updated_at: string
+          vendor_code: string
+          vendor_name: string
+          vendor_type: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          certifications?: Json | null
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          country?: string | null
+          created_at?: string
+          created_by: string
+          credit_limit?: number | null
+          current_balance?: number | null
+          customer_id: string
+          id?: string
+          insurance_info?: Json | null
+          notes?: string | null
+          on_time_delivery_rate?: number | null
+          payment_terms?: string | null
+          performance_score?: number | null
+          postal_code?: string | null
+          preferred_payment_method?: string | null
+          quality_rating?: number | null
+          state?: string | null
+          status?: string
+          tags?: string[] | null
+          tax_id?: string | null
+          updated_at?: string
+          vendor_code: string
+          vendor_name: string
+          vendor_type: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          certifications?: Json | null
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string
+          credit_limit?: number | null
+          current_balance?: number | null
+          customer_id?: string
+          id?: string
+          insurance_info?: Json | null
+          notes?: string | null
+          on_time_delivery_rate?: number | null
+          payment_terms?: string | null
+          performance_score?: number | null
+          postal_code?: string | null
+          preferred_payment_method?: string | null
+          quality_rating?: number | null
+          state?: string | null
+          status?: string
+          tags?: string[] | null
+          tax_id?: string | null
+          updated_at?: string
+          vendor_code?: string
+          vendor_name?: string
+          vendor_type?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      warehouses: {
+        Row: {
+          address: string
+          capacity_sqft: number | null
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          country: string | null
+          created_at: string
+          customer_id: string
+          id: string
+          manager_id: string | null
+          notes: string | null
+          operating_hours: string | null
+          postal_code: string | null
+          state: string | null
+          status: string
+          updated_at: string
+          warehouse_code: string
+          warehouse_name: string
+          warehouse_type: string | null
+        }
+        Insert: {
+          address: string
+          capacity_sqft?: number | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          manager_id?: string | null
+          notes?: string | null
+          operating_hours?: string | null
+          postal_code?: string | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+          warehouse_code: string
+          warehouse_name: string
+          warehouse_type?: string | null
+        }
+        Update: {
+          address?: string
+          capacity_sqft?: number | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          manager_id?: string | null
+          notes?: string | null
+          operating_hours?: string | null
+          postal_code?: string | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+          warehouse_code?: string
+          warehouse_name?: string
+          warehouse_type?: string | null
+        }
+        Relationships: []
+      }
       workflow_conditions: {
         Row: {
           condition_expression: Json
@@ -5968,6 +6388,33 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_reorder_alerts: {
+        Row: {
+          alert_level: string | null
+          current_quantity: number | null
+          customer_id: string | null
+          id: string | null
+          item_name: string | null
+          lead_time_days: number | null
+          location: string | null
+          reorder_point: number | null
+          reorder_quantity: number | null
+          shortage_quantity: number | null
+          sku: string | null
+          vendor_email: string | null
+          vendor_id: string | null
+          vendor_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_items_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       soc_engineer_alert_rules: {
         Row: {
           auto_remediation_workflow_id: string | null
@@ -6163,6 +6610,10 @@ export type Database = {
         Returns: string
       }
       generate_ticket_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_vendor_code: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

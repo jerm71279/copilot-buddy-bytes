@@ -85,6 +85,9 @@ import BudgetTracking from "./pages/BudgetTracking";
 import InvoiceManagement from "./pages/InvoiceManagement";
 import AssetFinancials from "./pages/AssetFinancials";
 import FinancialReporting from "./pages/FinancialReporting";
+import VendorManagement from "./pages/VendorManagement";
+import InventoryManagement from "./pages/InventoryManagement";
+import WarehouseManagement from "./pages/WarehouseManagement";
 
 const queryClient = new QueryClient();
 
@@ -521,6 +524,21 @@ const App = () => (
           <Route path="/financial-reports" element={
             <ProtectedRoute>
               <FinancialReporting />
+            </ProtectedRoute>
+          } />
+          <Route path="/vendors" element={
+            <ProtectedRoute>
+              <VendorManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/inventory" element={
+            <ProtectedRoute>
+              <InventoryManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/warehouses" element={
+            <ProtectedRoute>
+              <WarehouseManagement />
             </ProtectedRoute>
           } />
           

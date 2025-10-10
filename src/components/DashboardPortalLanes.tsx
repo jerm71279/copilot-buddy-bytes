@@ -19,7 +19,8 @@ const dashboards = [
   { name: "Finance", path: "/dashboard/finance" },
   { name: "Financial Reports", path: "/financial-reports" },
   { name: "HR", path: "/dashboard/hr" },
-  { name: "IT", path: "/dashboard/it" },
+  { name: "Inventory", path: "/inventory" },
+  { name: "Invoices", path: "/invoices" },
   { name: "MCP Server", path: "/mcp-servers" },
   { name: "Onboarding", path: "/onboarding" },
   { name: "Operations", path: "/dashboard/operations" },
@@ -29,6 +30,8 @@ const dashboards = [
   { name: "SLA Management", path: "/sla-management" },
   { name: "SOC", path: "/dashboard/soc" },
   { name: "Time Tracking", path: "/time-tracking" },
+  { name: "Vendors", path: "/vendors" },
+  { name: "Warehouses", path: "/warehouses" },
 ];
 
 const portals = [
