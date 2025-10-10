@@ -161,89 +161,11 @@ const HRDashboard = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="container mx-auto px-4 pt-56 pb-8 space-y-6">
+      <div className="container mx-auto px-4 pt-48 pb-8 space-y-6">
 
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">HR Dashboard</h1>
           <DashboardSettingsMenu dashboardName="HR" />
-        </div>
-        
-        {/* Quick Access Menu Bar */}
-        <div className="bg-card border-b border-border -mx-4 px-4">
-          <div className="flex gap-3 py-3 overflow-x-auto">
-            {/* HR Tools Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2 whitespace-nowrap">
-                  <Users className="h-4 w-4" />
-                  HR Tools
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-              <DropdownMenuLabel>HR Management</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/onboarding')}>
-                <UserPlus className="h-4 w-4 mr-2" />
-                Employee Onboarding
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/workflow/employees?department=hr')}>
-                <ClipboardList className="h-4 w-4 mr-2" />
-                Employee Records
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/workflow/performance-reviews?department=hr')}>
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Performance Reviews
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <Server className="h-4 w-4 mr-2" />
-                  MCP Servers
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="bg-background">
-                  <DropdownMenuItem onClick={() => navigate('/mcp-servers')}>
-                    All MCP Servers
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {mcpServers.length === 0 ? (
-                    <DropdownMenuItem disabled>No HR servers</DropdownMenuItem>
-                  ) : (
-                    mcpServers.map((server) => (
-                      <DropdownMenuItem
-                        key={server.id}
-                        onClick={() => navigate(`/mcp-servers?server=${server.id}`)}
-                      >
-                        {server.server_name}
-                      </DropdownMenuItem>
-                    ))
-                  )}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-            {/* Reports Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2 whitespace-nowrap">
-                  <FileText className="h-4 w-4" />
-                  Reports
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-                <DropdownMenuLabel>HR Reports</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/analytics?department=hr')}>
-                  HR Analytics
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/workflow/workforce-reports?department=hr')}>
-                  Workforce Reports
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

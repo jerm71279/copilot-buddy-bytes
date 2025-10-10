@@ -303,90 +303,13 @@ Churn rate represents the percentage of customers who have cancelled or become i
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="container mx-auto px-4 pt-56 pb-8 space-y-6">
+      <div className="container mx-auto px-4 pt-48 pb-8 space-y-6">
 
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Finance Dashboard</h1>
           <DashboardSettingsMenu dashboardName="Finance" />
         </div>
         
-        {/* Quick Access Menu Bar */}
-        <div className="bg-card border-b border-border -mx-4 px-4">
-          <div className="flex gap-3 py-3 overflow-x-auto">
-            {/* Finance Tools Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2 whitespace-nowrap">
-                  <DollarSign className="h-4 w-4" />
-                  Finance Tools
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-              <DropdownMenuLabel>Finance Management</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/workflow/billing?department=finance')}>
-                <Receipt className="h-4 w-4 mr-2" />
-                Billing Management
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/workflow/invoices?department=finance')}>
-                <FileText className="h-4 w-4 mr-2" />
-                Invoices
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/workflow/subscriptions?department=finance')}>
-                <CreditCard className="h-4 w-4 mr-2" />
-                Subscriptions
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <Server className="h-4 w-4 mr-2" />
-                  MCP Servers
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="bg-background">
-                  <DropdownMenuItem onClick={() => navigate('/mcp-servers')}>
-                    All MCP Servers
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {mcpServers.length === 0 ? (
-                    <DropdownMenuItem disabled>No finance servers</DropdownMenuItem>
-                  ) : (
-                    mcpServers.map((server) => (
-                      <DropdownMenuItem
-                        key={server.id}
-                        onClick={() => navigate(`/mcp-servers?server=${server.id}`)}
-                      >
-                        {server.server_name}
-                      </DropdownMenuItem>
-                    ))
-                  )}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-            {/* Reports Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2 whitespace-nowrap">
-                  <FileText className="h-4 w-4" />
-                  Reports
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-                <DropdownMenuLabel>Financial Reports</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/analytics?department=finance')}>
-                  Financial Analytics
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/workflow/revenue-reports?department=finance')}>
-                  Revenue Reports
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
         
         <TooltipProvider>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

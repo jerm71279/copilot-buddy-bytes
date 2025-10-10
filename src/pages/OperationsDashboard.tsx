@@ -168,90 +168,13 @@ const OperationsDashboard = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="container mx-auto px-4 pt-56 pb-8 space-y-6">
+      <div className="container mx-auto px-4 pt-48 pb-8 space-y-6">
 
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Operations Dashboard</h1>
           <DashboardSettingsMenu dashboardName="Operations" />
         </div>
         
-        {/* Quick Access Menu Bar */}
-        <div className="bg-card border-b border-border -mx-4 px-4">
-          <div className="flex gap-3 py-3 overflow-x-auto">
-            {/* Operations Tools Dropdown */}
-            <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2 whitespace-nowrap">
-                <Workflow className="h-4 w-4" />
-                Operations Tools
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-              <DropdownMenuLabel>Operations Management</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/workflows/builder')}>
-                <GitBranch className="h-4 w-4 mr-2" />
-                Workflow Builder
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/workflow-automation')}>
-                <Settings className="h-4 w-4 mr-2" />
-                Trigger Manager
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/workflow/executions?department=operations')}>
-                <Workflow className="h-4 w-4 mr-2" />
-                Execution History
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <Server className="h-4 w-4 mr-2" />
-                  MCP Servers
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="bg-background">
-                  <DropdownMenuItem onClick={() => navigate('/mcp-servers')}>
-                    All MCP Servers
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {mcpServers.length === 0 ? (
-                    <DropdownMenuItem disabled>No operations servers</DropdownMenuItem>
-                  ) : (
-                    mcpServers.map((server) => (
-                      <DropdownMenuItem
-                        key={server.id}
-                        onClick={() => navigate(`/mcp-servers?server=${server.id}`)}
-                      >
-                        {server.server_name}
-                      </DropdownMenuItem>
-                    ))
-                  )}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Reports Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2 whitespace-nowrap">
-                <FileText className="h-4 w-4" />
-                Reports
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-              <DropdownMenuLabel>Operations Reports</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/analytics?department=operations')}>
-                Operations Analytics
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/workflow/efficiency?department=operations')}>
-                Workflow Efficiency Reports
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          </div>
-        </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card 

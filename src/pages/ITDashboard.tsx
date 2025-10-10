@@ -160,89 +160,11 @@ const ITDashboard = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="container mx-auto px-4 pt-56 pb-8 space-y-6">
+      <div className="container mx-auto px-4 pt-48 pb-8 space-y-6">
 
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">IT Dashboard</h1>
           <DashboardSettingsMenu dashboardName="IT" />
-        </div>
-        
-        {/* Quick Access Menu Bar */}
-        <div className="bg-card border-b border-border -mx-4 px-4">
-          <div className="flex gap-3 py-3 overflow-x-auto">
-            {/* IT Tools Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2 whitespace-nowrap">
-                  <Server className="h-4 w-4" />
-                  IT Tools
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-              <DropdownMenuLabel>IT Management</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/cmdb')}>
-                <Database className="h-4 w-4 mr-2" />
-                CMDB Dashboard
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/change-management')}>
-                <Settings className="h-4 w-4 mr-2" />
-                Change Management
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/integrations')}>
-                <Zap className="h-4 w-4 mr-2" />
-                Integrations
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <Server className="h-4 w-4 mr-2" />
-                  MCP Servers
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="bg-background">
-                  <DropdownMenuItem onClick={() => navigate('/mcp-servers')}>
-                    All MCP Servers
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {mcpServersList.length === 0 ? (
-                    <DropdownMenuItem disabled>No IT servers</DropdownMenuItem>
-                  ) : (
-                    mcpServersList.map((server) => (
-                      <DropdownMenuItem
-                        key={server.id}
-                        onClick={() => navigate(`/mcp-servers?server=${server.id}`)}
-                      >
-                        {server.server_name}
-                      </DropdownMenuItem>
-                    ))
-                  )}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-            {/* Reports Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2 whitespace-nowrap">
-                  <FileText className="h-4 w-4" />
-                  Reports
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-                <DropdownMenuLabel>IT Reports</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/analytics?department=it')}>
-                  IT Analytics
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/workflow/system-health?department=it')}>
-                  System Health Reports
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

@@ -166,94 +166,13 @@ const ComplianceDashboard = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="container mx-auto px-4 pt-56 pb-8 space-y-6">
+      <div className="container mx-auto px-4 pt-48 pb-8 space-y-6">
 
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Compliance Dashboard</h1>
           <DashboardSettingsMenu dashboardName="Compliance" />
         </div>
         
-        {/* Quick Access Menu Bar */}
-        <div className="bg-card border-b border-border -mx-4 px-4">
-          <div className="flex gap-3 py-3 overflow-x-auto">
-            {/* Compliance Tools Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2 whitespace-nowrap">
-                  <Shield className="h-4 w-4" />
-                  Compliance Tools
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-              <DropdownMenuLabel>Compliance Management</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/compliance/audit-reports')}>
-                <FileCheck className="h-4 w-4 mr-2" />
-                Audit Reports
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/compliance/evidence-upload')}>
-                <FolderOpen className="h-4 w-4 mr-2" />
-                Evidence Upload
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/compliance/framework-records')}>
-                <ClipboardList className="h-4 w-4 mr-2" />
-                Framework Records
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/compliance')}>
-                <Shield className="h-4 w-4 mr-2" />
-                Compliance Portal
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <Server className="h-4 w-4 mr-2" />
-                  MCP Servers
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="bg-background">
-                  <DropdownMenuItem onClick={() => navigate('/mcp-servers')}>
-                    All MCP Servers
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {mcpServers.length === 0 ? (
-                    <DropdownMenuItem disabled>No compliance servers</DropdownMenuItem>
-                  ) : (
-                    mcpServers.map((server) => (
-                      <DropdownMenuItem
-                        key={server.id}
-                        onClick={() => navigate(`/mcp-servers?server=${server.id}`)}
-                      >
-                        {server.server_name}
-                      </DropdownMenuItem>
-                    ))
-                  )}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-            {/* Reports Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2 whitespace-nowrap">
-                  <FileText className="h-4 w-4" />
-                  Reports
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 bg-background z-50">
-                <DropdownMenuLabel>Compliance Reports</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/compliance/audit-reports')}>
-                  Compliance Audit Reports
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/compliance/framework-records')}>
-                  Framework Status Reports
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
         
         {/* Primary Compliance Frameworks - ISO27001 & SOC 2 */}
         <div className="grid gap-4 md:grid-cols-2 mb-6">
