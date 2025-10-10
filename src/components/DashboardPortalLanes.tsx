@@ -32,40 +32,21 @@ interface Category {
 
 const portals: Portal[] = [
   {
-    name: "CMDB",
-    path: "/cmdb",
+    name: "Operations",
+    path: "/dashboard/operations",
     children: [
-      { name: "Add Item", path: "/cmdb/add" },
-      { name: "Edit Item", path: "/cmdb/edit" },
-      { name: "Item Detail", path: "/cmdb/item" },
-    ],
-  },
-  {
-    name: "Change Management",
-    path: "/change-management",
-    children: [
+      { name: "CMDB", path: "/cmdb" },
+      { name: "Add CMDB Item", path: "/cmdb/add" },
+      { name: "Edit CMDB Item", path: "/cmdb/edit" },
+      { name: "CMDB Item Detail", path: "/cmdb/item" },
+      { name: "Change Management", path: "/change-management" },
       { name: "New Change", path: "/change/new" },
       { name: "Change Details", path: "/change/details" },
+      { name: "Incidents", path: "/incidents" },
+      { name: "Network Monitoring", path: "/network-monitoring" },
+      { name: "New Network Device", path: "/network/device/new" },
+      { name: "SLA Management", path: "/sla-management" },
     ],
-  },
-  {
-    name: "Incidents",
-    path: "/incidents",
-  },
-  {
-    name: "Network Monitoring",
-    path: "/network-monitoring",
-    children: [
-      { name: "New Device", path: "/network/device/new" },
-    ],
-  },
-  {
-    name: "SLA Management",
-    path: "/sla-management",
-  },
-  {
-    name: "MCP Servers",
-    path: "/mcp-servers",
   },
   {
     name: "Admin",
@@ -73,11 +54,19 @@ const portals: Portal[] = [
     children: [
       { name: "Applications", path: "/admin/applications" },
       { name: "Products", path: "/admin/products" },
+      { name: "MCP Servers", path: "/mcp-servers" },
+      { name: "RBAC", path: "/rbac" },
+      { name: "Privileged Access", path: "/audit/privileged-access" },
+      { name: "Customers", path: "/customers" },
     ],
   },
   {
-    name: "NinjaOne",
-    path: "/ninjaone",
+    name: "Integrations",
+    path: "/integrations",
+    children: [
+      { name: "NinjaOne", path: "/ninjaone" },
+      { name: "CIPP", path: "/cipp" },
+    ],
   },
   {
     name: "Compliance",
@@ -86,39 +75,20 @@ const portals: Portal[] = [
       { name: "Audit Reports", path: "/compliance/audit-reports" },
       { name: "Frameworks", path: "/compliance/frameworks" },
       { name: "Evidence Upload", path: "/compliance/evidence" },
+      { name: "Remediation Rules", path: "/remediation-rules" },
     ],
-  },
-  {
-    name: "CIPP",
-    path: "/cipp",
-  },
-  {
-    name: "RBAC",
-    path: "/rbac",
-  },
-  {
-    name: "Privileged Access",
-    path: "/audit/privileged-access",
-  },
-  {
-    name: "Remediation Rules",
-    path: "/remediation-rules",
   },
   {
     name: "Sales",
     path: "/sales-portal",
     children: [
-      { name: "Customers", path: "/customers" },
       { name: "Leads", path: "/leads" },
       { name: "Opportunities", path: "/opportunities" },
       { name: "Quotes", path: "/quotes" },
       { name: "Contracts", path: "/contracts" },
       { name: "Projects", path: "/projects" },
+      { name: "Client Portal", path: "/client-portal" },
     ],
-  },
-  {
-    name: "Client Portal",
-    path: "/client-portal",
   },
   {
     name: "Finance",
@@ -156,22 +126,23 @@ const portals: Portal[] = [
     ],
   },
   {
-    name: "Workflows",
+    name: "Automation",
     path: "/workflow-automation",
     children: [
       { name: "Workflow Builder", path: "/workflow-builder" },
       { name: "Workflow Orchestration", path: "/workflow-orchestration" },
       { name: "Visual Builder", path: "/workflows/visual-build" },
       { name: "Workflow Intelligence", path: "/workflow-intelligence" },
+      { name: "Intelligent Assistant", path: "/intelligent-assistant" },
     ],
   },
   {
-    name: "Intelligent Assistant",
-    path: "/intelligent-assistant",
-  },
-  {
-    name: "Knowledge Base",
+    name: "Knowledge",
     path: "/knowledge-base",
+    children: [
+      { name: "Articles", path: "/knowledge-base" },
+      { name: "Upload", path: "/knowledge-base/upload" },
+    ],
   },
 ];
 
