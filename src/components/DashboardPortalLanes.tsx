@@ -319,21 +319,23 @@ export default function DashboardPortalLanes() {
                           </CollapsibleTrigger>
                         </div>
                         <CollapsibleContent className="absolute left-0 top-full z-[10000] mt-1">
-                          <div className="bg-popover/95 backdrop-blur-sm border border-border rounded-md shadow-xl p-1 min-w-[200px] max-h-[70vh] overflow-auto">
-                            {portal.children.map((child) => (
-                              <Link
-                                key={child.path}
-                                to={child.path}
-                                className={cn(
-                                  "block px-3 py-2 text-sm rounded-md transition-colors",
-                                  currentPath === child.path
-                                    ? "bg-primary text-primary-foreground"
-                                    : "text-foreground hover:bg-muted"
-                                )}
-                              >
-                                {child.name}
-                              </Link>
-                            ))}
+                          <div className="bg-popover border border-border rounded-md shadow-xl p-2 min-w-[300px] max-w-[85vw] max-h-[70vh] overflow-auto">
+                            <div className="columns-3 gap-2">
+                              {portal.children.map((child) => (
+                                <Link
+                                  key={child.path}
+                                  to={child.path}
+                                  className={cn(
+                                    "mb-1 block break-inside-avoid px-3 py-2 text-sm rounded-md transition-colors",
+                                    currentPath === child.path
+                                      ? "bg-primary text-primary-foreground"
+                                      : "text-foreground hover:bg-muted"
+                                  )}
+                                >
+                                  {child.name}
+                                </Link>
+                              ))}
+                            </div>
                           </div>
                         </CollapsibleContent>
                       </Collapsible>
@@ -399,21 +401,23 @@ export default function DashboardPortalLanes() {
                         </CollapsibleTrigger>
                       </div>
                       <CollapsibleContent className="absolute left-0 top-full mt-1 z-[10000]">
-                        <div className="bg-popover/95 backdrop-blur-sm border border-border rounded-md shadow-xl p-1 min-w-[200px] max-h-[70vh] overflow-auto">
-                          {category.dashboards.map((dashboard) => (
-                            <Link
-                              key={dashboard.path}
-                              to={dashboard.path}
-                              className={cn(
-                                "block px-3 py-2 text-sm rounded-md transition-colors",
-                                currentPath === dashboard.path
-                                  ? "bg-primary text-primary-foreground"
-                                  : "text-foreground hover:bg-muted"
-                              )}
-                            >
-                              {dashboard.name}
-                            </Link>
-                          ))}
+                        <div className="bg-popover border border-border rounded-md shadow-xl p-2 min-w-[300px] max-w-[85vw] max-h-[70vh] overflow-auto">
+                          <div className="columns-3 gap-2">
+                            {category.dashboards.map((dashboard) => (
+                              <Link
+                                key={dashboard.path}
+                                to={dashboard.path}
+                                className={cn(
+                                  "mb-1 block break-inside-avoid px-3 py-2 text-sm rounded-md transition-colors",
+                                  currentPath === dashboard.path
+                                    ? "bg-primary text-primary-foreground"
+                                    : "text-foreground hover:bg-muted"
+                                )}
+                              >
+                                {dashboard.name}
+                              </Link>
+                            ))}
+                          </div>
                         </div>
                       </CollapsibleContent>
                     </Collapsible>
