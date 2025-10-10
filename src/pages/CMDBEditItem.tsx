@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save, RefreshCw } from "lucide-react";
+import { Save, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -164,13 +164,6 @@ const CMDBEditItem = () => {
             { name: "CI Detail", path: `/cmdb/${id}` },
           ]}
         />
-
-        <div className="flex items-center mb-6">
-          <Button variant="ghost" onClick={() => navigate(`/cmdb/${id}`)}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to CI Detail
-          </Button>
-        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6">

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  ArrowLeft,
   Edit,
   Trash2,
   RefreshCw,
@@ -166,21 +165,15 @@ const CMDBItemDetail = () => {
         />
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" onClick={() => navigate("/cmdb")}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to CMDB
+        <div className="flex items-center justify-end gap-2 mb-6">
+          <Button variant="outline" onClick={() => navigate(`/cmdb/${id}/edit`)}>
+            <Edit className="h-4 w-4 mr-2" />
+            Edit
           </Button>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate(`/cmdb/${id}/edit`)}>
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
-            <Button variant="destructive" onClick={handleDelete}>
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete
-            </Button>
-          </div>
+          <Button variant="destructive" onClick={handleDelete}>
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete
+          </Button>
         </div>
 
         {/* CI Overview Card */}

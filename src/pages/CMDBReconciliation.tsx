@@ -12,7 +12,6 @@ import {
   AlertTriangle, 
   CheckCircle, 
   RefreshCw,
-  ArrowLeft,
   Server,
   Network
 } from "lucide-react";
@@ -257,11 +256,7 @@ const CMDBReconciliation = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-          <Button variant="ghost" onClick={() => navigate("/cmdb")}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to CMDB
-          </Button>
+        <div className="flex justify-end mb-6">
           <Button onClick={analyzeDuplicates} disabled={analyzing}>
             <RefreshCw className={`h-4 w-4 mr-2 ${analyzing ? "animate-spin" : ""}`} />
             Re-analyze
