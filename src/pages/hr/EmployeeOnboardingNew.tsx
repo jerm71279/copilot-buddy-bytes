@@ -46,6 +46,8 @@ export default function EmployeeOnboardingNew() {
     notes: "",
   });
 
+  const selectedTemplate = templates.find(t => t.id === formData.template_id);
+
   useEffect(() => {
     loadTemplates();
     loadRoles();
@@ -225,11 +227,13 @@ export default function EmployeeOnboardingNew() {
                     <>
                       <Input
                         id="template"
-                        value={templates.find(t => t.id === formData.template_id)?.template_name || 'Loading...'}
+                        value={selectedTemplate?.template_name || 'Loading template...'}
                         disabled
                         className="bg-muted cursor-not-allowed"
                       />
-                      <p className="text-sm text-muted-foreground">Template is locked based on your selection</p>
+                      <p className="text-sm text-muted-foreground">
+                        This template was pre-selected and cannot be changed
+                      </p>
                     </>
                   ) : (
                     <Select
