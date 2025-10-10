@@ -3434,6 +3434,319 @@ export type Database = {
           },
         ]
       }
+      employee_onboarding_tasks: {
+        Row: {
+          actual_hours: number | null
+          assigned_role: string | null
+          assigned_to: string | null
+          blockers: string | null
+          completed_at: string | null
+          completed_by: string | null
+          compliance_tags: string[] | null
+          created_at: string | null
+          description: string | null
+          due_date: string | null
+          estimated_hours: number | null
+          id: string
+          notes: string | null
+          onboarding_id: string
+          required_documents: Json | null
+          sequence_order: number | null
+          status: string
+          task_category: string
+          task_name: string
+          template_task_id: string | null
+          updated_at: string | null
+          uploaded_documents: Json | null
+        }
+        Insert: {
+          actual_hours?: number | null
+          assigned_role?: string | null
+          assigned_to?: string | null
+          blockers?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          compliance_tags?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          estimated_hours?: number | null
+          id?: string
+          notes?: string | null
+          onboarding_id: string
+          required_documents?: Json | null
+          sequence_order?: number | null
+          status?: string
+          task_category: string
+          task_name: string
+          template_task_id?: string | null
+          updated_at?: string | null
+          uploaded_documents?: Json | null
+        }
+        Update: {
+          actual_hours?: number | null
+          assigned_role?: string | null
+          assigned_to?: string | null
+          blockers?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          compliance_tags?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          estimated_hours?: number | null
+          id?: string
+          notes?: string | null
+          onboarding_id?: string
+          required_documents?: Json | null
+          sequence_order?: number | null
+          status?: string
+          task_category?: string
+          task_name?: string
+          template_task_id?: string | null
+          updated_at?: string | null
+          uploaded_documents?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_onboarding_tasks_onboarding_id_fkey"
+            columns: ["onboarding_id"]
+            isOneToOne: false
+            referencedRelation: "employee_onboardings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_onboarding_tasks_template_task_id_fkey"
+            columns: ["template_task_id"]
+            isOneToOne: false
+            referencedRelation: "employee_onboarding_template_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_onboarding_template_tasks: {
+        Row: {
+          assigned_role: string | null
+          compliance_tags: string[] | null
+          created_at: string | null
+          dependencies: Json | null
+          description: string | null
+          estimated_hours: number | null
+          id: string
+          required_documents: Json | null
+          requires_employee_input: boolean | null
+          sequence_order: number | null
+          task_category: string
+          task_name: string
+          template_id: string
+        }
+        Insert: {
+          assigned_role?: string | null
+          compliance_tags?: string[] | null
+          created_at?: string | null
+          dependencies?: Json | null
+          description?: string | null
+          estimated_hours?: number | null
+          id?: string
+          required_documents?: Json | null
+          requires_employee_input?: boolean | null
+          sequence_order?: number | null
+          task_category: string
+          task_name: string
+          template_id: string
+        }
+        Update: {
+          assigned_role?: string | null
+          compliance_tags?: string[] | null
+          created_at?: string | null
+          dependencies?: Json | null
+          description?: string | null
+          estimated_hours?: number | null
+          id?: string
+          required_documents?: Json | null
+          requires_employee_input?: boolean | null
+          sequence_order?: number | null
+          task_category?: string
+          task_name?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_onboarding_template_tasks_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "employee_onboarding_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_onboarding_templates: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          customer_id: string
+          department_type: string | null
+          description: string | null
+          estimated_days: number | null
+          id: string
+          is_active: boolean | null
+          template_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          customer_id: string
+          department_type?: string | null
+          description?: string | null
+          estimated_days?: number | null
+          id?: string
+          is_active?: boolean | null
+          template_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          customer_id?: string
+          department_type?: string | null
+          description?: string | null
+          estimated_days?: number | null
+          id?: string
+          is_active?: boolean | null
+          template_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_onboarding_templates_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_onboardings: {
+        Row: {
+          actual_completion_date: string | null
+          address_line1: string | null
+          address_line2: string | null
+          assigned_role_id: string | null
+          city: string | null
+          completion_percentage: number | null
+          country: string | null
+          created_at: string | null
+          created_by: string
+          customer_id: string
+          date_of_birth: string | null
+          department: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
+          employee_email: string
+          employee_name: string
+          employee_phone: string | null
+          employment_type: string | null
+          id: string
+          job_title: string | null
+          manager_id: string | null
+          metadata: Json | null
+          notes: string | null
+          postal_code: string | null
+          start_date: string | null
+          state: string | null
+          status: string
+          target_completion_date: string | null
+          template_id: string | null
+          updated_at: string | null
+          work_location: string | null
+        }
+        Insert: {
+          actual_completion_date?: string | null
+          address_line1?: string | null
+          address_line2?: string | null
+          assigned_role_id?: string | null
+          city?: string | null
+          completion_percentage?: number | null
+          country?: string | null
+          created_at?: string | null
+          created_by: string
+          customer_id: string
+          date_of_birth?: string | null
+          department?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          employee_email: string
+          employee_name: string
+          employee_phone?: string | null
+          employment_type?: string | null
+          id?: string
+          job_title?: string | null
+          manager_id?: string | null
+          metadata?: Json | null
+          notes?: string | null
+          postal_code?: string | null
+          start_date?: string | null
+          state?: string | null
+          status?: string
+          target_completion_date?: string | null
+          template_id?: string | null
+          updated_at?: string | null
+          work_location?: string | null
+        }
+        Update: {
+          actual_completion_date?: string | null
+          address_line1?: string | null
+          address_line2?: string | null
+          assigned_role_id?: string | null
+          city?: string | null
+          completion_percentage?: number | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string
+          customer_id?: string
+          date_of_birth?: string | null
+          department?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          employee_email?: string
+          employee_name?: string
+          employee_phone?: string | null
+          employment_type?: string | null
+          id?: string
+          job_title?: string | null
+          manager_id?: string | null
+          metadata?: Json | null
+          notes?: string | null
+          postal_code?: string | null
+          start_date?: string | null
+          state?: string | null
+          status?: string
+          target_completion_date?: string | null
+          template_id?: string | null
+          updated_at?: string | null
+          work_location?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_onboardings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_onboardings_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "employee_onboarding_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employee_training: {
         Row: {
           certificate_url: string | null

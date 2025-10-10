@@ -98,6 +98,9 @@ import CustomerAccountDetail from "./pages/CustomerAccountDetail";
 import EmployeeDirectory from "./pages/EmployeeDirectory";
 import DepartmentManagement from "./pages/DepartmentManagement";
 import LeaveManagement from "./pages/LeaveManagement";
+import EmployeeOnboardingDashboard from "./pages/hr/EmployeeOnboardingDashboard";
+import EmployeeOnboardingTemplates from "./pages/hr/EmployeeOnboardingTemplates";
+import EmployeeOnboardingNew from "./pages/hr/EmployeeOnboardingNew";
 
 const queryClient = new QueryClient();
 
@@ -599,6 +602,23 @@ const App = () => (
           <Route path="/leave-management" element={
             <ProtectedRoute>
               <LeaveManagement />
+            </ProtectedRoute>
+          } />
+          
+          {/* HR Employee Onboarding - Protected */}
+          <Route path="/hr/employee-onboarding" element={
+            <ProtectedRoute>
+              <EmployeeOnboardingDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/hr/employee-onboarding/new" element={
+            <ProtectedRoute>
+              <EmployeeOnboardingNew />
+            </ProtectedRoute>
+          } />
+          <Route path="/hr/employee-onboarding/templates" element={
+            <ProtectedRoute>
+              <EmployeeOnboardingTemplates />
             </ProtectedRoute>
           } />
           

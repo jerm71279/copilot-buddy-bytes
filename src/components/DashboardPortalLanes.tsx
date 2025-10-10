@@ -40,8 +40,6 @@ const portals: Portal[] = [
       { name: "Employees", path: "/employees" },
       { name: "Departments", path: "/departments" },
       { name: "Leave Requests", path: "/leave-management" },
-      { name: "Onboarding", path: "/onboarding" },
-      { name: "Onboarding Templates", path: "/onboarding-templates" },
       { name: "Time Tracking", path: "/time-tracking" },
     ],
   },
@@ -64,6 +62,9 @@ const portals: Portal[] = [
       { name: "Network Monitoring", path: "/network-monitoring" },
       { name: "New Network Device", path: "/network/device/new" },
       { name: "SLA Management", path: "/sla-management" },
+      { name: "Client Onboarding", path: "/onboarding" },
+      { name: "New Client", path: "/onboarding/new" },
+      { name: "Onboarding Templates", path: "/onboarding/templates" },
     ],
   },
   {
@@ -187,6 +188,7 @@ const categories: Category[] = [
     icon: Users,
     dashboards: [
       { name: "HR", path: "/dashboard/hr" },
+      { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
     ],
   },
   {

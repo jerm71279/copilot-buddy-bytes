@@ -1,70 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Users, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { Plus, Users, Clock, CheckCircle, AlertCircle, Settings } from "lucide-react";
 
-/**
- * Onboarding Dashboard Data Flow
- * 
- * ```mermaid
- * graph TD
- *     A[User] -->|Visits /onboarding-dashboard| B[OnboardingDashboard Component]
- *     B -->|useEffect| C[checkAuthAndLoad]
- *     C -->|Auth Check| D[supabase.auth.getSession]
- *     
- *     D -->|Authenticated| E[loadOnboardings]
- *     E -->|Query| F[client_onboardings Table]
- *     F -->|Order by created_at| G[setOnboardings State]
- *     
- *     G -->|Calculate Stats| H[Total, In Progress, Completed, Overdue]
- *     H -->|Update| I[Stats Cards UI]
- *     
- *     J[Create Onboarding Button] -->|Navigate| K[Onboarding Creation Modal]
- *     K -->|Select Template| L[onboarding_templates Table]
- *     L -->|Load Template| M[Template Tasks]
- *     
- *     M -->|Submit| N[Insert Onboarding]
- *     N -->|Store| F
- *     N -->|Copy Tasks| O[client_onboarding_tasks Table]
- *     
- *     P[View Onboarding] -->|Click| Q[Onboarding Detail Page]
- *     Q -->|Load Tasks| O
- *     O -->|Display| R[Task List with Status]
- *     
- *     R -->|Update Task| S[Change Status/Complete]
- *     S -->|Update| O
- *     S -->|Recalculate| T[completion_percentage]
- *     T -->|Update| F
- *     
- *     U[Upload Document] -->|Task Action| V[File Upload]
- *     V -->|Store Reference| W[uploaded_documents in Task]
- *     
- *     X[Assign Task] -->|Select User| Y[Update assigned_to]
- *     Y -->|Notify| Z[User Notification]
- *     
- *     AA[Overdue Check] -->|Compare Dates| AB[target_completion_date]
- *     AB -->|Flag Overdue| AC[stats.overdue]
- *     
- *     AD[Progress Tracking] -->|Real-time| AE[Progress Bars]
- *     AE -->|Visual Feedback| AF[Color-coded Status]
- *     
- *     style A fill:#e1f5ff
- *     style F fill:#e6f7ff
- *     style L fill:#e6f7ff
- *     style O fill:#e6f7ff
- * ```
- */
-
-interface ClientOnboarding {
+interface EmployeeOnboarding {
   id: string;
-  client_name: string;
+  employee_name: string;
+  employee_email: string;
+  department: string | null;
+  job_title: string | null;
   status: string;
   completion_percentage: number;
   start_date: string | null;
@@ -72,10 +22,10 @@ interface ClientOnboarding {
   created_at: string;
 }
 
-export default function OnboardingDashboard() {
+export default function EmployeeOnboardingDashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [onboardings, setOnboardings] = useState<ClientOnboarding[]>([]);
+  const [onboardings, setOnboardings] = useState<EmployeeOnboarding[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({
     total: 0,
@@ -100,7 +50,7 @@ export default function OnboardingDashboard() {
   const loadOnboardings = async () => {
     try {
       const { data, error } = await supabase
-        .from('client_onboardings')
+        .from('employee_onboardings')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -119,10 +69,10 @@ export default function OnboardingDashboard() {
 
       setStats({ total, inProgress, completed, overdue });
     } catch (error) {
-      console.error('Error loading onboardings:', error);
+      console.error('Error loading employee onboardings:', error);
       toast({
         title: "Error",
-        description: "Failed to load client onboardings",
+        description: "Failed to load employee onboardings",
         variant: "destructive"
       });
     } finally {
@@ -149,47 +99,37 @@ export default function OnboardingDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      
       <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
         <DashboardNavigation 
-          title="Client Onboarding"
+          title="Employee Onboarding"
           dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
             { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
+            { name: "Employee Directory", path: "/employees" },
+            { name: "Departments", path: "/departments" },
           ]}
         />
         
         <div className="flex justify-end gap-2 mb-6">
-          <Button onClick={() => navigate('/onboarding/templates')}>
-            <Users className="mr-2 h-4 w-4" />
+          <Button variant="outline" onClick={() => navigate('/hr/employee-onboarding/templates')}>
+            <Settings className="mr-2 h-4 w-4" />
             Templates
           </Button>
-          <Button onClick={() => navigate('/onboarding/new')}>
+          <Button onClick={() => navigate('/hr/employee-onboarding/new')}>
             <Plus className="mr-2 h-4 w-4" />
-            New Onboarding
+            New Employee Onboarding
           </Button>
         </div>
 
         <div className="mb-6">
-          <h1 className="text-4xl font-bold mb-2">Client Onboarding</h1>
-          <p className="text-muted-foreground">Manage and track MSP customer onboarding processes</p>
+          <h1 className="text-4xl font-bold mb-2">Employee Onboarding</h1>
+          <p className="text-muted-foreground">Manage new employee onboarding processes</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.total}</div>
@@ -228,15 +168,15 @@ export default function OnboardingDashboard() {
         {isLoading ? (
           <Card>
             <CardContent className="py-8 text-center">
-              Loading onboardings...
+              Loading employee onboardings...
             </CardContent>
           </Card>
         ) : onboardings.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
               <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No client onboardings yet</h3>
-              <p className="text-muted-foreground">Use the "New Onboarding" button above to start onboarding your first client</p>
+              <h3 className="text-lg font-semibold mb-2">No employee onboardings yet</h3>
+              <p className="text-muted-foreground">Use the "New Employee Onboarding" button above to start onboarding your first employee</p>
             </CardContent>
           </Card>
         ) : (
@@ -245,19 +185,20 @@ export default function OnboardingDashboard() {
               <Card 
                 key={onboarding.id}
                 className="cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => navigate(`/onboarding/${onboarding.id}`)}
+                onClick={() => navigate(`/hr/employee-onboarding/${onboarding.id}`)}
               >
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
                       <CardTitle className="flex items-center gap-2">
-                        {onboarding.client_name}
+                        {onboarding.employee_name}
                         {getStatusIcon(onboarding.status)}
                       </CardTitle>
                       <CardDescription className="mt-1">
-                        Started {new Date(onboarding.created_at).toLocaleDateString()}
-                        {onboarding.target_completion_date && (
-                          <> • Target: {new Date(onboarding.target_completion_date).toLocaleDateString()}</>
+                        {onboarding.job_title && <>{onboarding.job_title}</>}
+                        {onboarding.department && <> • {onboarding.department}</>}
+                        {onboarding.start_date && (
+                          <> • Start: {new Date(onboarding.start_date).toLocaleDateString()}</>
                         )}
                       </CardDescription>
                     </div>

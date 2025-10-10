@@ -145,13 +145,13 @@ export default function OnboardingNew() {
           </Button>
           
           <h1 className="text-4xl font-bold mb-2">Create New Client Onboarding</h1>
-          <p className="text-muted-foreground">Set up a new client onboarding process</p>
+          <p className="text-muted-foreground">Set up onboarding for a new MSP customer</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Onboarding Details</CardTitle>
-            <CardDescription>Enter the client information and select a template</CardDescription>
+            <CardTitle>Client Information</CardTitle>
+            <CardDescription>Enter the MSP customer information and select an onboarding template</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
