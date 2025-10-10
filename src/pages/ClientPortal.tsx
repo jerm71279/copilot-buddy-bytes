@@ -127,7 +127,7 @@ export default function ClientPortal() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 pt-28 pb-8 space-y-6">
+      <div className="container mx-auto px-4 pt-64 pb-8 space-y-6">
         <DashboardNavigation 
           title="Client Portal"
           dashboards={[

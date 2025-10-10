@@ -46,7 +46,7 @@ const DataFlowPortal = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-background">
       <Navigation />
-      <div className="container mx-auto px-4 pt-28 pb-8">
+      <div className="container mx-auto px-4 pt-64 pb-8">
         <DashboardNavigation />
         
         <div className="mb-8">

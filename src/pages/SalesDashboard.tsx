@@ -143,7 +143,7 @@ const SalesDashboard = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="container mx-auto px-4 pt-28 pb-8">
+      <main className="container mx-auto px-4 pt-64 pb-8">
 
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Sales Dashboard</h1>

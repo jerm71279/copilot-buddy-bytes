@@ -62,22 +62,7 @@ export const DashboardPortalLanes = () => {
   }
 
   return (
-    <div className="w-full bg-background border-b border-border mt-24 md:mt-28">
-      {/* Back Button */}
-      <div className="border-b border-border">
-        <div className="container mx-auto px-4 py-1.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(-1)}
-            className="gap-2 h-8"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-        </div>
-      </div>
-
+    <div className="fixed top-[120px] left-0 right-0 z-40 w-full bg-background border-b border-border">
       {/* Portals Lane */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-1.5">
@@ -112,7 +97,7 @@ export const DashboardPortalLanes = () => {
       </div>
 
       {/* Dashboards Lane */}
-      <div>
+      <div className="border-b border-border">
         <div className="container mx-auto px-4 py-1.5">
           <div className="flex items-center gap-2 mb-1.5">
             <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
@@ -141,6 +126,21 @@ export const DashboardPortalLanes = () => {
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
+        </div>
+      </div>
+
+      {/* Back Button */}
+      <div>
+        <div className="container mx-auto px-4 py-1.5">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="gap-2 h-8"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
         </div>
       </div>
     </div>

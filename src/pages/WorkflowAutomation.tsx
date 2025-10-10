@@ -190,7 +190,7 @@ export default function WorkflowAutomation() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-28 pb-8">
+      <main className="container mx-auto px-4 pt-64 pb-8">
         <DashboardNavigation 
           title="Workflow Automation"
           dashboards={[
