@@ -208,20 +208,21 @@ const CMDBDashboard = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+        {/* Back Button */}
+        <div className="mb-6">
+          <Button variant="ghost" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+        </div>
 
         {/* Main Content */}
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" onClick={() => navigate(-1)}>
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
-                </Button>
-                <div>
-                  <CardTitle className="text-2xl">Configuration Items</CardTitle>
-                  <CardDescription>Manage your IT assets and infrastructure components</CardDescription>
-                </div>
+              <div>
+                <CardTitle className="text-2xl">Configuration Items</CardTitle>
+                <CardDescription>Manage your IT assets and infrastructure components</CardDescription>
               </div>
               <div className="flex flex-wrap gap-2 overflow-x-auto">
                 <Button onClick={() => navigate("/cmdb/reconciliation")} variant="outline">
