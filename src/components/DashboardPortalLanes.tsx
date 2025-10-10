@@ -282,7 +282,7 @@ export default function DashboardPortalLanes() {
       {/* Row 1: Portals with dropdowns */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
-          <div className="relative overflow-x-auto overflow-y-hidden">
+          <div className="relative overflow-x-auto overflow-y-visible">
             <div className="flex gap-2 pb-2 min-w-max">
               {portals.map((portal) => {
                 const isActive = currentPath === portal.path || 
@@ -363,7 +363,7 @@ export default function DashboardPortalLanes() {
       {/* Row 2: Categories with Dashboard dropdowns */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
-          <div className="relative overflow-x-auto overflow-y-hidden">
+          <div className="relative overflow-x-auto overflow-y-visible">
             <div className="flex gap-2 pb-2 min-w-max">
               {categories.map((category) => {
                 const CategoryIcon = category.icon;
