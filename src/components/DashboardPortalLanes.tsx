@@ -1,6 +1,7 @@
-import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Globe } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LayoutDashboard, Globe, ArrowLeft } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,6 +34,7 @@ const portals = [
 
 export const DashboardPortalLanes = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -60,42 +62,24 @@ export const DashboardPortalLanes = () => {
   }
 
   return (
-    <div className="w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* Dashboards Lane */}
-      <div className="border-b border-border/50">
+    <div className="w-full bg-background border-b border-border">
+      {/* Back Button */}
+      <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
-          <div className="flex items-center gap-2 mb-1">
-            <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Dashboards
-            </span>
-          </div>
-          <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex gap-2 pb-2">
-              {dashboards.map((dashboard) => (
-                <Link
-                  key={dashboard.path}
-                  to={dashboard.path}
-                  className={cn(
-                    "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors",
-                    "hover:bg-accent hover:text-accent-foreground",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    currentPath === dashboard.path
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "bg-muted text-muted-foreground"
-                  )}
-                >
-                  {dashboard.name}
-                </Link>
-              ))}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
         </div>
       </div>
 
       {/* Portals Lane */}
-      <div>
+      <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
           <div className="flex items-center gap-2 mb-1">
             <Globe className="h-4 w-4 text-muted-foreground" />
@@ -119,6 +103,39 @@ export const DashboardPortalLanes = () => {
                   )}
                 >
                   {portal.name}
+                </Link>
+              ))}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </div>
+      </div>
+
+      {/* Dashboards Lane */}
+      <div>
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex items-center gap-2 mb-1">
+            <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Dashboards
+            </span>
+          </div>
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-2 pb-2">
+              {dashboards.map((dashboard) => (
+                <Link
+                  key={dashboard.path}
+                  to={dashboard.path}
+                  className={cn(
+                    "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors",
+                    "hover:bg-accent hover:text-accent-foreground",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    currentPath === dashboard.path
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {dashboard.name}
                 </Link>
               ))}
             </div>
