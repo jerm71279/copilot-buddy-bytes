@@ -93,6 +93,9 @@ import SalesOpportunities from "./pages/SalesOpportunities";
 import SalesQuotes from "./pages/SalesQuotes";
 import CustomerAccounts from "./pages/CustomerAccounts";
 import CustomerAccountDetail from "./pages/CustomerAccountDetail";
+import EmployeeDirectory from "./pages/EmployeeDirectory";
+import DepartmentManagement from "./pages/DepartmentManagement";
+import LeaveManagement from "./pages/LeaveManagement";
 
 const queryClient = new QueryClient();
 
@@ -569,6 +572,21 @@ const App = () => (
           <Route path="/customers/:id" element={
             <ProtectedRoute>
               <CustomerAccountDetail />
+            </ProtectedRoute>
+          } />
+          <Route path="/employees" element={
+            <ProtectedRoute>
+              <EmployeeDirectory />
+            </ProtectedRoute>
+          } />
+          <Route path="/departments" element={
+            <ProtectedRoute>
+              <DepartmentManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/leave-management" element={
+            <ProtectedRoute>
+              <LeaveManagement />
             </ProtectedRoute>
           } />
           
