@@ -159,7 +159,7 @@ export default function PredictiveInsights() {
   const highCount = activeInsights?.filter((i: any) => i.severity === 'high').length || 0;
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto px-4 pt-64 pb-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">AI Predictive Insights</h1>
