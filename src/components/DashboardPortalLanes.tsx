@@ -1,54 +1,125 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Globe, ArrowLeft } from "lucide-react";
+import { 
+  Settings, 
+  Shield, 
+  TrendingUp, 
+  DollarSign, 
+  Users, 
+  BarChart3,
+  ArrowLeft 
+} from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const dashboards = [
-  { name: "Admin", path: "/admin" },
-  { name: "Asset Financials", path: "/asset-financials" },
-  { name: "Budgets", path: "/budgets" },
-  { name: "CMDB", path: "/cmdb" },
-  { name: "CIPP", path: "/cipp" },
-  { name: "Compliance", path: "/dashboard/compliance" },
-  { name: "Contracts", path: "/contracts" },
-  { name: "Customers", path: "/customers" },
-  { name: "Departments", path: "/departments" },
-  { name: "Employees", path: "/employees" },
-  { name: "Executive", path: "/dashboard/executive" },
-  { name: "Expenses", path: "/expenses" },
-  { name: "Finance", path: "/dashboard/finance" },
-  { name: "Financial Reports", path: "/financial-reports" },
-  { name: "HR", path: "/dashboard/hr" },
-  { name: "Inventory", path: "/inventory" },
-  { name: "Invoices", path: "/invoices" },
-  { name: "Leads", path: "/leads" },
-  { name: "Leave Requests", path: "/leave-management" },
-  { name: "MCP Server", path: "/mcp-servers" },
-  { name: "Onboarding", path: "/onboarding" },
-  { name: "Operations", path: "/dashboard/operations" },
-  { name: "Opportunities", path: "/opportunities" },
-  { name: "Projects", path: "/projects" },
-  { name: "Purchase Orders", path: "/purchase-orders" },
-  { name: "Quotes", path: "/quotes" },
-  { name: "Sales", path: "/dashboard/sales" },
-  { name: "SLA Management", path: "/sla-management" },
-  { name: "SOC", path: "/dashboard/soc" },
-  { name: "Time Tracking", path: "/time-tracking" },
-  { name: "Vendors", path: "/vendors" },
-  { name: "Warehouses", path: "/warehouses" },
-];
+interface NavItem {
+  name: string;
+  path: string;
+}
 
-const portals = [
-  { name: "Employee Portal", path: "/portal" },
-  { name: "Analytics Portal", path: "/analytics" },
-  { name: "Client Portal", path: "/client-portal" },
-  { name: "Compliance Portal", path: "/compliance" },
-  { name: "Data Flow Portal", path: "/data-flows" },
-  { name: "RBAC Portal", path: "/rbac" },
-  { name: "Sales Portal", path: "/sales-portal" },
+interface Category {
+  name: string;
+  icon: any;
+  items: NavItem[];
+}
+
+const categories: Category[] = [
+  {
+    name: "Operations & IT",
+    icon: Settings,
+    items: [
+      { name: "Operations", path: "/dashboard/operations" },
+      { name: "IT Dashboard", path: "/dashboard/it" },
+      { name: "CMDB", path: "/cmdb" },
+      { name: "Change Management", path: "/change-management" },
+      { name: "Incidents", path: "/incidents" },
+      { name: "Network Monitoring", path: "/network-monitoring" },
+      { name: "SLA Management", path: "/sla-management" },
+      { name: "MCP Server", path: "/mcp-servers" },
+      { name: "Admin", path: "/admin" },
+      { name: "NinjaOne", path: "/ninjaone" },
+    ],
+  },
+  {
+    name: "Compliance & Security",
+    icon: Shield,
+    items: [
+      { name: "Compliance Portal", path: "/compliance" },
+      { name: "Compliance Dashboard", path: "/dashboard/compliance" },
+      { name: "SOC Dashboard", path: "/dashboard/soc" },
+      { name: "CIPP", path: "/cipp" },
+      { name: "RBAC Portal", path: "/rbac" },
+      { name: "Audit Reports", path: "/compliance/audit-reports" },
+      { name: "Frameworks", path: "/compliance/frameworks" },
+      { name: "Privileged Access", path: "/privileged-access-audit" },
+      { name: "Remediation Rules", path: "/remediation-rules" },
+    ],
+  },
+  {
+    name: "Business & Sales",
+    icon: TrendingUp,
+    items: [
+      { name: "Sales Dashboard", path: "/dashboard/sales" },
+      { name: "Sales Portal", path: "/sales-portal" },
+      { name: "Client Portal", path: "/client-portal" },
+      { name: "Customers", path: "/customers" },
+      { name: "Leads", path: "/leads" },
+      { name: "Opportunities", path: "/opportunities" },
+      { name: "Quotes", path: "/quotes" },
+      { name: "Contracts", path: "/contracts" },
+      { name: "Projects", path: "/projects" },
+    ],
+  },
+  {
+    name: "Finance",
+    icon: DollarSign,
+    items: [
+      { name: "Finance Dashboard", path: "/dashboard/finance" },
+      { name: "Budgets", path: "/budgets" },
+      { name: "Invoices", path: "/invoices" },
+      { name: "Expenses", path: "/expenses" },
+      { name: "Purchase Orders", path: "/purchase-orders" },
+      { name: "Asset Financials", path: "/asset-financials" },
+      { name: "Financial Reports", path: "/financial-reports" },
+      { name: "Vendors", path: "/vendors" },
+      { name: "Inventory", path: "/inventory" },
+      { name: "Warehouses", path: "/warehouses" },
+    ],
+  },
+  {
+    name: "HR & People",
+    icon: Users,
+    items: [
+      { name: "HR Dashboard", path: "/dashboard/hr" },
+      { name: "Employee Portal", path: "/portal" },
+      { name: "Employees", path: "/employees" },
+      { name: "Departments", path: "/departments" },
+      { name: "Leave Requests", path: "/leave-management" },
+      { name: "Onboarding", path: "/onboarding" },
+      { name: "Onboarding Templates", path: "/onboarding-templates" },
+      { name: "Time Tracking", path: "/time-tracking" },
+    ],
+  },
+  {
+    name: "Analytics & Automation",
+    icon: BarChart3,
+    items: [
+      { name: "Executive Dashboard", path: "/dashboard/executive" },
+      { name: "Analytics Portal", path: "/analytics" },
+      { name: "Data Flow Portal", path: "/data-flows" },
+      { name: "Workflow Automation", path: "/workflow-automation" },
+      { name: "Workflow Builder", path: "/workflow-builder" },
+      { name: "Workflow Orchestration", path: "/workflow-orchestration" },
+      { name: "Visual Builder", path: "/workflows/visual-builder" },
+      { name: "Workflow Intelligence", path: "/workflow-intelligence" },
+      { name: "Intelligent Assistant", path: "/intelligent-assistant" },
+      { name: "Predictive Insights", path: "/predictive-insights" },
+      { name: "Knowledge Base", path: "/knowledge-base" },
+      { name: "Custom Reports", path: "/custom-reports" },
+    ],
+  },
 ];
 
 export const DashboardPortalLanes = () => {
@@ -79,18 +150,13 @@ export const DashboardPortalLanes = () => {
     const updateOffset = () => {
       if (!lanesRef.current) return;
       const height = lanesRef.current.offsetHeight;
-      const safeExtra = 12; // leave room for shadows/scrollbar
+      const safeExtra = 12;
       document.documentElement.style.setProperty('--lanes-height', `${height}px`);
       document.documentElement.style.setProperty('--lanes-bottom', `${height + safeExtra}px`);
     };
 
-    // Initial measure after mount
     const id = window.requestAnimationFrame(updateOffset);
-
-    // Recalculate on resize
     window.addEventListener('resize', updateOffset);
-
-    // Observe dynamic height changes (wraps, font load, etc.)
     const ro = new ResizeObserver(() => updateOffset());
     if (lanesRef.current) ro.observe(lanesRef.current);
 
@@ -100,86 +166,56 @@ export const DashboardPortalLanes = () => {
       ro.disconnect();
     };
   }, []);
+
   // Don't show on landing, auth, or demo pages
   const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
   if (!isLoggedIn || hideOnRoutes.includes(currentPath)) {
     return null;
   }
 
-  // Check if current path is a main portal or dashboard page (not a sub-page)
-  const isMainPage = [...portals, ...dashboards].some(item => item.path === currentPath);
+  // Check if current path is a main page
+  const allItems = categories.flatMap(cat => cat.items);
+  const isMainPage = allItems.some(item => item.path === currentPath);
 
   return (
     <div ref={lanesRef} className="fixed top-0 left-0 right-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
-      {/* Portals Lane */}
-      <div className="border-b border-border">
-        <div className="container mx-auto px-4 py-1.5">
-          <div className="flex items-center gap-2 mb-1.5">
-            <Globe className="h-4 w-4 text-muted-foreground" />
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Portals
-            </span>
-          </div>
-          <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex gap-1 pb-2">
-              {portals.map((portal) => (
-                <Link
-                  key={portal.path}
-                  to={portal.path}
-                  className={cn(
-                    "relative inline-flex items-center justify-center px-5 py-2 text-sm font-medium transition-all",
-                    "rounded-t-lg border-t-2 border-x-2 border-b-0",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    currentPath === portal.path
-                      ? "bg-background text-foreground border-primary shadow-md z-10 mb-[-2px]"
-                      : "bg-muted/50 text-muted-foreground border-border/50 hover:bg-muted hover:border-border"
-                  )}
-                >
-                  {portal.name}
-                </Link>
-              ))}
+      {categories.map((category, index) => (
+        <div key={category.name} className={cn("border-b border-border", index === categories.length - 1 && "border-b-0")}>
+          <div className="container mx-auto px-4 py-1.5">
+            <div className="flex items-center gap-2 mb-1.5">
+              <category.icon className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                {category.name}
+              </span>
             </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </div>
-      </div>
-
-      {/* Dashboards Lane */}
-      <div className="border-b border-border">
-        <div className="container mx-auto px-4 py-1.5">
-          <div className="flex items-center gap-2 mb-1.5">
-            <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Dashboards
-            </span>
+            <ScrollArea className="w-full whitespace-nowrap">
+              <div className="flex gap-1 pb-2">
+                {category.items.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={cn(
+                      "relative inline-flex items-center justify-center px-4 py-1.5 text-sm font-medium transition-all",
+                      "rounded-md",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      currentPath === item.path || currentPath.startsWith(item.path + '/')
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </div>
-          <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex gap-1 pb-2">
-              {dashboards.map((dashboard) => (
-                <Link
-                  key={dashboard.path}
-                  to={dashboard.path}
-                  className={cn(
-                    "relative inline-flex items-center justify-center px-5 py-2 text-sm font-medium transition-all",
-                    "rounded-t-lg border-t-2 border-x-2 border-b-0",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    currentPath === dashboard.path
-                      ? "bg-background text-foreground border-primary shadow-md z-10 mb-[-2px]"
-                      : "bg-muted/50 text-muted-foreground border-border/50 hover:bg-muted hover:border-border"
-                  )}
-                >
-                  {dashboard.name}
-                </Link>
-              ))}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
         </div>
-      </div>
+      ))}
 
       {/* Back Button - Only show on sub-pages */}
       {!isMainPage && (
-        <div>
+        <div className="border-t border-border bg-muted/30">
           <div className="container mx-auto px-4 py-1.5">
             <Button
               variant="ghost"
