@@ -401,7 +401,7 @@ export default function DashboardPortalLanes() {
                             </Button>
                           </CollapsibleTrigger>
                         </div>
-                        <CollapsibleContent className="absolute z-50 mt-1">
+                        <CollapsibleContent className="absolute mt-1 z-[9999]">
                           <div className="bg-popover border border-border rounded-md shadow-lg p-1 min-w-[200px]">
                             {portal.children.map((child) => (
                               <Link
@@ -482,8 +482,8 @@ export default function DashboardPortalLanes() {
                           </Button>
                         </CollapsibleTrigger>
                       </div>
-                      <CollapsibleContent className="absolute mt-1 z-50">
-                        <div className="bg-popover border border-border rounded-md shadow-lg p-1 min-w-[200px]">
+                <CollapsibleContent className="absolute mt-1 z-[9999]">
+                  <div className="bg-popover border border-border rounded-md shadow-lg p-1 min-w-[200px]">
                           {category.dashboards.map((dashboard) => (
                             <Link
                               key={dashboard.path}
