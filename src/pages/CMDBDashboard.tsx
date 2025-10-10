@@ -205,8 +205,8 @@ const CMDBDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <DashboardNavigation
           title="CMDB Dashboard"
           dashboards={[
@@ -234,7 +234,7 @@ const CMDBDashboard = () => {
                 <CardTitle className="text-2xl">Configuration Items</CardTitle>
                 <CardDescription>Manage your IT assets and infrastructure components</CardDescription>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2 overflow-x-auto">
                 <Button onClick={() => navigate("/cmdb/reconciliation")} variant="outline">
                   <GitBranch className="h-4 w-4 mr-2" />
                   Reconciliation
