@@ -198,8 +198,12 @@ export default function DashboardPortalLanes() {
   const navigate = useNavigate();
   const currentPath = location.pathname;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [openPortals, setOpenPortals] = useState<{ [key: string]: boolean }>({});
-  const [openCategories, setOpenCategories] = useState<{ [key: string]: boolean }>({});
+  const [openPortals, setOpenPortals] = useState<{ [key: string]: boolean }>(() => 
+    portals.reduce((acc, p) => ({ ...acc, [p.path]: false }), {})
+  );
+  const [openCategories, setOpenCategories] = useState<{ [key: string]: boolean }>(() =>
+    categories.reduce((acc, c) => ({ ...acc, [c.name]: false }), {})
+  );
   const lanesRef = useRef<HTMLDivElement>(null);
 
   const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
@@ -278,8 +282,8 @@ export default function DashboardPortalLanes() {
       {/* Row 1: Portals with dropdowns */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
-          <ScrollArea className="w-full overflow-visible">
-            <div className="flex gap-2 pb-2">
+          <div className="relative overflow-x-auto overflow-y-hidden">
+            <div className="flex gap-2 pb-2 min-w-max">
               {portals.map((portal) => {
                 const isActive = currentPath === portal.path || 
                   (portal.children && portal.children.some(child => currentPath.startsWith(child.path)));
@@ -350,16 +354,15 @@ export default function DashboardPortalLanes() {
                 );
               })}
             </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          </div>
         </div>
       </div>
 
       {/* Row 2: Categories with Dashboard dropdowns */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
-          <ScrollArea className="w-full overflow-visible">
-            <div className="flex gap-2 pb-2">
+          <div className="relative overflow-x-auto overflow-y-hidden">
+            <div className="flex gap-2 pb-2 min-w-max">
               {categories.map((category) => {
                 const CategoryIcon = category.icon;
                 const isActive = category.dashboards.some((d) => currentPath === d.path || currentPath.startsWith(d.path + '/'));
@@ -418,8 +421,7 @@ export default function DashboardPortalLanes() {
                 );
               })}
             </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          </div>
         </div>
       </div>
 
