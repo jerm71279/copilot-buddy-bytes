@@ -208,6 +208,15 @@ const CMDBDashboard = () => {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
 
+        {/* Floating Add CI Button - Partially Hidden */}
+        <Button
+          onClick={() => navigate("/cmdb/add")}
+          className="fixed top-1/2 -right-8 -translate-y-1/2 hover:right-0 transition-all duration-300 rounded-l-lg rounded-r-none shadow-lg z-50 px-4 py-6 bg-primary hover:bg-primary/90"
+          title="Add Configuration Item"
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
+
         {/* Main Content */}
         <Card>
           <CardHeader>
