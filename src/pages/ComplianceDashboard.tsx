@@ -10,7 +10,7 @@ import { Shield, CheckCircle, AlertTriangle, FileText, FileCheck, ChevronDown, C
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import {
@@ -167,24 +167,6 @@ const ComplianceDashboard = () => {
       <Navigation />
 
       <div className="container mx-auto px-4 pt-28 pb-8 space-y-6">
-        <DashboardNavigation 
-          title="Compliance Dashboard"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Onboarding Dashboard", path: "/onboarding" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
 
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Compliance Dashboard</h1>
