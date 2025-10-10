@@ -58,10 +58,11 @@ export const DashboardPortalLanes = () => {
 
   useEffect(() => {
     const updateOffset = () => {
-      if (lanesRef.current) {
-        const height = lanesRef.current.offsetHeight;
-        document.documentElement.style.setProperty('--lanes-height', `${height}px`);
-      }
+      if (!lanesRef.current) return;
+      const height = lanesRef.current.offsetHeight;
+      const safeExtra = 12; // leave room for shadows/scrollbar
+      document.documentElement.style.setProperty('--lanes-height', `${height}px`);
+      document.documentElement.style.setProperty('--lanes-bottom', `${height + safeExtra}px`);
     };
 
     // Initial measure after mount
@@ -70,9 +71,14 @@ export const DashboardPortalLanes = () => {
     // Recalculate on resize
     window.addEventListener('resize', updateOffset);
 
+    // Observe dynamic height changes (wraps, font load, etc.)
+    const ro = new ResizeObserver(() => updateOffset());
+    if (lanesRef.current) ro.observe(lanesRef.current);
+
     return () => {
       window.cancelAnimationFrame(id);
       window.removeEventListener('resize', updateOffset);
+      ro.disconnect();
     };
   }, []);
   // Don't show on landing, auth, or demo pages
