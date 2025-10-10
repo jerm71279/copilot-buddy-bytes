@@ -32,7 +32,7 @@ interface Category {
 
 const portals: Portal[] = [
   {
-    name: "Operations",
+    name: "Operations Portal",
     path: "/dashboard/operations",
     children: [
       { name: "CMDB", path: "/cmdb" },
@@ -49,7 +49,7 @@ const portals: Portal[] = [
     ],
   },
   {
-    name: "Admin",
+    name: "Admin Portal",
     path: "/admin",
     children: [
       { name: "Applications", path: "/admin/applications" },
@@ -61,7 +61,7 @@ const portals: Portal[] = [
     ],
   },
   {
-    name: "Integrations",
+    name: "Integrations Portal",
     path: "/integrations",
     children: [
       { name: "NinjaOne", path: "/ninjaone" },
@@ -69,7 +69,7 @@ const portals: Portal[] = [
     ],
   },
   {
-    name: "Compliance",
+    name: "Compliance Portal",
     path: "/compliance",
     children: [
       { name: "Audit Reports", path: "/compliance/audit-reports" },
@@ -79,7 +79,7 @@ const portals: Portal[] = [
     ],
   },
   {
-    name: "Sales",
+    name: "Sales Portal",
     path: "/sales-portal",
     children: [
       { name: "Leads", path: "/leads" },
@@ -91,7 +91,7 @@ const portals: Portal[] = [
     ],
   },
   {
-    name: "Finance",
+    name: "Finance Portal",
     path: "/budgets",
     children: [
       { name: "Invoices", path: "/invoices" },
@@ -105,7 +105,7 @@ const portals: Portal[] = [
     ],
   },
   {
-    name: "HR & People",
+    name: "HR Portal",
     path: "/portal",
     children: [
       { name: "Employees", path: "/employees" },
@@ -117,7 +117,7 @@ const portals: Portal[] = [
     ],
   },
   {
-    name: "Analytics",
+    name: "Analytics Portal",
     path: "/analytics",
     children: [
       { name: "Data Flows", path: "/data-flows" },
@@ -126,7 +126,7 @@ const portals: Portal[] = [
     ],
   },
   {
-    name: "Automation",
+    name: "Automation Portal",
     path: "/workflow-automation",
     children: [
       { name: "Workflow Builder", path: "/workflow-builder" },
@@ -137,7 +137,7 @@ const portals: Portal[] = [
     ],
   },
   {
-    name: "Knowledge",
+    name: "Knowledge Portal",
     path: "/knowledge-base",
     children: [
       { name: "Articles", path: "/knowledge-base" },
