@@ -53,7 +53,7 @@ const categories: Category[] = [
       { name: "RBAC Portal", path: "/rbac" },
       { name: "Audit Reports", path: "/compliance/audit-reports" },
       { name: "Frameworks", path: "/compliance/frameworks" },
-      { name: "Privileged Access", path: "/privileged-access-audit" },
+      { name: "Privileged Access", path: "/audit/privileged-access" },
       { name: "Remediation Rules", path: "/remediation-rules" },
     ],
   },
