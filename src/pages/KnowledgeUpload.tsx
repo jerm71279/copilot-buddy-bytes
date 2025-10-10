@@ -65,7 +65,7 @@ export default function KnowledgeUpload() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-28 pb-8 max-w-2xl">
+      <main className="container mx-auto px-4 pt-64 pb-8 max-w-2xl">
         <Button variant="ghost" onClick={() => navigate("/knowledge")} className="mb-6">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Knowledge Base

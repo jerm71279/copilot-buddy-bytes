@@ -104,7 +104,7 @@ export default function WorkflowExecutionDetail() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pt-28 pb-8">
+        <main className="container mx-auto px-4 pt-64 pb-8">
           <div className="flex items-center justify-center py-12">
             <Activity className="h-8 w-8 animate-spin text-primary" />
           </div>
@@ -117,7 +117,7 @@ export default function WorkflowExecutionDetail() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pt-28 pb-8">
+        <main className="container mx-auto px-4 pt-64 pb-8">
           <Card>
             <CardContent className="py-12 text-center">
               <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
@@ -138,7 +138,7 @@ export default function WorkflowExecutionDetail() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-28 pb-8">
+      <main className="container mx-auto px-4 pt-64 pb-8">
         <Button 
           onClick={() => navigate(-1)} 
           variant="ghost" 

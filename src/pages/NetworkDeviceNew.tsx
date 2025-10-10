@@ -112,7 +112,7 @@ const NetworkDeviceNew = () => {
         ]}
       />
       
-      <main className="container mx-auto px-4 pt-28 pb-8">
+      <main className="container mx-auto px-4 pt-64 pb-8">
         <div className="flex items-center gap-4 mb-6">
           <Button
             variant="ghost"

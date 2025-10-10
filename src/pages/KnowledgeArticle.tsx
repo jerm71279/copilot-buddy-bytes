@@ -91,7 +91,7 @@ export default function KnowledgeArticle() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pt-28 pb-8">
+        <main className="container mx-auto px-4 pt-64 pb-8">
           <p>Loading article...</p>
         </main>
       </div>
@@ -102,7 +102,7 @@ export default function KnowledgeArticle() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pt-28 pb-8">
+        <main className="container mx-auto px-4 pt-64 pb-8">
           <p>Article not found</p>
         </main>
       </div>
@@ -113,7 +113,7 @@ export default function KnowledgeArticle() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-28 pb-8 max-w-4xl">
+      <main className="container mx-auto px-4 pt-64 pb-8 max-w-4xl">
         {/* Header */}
         <div className="mb-6">
           <Button variant="ghost" onClick={() => navigate("/knowledge")} className="mb-4">
