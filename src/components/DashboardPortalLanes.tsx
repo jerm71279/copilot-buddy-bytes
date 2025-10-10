@@ -7,7 +7,8 @@ import {
   Users, 
   BarChart3,
   ArrowLeft,
-  ChevronDown
+  ChevronDown,
+  Search
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { GlobalSearch } from "@/components/GlobalSearch";
 
 // Portals are the main navigation items (non-dashboard pages) with optional children
 interface Portal {
@@ -220,6 +222,7 @@ export default function DashboardPortalLanes() {
     categories.reduce((acc, c) => ({ ...acc, [c.name]: false }), {})
   );
   const lanesRef = useRef<HTMLDivElement>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
   const shouldHide = !isLoggedIn || hideOnRoutes.includes(currentPath);
@@ -239,6 +242,18 @@ export default function DashboardPortalLanes() {
     return () => {
       subscription.unsubscribe();
     };
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   useEffect(() => {
@@ -476,6 +491,18 @@ export default function DashboardPortalLanes() {
                   </div>
                 );
               })}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchOpen(true)}
+                className="gap-2 px-4 py-2 text-sm font-medium"
+              >
+                <Search className="h-4 w-4" />
+                Search
+                <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                  <span className="text-xs">⌘</span>K
+                </kbd>
+              </Button>
             </div>
           </div>
         </div>
@@ -497,6 +524,8 @@ export default function DashboardPortalLanes() {
           </div>
         </div>
       )}
+
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 }
