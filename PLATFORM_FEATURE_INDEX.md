@@ -1,8 +1,8 @@
 # OberaConnect Platform Feature Index
 
-**Last Updated:** October 9, 2025  
-**Platform Version:** 2.0  
-**Total Pages:** 64+  
+**Last Updated:** October 10, 2025  
+**Platform Version:** 2.1  
+**Total Pages:** 70+  
 **Total Edge Functions:** 17
 
 ---
@@ -181,7 +181,31 @@
 
 ---
 
-## Onboarding & Service Management
+## Customer & Business Management
+
+### Customer Management (NEW - Oct 10)
+| Route | Page | Description | Status |
+|-------|------|-------------|--------|
+| `/customers` | CustomerAccounts | Customer account management | ✅ New (Oct 10) |
+| `/customers/:id` | CustomerAccountDetail | Customer detail with contacts, sites, assets | ✅ New (Oct 10) |
+
+### HR & Employee Management (NEW - Oct 10)
+| Route | Page | Description | Status |
+|-------|------|-------------|--------|
+| `/employees` | EmployeeDirectory | Employee directory and management | ✅ New (Oct 10) |
+| `/departments` | DepartmentManagement | Department management | ✅ New (Oct 10) |
+| `/leave-management` | LeaveManagement | Leave request management | ✅ New (Oct 10) |
+
+### Project Management (ENHANCED - Oct 10)
+| Route | Page | Description | Status |
+|-------|------|-------------|--------|
+| `/projects` | ProjectManagement | Project tracking with full lifecycle | ✅ Enhanced (Oct 10) |
+
+### Vendor Management (NEW - Oct 10)
+| Route | Page | Description | Status |
+|-------|------|-------------|--------|
+| `/vendors` | VendorManagement | Vendor management and tracking | ✅ New (Oct 10) |
+| `/vendors/:id` | VendorDetail | Vendor detail with contracts & performance | ✅ New (Oct 10) |
 
 ### Client Onboarding
 | Route | Page | Description | Status |
@@ -217,6 +241,10 @@
 | **CMDB** | 5 pages | configuration_items, ci_relationships | - | ✅ Production |
 | **Change Management** | 3 pages | change_requests, change_approvals | change-impact-analyzer | ✅ Production |
 | **Workflows** | 6 pages | workflows, workflow_executions | workflow-executor, workflow-orchestrator | ✅ Production |
+| **Customer Management** | 2 pages | customer_accounts, customer_contacts, customer_sites | - | ✅ New (Oct 10) |
+| **HR Management** | 3 pages | employees, departments, employee_leave | - | ✅ New (Oct 10) |
+| **Project Management** | 1 page | projects, project_tasks, project_milestones | - | ✅ Enhanced (Oct 10) |
+| **Vendor Management** | 2 pages | vendors, vendor_contracts, vendor_performance | - | ✅ New (Oct 10) |
 | **AI Assistants** | 2 pages | ai_interactions, ml_insights | intelligent-assistant, department-assistant | ✅ Production |
 | **Knowledge Base** | 3 pages | knowledge_articles, knowledge_files | knowledge-processor | ✅ Production |
 | **MCP Integration** | MCPServerDashboard | mcp_servers, mcp_tools | mcp-server, ai-mcp-generator | ✅ Production |
@@ -233,6 +261,13 @@
 ---
 
 ## Recently Added Features
+
+### October 10, 2025
+- **Navigation Revamp**: New 6-category navigation system for better organization
+- **Customer & Account Management**: Full customer account management with contacts, sites, assets, service history
+- **HR & Employee Management**: Employee directory, department management, leave management, performance reviews, certifications
+- **Enhanced Project Management**: Project tracking with tasks, milestones, team management, expenses, time entries
+- **Vendor Management**: Vendor tracking with contracts, performance history, and automated vendor codes
 
 ### October 9, 2025
 - **Products Admin**: Full product catalog management with CRUD operations
@@ -253,22 +288,41 @@
 
 ---
 
-## Navigation Paths
+## Navigation Structure
 
-### Admin Quick Access
-From Admin Dashboard dropdown:
-- MCP Tools → Server Status, Logs, Configure, AI Generator
-- Testing → System Validation, Comprehensive Tests
-- Management → Applications, CMDB, Change Management
+### New 6-Category Navigation System (October 10, 2025)
 
-### Department Dashboard Access
-From Portal → Select Department → Dashboard
+The platform now features an organized 6-category horizontal scrolling navigation with all features categorized:
 
-### Integration Access
-- IT Dashboard → M365, NinjaOne tabs
-- Admin → CIPP Dashboard link
-- Sales Dashboard → Revio integration
-- Operations → SharePoint Sync
+#### 1. Operations & IT
+- Operations Dashboard, IT Dashboard, CMDB, Change Management
+- Incidents, Network Monitoring, SLA Management
+- MCP Server, Admin, NinjaOne Integration
+
+#### 2. Compliance & Security  
+- Compliance Portal, Compliance Dashboard, SOC Dashboard
+- CIPP, RBAC Portal, Audit Reports, Frameworks
+- Privileged Access, Remediation Rules
+
+#### 3. Business & Sales
+- Sales Dashboard, Sales Portal, Client Portal
+- Customers, Leads, Opportunities, Quotes
+- Contracts, Projects
+
+#### 4. Finance
+- Finance Dashboard, Budgets, Invoices, Expenses
+- Purchase Orders, Asset Financials, Financial Reports
+- Vendors, Inventory, Warehouses
+
+#### 5. HR & People
+- HR Dashboard, Employee Portal, Employees, Departments
+- Leave Requests, Onboarding, Onboarding Templates, Time Tracking
+
+#### 6. Analytics & Automation
+- Executive Dashboard, Analytics Portal, Data Flow Portal
+- Workflow Automation, Workflow Builder, Workflow Orchestration
+- Visual Builder, Workflow Intelligence, Intelligent Assistant
+- Predictive Insights, Knowledge Base, Custom Reports
 
 ---
 

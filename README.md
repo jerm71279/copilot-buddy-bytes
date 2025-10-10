@@ -1,6 +1,6 @@
 # OberaConnect Platform
 
-**Version:** 2.0 | **Last Updated:** October 9, 2025 | **Status:** Production Ready ✅
+**Version:** 2.1 | **Last Updated:** October 10, 2025 | **Status:** Production Ready ✅
 
 ## 📦 Documentation Package
 
@@ -23,12 +23,13 @@ See [DOCUMENTATION_INDEX.md](./DOCUMENTATION_INDEX.md) for complete export instr
 OberaConnect is a clause-aware, multi-tenant SaaS platform that provides AI-powered integrations and department-specific dashboards for MSP (Managed Service Provider) operations. The platform enables seamless integration with billing, security, RMM, and compliance systems while maintaining customer-specific customization and branding.
 
 ### Platform Statistics
-- **64+ Pages** across 8 department dashboards
-- **55+ Database Tables** with Row Level Security
+- **70+ Pages** across 8 department dashboards
+- **65+ Database Tables** with Row Level Security
 - **17 Edge Functions** for serverless backend
 - **50+ React Components** in component library
 - **7 External Integrations** (M365, CIPP, NinjaOne, Revio, SharePoint)
 - **10+ Custom Hooks** for business logic
+- **6-Category Navigation** for organized access
 
 ## 🏗️ Architecture Philosophy
 
@@ -264,6 +265,11 @@ supabase/
 
 **Customer & User Management**
 - `customers` - Customer organizations
+- `customer_accounts` - Customer account management (NEW - Oct 10)
+- `customer_contacts` - Customer contact information (NEW - Oct 10)
+- `customer_sites` - Customer site locations (NEW - Oct 10)
+- `customer_assets` - Customer asset tracking (NEW - Oct 10)
+- `customer_service_history` - Service history tracking (NEW - Oct 10)
 - `user_profiles` - User accounts with department roles
 - `customer_customizations` - Per-customer UI/feature settings
 - `customer_details` - Extended customer business information
