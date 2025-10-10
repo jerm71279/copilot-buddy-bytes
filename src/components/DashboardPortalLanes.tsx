@@ -96,18 +96,19 @@ export const DashboardPortalLanes = () => {
             </span>
           </div>
           <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex gap-2 pb-1">
+            <div className="flex gap-1 pb-0">
               {portals.map((portal) => (
                 <Link
                   key={portal.path}
                   to={portal.path}
                   className={cn(
-                    "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors",
-                    "hover:bg-accent hover:text-accent-foreground",
+                    "relative inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium transition-all",
+                    "rounded-t-lg border-t-2 border-x-2 border-b-0",
+                    "hover:translate-y-[-2px]",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     currentPath === portal.path
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "bg-muted text-muted-foreground"
+                      ? "bg-background text-foreground border-primary shadow-lg z-10 translate-y-[2px]"
+                      : "bg-muted/50 text-muted-foreground border-border/50 hover:bg-muted"
                   )}
                 >
                   {portal.name}
@@ -129,18 +130,19 @@ export const DashboardPortalLanes = () => {
             </span>
           </div>
           <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex gap-2 pb-1">
+            <div className="flex gap-1 pb-0">
               {dashboards.map((dashboard) => (
                 <Link
                   key={dashboard.path}
                   to={dashboard.path}
                   className={cn(
-                    "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors",
-                    "hover:bg-accent hover:text-accent-foreground",
+                    "relative inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium transition-all",
+                    "rounded-t-lg border-t-2 border-x-2 border-b-0",
+                    "hover:translate-y-[-2px]",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     currentPath === dashboard.path
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "bg-muted text-muted-foreground"
+                      ? "bg-background text-foreground border-primary shadow-lg z-10 translate-y-[2px]"
+                      : "bg-muted/50 text-muted-foreground border-border/50 hover:bg-muted"
                   )}
                 >
                   {dashboard.name}
