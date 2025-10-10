@@ -221,29 +221,37 @@ export default function EmployeeOnboardingNew() {
 
                 <div className="space-y-2">
                   <Label htmlFor="template">Onboarding Template *</Label>
-                  <Select
-                    value={formData.template_id}
-                    onValueChange={(value) => setFormData({ ...formData, template_id: value })}
-                    disabled={!!preselectedTemplateId}
-                  >
-                    <SelectTrigger id="template" className="bg-background">
-                      <SelectValue placeholder="Select a template" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background z-50">
-                      {templates.length === 0 ? (
-                        <div className="p-2 text-sm text-muted-foreground">No templates available</div>
-                      ) : (
-                        templates.map((template) => (
-                          <SelectItem key={template.id} value={template.id}>
-                            {template.template_name}
-                            {template.estimated_days && ` (${template.estimated_days} days)`}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                  {preselectedTemplateId && (
-                    <p className="text-sm text-muted-foreground">Template is locked based on your selection</p>
+                  {preselectedTemplateId ? (
+                    <>
+                      <Input
+                        id="template"
+                        value={templates.find(t => t.id === formData.template_id)?.template_name || 'Loading...'}
+                        disabled
+                        className="bg-muted cursor-not-allowed"
+                      />
+                      <p className="text-sm text-muted-foreground">Template is locked based on your selection</p>
+                    </>
+                  ) : (
+                    <Select
+                      value={formData.template_id}
+                      onValueChange={(value) => setFormData({ ...formData, template_id: value })}
+                    >
+                      <SelectTrigger id="template" className="bg-background">
+                        <SelectValue placeholder="Select a template" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background z-50">
+                        {templates.length === 0 ? (
+                          <div className="p-2 text-sm text-muted-foreground">No templates available</div>
+                        ) : (
+                          templates.map((template) => (
+                            <SelectItem key={template.id} value={template.id}>
+                              {template.template_name}
+                              {template.estimated_days && ` (${template.estimated_days} days)`}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
                   )}
                 </div>
 
