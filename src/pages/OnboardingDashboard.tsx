@@ -149,9 +149,8 @@ export default function OnboardingDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
       
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
         <DashboardNavigation 
           title="Client Onboarding"
           dashboards={[

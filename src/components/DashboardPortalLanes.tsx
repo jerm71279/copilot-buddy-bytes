@@ -38,7 +38,6 @@ export const DashboardPortalLanes = () => {
   const currentPath = location.pathname;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const lanesRef = useRef<HTMLDivElement>(null);
-  const topClass = currentPath === '/admin' ? 'top-0' : 'top-16';
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -83,7 +82,7 @@ export const DashboardPortalLanes = () => {
   }
 
   return (
-    <div ref={lanesRef} className={`fixed ${topClass} left-0 right-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border shadow-md`}>
+    <div ref={lanesRef} className="fixed top-0 left-0 right-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
       {/* Portals Lane */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-1.5">

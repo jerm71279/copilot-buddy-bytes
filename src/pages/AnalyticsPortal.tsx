@@ -180,8 +180,7 @@ export default function AnalyticsPortal() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="container mx-auto px-4 pt-56 pb-8">
+      <div className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-4xl font-bold">Analytics Portal</h1>

@@ -45,8 +45,7 @@ const DataFlowPortal = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-background">
-      <Navigation />
-      <div className="container mx-auto px-4 pt-56 pb-8">
+      <div className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
         <DashboardNavigation />
         
         <div className="mb-8">
