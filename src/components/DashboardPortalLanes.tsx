@@ -37,7 +37,7 @@ export const DashboardPortalLanes = () => {
   const navigate = useNavigate();
   const currentPath = location.pathname;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const topClass = currentPath === '/admin' ? 'top-[120px]' : 'top-16';
+  const topClass = currentPath === '/admin' ? 'top-[160px]' : 'top-16';
 
   useEffect(() => {
     const checkAuth = async () => {
