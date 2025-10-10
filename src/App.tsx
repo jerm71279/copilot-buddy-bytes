@@ -101,6 +101,7 @@ import LeaveManagement from "./pages/LeaveManagement";
 import EmployeeOnboardingDashboard from "./pages/hr/EmployeeOnboardingDashboard";
 import EmployeeOnboardingTemplates from "./pages/hr/EmployeeOnboardingTemplates";
 import EmployeeOnboardingNew from "./pages/hr/EmployeeOnboardingNew";
+import EmployeeOnboardingDetail from "./pages/hr/EmployeeOnboardingDetail";
 
 const queryClient = new QueryClient();
 
@@ -619,6 +620,11 @@ const App = () => (
           <Route path="/hr/employee-onboarding/templates" element={
             <ProtectedRoute>
               <EmployeeOnboardingTemplates />
+            </ProtectedRoute>
+          } />
+          <Route path="/hr/employee-onboarding/:id" element={
+            <ProtectedRoute>
+              <EmployeeOnboardingDetail />
             </ProtectedRoute>
           } />
           

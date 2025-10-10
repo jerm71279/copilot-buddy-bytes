@@ -1,0 +1,241 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, Mail, Phone, Calendar, Building, Briefcase, User } from "lucide-react";
+import DashboardNavigation from "@/components/DashboardNavigation";
+
+interface Onboarding {
+  id: string;
+  employee_name: string;
+  employee_email: string;
+  employee_phone: string | null;
+  department: string | null;
+  job_title: string | null;
+  employment_type: string;
+  start_date: string;
+  status: string;
+  completion_percentage: number;
+  notes: string | null;
+  created_at: string;
+}
+
+interface Template {
+  id: string;
+  template_name: string;
+  description: string | null;
+}
+
+export default function EmployeeOnboardingDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [onboarding, setOnboarding] = useState<Onboarding | null>(null);
+  const [template, setTemplate] = useState<Template | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadOnboarding();
+  }, [id]);
+
+  const loadOnboarding = async () => {
+    if (!id) return;
+
+    try {
+      const { data: onboardingData, error: onboardingError } = await supabase
+        .from('employee_onboardings')
+        .select('*, template_id')
+        .eq('id', id)
+        .single();
+
+      if (onboardingError) throw onboardingError;
+      setOnboarding(onboardingData);
+
+      if (onboardingData.template_id) {
+        const { data: templateData, error: templateError } = await supabase
+          .from('employee_onboarding_templates')
+          .select('id, template_name, description')
+          .eq('id', onboardingData.template_id)
+          .single();
+
+        if (!templateError && templateData) {
+          setTemplate(templateData);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading onboarding:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load employee onboarding details",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+      not_started: { label: "Not Started", variant: "secondary" },
+      in_progress: { label: "In Progress", variant: "default" },
+      completed: { label: "Completed", variant: "outline" },
+      on_hold: { label: "On Hold", variant: "destructive" }
+    };
+    
+    const config = statusConfig[status] || { label: status, variant: "secondary" };
+    return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+          <div className="text-center py-12">Loading...</div>
+        </main>
+      </div>
+    );
+  }
+
+  if (!onboarding) {
+    return (
+      <div className="min-h-screen bg-background">
+        <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+          <div className="text-center py-12">
+            <p className="text-muted-foreground mb-4">Employee onboarding not found</p>
+            <Button onClick={() => navigate('/hr/employee-onboarding')}>
+              Back to Dashboard
+            </Button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+        <DashboardNavigation 
+          title="Employee Onboarding Details"
+          dashboards={[
+            { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
+            { name: "Templates", path: "/hr/employee-onboarding/templates" },
+          ]}
+        />
+
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/hr/employee-onboarding')}
+            className="mb-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">{onboarding.employee_name}</h1>
+              <p className="text-muted-foreground">{onboarding.job_title || 'No job title specified'}</p>
+            </div>
+            {getStatusBadge(onboarding.status)}
+          </div>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 mb-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Employee Information</CardTitle>
+              <CardDescription>Contact and employment details</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Email</p>
+                  <p className="font-medium">{onboarding.employee_email}</p>
+                </div>
+              </div>
+              
+              {onboarding.employee_phone && (
+                <div className="flex items-center gap-3">
+                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Phone</p>
+                    <p className="font-medium">{onboarding.employee_phone}</p>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex items-center gap-3">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Start Date</p>
+                  <p className="font-medium">{new Date(onboarding.start_date).toLocaleDateString()}</p>
+                </div>
+              </div>
+              
+              {onboarding.department && (
+                <div className="flex items-center gap-3">
+                  <Building className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Department</p>
+                    <p className="font-medium">{onboarding.department}</p>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex items-center gap-3">
+                <Briefcase className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Employment Type</p>
+                  <p className="font-medium capitalize">{onboarding.employment_type.replace('-', ' ')}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Onboarding Progress</CardTitle>
+              <CardDescription>Current completion status</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Completion</span>
+                  <span className="text-sm font-medium">{onboarding.completion_percentage}%</span>
+                </div>
+                <Progress value={onboarding.completion_percentage} />
+              </div>
+
+              {template && (
+                <div className="pt-4 border-t">
+                  <p className="text-sm text-muted-foreground mb-1">Template</p>
+                  <p className="font-medium">{template.template_name}</p>
+                  {template.description && (
+                    <p className="text-sm text-muted-foreground mt-2">{template.description}</p>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {onboarding.notes && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Notes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">{onboarding.notes}</p>
+            </CardContent>
+          </Card>
+        )}
+      </main>
+    </div>
+  );
+}
