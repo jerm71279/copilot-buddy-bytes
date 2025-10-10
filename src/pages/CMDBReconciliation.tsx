@@ -255,17 +255,9 @@ const CMDBReconciliation = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation
-        title="CMDB Reconciliation"
-        dashboards={[
-          { name: "CMDB Dashboard", path: "/cmdb" },
-        ]}
-      />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
-        <div className="flex items-center justify-between mb-6">
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <Button variant="ghost" onClick={() => navigate("/cmdb")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to CMDB
