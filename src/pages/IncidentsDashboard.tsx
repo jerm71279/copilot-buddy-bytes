@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { AlertCircle, CheckCircle, Clock, Play } from "lucide-react";
+import IncidentEvidenceUpload from "@/components/IncidentEvidenceUpload";
 
 export default function IncidentsDashboard() {
   const queryClient = useQueryClient();
@@ -276,16 +277,23 @@ export default function IncidentsDashboard() {
                   </TableCell>
                   <TableCell>{new Date(incident.detected_at).toLocaleString()}</TableCell>
                   <TableCell>
-                    {incident.status !== "resolved" && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => triggerRemediation.mutate(incident.id)}
-                      >
-                        <Play className="h-4 w-4 mr-1" />
-                        Remediate
-                      </Button>
-                    )}
+                    <div className="flex gap-2">
+                      <IncidentEvidenceUpload
+                        incidentId={incident.id}
+                        incidentNumber={incident.incident_number}
+                        onUploadComplete={() => queryClient.invalidateQueries({ queryKey: ["incidents"] })}
+                      />
+                      {incident.status !== "resolved" && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => triggerRemediation.mutate(incident.id)}
+                        >
+                          <Play className="h-4 w-4 mr-1" />
+                          Remediate
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

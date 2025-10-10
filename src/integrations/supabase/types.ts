@@ -3608,6 +3608,7 @@ export type Database = {
           file_type: string
           framework_id: string | null
           id: string
+          incident_id: string | null
           storage_path: string
           uploaded_at: string
           uploaded_by: string
@@ -3623,6 +3624,7 @@ export type Database = {
           file_type: string
           framework_id?: string | null
           id?: string
+          incident_id?: string | null
           storage_path: string
           uploaded_at?: string
           uploaded_by: string
@@ -3638,6 +3640,7 @@ export type Database = {
           file_type?: string
           framework_id?: string | null
           id?: string
+          incident_id?: string | null
           storage_path?: string
           uploaded_at?: string
           uploaded_by?: string
@@ -3655,6 +3658,13 @@ export type Database = {
             columns: ["framework_id"]
             isOneToOne: false
             referencedRelation: "compliance_frameworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_files_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
         ]
