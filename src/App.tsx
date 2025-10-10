@@ -91,6 +91,8 @@ import WarehouseManagement from "./pages/WarehouseManagement";
 import LeadManagement from "./pages/LeadManagement";
 import SalesOpportunities from "./pages/SalesOpportunities";
 import SalesQuotes from "./pages/SalesQuotes";
+import CustomerAccounts from "./pages/CustomerAccounts";
+import CustomerAccountDetail from "./pages/CustomerAccountDetail";
 
 const queryClient = new QueryClient();
 
@@ -557,6 +559,16 @@ const App = () => (
           <Route path="/quotes" element={
             <ProtectedRoute>
               <SalesQuotes />
+            </ProtectedRoute>
+          } />
+          <Route path="/customers" element={
+            <ProtectedRoute>
+              <CustomerAccounts />
+            </ProtectedRoute>
+          } />
+          <Route path="/customers/:id" element={
+            <ProtectedRoute>
+              <CustomerAccountDetail />
             </ProtectedRoute>
           } />
           

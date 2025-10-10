@@ -14,6 +14,7 @@ const dashboards = [
   { name: "CIPP", path: "/cipp" },
   { name: "Compliance", path: "/dashboard/compliance" },
   { name: "Contracts", path: "/contracts" },
+  { name: "Customers", path: "/customers" },
   { name: "Executive", path: "/dashboard/executive" },
   { name: "Expenses", path: "/expenses" },
   { name: "Finance", path: "/dashboard/finance" },

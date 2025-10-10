@@ -2136,6 +2136,81 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_accounts: {
+        Row: {
+          account_manager_id: string | null
+          account_number: string
+          account_status: string
+          account_type: string
+          billing_address: Json | null
+          company_name: string
+          company_size: string | null
+          created_at: string
+          credit_limit: number | null
+          custom_fields: Json | null
+          customer_id: string
+          id: string
+          industry: string | null
+          notes: string | null
+          parent_account_id: string | null
+          payment_terms: string | null
+          primary_contact_id: string | null
+          shipping_address: Json | null
+          support_tier: string | null
+          tax_id: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          account_manager_id?: string | null
+          account_number: string
+          account_status?: string
+          account_type?: string
+          billing_address?: Json | null
+          company_name: string
+          company_size?: string | null
+          created_at?: string
+          credit_limit?: number | null
+          custom_fields?: Json | null
+          customer_id: string
+          id?: string
+          industry?: string | null
+          notes?: string | null
+          parent_account_id?: string | null
+          payment_terms?: string | null
+          primary_contact_id?: string | null
+          shipping_address?: Json | null
+          support_tier?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          account_manager_id?: string | null
+          account_number?: string
+          account_status?: string
+          account_type?: string
+          billing_address?: Json | null
+          company_name?: string
+          company_size?: string | null
+          created_at?: string
+          credit_limit?: number | null
+          custom_fields?: Json | null
+          customer_id?: string
+          id?: string
+          industry?: string | null
+          notes?: string | null
+          parent_account_id?: string | null
+          payment_terms?: string | null
+          primary_contact_id?: string | null
+          shipping_address?: Json | null
+          support_tier?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       customer_activity_log: {
         Row: {
           activity_description: string
@@ -2171,6 +2246,95 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      customer_assets: {
+        Row: {
+          account_id: string
+          annual_cost: number | null
+          asset_status: string
+          ci_id: string | null
+          created_at: string
+          customer_id: string
+          id: string
+          installation_date: string | null
+          last_service_date: string | null
+          monthly_cost: number | null
+          next_service_date: string | null
+          notes: string | null
+          service_level: string | null
+          site_id: string | null
+          support_contract_id: string | null
+          updated_at: string
+          warranty_provider: string | null
+        }
+        Insert: {
+          account_id: string
+          annual_cost?: number | null
+          asset_status?: string
+          ci_id?: string | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          installation_date?: string | null
+          last_service_date?: string | null
+          monthly_cost?: number | null
+          next_service_date?: string | null
+          notes?: string | null
+          service_level?: string | null
+          site_id?: string | null
+          support_contract_id?: string | null
+          updated_at?: string
+          warranty_provider?: string | null
+        }
+        Update: {
+          account_id?: string
+          annual_cost?: number | null
+          asset_status?: string
+          ci_id?: string | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          installation_date?: string | null
+          last_service_date?: string | null
+          monthly_cost?: number | null
+          next_service_date?: string | null
+          notes?: string | null
+          service_level?: string | null
+          site_id?: string | null
+          support_contract_id?: string | null
+          updated_at?: string
+          warranty_provider?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_assets_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "customer_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_assets_ci_id_fkey"
+            columns: ["ci_id"]
+            isOneToOne: false
+            referencedRelation: "ci_overview"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_assets_ci_id_fkey"
+            columns: ["ci_id"]
+            isOneToOne: false
+            referencedRelation: "configuration_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_assets_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "customer_sites"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       customer_billing: {
         Row: {
@@ -2228,6 +2392,77 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      customer_contacts: {
+        Row: {
+          account_id: string
+          contact_type: string
+          created_at: string
+          customer_id: string
+          department: string | null
+          email: string | null
+          first_name: string
+          id: string
+          is_billing_contact: boolean | null
+          is_primary: boolean | null
+          is_technical_contact: boolean | null
+          job_title: string | null
+          last_name: string
+          mobile: string | null
+          notes: string | null
+          phone: string | null
+          preferred_contact_method: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          contact_type?: string
+          created_at?: string
+          customer_id: string
+          department?: string | null
+          email?: string | null
+          first_name: string
+          id?: string
+          is_billing_contact?: boolean | null
+          is_primary?: boolean | null
+          is_technical_contact?: boolean | null
+          job_title?: string | null
+          last_name: string
+          mobile?: string | null
+          notes?: string | null
+          phone?: string | null
+          preferred_contact_method?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          contact_type?: string
+          created_at?: string
+          customer_id?: string
+          department?: string | null
+          email?: string | null
+          first_name?: string
+          id?: string
+          is_billing_contact?: boolean | null
+          is_primary?: boolean | null
+          is_technical_contact?: boolean | null
+          job_title?: string | null
+          last_name?: string
+          mobile?: string | null
+          notes?: string | null
+          phone?: string | null
+          preferred_contact_method?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_contacts_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "customer_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       customer_customizations: {
         Row: {
@@ -2542,6 +2777,161 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      customer_service_history: {
+        Row: {
+          account_id: string
+          amount_charged: number | null
+          billable: boolean | null
+          created_at: string
+          customer_id: string
+          customer_satisfaction: number | null
+          description: string
+          id: string
+          notes: string | null
+          performed_by: string | null
+          related_change_id: string | null
+          related_ticket_id: string | null
+          resolution: string | null
+          service_date: string
+          service_type: string
+          site_id: string | null
+          time_spent_hours: number | null
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          amount_charged?: number | null
+          billable?: boolean | null
+          created_at?: string
+          customer_id: string
+          customer_satisfaction?: number | null
+          description: string
+          id?: string
+          notes?: string | null
+          performed_by?: string | null
+          related_change_id?: string | null
+          related_ticket_id?: string | null
+          resolution?: string | null
+          service_date: string
+          service_type: string
+          site_id?: string | null
+          time_spent_hours?: number | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          amount_charged?: number | null
+          billable?: boolean | null
+          created_at?: string
+          customer_id?: string
+          customer_satisfaction?: number | null
+          description?: string
+          id?: string
+          notes?: string | null
+          performed_by?: string | null
+          related_change_id?: string | null
+          related_ticket_id?: string | null
+          resolution?: string | null
+          service_date?: string
+          service_type?: string
+          site_id?: string | null
+          time_spent_hours?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_service_history_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "customer_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_service_history_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "customer_sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_sites: {
+        Row: {
+          account_id: string
+          address_line1: string
+          address_line2: string | null
+          city: string
+          coordinates: Json | null
+          country: string
+          created_at: string
+          customer_id: string
+          id: string
+          is_primary_site: boolean | null
+          operating_hours: Json | null
+          phone: string | null
+          postal_code: string | null
+          site_code: string | null
+          site_contact_id: string | null
+          site_name: string
+          site_type: string | null
+          special_instructions: string | null
+          state_province: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          address_line1: string
+          address_line2?: string | null
+          city: string
+          coordinates?: Json | null
+          country?: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_primary_site?: boolean | null
+          operating_hours?: Json | null
+          phone?: string | null
+          postal_code?: string | null
+          site_code?: string | null
+          site_contact_id?: string | null
+          site_name: string
+          site_type?: string | null
+          special_instructions?: string | null
+          state_province?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          address_line1?: string
+          address_line2?: string | null
+          city?: string
+          coordinates?: Json | null
+          country?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_primary_site?: boolean | null
+          operating_hours?: Json | null
+          phone?: string | null
+          postal_code?: string | null
+          site_code?: string | null
+          site_contact_id?: string | null
+          site_name?: string
+          site_type?: string | null
+          special_instructions?: string | null
+          state_province?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_sites_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "customer_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       customer_subscriptions: {
         Row: {
@@ -6863,6 +7253,10 @@ export type Database = {
       customer_has_feature: {
         Args: { _customer_id: string; _feature_name: string }
         Returns: boolean
+      }
+      generate_account_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       generate_change_number: {
         Args: Record<PropertyKey, never>
