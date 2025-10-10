@@ -40,7 +40,6 @@ export default function EmployeeOnboardingNew() {
     job_title: "",
     employment_type: "full-time",
     start_date: new Date().toISOString().split('T')[0],
-    target_completion_date: "",
     assigned_role_id: "",
     notes: "",
   });
@@ -122,7 +121,6 @@ export default function EmployeeOnboardingNew() {
           job_title: formData.job_title || null,
           employment_type: formData.employment_type,
           start_date: formData.start_date,
-          target_completion_date: formData.target_completion_date || null,
           assigned_role_id: formData.assigned_role_id || null,
           notes: formData.notes || null,
           status: 'not_started',
@@ -304,16 +302,6 @@ export default function EmployeeOnboardingNew() {
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                     required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="target_completion_date">Target Completion Date</Label>
-                  <Input
-                    id="target_completion_date"
-                    type="date"
-                    value={formData.target_completion_date}
-                    onChange={(e) => setFormData({ ...formData, target_completion_date: e.target.value })}
                   />
                 </div>
               </div>
