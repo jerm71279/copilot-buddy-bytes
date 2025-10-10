@@ -226,16 +226,20 @@ export default function EmployeeOnboardingNew() {
                     onValueChange={(value) => setFormData({ ...formData, template_id: value })}
                     disabled={!!preselectedTemplateId}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="template" className="bg-background">
                       <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {templates.map((template) => (
-                        <SelectItem key={template.id} value={template.id}>
-                          {template.template_name}
-                          {template.estimated_days && ` (${template.estimated_days} days)`}
-                        </SelectItem>
-                      ))}
+                    <SelectContent className="bg-background z-50">
+                      {templates.length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground">No templates available</div>
+                      ) : (
+                        templates.map((template) => (
+                          <SelectItem key={template.id} value={template.id}>
+                            {template.template_name}
+                            {template.estimated_days && ` (${template.estimated_days} days)`}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                   {preselectedTemplateId && (
