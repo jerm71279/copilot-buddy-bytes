@@ -133,6 +133,10 @@ export const DashboardPortalLanes = () => {
   const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
   const lanesRef = useRef<HTMLDivElement>(null);
 
+  // Don't show on landing, auth, or demo pages - CHECK THIS FIRST
+  const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
+  const shouldHide = !isLoggedIn || hideOnRoutes.includes(currentPath);
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -151,6 +155,8 @@ export const DashboardPortalLanes = () => {
   }, []);
 
   useEffect(() => {
+    if (shouldHide) return;
+    
     const updateOffset = () => {
       if (!lanesRef.current) return;
       const height = lanesRef.current.offsetHeight;
@@ -169,23 +175,23 @@ export const DashboardPortalLanes = () => {
       window.removeEventListener('resize', updateOffset);
       ro.disconnect();
     };
-  }, []);
-
-  // Don't show on landing, auth, or demo pages
-  const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
-  if (!isLoggedIn || hideOnRoutes.includes(currentPath)) {
-    return null;
-  }
+  }, [shouldHide]);
 
   // Determine which category should be active based on current path
   useEffect(() => {
+    if (shouldHide) return;
+    
     const categoryIndex = categories.findIndex(cat =>
       cat.items.some(item => currentPath === item.path || currentPath.startsWith(item.path + '/'))
     );
     if (categoryIndex !== -1) {
       setActiveCategory(categoryIndex);
     }
-  }, [currentPath]);
+  }, [currentPath, shouldHide]);
+
+  if (shouldHide) {
+    return null;
+  }
 
   const toggleItem = (itemPath: string) => {
     setOpenItems(prev => ({
