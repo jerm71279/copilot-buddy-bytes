@@ -200,7 +200,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pt-48 pb-8 space-y-8">
+      <div className="container mx-auto px-4 pt-[var(--lanes-height,0px)] pb-8 space-y-8">
         
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">

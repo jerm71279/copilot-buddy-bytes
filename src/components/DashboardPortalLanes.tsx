@@ -3,7 +3,7 @@ import { LayoutDashboard, Globe, ArrowLeft } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const dashboards = [
@@ -37,6 +37,8 @@ export const DashboardPortalLanes = () => {
   const navigate = useNavigate();
   const currentPath = location.pathname;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const lanesRef = useRef<HTMLDivElement>(null);
+  const topClass = currentPath === '/admin' ? 'top-0' : 'top-16';
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -55,6 +57,25 @@ export const DashboardPortalLanes = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const updateOffset = () => {
+      if (lanesRef.current) {
+        const height = lanesRef.current.offsetHeight;
+        document.documentElement.style.setProperty('--lanes-height', `${height}px`);
+      }
+    };
+
+    // Initial measure after mount
+    const id = window.requestAnimationFrame(updateOffset);
+
+    // Recalculate on resize
+    window.addEventListener('resize', updateOffset);
+
+    return () => {
+      window.cancelAnimationFrame(id);
+      window.removeEventListener('resize', updateOffset);
+    };
+  }, []);
   // Don't show on landing, auth, or demo pages
   const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
   if (!isLoggedIn || hideOnRoutes.includes(currentPath)) {
@@ -62,7 +83,7 @@ export const DashboardPortalLanes = () => {
   }
 
   return (
-    <div className="fixed top-16 left-0 right-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
+    <div ref={lanesRef} className={`fixed ${topClass} left-0 right-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border shadow-md`}>
       {/* Portals Lane */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-1.5">
