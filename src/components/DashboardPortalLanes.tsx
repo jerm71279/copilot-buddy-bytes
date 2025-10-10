@@ -122,18 +122,6 @@ const portals: Portal[] = [
     ],
   },
   {
-    name: "HR Portal",
-    path: "/portal",
-    children: [
-      { name: "Employees", path: "/employees" },
-      { name: "Departments", path: "/departments" },
-      { name: "Leave Requests", path: "/leave-management" },
-      { name: "Onboarding", path: "/onboarding" },
-      { name: "Onboarding Templates", path: "/onboarding-templates" },
-      { name: "Time Tracking", path: "/time-tracking" },
-    ],
-  },
-  {
     name: "Analytics Portal",
     path: "/analytics",
     children: [

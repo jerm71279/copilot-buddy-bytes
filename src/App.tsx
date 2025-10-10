@@ -30,6 +30,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ApplicationsAdmin from "./pages/ApplicationsAdmin";
 import OnboardingDashboard from "./pages/OnboardingDashboard";
 import OnboardingTemplates from "./pages/OnboardingTemplates";
+import OnboardingNew from "./pages/OnboardingNew";
 import CompliancePortal from "./pages/CompliancePortal";
 import ComplianceFrameworkDetail from "./pages/ComplianceFrameworkDetail";
 import ComplianceFrameworkRecords from "./pages/ComplianceFrameworkRecords";
@@ -230,6 +231,11 @@ const App = () => (
           <Route path="/onboarding" element={
             <ProtectedRoute>
               <OnboardingDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/onboarding/new" element={
+            <ProtectedRoute>
+              <OnboardingNew />
             </ProtectedRoute>
           } />
           <Route path="/onboarding/templates" element={
