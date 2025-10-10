@@ -250,7 +250,6 @@ export default function EmployeeOnboardingNew() {
                           templates.map((template) => (
                             <SelectItem key={template.id} value={template.id}>
                               {template.template_name}
-                              {template.estimated_days && ` (${template.estimated_days} days)`}
                             </SelectItem>
                           ))
                         )}
