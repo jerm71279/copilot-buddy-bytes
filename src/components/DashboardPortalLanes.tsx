@@ -37,6 +37,7 @@ export const DashboardPortalLanes = () => {
   const navigate = useNavigate();
   const currentPath = location.pathname;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const topClass = currentPath === '/admin' ? 'top-[120px]' : 'top-16';
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -62,7 +63,7 @@ export const DashboardPortalLanes = () => {
   }
 
   return (
-    <div className="fixed top-16 left-0 right-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
+    <div className={`fixed ${topClass} left-0 right-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border shadow-md`}>
       {/* Portals Lane */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-1.5">
