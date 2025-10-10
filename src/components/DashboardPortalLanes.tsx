@@ -274,7 +274,7 @@ export default function DashboardPortalLanes() {
   const isMainPage = allPages.some((path) => currentPath === path);
 
   return (
-    <div ref={lanesRef} className="fixed top-0 left-0 right-0 z-[9999] w-full bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
+    <div ref={lanesRef} className="fixed top-0 left-0 right-0 z-[9999] w-full isolate overflow-visible bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
       {/* Row 1: Portals with dropdowns */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
@@ -286,7 +286,7 @@ export default function DashboardPortalLanes() {
                 const isOpen = openPortals[portal.path];
 
                 return (
-                  <div key={portal.path} className="inline-block">
+                  <div key={portal.path} className="relative inline-block">
                     {portal.children && portal.children.length > 0 ? (
                       <Collapsible open={isOpen} onOpenChange={() => togglePortal(portal.path)}>
                         <div className="flex items-center gap-1">
@@ -314,8 +314,8 @@ export default function DashboardPortalLanes() {
                             </Button>
                           </CollapsibleTrigger>
                         </div>
-                        <CollapsibleContent className="absolute z-[10000] mt-1">
-                          <div className="bg-popover/95 backdrop-blur-sm border border-border rounded-md shadow-xl p-1 min-w-[200px]">
+                        <CollapsibleContent className="absolute left-0 top-full z-[10000] mt-1">
+                          <div className="bg-popover/95 backdrop-blur-sm border border-border rounded-md shadow-xl p-1 min-w-[200px] max-h-[70vh] overflow-auto">
                             {portal.children.map((child) => (
                               <Link
                                 key={child.path}
@@ -366,7 +366,7 @@ export default function DashboardPortalLanes() {
                 const isOpen = openCategories[category.name];
 
                 return (
-                  <div key={category.name} className="inline-block">
+                  <div key={category.name} className="relative inline-block">
                     <Collapsible open={isOpen} onOpenChange={() => toggleCategory(category.name)}>
                       <div className="flex items-center gap-1">
                         <Button
@@ -395,8 +395,8 @@ export default function DashboardPortalLanes() {
                           </Button>
                         </CollapsibleTrigger>
                       </div>
-                      <CollapsibleContent className="absolute mt-1 z-[10000]">
-                        <div className="bg-popover/95 backdrop-blur-sm border border-border rounded-md shadow-xl p-1 min-w-[200px]">
+                      <CollapsibleContent className="absolute left-0 top-full mt-1 z-[10000]">
+                        <div className="bg-popover/95 backdrop-blur-sm border border-border rounded-md shadow-xl p-1 min-w-[200px] max-h-[70vh] overflow-auto">
                           {category.dashboards.map((dashboard) => (
                             <Link
                               key={dashboard.path}
