@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, LogOut, Brain, Search, LayoutDashboard } from "lucide-react";
+import { Menu, LogOut, Brain, Search, LayoutDashboard, Globe } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +9,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import oberaLogo from "@/assets/obera-logo-cropped.png";
 
 const Navigation = () => {
@@ -174,49 +177,83 @@ const Navigation = () => {
                         Dashboards
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-56">
-                      <DropdownMenuItem asChild>
-                        <Link to="/admin" className="w-full cursor-pointer">Admin Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/cmdb" className="w-full cursor-pointer">CMDB Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/cipp" className="w-full cursor-pointer">CIPP Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard/compliance" className="w-full cursor-pointer">Compliance Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard/executive" className="w-full cursor-pointer">Executive Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard/finance" className="w-full cursor-pointer">Finance Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard/hr" className="w-full cursor-pointer">HR Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard/it" className="w-full cursor-pointer">IT Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/mcp-servers" className="w-full cursor-pointer">MCP Server Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/onboarding" className="w-full cursor-pointer">Onboarding Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard/operations" className="w-full cursor-pointer">Operations Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard/sales" className="w-full cursor-pointer">Sales Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/sales-portal" className="w-full cursor-pointer">Sales Portal</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard/soc" className="w-full cursor-pointer">SOC Dashboard</Link>
-                      </DropdownMenuItem>
+                    <DropdownMenuContent align="start" className="w-56 bg-background">
+                      <DropdownMenuLabel>Dashboards</DropdownMenuLabel>
+                      <ScrollArea className="h-[300px]">
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin" className="w-full cursor-pointer">Admin Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/cmdb" className="w-full cursor-pointer">CMDB Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/cipp" className="w-full cursor-pointer">CIPP Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/compliance" className="w-full cursor-pointer">Compliance Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/executive" className="w-full cursor-pointer">Executive Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/finance" className="w-full cursor-pointer">Finance Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/hr" className="w-full cursor-pointer">HR Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/it" className="w-full cursor-pointer">IT Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/mcp-servers" className="w-full cursor-pointer">MCP Server Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/onboarding" className="w-full cursor-pointer">Onboarding Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/operations" className="w-full cursor-pointer">Operations Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/sales" className="w-full cursor-pointer">Sales Dashboard</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/soc" className="w-full cursor-pointer">SOC Dashboard</Link>
+                        </DropdownMenuItem>
+                      </ScrollArea>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="text-sm font-medium hover:text-accent transition-colors flex items-center gap-1">
+                        <Globe className="h-4 w-4" />
+                        Portals
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-56 bg-background">
+                      <DropdownMenuLabel>Portals</DropdownMenuLabel>
+                      <ScrollArea className="h-[250px]">
+                        <DropdownMenuItem asChild>
+                          <Link to="/portal" className="w-full cursor-pointer">Employee Portal</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/analytics" className="w-full cursor-pointer">Analytics Portal</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/client-portal" className="w-full cursor-pointer">Client Portal</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/compliance" className="w-full cursor-pointer">Compliance Portal</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/data-flows" className="w-full cursor-pointer">Data Flow Portal</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/rbac" className="w-full cursor-pointer">RBAC Portal</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/sales-portal" className="w-full cursor-pointer">Sales Portal</Link>
+                        </DropdownMenuItem>
+                      </ScrollArea>
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <Link 
@@ -301,12 +338,7 @@ const Navigation = () => {
                 <>
                   <Link to="/portal">
                     <Button variant="ghost" size="sm">
-                      Employee Portal
-                    </Button>
-                  </Link>
-                  <Link to="/analytics">
-                    <Button variant="ghost" size="sm">
-                      Analytics
+                      Portal
                     </Button>
                   </Link>
                   {isAdmin && (
@@ -384,48 +416,73 @@ const Navigation = () => {
                 <>
                   <div className="border-b border-border pb-2 mb-2">
                     <div className="text-xs font-semibold text-muted-foreground px-4 py-2">DASHBOARDS</div>
-                    <Link to="/admin" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      Admin Dashboard
-                    </Link>
-                    <Link to="/cmdb" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      CMDB Dashboard
-                    </Link>
-                    <Link to="/cipp" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      CIPP Dashboard
-                    </Link>
-                    <Link to="/dashboard/compliance" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      Compliance Dashboard
-                    </Link>
-                    <Link to="/dashboard/executive" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      Executive Dashboard
-                    </Link>
-                    <Link to="/dashboard/finance" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      Finance Dashboard
-                    </Link>
-                    <Link to="/dashboard/hr" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      HR Dashboard
-                    </Link>
-                    <Link to="/dashboard/it" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      IT Dashboard
-                    </Link>
-                    <Link to="/mcp-servers" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      MCP Server Dashboard
-                    </Link>
-                    <Link to="/onboarding" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      Onboarding Dashboard
-                    </Link>
-                    <Link to="/dashboard/operations" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      Operations Dashboard
-                    </Link>
-                    <Link to="/dashboard/sales" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      Sales Dashboard
-                    </Link>
-                    <Link to="/sales-portal" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      Sales Portal
-                    </Link>
-                    <Link to="/dashboard/soc" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
-                      SOC Dashboard
-                    </Link>
+                    <ScrollArea className="h-[200px]">
+                      <Link to="/admin" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Admin Dashboard
+                      </Link>
+                      <Link to="/cmdb" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        CMDB Dashboard
+                      </Link>
+                      <Link to="/cipp" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        CIPP Dashboard
+                      </Link>
+                      <Link to="/dashboard/compliance" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Compliance Dashboard
+                      </Link>
+                      <Link to="/dashboard/executive" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Executive Dashboard
+                      </Link>
+                      <Link to="/dashboard/finance" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Finance Dashboard
+                      </Link>
+                      <Link to="/dashboard/hr" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        HR Dashboard
+                      </Link>
+                      <Link to="/dashboard/it" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        IT Dashboard
+                      </Link>
+                      <Link to="/mcp-servers" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        MCP Server Dashboard
+                      </Link>
+                      <Link to="/onboarding" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Onboarding Dashboard
+                      </Link>
+                      <Link to="/dashboard/operations" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Operations Dashboard
+                      </Link>
+                      <Link to="/dashboard/sales" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Sales Dashboard
+                      </Link>
+                      <Link to="/dashboard/soc" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        SOC Dashboard
+                      </Link>
+                    </ScrollArea>
+                  </div>
+                  <div className="border-b border-border pb-2 mb-2">
+                    <div className="text-xs font-semibold text-muted-foreground px-4 py-2">PORTALS</div>
+                    <ScrollArea className="h-[150px]">
+                      <Link to="/portal" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Employee Portal
+                      </Link>
+                      <Link to="/analytics" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Analytics Portal
+                      </Link>
+                      <Link to="/client-portal" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Client Portal
+                      </Link>
+                      <Link to="/compliance" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Compliance Portal
+                      </Link>
+                      <Link to="/data-flows" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Data Flow Portal
+                      </Link>
+                      <Link to="/rbac" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        RBAC Portal
+                      </Link>
+                      <Link to="/sales-portal" className="text-sm font-medium hover:bg-accent/10 transition-colors py-2 px-4 rounded block" onClick={() => setIsMenuOpen(false)}>
+                        Sales Portal
+                      </Link>
+                    </ScrollArea>
                   </div>
                   <Link 
                     to="/knowledge"
@@ -433,13 +490,6 @@ const Navigation = () => {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Knowledge
-                  </Link>
-                  <Link 
-                    to="/compliance"
-                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Compliance
                   </Link>
                   <Link 
                     to="/change-management"
@@ -463,11 +513,11 @@ const Navigation = () => {
                     Monitoring
                   </Link>
                   <Link
-                    to="/data-flows"
+                    to="/network-monitoring"
                     className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Data Flows
+                    Network
                   </Link>
                   <Link
                     to="/incidents"
@@ -475,13 +525,6 @@ const Navigation = () => {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Incidents
-                  </Link>
-                  <Link
-                    to="/client-portal"
-                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Client Portal
                   </Link>
                   <Link
                     to="/reports/builder"
@@ -509,12 +552,7 @@ const Navigation = () => {
                   <>
                     <Link to="/portal" onClick={() => setIsMenuOpen(false)}>
                       <Button variant="ghost" size="sm" className="justify-start w-full">
-                        Employee Portal
-                      </Button>
-                    </Link>
-                    <Link to="/analytics" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="ghost" size="sm" className="justify-start w-full">
-                        Analytics
+                        Portal
                       </Button>
                     </Link>
                     {isAdmin && (
