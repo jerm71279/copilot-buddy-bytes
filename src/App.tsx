@@ -75,6 +75,10 @@ import Developers from "./pages/Developers";
 import ArchitectureDiagram from "./pages/ArchitectureDiagram";
 import ArchitectureCanvas from "./pages/ArchitectureCanvas";
 import WorkflowIntelligence from "./pages/WorkflowIntelligence";
+import SLAManagement from "./pages/SLAManagement";
+import TimeTracking from "./pages/TimeTracking";
+import ProjectManagement from "./pages/ProjectManagement";
+import ContractManagement from "./pages/ContractManagement";
 
 const queryClient = new QueryClient();
 
@@ -459,6 +463,28 @@ const App = () => (
           <Route path="/admin/products" element={
             <ProtectedRoute requireAdmin>
               <ProductsAdmin />
+            </ProtectedRoute>
+          } />
+          
+          {/* MSP ERP Features - Protected */}
+          <Route path="/sla-management" element={
+            <ProtectedRoute>
+              <SLAManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/time-tracking" element={
+            <ProtectedRoute>
+              <TimeTracking />
+            </ProtectedRoute>
+          } />
+          <Route path="/projects" element={
+            <ProtectedRoute>
+              <ProjectManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/contracts" element={
+            <ProtectedRoute>
+              <ContractManagement />
             </ProtectedRoute>
           } />
           
