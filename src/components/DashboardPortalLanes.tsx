@@ -256,17 +256,25 @@ export default function DashboardPortalLanes() {
   }
 
   const togglePortal = (path: string) => {
-    setOpenPortals(prev => ({
-      ...prev,
-      [path]: !prev[path],
-    }));
+    const isCurrentlyOpen = openPortals[path];
+    // Close all portals and categories
+    setOpenPortals(portals.reduce((acc, p) => ({ ...acc, [p.path]: false }), {}));
+    setOpenCategories(categories.reduce((acc, c) => ({ ...acc, [c.name]: false }), {}));
+    // Open this one if it was closed
+    if (!isCurrentlyOpen) {
+      setOpenPortals(prev => ({ ...prev, [path]: true }));
+    }
   };
 
   const toggleCategory = (name: string) => {
-    setOpenCategories(prev => ({
-      ...prev,
-      [name]: !prev[name],
-    }));
+    const isCurrentlyOpen = openCategories[name];
+    // Close all portals and categories
+    setOpenPortals(portals.reduce((acc, p) => ({ ...acc, [p.path]: false }), {}));
+    setOpenCategories(categories.reduce((acc, c) => ({ ...acc, [c.name]: false }), {}));
+    // Open this one if it was closed
+    if (!isCurrentlyOpen) {
+      setOpenCategories(prev => ({ ...prev, [name]: true }));
+    }
   };
 
   // Check if current page is a main portal/dashboard page
