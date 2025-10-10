@@ -73,6 +73,7 @@ import ProductsAdmin from "./pages/ProductsAdmin";
 import Developers from "./pages/Developers";
 import ArchitectureDiagram from "./pages/ArchitectureDiagram";
 import ArchitectureCanvas from "./pages/ArchitectureCanvas";
+import WorkflowIntelligence from "./pages/WorkflowIntelligence";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +89,7 @@ const App = () => (
           <Route path="/developers" element={<Developers />} />
           <Route path="/architecture-diagram" element={<ArchitectureDiagram />} />
           <Route path="/architecture/canvas" element={<ArchitectureCanvas />} />
+          <Route path="/workflow-intelligence" element={<WorkflowIntelligence />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/demo" element={<DemoSelector />} />
           

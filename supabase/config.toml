@@ -71,3 +71,6 @@ verify_jwt = true
 
 [functions.client-portal]
 verify_jwt = true
+
+[functions.workflow-intelligence]
+verify_jwt = true
