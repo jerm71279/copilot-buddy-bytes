@@ -112,7 +112,7 @@ export default function ProductsAdmin() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto pt-64 pb-8 px-4">
+      <div className="container mx-auto pt-56 pb-8 px-4">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Product Catalog</h1>

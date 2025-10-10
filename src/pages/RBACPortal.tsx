@@ -36,7 +36,7 @@ export default function RBACPortal() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <div className="container mx-auto px-4 pt-64 pb-8">
+        <div className="container mx-auto px-4 pt-56 pb-8">
           <p>Loading...</p>
         </div>
       </div>
@@ -47,7 +47,7 @@ export default function RBACPortal() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pt-64 pb-8">
+        <main className="container mx-auto px-4 pt-56 pb-8">
           <Card>
             <CardHeader>
               <CardTitle>Access Denied</CardTitle>
@@ -65,7 +65,7 @@ export default function RBACPortal() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-64 pb-8">
+      <main className="container mx-auto px-4 pt-56 pb-8">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Shield className="h-8 w-8 text-primary" />

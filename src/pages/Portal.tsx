@@ -167,7 +167,7 @@ const Portal = () => {
       {/* External Systems Bar */}
       <ExternalSystemsBar />
 
-      <div className="container mx-auto px-4 pt-64 pb-8">
+      <div className="container mx-auto px-4 pt-56 pb-8">
         {/* Tools and Activities Dropdown */}
         <div className="flex items-center gap-3 mb-8">
           

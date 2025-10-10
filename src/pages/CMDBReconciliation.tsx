@@ -264,7 +264,7 @@ const CMDBReconciliation = () => {
         ]}
       />
       
-      <main className="container mx-auto px-4 pt-64 pb-8">
+      <main className="container mx-auto px-4 pt-56 pb-8">
         <div className="flex items-center justify-between mb-6">
           <Button variant="ghost" onClick={() => navigate("/cmdb")}>
             <ArrowLeft className="h-4 w-4 mr-2" />

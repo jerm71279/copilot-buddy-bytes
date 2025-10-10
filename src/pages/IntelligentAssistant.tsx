@@ -180,7 +180,7 @@ const IntelligentAssistant = () => {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 pt-64 pb-8">
+      <div className="container mx-auto px-4 pt-56 pb-8">
         <DashboardNavigation 
           title="Intelligent Assistant"
           dashboards={[

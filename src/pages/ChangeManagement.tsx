@@ -172,7 +172,7 @@ const ChangeManagement = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 pt-64 pb-16">
+      <div className="container mx-auto px-4 pt-56 pb-16">
         <DashboardNavigation
           title="Change Management"
           dashboards={[

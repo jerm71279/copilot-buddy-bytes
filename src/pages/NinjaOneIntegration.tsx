@@ -246,7 +246,7 @@ export default function NinjaOneIntegration() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-64 pb-8">
+      <main className="container mx-auto px-4 pt-56 pb-8">
         <DashboardNavigation 
           title="NinjaOne Monitoring"
           dashboards={[
