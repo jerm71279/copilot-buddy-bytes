@@ -364,7 +364,11 @@ export default function VendorManagement() {
                   </TableRow>
                 ) : (
                   filteredVendors.map((vendor) => (
-                    <TableRow key={vendor.id}>
+                    <TableRow 
+                      key={vendor.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => navigate(`/vendors/${vendor.id}`)}
+                    >
                       <TableCell className="font-medium">{vendor.vendor_code}</TableCell>
                       <TableCell>{vendor.vendor_name}</TableCell>
                       <TableCell className="capitalize">{vendor.vendor_type}</TableCell>

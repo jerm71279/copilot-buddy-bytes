@@ -86,6 +86,7 @@ import InvoiceManagement from "./pages/InvoiceManagement";
 import AssetFinancials from "./pages/AssetFinancials";
 import FinancialReporting from "./pages/FinancialReporting";
 import VendorManagement from "./pages/VendorManagement";
+import VendorDetail from "./pages/VendorDetail";
 import InventoryManagement from "./pages/InventoryManagement";
 import WarehouseManagement from "./pages/WarehouseManagement";
 import LeadManagement from "./pages/LeadManagement";
@@ -537,6 +538,11 @@ const App = () => (
           <Route path="/vendors" element={
             <ProtectedRoute>
               <VendorManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/vendors/:id" element={
+            <ProtectedRoute>
+              <VendorDetail />
             </ProtectedRoute>
           } />
           <Route path="/inventory" element={

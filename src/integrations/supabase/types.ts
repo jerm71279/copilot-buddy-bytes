@@ -7603,6 +7603,86 @@ export type Database = {
           },
         ]
       }
+      vendor_contracts: {
+        Row: {
+          auto_renew: boolean | null
+          contract_name: string
+          contract_number: string
+          contract_type: string
+          contract_value: number | null
+          created_at: string
+          created_by: string
+          customer_id: string
+          document_url: string | null
+          end_date: string | null
+          id: string
+          notes: string | null
+          payment_schedule: string | null
+          renewal_notice_days: number | null
+          signed_by: string | null
+          signed_date: string | null
+          start_date: string
+          status: string
+          terms: string | null
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          auto_renew?: boolean | null
+          contract_name: string
+          contract_number: string
+          contract_type: string
+          contract_value?: number | null
+          created_at?: string
+          created_by: string
+          customer_id: string
+          document_url?: string | null
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          payment_schedule?: string | null
+          renewal_notice_days?: number | null
+          signed_by?: string | null
+          signed_date?: string | null
+          start_date: string
+          status?: string
+          terms?: string | null
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          auto_renew?: boolean | null
+          contract_name?: string
+          contract_number?: string
+          contract_type?: string
+          contract_value?: number | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          document_url?: string | null
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          payment_schedule?: string | null
+          renewal_notice_days?: number | null
+          signed_by?: string | null
+          signed_date?: string | null
+          start_date?: string
+          status?: string
+          terms?: string | null
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_contracts_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendor_performance: {
         Row: {
           comments: string | null
@@ -8364,6 +8444,10 @@ export type Database = {
         Returns: string
       }
       generate_client_ticket_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_contract_number: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
