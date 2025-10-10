@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
+
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -209,9 +209,8 @@ export default function ComplianceFrameworkRecords() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+
         <DashboardNavigation 
           title="Framework Records"
           dashboards={[

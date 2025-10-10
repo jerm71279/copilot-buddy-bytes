@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
+
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -216,8 +216,7 @@ export default function ComplianceReportDetail() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
           <p>Loading report...</p>
         </div>
       </div>
@@ -227,8 +226,7 @@ export default function ComplianceReportDetail() {
   if (!report) {
     return (
       <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
           <p>Report not found</p>
           <Button onClick={() => navigate('/compliance')} className="mt-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -241,9 +239,8 @@ export default function ComplianceReportDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+
         <DashboardNavigation 
           title="Report Detail"
           dashboards={[
