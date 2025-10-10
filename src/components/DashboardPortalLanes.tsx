@@ -9,131 +9,286 @@ import {
   ArrowLeft,
   ChevronDown
 } from "lucide-react";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-interface NavItem {
+// Portals are the main navigation items (non-dashboard pages) with optional children
+interface Portal {
   name: string;
   path: string;
+  children?: { name: string; path: string; }[];
 }
 
+// Categories organize dashboards by theme
 interface Category {
   name: string;
   icon: any;
-  items: NavItem[];
+  dashboards: { name: string; path: string; }[];
 }
+
+const portals: Portal[] = [
+  {
+    name: "CMDB",
+    path: "/cmdb",
+    children: [
+      { name: "Add Item", path: "/cmdb/add" },
+      { name: "Edit Item", path: "/cmdb/edit" },
+      { name: "Item Detail", path: "/cmdb/item" },
+    ],
+  },
+  {
+    name: "Change Management",
+    path: "/change-management",
+    children: [
+      { name: "New Change", path: "/change/new" },
+      { name: "Manage Changes", path: "/change/manage" },
+    ],
+  },
+  {
+    name: "Incidents",
+    path: "/incidents",
+  },
+  {
+    name: "Network Monitoring",
+    path: "/network-monitoring",
+  },
+  {
+    name: "SLA Management",
+    path: "/sla-management",
+  },
+  {
+    name: "MCP Servers",
+    path: "/mcp-servers",
+  },
+  {
+    name: "Admin",
+    path: "/admin",
+  },
+  {
+    name: "NinjaOne",
+    path: "/ninjaone",
+  },
+  {
+    name: "Compliance Portal",
+    path: "/compliance",
+    children: [
+      { name: "Audit Reports", path: "/compliance/audit-reports" },
+      { name: "Frameworks", path: "/compliance/frameworks" },
+    ],
+  },
+  {
+    name: "CIPP",
+    path: "/cipp",
+  },
+  {
+    name: "RBAC",
+    path: "/rbac",
+  },
+  {
+    name: "Privileged Access",
+    path: "/audit/privileged-access",
+  },
+  {
+    name: "Remediation Rules",
+    path: "/remediation-rules",
+  },
+  {
+    name: "Sales Portal",
+    path: "/sales-portal",
+  },
+  {
+    name: "Client Portal",
+    path: "/client-portal",
+  },
+  {
+    name: "Customers",
+    path: "/customers",
+  },
+  {
+    name: "Leads",
+    path: "/leads",
+  },
+  {
+    name: "Opportunities",
+    path: "/opportunities",
+  },
+  {
+    name: "Quotes",
+    path: "/quotes",
+  },
+  {
+    name: "Contracts",
+    path: "/contracts",
+  },
+  {
+    name: "Projects",
+    path: "/projects",
+  },
+  {
+    name: "Budgets",
+    path: "/budgets",
+  },
+  {
+    name: "Invoices",
+    path: "/invoices",
+  },
+  {
+    name: "Expenses",
+    path: "/expenses",
+  },
+  {
+    name: "Purchase Orders",
+    path: "/purchase-orders",
+  },
+  {
+    name: "Asset Financials",
+    path: "/asset-financials",
+  },
+  {
+    name: "Financial Reports",
+    path: "/financial-reports",
+  },
+  {
+    name: "Vendors",
+    path: "/vendors",
+  },
+  {
+    name: "Inventory",
+    path: "/inventory",
+  },
+  {
+    name: "Warehouses",
+    path: "/warehouses",
+  },
+  {
+    name: "Employee Portal",
+    path: "/portal",
+  },
+  {
+    name: "Employees",
+    path: "/employees",
+  },
+  {
+    name: "Departments",
+    path: "/departments",
+  },
+  {
+    name: "Leave Requests",
+    path: "/leave-management",
+  },
+  {
+    name: "Onboarding",
+    path: "/onboarding",
+    children: [
+      { name: "Onboarding Templates", path: "/onboarding-templates" },
+    ],
+  },
+  {
+    name: "Time Tracking",
+    path: "/time-tracking",
+  },
+  {
+    name: "Analytics Portal",
+    path: "/analytics",
+  },
+  {
+    name: "Data Flows",
+    path: "/data-flows",
+  },
+  {
+    name: "Workflow Automation",
+    path: "/workflow-automation",
+  },
+  {
+    name: "Workflow Builder",
+    path: "/workflow-builder",
+  },
+  {
+    name: "Workflow Orchestration",
+    path: "/workflow-orchestration",
+  },
+  {
+    name: "Visual Workflow Builder",
+    path: "/workflows/visual-build",
+  },
+  {
+    name: "Intelligent Assistant",
+    path: "/intelligent-assistant",
+  },
+  {
+    name: "Predictive Insights",
+    path: "/predictive-insights",
+  },
+  {
+    name: "Knowledge Base",
+    path: "/knowledge-base",
+  },
+  {
+    name: "Custom Reports",
+    path: "/custom-reports",
+  },
+];
 
 const categories: Category[] = [
   {
     name: "Operations & IT",
     icon: Settings,
-    items: [
+    dashboards: [
       { name: "Operations", path: "/dashboard/operations" },
-      { name: "IT Dashboard", path: "/dashboard/it" },
-      { name: "CMDB", path: "/cmdb" },
-      { name: "Change Management", path: "/change-management" },
-      { name: "Incidents", path: "/incidents" },
-      { name: "Network Monitoring", path: "/network-monitoring" },
-      { name: "SLA Management", path: "/sla-management" },
-      { name: "MCP Server", path: "/mcp-servers" },
-      { name: "Admin", path: "/admin" },
-      { name: "NinjaOne", path: "/ninjaone" },
+      { name: "IT", path: "/dashboard/it" },
     ],
   },
   {
     name: "Compliance & Security",
     icon: Shield,
-    items: [
-      { name: "Compliance Portal", path: "/compliance" },
-      { name: "Compliance Dashboard", path: "/dashboard/compliance" },
-      { name: "SOC Dashboard", path: "/dashboard/soc" },
-      { name: "CIPP", path: "/cipp" },
-      { name: "RBAC Portal", path: "/rbac" },
-      { name: "Audit Reports", path: "/compliance/audit-reports" },
-      { name: "Frameworks", path: "/compliance/frameworks" },
-      { name: "Privileged Access", path: "/audit/privileged-access" },
-      { name: "Remediation Rules", path: "/remediation-rules" },
+    dashboards: [
+      { name: "Compliance", path: "/dashboard/compliance" },
+      { name: "SOC", path: "/dashboard/soc" },
     ],
   },
   {
     name: "Business & Sales",
     icon: TrendingUp,
-    items: [
-      { name: "Sales Dashboard", path: "/dashboard/sales" },
-      { name: "Sales Portal", path: "/sales-portal" },
-      { name: "Client Portal", path: "/client-portal" },
-      { name: "Customers", path: "/customers" },
-      { name: "Leads", path: "/leads" },
-      { name: "Opportunities", path: "/opportunities" },
-      { name: "Quotes", path: "/quotes" },
-      { name: "Contracts", path: "/contracts" },
-      { name: "Projects", path: "/projects" },
+    dashboards: [
+      { name: "Sales", path: "/dashboard/sales" },
     ],
   },
   {
     name: "Finance",
     icon: DollarSign,
-    items: [
-      { name: "Finance Dashboard", path: "/dashboard/finance" },
-      { name: "Budgets", path: "/budgets" },
-      { name: "Invoices", path: "/invoices" },
-      { name: "Expenses", path: "/expenses" },
-      { name: "Purchase Orders", path: "/purchase-orders" },
-      { name: "Asset Financials", path: "/asset-financials" },
-      { name: "Financial Reports", path: "/financial-reports" },
-      { name: "Vendors", path: "/vendors" },
-      { name: "Inventory", path: "/inventory" },
-      { name: "Warehouses", path: "/warehouses" },
+    dashboards: [
+      { name: "Finance", path: "/dashboard/finance" },
     ],
   },
   {
     name: "HR & People",
     icon: Users,
-    items: [
-      { name: "HR Dashboard", path: "/dashboard/hr" },
-      { name: "Employee Portal", path: "/portal" },
-      { name: "Employees", path: "/employees" },
-      { name: "Departments", path: "/departments" },
-      { name: "Leave Requests", path: "/leave-management" },
-      { name: "Onboarding", path: "/onboarding" },
-      { name: "Onboarding Templates", path: "/onboarding-templates" },
-      { name: "Time Tracking", path: "/time-tracking" },
+    dashboards: [
+      { name: "HR", path: "/dashboard/hr" },
     ],
   },
   {
     name: "Analytics & Automation",
     icon: BarChart3,
-    items: [
-      { name: "Executive Dashboard", path: "/dashboard/executive" },
-      { name: "Analytics Portal", path: "/analytics" },
-      { name: "Data Flow Portal", path: "/data-flows" },
-      { name: "Workflow Automation", path: "/workflow-automation" },
-      { name: "Workflow Builder", path: "/workflow-builder" },
-      { name: "Workflow Orchestration", path: "/workflow-orchestration" },
-      { name: "Visual Builder", path: "/workflows/visual-builder" },
-      { name: "Workflow Intelligence", path: "/workflow-intelligence" },
-      { name: "Intelligent Assistant", path: "/intelligent-assistant" },
-      { name: "Predictive Insights", path: "/predictive-insights" },
-      { name: "Knowledge Base", path: "/knowledge-base" },
-      { name: "Custom Reports", path: "/custom-reports" },
+    dashboards: [
+      { name: "Executive", path: "/dashboard/executive" },
     ],
   },
 ];
 
-export const DashboardPortalLanes = () => {
+export default function DashboardPortalLanes() {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(0);
-  const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
+  const [openPortals, setOpenPortals] = useState<{ [key: string]: boolean }>({});
+  const [openCategories, setOpenCategories] = useState<{ [key: string]: boolean }>({});
   const lanesRef = useRef<HTMLDivElement>(null);
 
-  // Don't show on landing, auth, or demo pages - CHECK THIS FIRST
   const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
   const shouldHide = !isLoggedIn || hideOnRoutes.includes(currentPath);
 
@@ -142,7 +297,7 @@ export const DashboardPortalLanes = () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsLoggedIn(!!session);
     };
-    
+
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
@@ -156,7 +311,7 @@ export const DashboardPortalLanes = () => {
 
   useEffect(() => {
     if (shouldHide) return;
-    
+
     const updateOffset = () => {
       if (!lanesRef.current) return;
       const height = lanesRef.current.offsetHeight;
@@ -167,8 +322,10 @@ export const DashboardPortalLanes = () => {
 
     const id = window.requestAnimationFrame(updateOffset);
     window.addEventListener('resize', updateOffset);
-    const ro = new ResizeObserver(() => updateOffset());
-    if (lanesRef.current) ro.observe(lanesRef.current);
+    const ro = new ResizeObserver(updateOffset);
+    if (lanesRef.current) {
+      ro.observe(lanesRef.current);
+    }
 
     return () => {
       window.cancelAnimationFrame(id);
@@ -177,58 +334,106 @@ export const DashboardPortalLanes = () => {
     };
   }, [shouldHide]);
 
-  // Determine which category should be active based on current path
-  useEffect(() => {
-    if (shouldHide) return;
-    
-    const categoryIndex = categories.findIndex(cat =>
-      cat.items.some(item => currentPath === item.path || currentPath.startsWith(item.path + '/'))
-    );
-    if (categoryIndex !== -1) {
-      setActiveCategory(categoryIndex);
-    }
-  }, [currentPath, shouldHide]);
-
   if (shouldHide) {
     return null;
   }
 
-  const toggleItem = (itemPath: string) => {
-    setOpenItems(prev => ({
+  const togglePortal = (path: string) => {
+    setOpenPortals((prev) => ({
       ...prev,
-      [itemPath]: !prev[itemPath]
+      [path]: !prev[path],
     }));
   };
 
-  // Check if current path is a main page
-  const allItems = categories.flatMap(cat => cat.items);
-  const isMainPage = allItems.some(item => item.path === currentPath);
+  const toggleCategory = (name: string) => {
+    setOpenCategories((prev) => ({
+      ...prev,
+      [name]: !prev[name],
+    }));
+  };
+
+  // Check if current page is a main portal/dashboard page
+  const allPages = [
+    ...portals.map((p) => p.path),
+    ...portals.flatMap((p) => p.children?.map((c) => c.path) || []),
+    ...categories.flatMap((c) => c.dashboards.map((d) => d.path)),
+  ];
+  const isMainPage = allPages.some((path) => currentPath === path);
 
   return (
     <div ref={lanesRef} className="fixed top-0 left-0 right-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
-      {/* Row 1: Category Folder Tabs */}
+      {/* Row 1: Portals with dropdowns */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
-          <ScrollArea className="w-full whitespace-nowrap">
+          <ScrollArea className="w-full">
             <div className="flex gap-2 pb-2">
-              {categories.map((category, index) => {
-                const CategoryIcon = category.icon;
+              {portals.map((portal) => {
+                const isActive = currentPath === portal.path || 
+                  (portal.children && portal.children.some((child) => currentPath.startsWith(child.path)));
+                const isOpen = openPortals[portal.path];
+
                 return (
-                  <button
-                    key={category.name}
-                    onClick={() => setActiveCategory(index)}
-                    className={cn(
-                      "relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all",
-                      "rounded-t-lg border-b-2",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      activeCategory === index
-                        ? "bg-primary/10 text-primary border-primary shadow-sm"
-                        : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50 hover:text-foreground"
+                  <div key={portal.path} className="inline-block">
+                    {portal.children && portal.children.length > 0 ? (
+                      <Collapsible open={isOpen} onOpenChange={() => togglePortal(portal.path)}>
+                        <div className="flex items-center gap-1">
+                          <Link
+                            to={portal.path}
+                            className={cn(
+                              "inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-all",
+                              isActive
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "bg-muted/30 text-foreground hover:bg-muted/50"
+                            )}
+                          >
+                            {portal.name}
+                          </Link>
+                          <CollapsibleTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className={cn(
+                                "h-8 w-8 p-0 transition-transform",
+                                isOpen && "rotate-180"
+                              )}
+                            >
+                              <ChevronDown className="h-3 w-3" />
+                            </Button>
+                          </CollapsibleTrigger>
+                        </div>
+                        <CollapsibleContent className="absolute z-50 mt-1">
+                          <div className="bg-popover border border-border rounded-md shadow-lg p-1 min-w-[200px]">
+                            {portal.children.map((child) => (
+                              <Link
+                                key={child.path}
+                                to={child.path}
+                                className={cn(
+                                  "block px-3 py-2 text-sm rounded-md transition-colors",
+                                  currentPath === child.path
+                                    ? "bg-primary text-primary-foreground"
+                                    : "hover:bg-muted"
+                                )}
+                              >
+                                {child.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ) : (
+                      <Link
+                        to={portal.path}
+                        className={cn(
+                          "inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-all",
+                          isActive
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "bg-muted/30 text-foreground hover:bg-muted/50"
+                        )}
+                      >
+                        {portal.name}
+                      </Link>
                     )}
-                  >
-                    <CategoryIcon className="h-4 w-4" />
-                    {category.name}
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -237,42 +442,39 @@ export const DashboardPortalLanes = () => {
         </div>
       </div>
 
-      {/* Row 2: Portal Items with Hierarchical Dropdowns */}
-      <div className="border-b border-border bg-muted/20">
+      {/* Row 2: Categories with Dashboard dropdowns */}
+      <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
-          <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex gap-1 pb-2">
-              {categories[activeCategory].items.map((item) => {
-                const isActive = currentPath === item.path || currentPath.startsWith(item.path + '/');
-                const isOpen = openItems[item.path];
-                
+          <ScrollArea className="w-full">
+            <div className="flex gap-2 pb-2">
+              {categories.map((category) => {
+                const CategoryIcon = category.icon;
+                const isActive = category.dashboards.some((d) => currentPath === d.path || currentPath.startsWith(d.path + '/'));
+                const isOpen = openCategories[category.name];
+
                 return (
-                  <Collapsible
-                    key={item.path}
-                    open={isOpen}
-                    onOpenChange={() => toggleItem(item.path)}
-                  >
-                    <div className="inline-flex flex-col">
+                  <div key={category.name} className="inline-block">
+                    <Collapsible open={isOpen} onOpenChange={() => toggleCategory(category.name)}>
                       <div className="flex items-center gap-1">
-                        <Link
-                          to={item.path}
+                        <Button
+                          variant="ghost"
                           className={cn(
-                            "relative inline-flex items-center justify-center px-4 py-2 text-sm font-medium transition-all",
-                            "rounded-md",
-                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                            "inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-all",
                             isActive
-                              ? "bg-primary text-primary-foreground shadow-sm"
-                              : "bg-background text-foreground hover:bg-muted/80"
+                              ? "bg-primary/10 text-primary"
+                              : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
                           )}
+                          onClick={() => toggleCategory(category.name)}
                         >
-                          {item.name}
-                        </Link>
+                          <CategoryIcon className="h-4 w-4" />
+                          {category.name}
+                        </Button>
                         <CollapsibleTrigger asChild>
                           <Button
                             variant="ghost"
                             size="sm"
                             className={cn(
-                              "h-9 w-8 p-0 transition-transform",
+                              "h-8 w-8 p-0 transition-transform",
                               isOpen && "rotate-180"
                             )}
                           >
@@ -280,15 +482,26 @@ export const DashboardPortalLanes = () => {
                           </Button>
                         </CollapsibleTrigger>
                       </div>
-                      <CollapsibleContent className="absolute top-full mt-1 z-10">
+                      <CollapsibleContent className="absolute mt-1 z-50">
                         <div className="bg-popover border border-border rounded-md shadow-lg p-1 min-w-[200px]">
-                          <div className="text-xs text-muted-foreground p-2">
-                            Sub-items for {item.name}
-                          </div>
+                          {category.dashboards.map((dashboard) => (
+                            <Link
+                              key={dashboard.path}
+                              to={dashboard.path}
+                              className={cn(
+                                "block px-3 py-2 text-sm rounded-md transition-colors",
+                                currentPath === dashboard.path
+                                  ? "bg-primary text-primary-foreground"
+                                  : "hover:bg-muted"
+                              )}
+                            >
+                              {dashboard.name}
+                            </Link>
+                          ))}
                         </div>
                       </CollapsibleContent>
-                    </div>
-                  </Collapsible>
+                    </Collapsible>
+                  </div>
                 );
               })}
             </div>
@@ -297,10 +510,10 @@ export const DashboardPortalLanes = () => {
         </div>
       </div>
 
-      {/* Back Button - Only show on sub-pages */}
+      {/* Back Button - Only show on non-main pages */}
       {!isMainPage && (
-        <div className="border-t border-border bg-muted/30">
-          <div className="container mx-auto px-4 py-1.5">
+        <div className="border-t border-border">
+          <div className="container mx-auto px-4 py-2">
             <Button
               variant="ghost"
               size="sm"
@@ -315,4 +528,4 @@ export const DashboardPortalLanes = () => {
       )}
     </div>
   );
-};
+}
