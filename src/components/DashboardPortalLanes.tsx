@@ -32,6 +32,22 @@ interface Category {
 
 const portals: Portal[] = [
   {
+    name: "Employee Portal",
+    path: "/portal",
+    children: [
+      { name: "Employees", path: "/employees" },
+      { name: "Departments", path: "/departments" },
+      { name: "Leave Requests", path: "/leave-management" },
+      { name: "Onboarding", path: "/onboarding" },
+      { name: "Onboarding Templates", path: "/onboarding-templates" },
+      { name: "Time Tracking", path: "/time-tracking" },
+    ],
+  },
+  {
+    name: "Client Portal",
+    path: "/client-portal",
+  },
+  {
     name: "Operations Portal",
     path: "/dashboard/operations",
     children: [
@@ -87,7 +103,6 @@ const portals: Portal[] = [
       { name: "Quotes", path: "/quotes" },
       { name: "Contracts", path: "/contracts" },
       { name: "Projects", path: "/projects" },
-      { name: "Client Portal", path: "/client-portal" },
     ],
   },
   {
