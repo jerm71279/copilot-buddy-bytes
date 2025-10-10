@@ -11,6 +11,7 @@ const dashboards = [
   { name: "CMDB", path: "/cmdb" },
   { name: "CIPP", path: "/cipp" },
   { name: "Compliance", path: "/dashboard/compliance" },
+  { name: "Contracts", path: "/contracts" },
   { name: "Executive", path: "/dashboard/executive" },
   { name: "Finance", path: "/dashboard/finance" },
   { name: "HR", path: "/dashboard/hr" },
@@ -18,8 +19,11 @@ const dashboards = [
   { name: "MCP Server", path: "/mcp-servers" },
   { name: "Onboarding", path: "/onboarding" },
   { name: "Operations", path: "/dashboard/operations" },
+  { name: "Projects", path: "/projects" },
   { name: "Sales", path: "/dashboard/sales" },
+  { name: "SLA Management", path: "/sla-management" },
   { name: "SOC", path: "/dashboard/soc" },
+  { name: "Time Tracking", path: "/time-tracking" },
 ];
 
 const portals = [
