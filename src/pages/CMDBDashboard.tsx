@@ -22,6 +22,7 @@ import {
   AlertCircle,
   TrendingUp,
   RefreshCw,
+  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -207,6 +208,14 @@ const CMDBDashboard = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+        {/* Back Button */}
+        <div className="mb-6">
+          <Button variant="ghost" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+        </div>
+
         {/* Main Content */}
         <Card>
           <CardHeader>
