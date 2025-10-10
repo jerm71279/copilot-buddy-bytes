@@ -62,7 +62,7 @@ export const DashboardPortalLanes = () => {
   }
 
   return (
-    <div className="fixed top-[120px] left-0 right-0 z-40 w-full bg-background border-b border-border">
+    <div className="fixed top-[120px] left-0 right-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
       {/* Portals Lane */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-1.5">
