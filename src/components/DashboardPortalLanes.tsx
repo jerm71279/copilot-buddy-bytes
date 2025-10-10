@@ -45,7 +45,7 @@ const portals: Portal[] = [
     path: "/change-management",
     children: [
       { name: "New Change", path: "/change/new" },
-      { name: "Manage Changes", path: "/change/manage" },
+      { name: "Change Details", path: "/change/details" },
     ],
   },
   {
@@ -55,6 +55,9 @@ const portals: Portal[] = [
   {
     name: "Network Monitoring",
     path: "/network-monitoring",
+    children: [
+      { name: "New Device", path: "/network/device/new" },
+    ],
   },
   {
     name: "SLA Management",
@@ -67,17 +70,22 @@ const portals: Portal[] = [
   {
     name: "Admin",
     path: "/admin",
+    children: [
+      { name: "Applications", path: "/admin/applications" },
+      { name: "Products", path: "/admin/products" },
+    ],
   },
   {
     name: "NinjaOne",
     path: "/ninjaone",
   },
   {
-    name: "Compliance Portal",
+    name: "Compliance",
     path: "/compliance",
     children: [
       { name: "Audit Reports", path: "/compliance/audit-reports" },
       { name: "Frameworks", path: "/compliance/frameworks" },
+      { name: "Evidence Upload", path: "/compliance/evidence" },
     ],
   },
   {
@@ -97,139 +105,73 @@ const portals: Portal[] = [
     path: "/remediation-rules",
   },
   {
-    name: "Sales Portal",
+    name: "Sales",
     path: "/sales-portal",
+    children: [
+      { name: "Customers", path: "/customers" },
+      { name: "Leads", path: "/leads" },
+      { name: "Opportunities", path: "/opportunities" },
+      { name: "Quotes", path: "/quotes" },
+      { name: "Contracts", path: "/contracts" },
+      { name: "Projects", path: "/projects" },
+    ],
   },
   {
     name: "Client Portal",
     path: "/client-portal",
   },
   {
-    name: "Customers",
-    path: "/customers",
-  },
-  {
-    name: "Leads",
-    path: "/leads",
-  },
-  {
-    name: "Opportunities",
-    path: "/opportunities",
-  },
-  {
-    name: "Quotes",
-    path: "/quotes",
-  },
-  {
-    name: "Contracts",
-    path: "/contracts",
-  },
-  {
-    name: "Projects",
-    path: "/projects",
-  },
-  {
-    name: "Budgets",
+    name: "Finance",
     path: "/budgets",
-  },
-  {
-    name: "Invoices",
-    path: "/invoices",
-  },
-  {
-    name: "Expenses",
-    path: "/expenses",
-  },
-  {
-    name: "Purchase Orders",
-    path: "/purchase-orders",
-  },
-  {
-    name: "Asset Financials",
-    path: "/asset-financials",
-  },
-  {
-    name: "Financial Reports",
-    path: "/financial-reports",
-  },
-  {
-    name: "Vendors",
-    path: "/vendors",
-  },
-  {
-    name: "Inventory",
-    path: "/inventory",
-  },
-  {
-    name: "Warehouses",
-    path: "/warehouses",
-  },
-  {
-    name: "Employee Portal",
-    path: "/portal",
-  },
-  {
-    name: "Employees",
-    path: "/employees",
-  },
-  {
-    name: "Departments",
-    path: "/departments",
-  },
-  {
-    name: "Leave Requests",
-    path: "/leave-management",
-  },
-  {
-    name: "Onboarding",
-    path: "/onboarding",
     children: [
-      { name: "Onboarding Templates", path: "/onboarding-templates" },
+      { name: "Invoices", path: "/invoices" },
+      { name: "Expenses", path: "/expenses" },
+      { name: "Purchase Orders", path: "/purchase-orders" },
+      { name: "Asset Financials", path: "/asset-financials" },
+      { name: "Financial Reports", path: "/financial-reports" },
+      { name: "Vendors", path: "/vendors" },
+      { name: "Inventory", path: "/inventory" },
+      { name: "Warehouses", path: "/warehouses" },
     ],
   },
   {
-    name: "Time Tracking",
-    path: "/time-tracking",
+    name: "HR & People",
+    path: "/portal",
+    children: [
+      { name: "Employees", path: "/employees" },
+      { name: "Departments", path: "/departments" },
+      { name: "Leave Requests", path: "/leave-management" },
+      { name: "Onboarding", path: "/onboarding" },
+      { name: "Onboarding Templates", path: "/onboarding-templates" },
+      { name: "Time Tracking", path: "/time-tracking" },
+    ],
   },
   {
-    name: "Analytics Portal",
+    name: "Analytics",
     path: "/analytics",
+    children: [
+      { name: "Data Flows", path: "/data-flows" },
+      { name: "Predictive Insights", path: "/predictive-insights" },
+      { name: "Custom Reports", path: "/custom-reports" },
+    ],
   },
   {
-    name: "Data Flows",
-    path: "/data-flows",
-  },
-  {
-    name: "Workflow Automation",
+    name: "Workflows",
     path: "/workflow-automation",
-  },
-  {
-    name: "Workflow Builder",
-    path: "/workflow-builder",
-  },
-  {
-    name: "Workflow Orchestration",
-    path: "/workflow-orchestration",
-  },
-  {
-    name: "Visual Workflow Builder",
-    path: "/workflows/visual-build",
+    children: [
+      { name: "Workflow Builder", path: "/workflow-builder" },
+      { name: "Workflow Orchestration", path: "/workflow-orchestration" },
+      { name: "Visual Builder", path: "/workflows/visual-build" },
+      { name: "Workflow Intelligence", path: "/workflow-intelligence" },
+    ],
   },
   {
     name: "Intelligent Assistant",
     path: "/intelligent-assistant",
   },
   {
-    name: "Predictive Insights",
-    path: "/predictive-insights",
-  },
-  {
     name: "Knowledge Base",
     path: "/knowledge-base",
-  },
-  {
-    name: "Custom Reports",
-    path: "/custom-reports",
   },
 ];
 
@@ -339,14 +281,14 @@ export default function DashboardPortalLanes() {
   }
 
   const togglePortal = (path: string) => {
-    setOpenPortals((prev) => ({
+    setOpenPortals(prev => ({
       ...prev,
       [path]: !prev[path],
     }));
   };
 
   const toggleCategory = (name: string) => {
-    setOpenCategories((prev) => ({
+    setOpenCategories(prev => ({
       ...prev,
       [name]: !prev[name],
     }));
@@ -354,9 +296,9 @@ export default function DashboardPortalLanes() {
 
   // Check if current page is a main portal/dashboard page
   const allPages = [
-    ...portals.map((p) => p.path),
-    ...portals.flatMap((p) => p.children?.map((c) => c.path) || []),
-    ...categories.flatMap((c) => c.dashboards.map((d) => d.path)),
+    ...portals.map(p => p.path),
+    ...portals.flatMap(p => p.children?.map(c => c.path) || []),
+    ...categories.flatMap(c => c.dashboards.map(d => d.path)),
   ];
   const isMainPage = allPages.some((path) => currentPath === path);
 
@@ -369,7 +311,7 @@ export default function DashboardPortalLanes() {
             <div className="flex gap-2 pb-2">
               {portals.map((portal) => {
                 const isActive = currentPath === portal.path || 
-                  (portal.children && portal.children.some((child) => currentPath.startsWith(child.path)));
+                  (portal.children && portal.children.some(child => currentPath.startsWith(child.path)));
                 const isOpen = openPortals[portal.path];
 
                 return (
@@ -401,7 +343,7 @@ export default function DashboardPortalLanes() {
                             </Button>
                           </CollapsibleTrigger>
                         </div>
-                        <CollapsibleContent className="absolute mt-1 z-[9999]">
+                        <CollapsibleContent className="absolute z-[9999] mt-1">
                           <div className="bg-popover border border-border rounded-md shadow-lg p-1 min-w-[200px]">
                             {portal.children.map((child) => (
                               <Link
@@ -482,8 +424,8 @@ export default function DashboardPortalLanes() {
                           </Button>
                         </CollapsibleTrigger>
                       </div>
-                <CollapsibleContent className="absolute mt-1 z-[9999]">
-                  <div className="bg-popover border border-border rounded-md shadow-lg p-1 min-w-[200px]">
+                      <CollapsibleContent className="absolute mt-1 z-[9999]">
+                        <div className="bg-popover border border-border rounded-md shadow-lg p-1 min-w-[200px]">
                           {category.dashboards.map((dashboard) => (
                             <Link
                               key={dashboard.path}
