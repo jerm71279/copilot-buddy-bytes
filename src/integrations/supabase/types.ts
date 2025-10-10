@@ -5484,6 +5484,565 @@ export type Database = {
         }
         Relationships: []
       }
+      project_documents: {
+        Row: {
+          created_at: string
+          customer_id: string
+          description: string | null
+          document_name: string
+          document_type: string | null
+          file_size: number | null
+          file_url: string
+          id: string
+          is_active: boolean | null
+          project_id: string
+          updated_at: string
+          uploaded_by: string | null
+          version: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          document_name: string
+          document_type?: string | null
+          file_size?: number | null
+          file_url: string
+          id?: string
+          is_active?: boolean | null
+          project_id: string
+          updated_at?: string
+          uploaded_by?: string | null
+          version?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          document_name?: string
+          document_type?: string | null
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          is_active?: boolean | null
+          project_id?: string
+          updated_at?: string
+          uploaded_by?: string | null
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_expenses: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          customer_id: string
+          expense_date: string
+          expense_description: string
+          expense_status: string
+          expense_type: string
+          id: string
+          is_billable: boolean | null
+          is_reimbursable: boolean | null
+          notes: string | null
+          project_id: string
+          receipt_url: string | null
+          submitted_by: string | null
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          customer_id: string
+          expense_date?: string
+          expense_description: string
+          expense_status?: string
+          expense_type: string
+          id?: string
+          is_billable?: boolean | null
+          is_reimbursable?: boolean | null
+          notes?: string | null
+          project_id: string
+          receipt_url?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          customer_id?: string
+          expense_date?: string
+          expense_description?: string
+          expense_status?: string
+          expense_type?: string
+          id?: string
+          is_billable?: boolean | null
+          is_reimbursable?: boolean | null
+          notes?: string | null
+          project_id?: string
+          receipt_url?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_expenses_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_expenses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_expenses_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_expenses_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_milestones: {
+        Row: {
+          completion_date: string | null
+          created_at: string
+          customer_id: string
+          deliverables: string | null
+          due_date: string
+          id: string
+          is_critical: boolean | null
+          milestone_description: string | null
+          milestone_name: string
+          milestone_status: string
+          project_id: string
+          updated_at: string
+        }
+        Insert: {
+          completion_date?: string | null
+          created_at?: string
+          customer_id: string
+          deliverables?: string | null
+          due_date: string
+          id?: string
+          is_critical?: boolean | null
+          milestone_description?: string | null
+          milestone_name: string
+          milestone_status?: string
+          project_id: string
+          updated_at?: string
+        }
+        Update: {
+          completion_date?: string | null
+          created_at?: string
+          customer_id?: string
+          deliverables?: string | null
+          due_date?: string
+          id?: string
+          is_critical?: boolean | null
+          milestone_description?: string | null
+          milestone_name?: string
+          milestone_status?: string
+          project_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_milestones_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_tasks: {
+        Row: {
+          actual_hours: number | null
+          assigned_to: string | null
+          billing_rate: number | null
+          completed_date: string | null
+          completion_percentage: number | null
+          created_at: string
+          customer_id: string
+          due_date: string | null
+          estimated_hours: number | null
+          id: string
+          is_billable: boolean | null
+          notes: string | null
+          parent_task_id: string | null
+          priority: string
+          project_id: string
+          start_date: string | null
+          task_description: string | null
+          task_name: string
+          task_number: string
+          task_status: string
+          updated_at: string
+        }
+        Insert: {
+          actual_hours?: number | null
+          assigned_to?: string | null
+          billing_rate?: number | null
+          completed_date?: string | null
+          completion_percentage?: number | null
+          created_at?: string
+          customer_id: string
+          due_date?: string | null
+          estimated_hours?: number | null
+          id?: string
+          is_billable?: boolean | null
+          notes?: string | null
+          parent_task_id?: string | null
+          priority?: string
+          project_id: string
+          start_date?: string | null
+          task_description?: string | null
+          task_name: string
+          task_number: string
+          task_status?: string
+          updated_at?: string
+        }
+        Update: {
+          actual_hours?: number | null
+          assigned_to?: string | null
+          billing_rate?: number | null
+          completed_date?: string | null
+          completion_percentage?: number | null
+          created_at?: string
+          customer_id?: string
+          due_date?: string | null
+          estimated_hours?: number | null
+          id?: string
+          is_billable?: boolean | null
+          notes?: string | null
+          parent_task_id?: string | null
+          priority?: string
+          project_id?: string
+          start_date?: string | null
+          task_description?: string | null
+          task_name?: string
+          task_number?: string
+          task_status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_tasks_parent_task_id_fkey"
+            columns: ["parent_task_id"]
+            isOneToOne: false
+            referencedRelation: "project_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_team: {
+        Row: {
+          allocation_percentage: number | null
+          created_at: string
+          customer_id: string
+          employee_id: string
+          end_date: string | null
+          hourly_rate: number | null
+          id: string
+          is_active: boolean | null
+          project_id: string
+          role: string
+          start_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          allocation_percentage?: number | null
+          created_at?: string
+          customer_id: string
+          employee_id: string
+          end_date?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean | null
+          project_id: string
+          role: string
+          start_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          allocation_percentage?: number | null
+          created_at?: string
+          customer_id?: string
+          employee_id?: string
+          end_date?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean | null
+          project_id?: string
+          role?: string
+          start_date?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_team_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_team_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_time_entries: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          billed_amount: number | null
+          billing_rate: number | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          employee_id: string
+          end_time: string | null
+          entry_date: string
+          hours: number
+          id: string
+          invoice_id: string | null
+          is_approved: boolean | null
+          is_billable: boolean | null
+          project_id: string
+          start_time: string | null
+          task_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          billed_amount?: number | null
+          billing_rate?: number | null
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          employee_id: string
+          end_time?: string | null
+          entry_date: string
+          hours: number
+          id?: string
+          invoice_id?: string | null
+          is_approved?: boolean | null
+          is_billable?: boolean | null
+          project_id: string
+          start_time?: string | null
+          task_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          billed_amount?: number | null
+          billing_rate?: number | null
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          employee_id?: string
+          end_time?: string | null
+          entry_date?: string
+          hours?: number
+          id?: string
+          invoice_id?: string | null
+          is_approved?: boolean | null
+          is_billable?: boolean | null
+          project_id?: string
+          start_time?: string | null
+          task_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_time_entries_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_time_entries_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_time_entries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_time_entries_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "project_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          actual_cost: number | null
+          actual_hours: number | null
+          billing_type: string | null
+          budget_amount: number | null
+          completion_percentage: number | null
+          created_at: string
+          customer_account_id: string | null
+          customer_id: string
+          deliverables: string | null
+          description: string | null
+          end_date: string | null
+          estimated_hours: number | null
+          hourly_rate: number | null
+          id: string
+          is_billable: boolean | null
+          objectives: string | null
+          priority: string
+          project_code: string | null
+          project_manager_id: string | null
+          project_name: string
+          project_number: string
+          project_status: string
+          project_type: string
+          risks: string | null
+          start_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          actual_cost?: number | null
+          actual_hours?: number | null
+          billing_type?: string | null
+          budget_amount?: number | null
+          completion_percentage?: number | null
+          created_at?: string
+          customer_account_id?: string | null
+          customer_id: string
+          deliverables?: string | null
+          description?: string | null
+          end_date?: string | null
+          estimated_hours?: number | null
+          hourly_rate?: number | null
+          id?: string
+          is_billable?: boolean | null
+          objectives?: string | null
+          priority?: string
+          project_code?: string | null
+          project_manager_id?: string | null
+          project_name: string
+          project_number: string
+          project_status?: string
+          project_type?: string
+          risks?: string | null
+          start_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actual_cost?: number | null
+          actual_hours?: number | null
+          billing_type?: string | null
+          budget_amount?: number | null
+          completion_percentage?: number | null
+          created_at?: string
+          customer_account_id?: string | null
+          customer_id?: string
+          deliverables?: string | null
+          description?: string | null
+          end_date?: string | null
+          estimated_hours?: number | null
+          hourly_rate?: number | null
+          id?: string
+          is_billable?: boolean | null
+          objectives?: string | null
+          priority?: string
+          project_code?: string | null
+          project_manager_id?: string | null
+          project_name?: string
+          project_number?: string
+          project_status?: string
+          project_type?: string
+          risks?: string | null
+          start_date?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_customer_account_id_fkey"
+            columns: ["customer_account_id"]
+            isOneToOne: false
+            referencedRelation: "customer_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_project_manager_id_fkey"
+            columns: ["project_manager_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       purchase_orders: {
         Row: {
           approval_workflow: Json | null
@@ -7833,6 +8392,10 @@ export type Database = {
         Returns: string
       }
       generate_po_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_project_number: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
