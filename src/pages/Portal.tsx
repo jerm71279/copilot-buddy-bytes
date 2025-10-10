@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Activity, Clock, FileText, BookOpen, Workflow, BarChart3, Settings, ExternalLink, Brain, Zap, Calendar, MessagesSquare, ArrowLeft, AlertTriangle, Users, Database } from "lucide-react";
+import { Shield, Activity, Clock, FileText, BookOpen, Workflow, BarChart3, Settings, ExternalLink, Brain, Zap, Calendar, MessagesSquare, ArrowLeft, AlertTriangle, Users, Database, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import EmployeeToolbar from "@/components/EmployeeToolbar";
@@ -15,6 +15,7 @@ import AutomationSuggestions from "@/components/AutomationSuggestions";
 import { RepetitiveTaskTester } from "@/components/RepetitiveTaskTester";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { GlobalSearch } from "@/components/GlobalSearch";
 
 const Portal = () => {
   const navigate = useNavigate();
@@ -24,9 +25,22 @@ const Portal = () => {
   const [userDepartment, setUserDepartment] = useState<string | null>(null);
   const [recentArticles, setRecentArticles] = useState<any[]>([]);
   const [recentWorkflows, setRecentWorkflows] = useState<any[]>([]);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     loadCustomerData();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   useEffect(() => {
@@ -153,6 +167,17 @@ const Portal = () => {
               </div>
             </div>
               <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSearchOpen(true)}
+                  className="gap-2"
+                >
+                  <Search className="h-4 w-4" />
+                  Search
+                  <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                    <span className="text-xs">⌘</span>K
+                  </kbd>
+                </Button>
                 <Button variant="outline" onClick={handleSignOut}>
                   Sign Out
                 </Button>
@@ -295,6 +320,8 @@ const Portal = () => {
             </TabsContent>
         </Tabs>
       </div>
+
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 };
