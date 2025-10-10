@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, FileCheck, AlertTriangle, TrendingUp, Plus, ArrowLeft } from "lucide-react";
+import { Shield, FileCheck, AlertTriangle, TrendingUp, Plus } from "lucide-react";
 
 interface Framework {
   id: string;
@@ -118,15 +118,6 @@ export default function CompliancePortal() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3 mb-6 overflow-x-auto">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate(-1)}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
           <Button size="sm" onClick={() => navigate('/compliance/audit-reports')}>
             <FileCheck className="mr-2 h-4 w-4" />
             Generate Audit Report
