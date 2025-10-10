@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar, AlertCircle, CheckCircle, Clock, ChevronDown, FileText, BarChart, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
-import Navigation from "@/components/Navigation";
+
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import {

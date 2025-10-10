@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Shield, CheckCircle, AlertTriangle, FileText, FileCheck, ChevronDown, ClipboardList, FolderOpen, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
-import Navigation from "@/components/Navigation";
+
 
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";

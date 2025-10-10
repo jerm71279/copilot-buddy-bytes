@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { DollarSign, Users, TrendingUp, CreditCard, Info, Percent, Calendar, ChevronDown, FileText, Receipt, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
-import Navigation from "@/components/Navigation";
+
 
 import { useRevioData } from "@/hooks/useRevioData";
 import MCPServerStatus from "@/components/MCPServerStatus";

@@ -13,7 +13,7 @@ import { AIMCPGenerator } from "@/components/AIMCPGenerator";
 import MCPExecutionLogs from "@/components/MCPExecutionLogs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoMode } from "@/hooks/useDemoMode";
-import Navigation from "@/components/Navigation";
+
 
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Navigation from "@/components/Navigation";
+
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

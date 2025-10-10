@@ -12,7 +12,7 @@ import {
   Clock, Zap, ChevronDown, FileText, Search, Server, Globe
 } from "lucide-react";
 import { useDemoMode } from "@/hooks/useDemoMode";
-import Navigation from "@/components/Navigation";
+
 
 import { toast } from "sonner";
 import MCPServerStatus from "@/components/MCPServerStatus";

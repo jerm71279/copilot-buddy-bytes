@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
-import Navigation from "@/components/Navigation";
+
 import { toast } from "sonner";
 
 const SalesPortal = () => {

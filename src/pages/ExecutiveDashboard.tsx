@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { BarChart3, TrendingUp, Shield, Users, AlertCircle, CheckCircle, ChevronDown, FileText, Building, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
-import Navigation from "@/components/Navigation";
+
 
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Users, UserCheck, Clock, TrendingUp, ChevronDown, FileText, ClipboardList, UserPlus, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
-import Navigation from "@/components/Navigation";
+
 
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";

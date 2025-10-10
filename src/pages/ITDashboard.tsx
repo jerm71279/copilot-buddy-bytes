@@ -9,7 +9,7 @@ import { Server, Activity, AlertCircle, Zap, Shield, ChevronDown, FileText, Data
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
-import Navigation from "@/components/Navigation";
+
 
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import {
