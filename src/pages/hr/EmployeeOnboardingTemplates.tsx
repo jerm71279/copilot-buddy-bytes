@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, FileText, Edit, Trash2, Users } from "lucide-react";
+import { Plus, FileText, Edit, Trash2, Users, UserPlus } from "lucide-react";
 
 interface Template {
   id: string;
@@ -335,13 +335,19 @@ export default function EmployeeOnboardingTemplates() {
                   </div>
                   <div className="flex gap-2 mt-4">
                     <Button 
-                      variant="outline" 
                       size="sm" 
                       className="flex-1"
+                      onClick={() => navigate(`/hr/employee-onboarding/new?template=${template.id}`)}
+                    >
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Use Template
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
                       onClick={() => navigate(`/hr/employee-onboarding/templates/${template.id}`)}
                     >
-                      <Edit className="mr-2 h-4 w-4" />
-                      Edit
+                      <Edit className="h-4 w-4" />
                     </Button>
                     <Button 
                       variant="outline" 

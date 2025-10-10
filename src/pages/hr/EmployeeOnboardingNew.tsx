@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +28,8 @@ interface Role {
 export default function EmployeeOnboardingNew() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const preselectedTemplateId = searchParams.get('template');
   const [templates, setTemplates] = useState<Template[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +37,7 @@ export default function EmployeeOnboardingNew() {
     employee_name: "",
     employee_email: "",
     employee_phone: "",
-    template_id: "",
+    template_id: preselectedTemplateId || "",
     department: "",
     job_title: "",
     employment_type: "full-time",
@@ -222,6 +224,7 @@ export default function EmployeeOnboardingNew() {
                   <Select
                     value={formData.template_id}
                     onValueChange={(value) => setFormData({ ...formData, template_id: value })}
+                    disabled={!!preselectedTemplateId}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a template" />
@@ -235,6 +238,9 @@ export default function EmployeeOnboardingNew() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {preselectedTemplateId && (
+                    <p className="text-sm text-muted-foreground">Template is locked based on your selection</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
