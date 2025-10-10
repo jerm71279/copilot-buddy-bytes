@@ -148,7 +148,7 @@ const portals: Portal[] = [
 
 const categories: Category[] = [
   {
-    name: "Operations & IT",
+    name: "IT Services",
     icon: Settings,
     dashboards: [
       { name: "Operations", path: "/dashboard/operations" },
