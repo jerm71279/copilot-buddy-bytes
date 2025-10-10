@@ -277,6 +277,11 @@ export default function DashboardPortalLanes() {
     }
   };
 
+  const closeAll = () => {
+    setOpenPortals(portals.reduce((acc, p) => ({ ...acc, [p.path]: false }), {}));
+    setOpenCategories(categories.reduce((acc, c) => ({ ...acc, [c.name]: false }), {}));
+  };
+
   // Check if current page is a main portal/dashboard page
   const allPages = [
     ...portals.map(p => p.path),
@@ -326,23 +331,25 @@ export default function DashboardPortalLanes() {
                             </Button>
                           </CollapsibleTrigger>
                         </div>
-                        <CollapsibleContent className="absolute left-0 top-full z-[10000] mt-1">
-                          <div className="bg-popover border border-border rounded-md shadow-xl p-4 min-w-[600px]">
-                            <div className="columns-3 gap-4">
-                              {portal.children.map((child) => (
-                                <Link
-                                  key={child.path}
-                                  to={child.path}
-                                  className={cn(
-                                    "mb-1 block break-inside-avoid px-3 py-2 text-sm rounded-md transition-colors",
-                                    currentPath === child.path
-                                      ? "bg-primary text-primary-foreground"
-                                      : "text-foreground hover:bg-muted"
-                                  )}
-                                >
-                                  {child.name}
-                                </Link>
-                              ))}
+                        <CollapsibleContent forceMount className="fixed inset-0 z-[10000]">
+                          <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={closeAll} />
+                          <div className="bg-popover border border-border rounded-md shadow-xl p-6 container mx-auto px-4 mt-[var(--lanes-bottom)]">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {portal.children.map((child) => (
+                                  <Link
+                                    key={child.path}
+                                    to={child.path}
+                                    onClick={closeAll}
+                                    className={cn(
+                                      "block px-3 py-2 text-sm rounded-md transition-colors",
+                                      currentPath === child.path
+                                        ? "bg-primary text-primary-foreground"
+                                        : "text-foreground hover:bg-muted"
+                                    )}
+                                  >
+                                    {child.name}
+                                  </Link>
+                                ))}
                             </div>
                           </div>
                         </CollapsibleContent>
@@ -408,23 +415,25 @@ export default function DashboardPortalLanes() {
                           </Button>
                         </CollapsibleTrigger>
                       </div>
-                       <CollapsibleContent className="absolute left-0 top-full mt-1 z-[10000]">
-                        <div className="bg-popover border border-border rounded-md shadow-xl p-4 min-w-[600px]">
-                          <div className="columns-3 gap-4">
-                            {category.dashboards.map((dashboard) => (
-                              <Link
-                                key={dashboard.path}
-                                to={dashboard.path}
-                                className={cn(
-                                  "mb-1 block break-inside-avoid px-3 py-2 text-sm rounded-md transition-colors",
-                                  currentPath === dashboard.path
-                                    ? "bg-primary text-primary-foreground"
-                                    : "text-foreground hover:bg-muted"
-                                )}
-                              >
-                                {dashboard.name}
-                              </Link>
-                            ))}
+                      <CollapsibleContent forceMount className="fixed inset-0 z-[10000]">
+                        <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={closeAll} />
+                        <div className="bg-popover border border-border rounded-md shadow-xl p-6 container mx-auto px-4 mt-[var(--lanes-bottom)]">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                              {category.dashboards.map((dashboard) => (
+                                <Link
+                                  key={dashboard.path}
+                                  to={dashboard.path}
+                                  onClick={closeAll}
+                                  className={cn(
+                                    "block px-3 py-2 text-sm rounded-md transition-colors",
+                                    currentPath === dashboard.path
+                                      ? "bg-primary text-primary-foreground"
+                                      : "text-foreground hover:bg-muted"
+                                  )}
+                                >
+                                  {dashboard.name}
+                                </Link>
+                              ))}
                           </div>
                         </div>
                       </CollapsibleContent>
