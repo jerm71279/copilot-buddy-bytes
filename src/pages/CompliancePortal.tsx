@@ -109,16 +109,15 @@ export default function CompliancePortal() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         
         <div className="mb-6">
           <h1 className="text-4xl font-bold mb-2">Compliance Management</h1>
           <p className="text-muted-foreground">Track compliance frameworks and evidence collection</p>
         </div>
 
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex flex-wrap items-center gap-3 mb-6 overflow-x-auto">
           <Button
             variant="outline"
             size="sm"
