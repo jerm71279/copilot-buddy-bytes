@@ -56,12 +56,12 @@ Deno.serve(async (req) => {
 
     // Special Character Tests
     const specialCharPayloads = [
-      "\x00\x00\x00", // Null bytes
       "../../etc/passwd", // Path traversal
       "%00", // URL encoded null
-      "\u0000", // Unicode null
       "{{7*7}}", // Template injection
       "${7*7}", // Expression injection
+      "../../../../../etc/passwd", // Deep path traversal
+      "null\0byte", // Null byte string representation
     ];
 
     // Format String Tests
@@ -221,7 +221,7 @@ Deno.serve(async (req) => {
       ["<script>", "alert(1)"],
       ["'; DROP TABLE", "--"],
       Array(1000).fill("tag"),
-      ["\\x00\\x00", "null bytes"]
+      ["malicious", "../../../path"]
     ];
 
     for (const payload of arrayPayloads) {
