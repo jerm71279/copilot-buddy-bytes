@@ -437,6 +437,13 @@ const App = () => (
             </ProtectedRoute>
           } />
           
+          {/* Testing Dashboard Alias - Admin Only */}
+          <Route path="/testing-dashboard" element={
+            <ProtectedRoute requireAdmin>
+              <ComprehensiveTestDashboard />
+            </ProtectedRoute>
+          } />
+          
           {/* System Validation Dashboard - Admin Only */}
           <Route path="/test/validation" element={
             <ProtectedRoute requireAdmin>
