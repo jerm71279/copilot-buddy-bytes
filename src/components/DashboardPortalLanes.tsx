@@ -205,6 +205,8 @@ export default function DashboardPortalLanes() {
   const navigate = useNavigate();
   const currentPath = location.pathname;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [enabledPortals, setEnabledPortals] = useState<string[]>([]);
+  const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({});
   const [openPortals, setOpenPortals] = useState<{ [key: string]: boolean }>(() => 
     portals.reduce((acc, p) => ({ ...acc, [p.path]: false }), {})
   );
@@ -216,6 +218,63 @@ export default function DashboardPortalLanes() {
 
   const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
   const shouldHide = !isLoggedIn || hideOnRoutes.includes(currentPath);
+
+  // Map portal paths to slugs for filtering
+  const portalSlugMap: Record<string, string> = {
+    '/portal': 'employee',
+    '/client-portal': 'client',
+    '/dashboard/operations': 'operations',
+    '/admin': 'admin',
+    '/integrations': 'integrations',
+    '/compliance': 'compliance',
+    '/analytics': 'analytics',
+    '/data-flow': 'data_flow',
+  };
+
+  // Map category names to module slugs
+  const categorySlugMap: Record<string, string> = {
+    'IT Services': 'it_services',
+    'Compliance & Security': 'compliance_security',
+    'Business & Sales': 'sales_marketing',
+    'Finance': 'finance',
+    'HR & People': 'hr',
+    'Analytics & Automation': 'executive',
+  };
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("customer_id")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (!profile?.customer_id) return;
+
+      const { data: customization } = await supabase
+        .from("customer_customizations")
+        .select("enabled_portals, enabled_modules")
+        .eq("customer_id", profile.customer_id)
+        .maybeSingle();
+
+      if (customization) {
+        const portals = customization.enabled_portals 
+          ? (customization.enabled_portals as any[]).filter((p): p is string => typeof p === 'string')
+          : [];
+        const modules = customization.enabled_modules && typeof customization.enabled_modules === 'object'
+          ? customization.enabled_modules as Record<string, boolean>
+          : {};
+        
+        setEnabledPortals(portals);
+        setEnabledModules(modules);
+      }
+    };
+
+    loadSettings();
+  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -317,6 +376,21 @@ export default function DashboardPortalLanes() {
   ];
   const isMainPage = allPages.some((path) => currentPath === path);
 
+  // Filter portals and categories based on customer settings
+  const filteredPortals = enabledPortals.length > 0 
+    ? portals.filter(portal => {
+        const slug = portalSlugMap[portal.path];
+        return !slug || enabledPortals.includes(slug);
+      })
+    : portals;
+
+  const filteredCategories = Object.keys(enabledModules).length > 0
+    ? categories.filter(category => {
+        const slug = categorySlugMap[category.name];
+        return !slug || enabledModules[slug] !== false;
+      })
+    : categories;
+
   return (
     <div ref={lanesRef} className="fixed top-0 left-0 right-0 z-[9999] w-full isolate overflow-visible bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
       {/* Row 1: Portals with dropdowns */}
@@ -324,7 +398,7 @@ export default function DashboardPortalLanes() {
         <div className="container mx-auto px-4 py-2">
           <div className="relative overflow-x-auto overflow-y-visible">
             <div className="flex gap-2 pb-2 min-w-max">
-              {portals.map((portal) => {
+              {filteredPortals.map((portal) => {
                 const isActive = currentPath === portal.path || 
                   (portal.children && portal.children.some(child => currentPath.startsWith(child.path)));
                 const isOpen = openPortals[portal.path];
@@ -417,7 +491,7 @@ export default function DashboardPortalLanes() {
         <div className="container mx-auto px-4 py-2">
           <div className="relative overflow-x-auto overflow-y-visible">
             <div className="flex gap-2 pb-2 min-w-max">
-              {categories.map((category) => {
+              {filteredCategories.map((category) => {
                 const CategoryIcon = category.icon;
                 const isActive = category.dashboards.some((d) => currentPath === d.path || currentPath.startsWith(d.path + '/'));
                 const isOpen = openCategories[category.name];

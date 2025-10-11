@@ -103,6 +103,7 @@ import EmployeeOnboardingTemplates from "./pages/hr/EmployeeOnboardingTemplates"
 import EmployeeOnboardingNew from "./pages/hr/EmployeeOnboardingNew";
 import EmployeeOnboardingDetail from "./pages/hr/EmployeeOnboardingDetail";
 import EmployeeOnboardingEdit from "./pages/hr/EmployeeOnboardingEdit";
+import ModuleManagement from "./pages/ModuleManagement";
 
 const queryClient = new QueryClient();
 
@@ -631,6 +632,13 @@ const App = () => (
           <Route path="/hr/employee-onboarding/:id" element={
             <ProtectedRoute>
               <EmployeeOnboardingDetail />
+            </ProtectedRoute>
+          } />
+          
+          {/* Module Management - Protected Admin */}
+          <Route path="/admin/modules" element={
+            <ProtectedRoute requireAdmin>
+              <ModuleManagement />
             </ProtectedRoute>
           } />
           

@@ -13,6 +13,8 @@ export interface CustomerCustomization {
   default_dashboard: string;
   dashboard_layout: Record<string, any>;
   custom_settings: Record<string, any>;
+  enabled_portals?: string[];
+  enabled_modules?: Record<string, boolean>;
 }
 
 export const useCustomerCustomization = (customerId?: string) => {

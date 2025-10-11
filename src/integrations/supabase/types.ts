@@ -2475,6 +2475,8 @@ export type Database = {
           default_dashboard: string | null
           enabled_features: Json | null
           enabled_integrations: Json | null
+          enabled_modules: Json | null
+          enabled_portals: Json | null
           id: string
           primary_color: string | null
           secondary_color: string | null
@@ -2490,6 +2492,8 @@ export type Database = {
           default_dashboard?: string | null
           enabled_features?: Json | null
           enabled_integrations?: Json | null
+          enabled_modules?: Json | null
+          enabled_portals?: Json | null
           id?: string
           primary_color?: string | null
           secondary_color?: string | null
@@ -2505,6 +2509,8 @@ export type Database = {
           default_dashboard?: string | null
           enabled_features?: Json | null
           enabled_integrations?: Json | null
+          enabled_modules?: Json | null
+          enabled_portals?: Json | null
           id?: string
           primary_color?: string | null
           secondary_color?: string | null

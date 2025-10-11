@@ -245,6 +245,39 @@ const AdminDashboard = () => {
           </Card>
         )}
         
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/applications')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Server className="h-5 w-5" />
+                Applications
+              </CardTitle>
+              <CardDescription>Manage system applications</CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/products')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Server className="h-5 w-5" />
+                Products
+              </CardTitle>
+              <CardDescription>Manage product offerings</CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/modules')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Server className="h-5 w-5" />
+                Module Management
+              </CardTitle>
+              <CardDescription>Enable/disable portals and modules</CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+        
         <Card>
           <CardHeader>
             <CardTitle>Customer Management</CardTitle>
