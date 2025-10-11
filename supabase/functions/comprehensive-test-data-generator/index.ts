@@ -36,13 +36,9 @@ Deno.serve(async (req) => {
     
     const customerId = customers?.[0]?.id || '710092dc-c33c-4f8e-8c65-11fc62982c96';
     
-    // Get a real user ID from user_profiles
-    const { data: userProfiles } = await supabase
-      .from('user_profiles')
-      .select('user_id')
-      .limit(1);
-    
-    const testUserId = userProfiles?.[0]?.user_id || null;
+    // Get a real user ID from auth.users (not user_profiles) for foreign key constraints
+    const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers();
+    const testUserId = users && users.length > 0 ? users[0].id : null;
     
     // Skip tests that require a user if no user exists
     if (!testUserId) {
@@ -77,32 +73,32 @@ Deno.serve(async (req) => {
             {
               customer_id: customerId,
               category_id: categories?.[0]?.id,
-              title: 'Password Policy Requirements',
-              content: 'All passwords must be at least 12 characters and include uppercase, lowercase, numbers, and special characters.',
+              title: 'Password Policy',
+              content: 'Passwords must be at least 12 characters.',
               article_type: 'sop',
               status: 'published',
               created_by: testUserId,
-              tags: ['security', 'authentication', 'policy']
+              tags: ['security']
             },
             {
               customer_id: customerId,
               category_id: categories?.[1]?.id,
-              title: 'Server Backup Procedures',
-              content: 'Daily automated backups run at 2 AM. Manual backups can be triggered from the admin panel.',
+              title: 'Backup Procedures',
+              content: 'Daily backups run at 2 AM.',
               article_type: 'sop',
               status: 'published',
               created_by: testUserId,
-              tags: ['backup', 'operations', 'maintenance']
+              tags: ['backup']
             },
             {
               customer_id: customerId,
               category_id: categories?.[2]?.id,
-              title: 'Employee Onboarding Checklist',
-              content: 'Complete background check, setup email, assign equipment, schedule training sessions.',
+              title: 'Onboarding Checklist',
+              content: 'Setup email and assign equipment.',
               article_type: 'guide',
               status: 'published',
               created_by: testUserId,
-              tags: ['onboarding', 'hr', 'checklist']
+              tags: ['onboarding']
             }
           ])
           .select();
@@ -147,8 +143,8 @@ Deno.serve(async (req) => {
               user_id: testUserId,
               conversation_id: conversationId,
               interaction_type: 'query',
-              user_query: 'What is our password policy?',
-              ai_response: 'All passwords must be at least 12 characters long and include a mix of uppercase, lowercase, numbers, and special characters.',
+          user_query: 'What is our password policy?',
+              ai_response: 'Passwords must be at least 12 characters long.',
               confidence_score: 0.95,
               insight_generated: true,
               was_helpful: true,
@@ -207,26 +203,18 @@ Deno.serve(async (req) => {
             {
               customer_id: customerId,
               user_id: testUserId,
-              system_name: 'user_management',
-              action_type: 'user_created',
-              action_details: { username: 'john.doe', department: 'IT' },
-              compliance_tags: ['access_control', 'user_management']
+              system_name: 'users',
+              action_type: 'created',
+              action_details: { username: 'testuser' },
+              compliance_tags: ['access']
             },
             {
               customer_id: customerId,
               user_id: testUserId,
-              system_name: 'evidence_management',
-              action_type: 'file_uploaded',
-              action_details: { file_name: 'security_policy.pdf', size: 524288 },
-              compliance_tags: ['compliance', 'evidence']
-            },
-            {
-              customer_id: customerId,
-              user_id: testUserId,
-              system_name: 'workflow_automation',
-              action_type: 'workflow_executed',
-              action_details: { workflow_name: 'User Access Provisioning', status: 'completed' },
-              compliance_tags: ['automation', 'access_control']
+              system_name: 'files',
+              action_type: 'uploaded',
+              action_details: { filename: 'doc.pdf' },
+              compliance_tags: ['compliance']
             }
           ])
           .select();
@@ -269,20 +257,20 @@ Deno.serve(async (req) => {
               user_id: testUserId,
               system_name: 'portal',
               event_type: 'page_view',
-              action: 'viewed_compliance_dashboard',
+              action: 'viewed_dashboard',
               duration_ms: 45000,
-              context: { page: '/compliance', browser: 'Chrome' },
-              compliance_tags: ['usage', 'compliance']
+              context: { page: '/dashboard' },
+              compliance_tags: ['usage']
             },
             {
               customer_id: customerId,
               user_id: testUserId,
-              system_name: 'knowledge_base',
+              system_name: 'search',
               event_type: 'search',
-              action: 'searched_articles',
+              action: 'searched',
               duration_ms: 2500,
-              context: { query: 'password policy', results: 5 },
-              compliance_tags: ['knowledge', 'search']
+              context: { query: 'test' },
+              compliance_tags: ['search']
             }
           ])
           .select();
@@ -322,25 +310,25 @@ Deno.serve(async (req) => {
           {
             customer_id: customerId,
             affected_user_id: testUserId,
-            anomaly_type: 'unusual_access_pattern',
+            anomaly_type: 'unusual_access',
             severity: 'medium',
-            system_name: 'access_control',
-            description: 'User accessed system outside normal business hours',
-            detection_method: 'ml_algorithm',
+            system_name: 'access',
+            description: 'Unusual access pattern detected',
+            detection_method: 'ml',
             confidence_score: 0.82,
             status: 'investigating',
-            compliance_tags: ['security', 'access_control']
+            compliance_tags: ['security']
           },
           {
             customer_id: customerId,
-            anomaly_type: 'failed_login_attempts',
+            anomaly_type: 'failed_login',
             severity: 'high',
-            system_name: 'authentication',
-            description: 'Multiple failed login attempts detected from IP 192.168.1.100',
-            detection_method: 'threshold_exceeded',
+            system_name: 'auth',
+            description: 'Multiple failed logins',
+            detection_method: 'threshold',
             confidence_score: 0.95,
             status: 'new',
-            compliance_tags: ['security', 'authentication']
+            compliance_tags: ['security']
           }
         ])
         .select();
@@ -376,20 +364,20 @@ Deno.serve(async (req) => {
         .insert([
           {
             customer_id: customerId,
-            server_name: 'Compliance Automation Server',
+            server_name: 'Compliance Server',
             server_type: 'compliance',
-            description: 'MCP server for automated compliance checks',
+            description: 'Compliance automation',
             status: 'active',
-            capabilities: ['evidence_validation', 'report_generation', 'gap_analysis'],
+            capabilities: ['validation'],
             last_health_check: new Date().toISOString()
           },
           {
             customer_id: customerId,
-            server_name: 'IT Operations Server',
+            server_name: 'Operations Server',
             server_type: 'operations',
-            description: 'MCP server for IT operations automation',
+            description: 'Operations automation',
             status: 'active',
-            capabilities: ['backup_management', 'monitoring', 'incident_response'],
+            capabilities: ['monitoring'],
             last_health_check: new Date().toISOString()
           }
         ])
@@ -451,23 +439,23 @@ Deno.serve(async (req) => {
         .insert([
           {
             customer_id: customerId,
-            insight_type: 'compliance_risk',
-            title: 'Increasing Gap in Access Control Documentation',
-            description: 'ML model detected 15% increase in undocumented access control changes',
+            insight_type: 'risk',
+            title: 'Access Control Gap',
+            description: 'Gap detected in documentation',
             confidence_score: 0.87,
             priority: 'high',
             status: 'pending_review',
-            recommended_actions: ['Schedule access control audit', 'Update documentation procedures']
+            recommended_actions: ['Review policies']
           },
           {
             customer_id: customerId,
-            insight_type: 'workflow_optimization',
-            title: 'Backup Workflow Efficiency Improvement',
-            description: 'ML analysis suggests backup workflow could be 30% faster with parallel processing',
+            insight_type: 'optimization',
+            title: 'Workflow Improvement',
+            description: 'Workflow could be optimized',
             confidence_score: 0.92,
             priority: 'medium',
             status: 'pending_review',
-            recommended_actions: ['Enable parallel backup processing', 'Increase resource allocation']
+            recommended_actions: ['Enable optimization']
           }
         ])
         .select();
@@ -512,23 +500,13 @@ Deno.serve(async (req) => {
               {
                 customer_id: customerId,
                 template_id: templates[0].id,
-                client_name: 'Acme Corporation',
-                client_contact_email: 'contact@acme.com',
-                client_contact_name: 'Jane Smith',
+                client_name: 'Test Corp',
+                client_contact_email: 'test@test.com',
+                client_contact_name: 'Test User',
                 status: 'in_progress',
                 start_date: new Date().toISOString().split('T')[0],
                 created_by: testUserId,
                 completion_percentage: 35
-              },
-              {
-                customer_id: customerId,
-                template_id: templates[0].id,
-                client_name: 'TechStart Inc',
-                client_contact_email: 'admin@techstart.io',
-                client_contact_name: 'Bob Johnson',
-                status: 'not_started',
-                created_by: testUserId,
-                completion_percentage: 0
               }
             ])
             .select();
