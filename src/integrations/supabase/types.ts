@@ -3153,6 +3153,66 @@ export type Database = {
           },
         ]
       }
+      department_insights: {
+        Row: {
+          affected_users: number | null
+          confidence_score: number | null
+          created_at: string | null
+          customer_id: string
+          department: string
+          description: string
+          first_detected_at: string | null
+          frequency_count: number | null
+          id: string
+          impact_score: number | null
+          insight_type: string
+          last_detected_at: string | null
+          metadata: Json | null
+          status: string | null
+          supporting_interactions: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          affected_users?: number | null
+          confidence_score?: number | null
+          created_at?: string | null
+          customer_id: string
+          department: string
+          description: string
+          first_detected_at?: string | null
+          frequency_count?: number | null
+          id?: string
+          impact_score?: number | null
+          insight_type: string
+          last_detected_at?: string | null
+          metadata?: Json | null
+          status?: string | null
+          supporting_interactions?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          affected_users?: number | null
+          confidence_score?: number | null
+          created_at?: string | null
+          customer_id?: string
+          department?: string
+          description?: string
+          first_detected_at?: string | null
+          frequency_count?: number | null
+          id?: string
+          impact_score?: number | null
+          insight_type?: string
+          last_detected_at?: string | null
+          metadata?: Json | null
+          status?: string | null
+          supporting_interactions?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       department_permissions: {
         Row: {
           accessible_features: Json
@@ -4181,6 +4241,42 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      insight_to_article: {
+        Row: {
+          article_id: string
+          insight_id: string
+          promoted_at: string | null
+          promoted_by: string | null
+        }
+        Insert: {
+          article_id: string
+          insight_id: string
+          promoted_at?: string | null
+          promoted_by?: string | null
+        }
+        Update: {
+          article_id?: string
+          insight_id?: string
+          promoted_at?: string | null
+          promoted_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insight_to_article_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insight_to_article_insight_id_fkey"
+            columns: ["insight_id"]
+            isOneToOne: false
+            referencedRelation: "department_insights"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       integration_credentials: {
         Row: {

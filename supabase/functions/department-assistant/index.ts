@@ -20,6 +20,111 @@ const assistantRequestSchema = z.object({
 // Maximum payload size (2MB)
 const MAX_PAYLOAD_SIZE = 2 * 1024 * 1024;
 
+// Insight generation helper function
+async function generateInsightsIfNeeded(
+  supabase: any,
+  customerId: string,
+  department: string,
+  userId: string,
+  userQuery: string,
+  assistantResponse: string,
+  conversationIds: string[]
+) {
+  // Analyze recent conversations to detect patterns
+  const { data: recentConvs } = await supabase
+    .from("conversation_history")
+    .select("*")
+    .eq("customer_id", customerId)
+    .eq("department", department)
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (!recentConvs || recentConvs.length < 10) {
+    return; // Need at least 10 conversations to detect patterns
+  }
+
+  // Detect knowledge gaps (repeated similar questions)
+  const queryLower = userQuery.toLowerCase();
+  const similarQuestions = recentConvs.filter((conv: any) => 
+    conv.role === "user" && 
+    conv.content.toLowerCase().includes(queryLower.split(' ')[0])
+  );
+
+  if (similarQuestions.length >= 3) {
+    // Check if insight already exists
+    const { data: existingInsight } = await supabase
+      .from("department_insights")
+      .select("id, frequency_count")
+      .eq("customer_id", customerId)
+      .eq("department", department)
+      .eq("insight_type", "knowledge_gap")
+      .ilike("title", `%${queryLower.split(' ').slice(0, 3).join(' ')}%`)
+      .maybeSingle();
+
+    if (existingInsight) {
+      // Update existing insight
+      await supabase
+        .from("department_insights")
+        .update({
+          frequency_count: existingInsight.frequency_count + 1,
+          last_detected_at: new Date().toISOString(),
+          affected_users: supabase.rpc('increment', { x: 1 })
+        })
+        .eq("id", existingInsight.id);
+    } else {
+      // Create new insight
+      await supabase
+        .from("department_insights")
+        .insert({
+          customer_id: customerId,
+          department,
+          insight_type: "knowledge_gap",
+          title: `Frequent questions about: ${userQuery.split(' ').slice(0, 5).join(' ')}`,
+          description: `Users in ${department} are repeatedly asking similar questions, indicating a potential knowledge gap. Consider creating a knowledge article or updating existing documentation.`,
+          confidence_score: 0.75,
+          impact_score: 7,
+          supporting_interactions: conversationIds,
+          affected_users: 1,
+          frequency_count: similarQuestions.length,
+          metadata: {
+            sample_questions: similarQuestions.slice(0, 3).map((q: any) => q.content),
+            detection_method: "repeated_query_pattern"
+          }
+        });
+    }
+  }
+
+  // Detect bottleneck patterns (questions about delays, issues, blockers)
+  const bottleneckKeywords = ['stuck', 'blocked', 'delay', 'waiting', 'slow', 'issue', 'problem', 'not working'];
+  if (bottleneckKeywords.some(kw => queryLower.includes(kw))) {
+    const bottleneckConvs = recentConvs.filter((conv: any) =>
+      conv.role === "user" && 
+      bottleneckKeywords.some(kw => conv.content.toLowerCase().includes(kw))
+    );
+
+    if (bottleneckConvs.length >= 5) {
+      await supabase
+        .from("department_insights")
+        .insert({
+          customer_id: customerId,
+          department,
+          insight_type: "bottleneck",
+          title: `Recurring workflow bottleneck detected in ${department}`,
+          description: `Multiple users are reporting issues with delays or blockers. This may indicate a process bottleneck that needs attention.`,
+          confidence_score: 0.80,
+          impact_score: 8,
+          supporting_interactions: bottleneckConvs.slice(0, 10).map((c: any) => c.id),
+          affected_users: new Set(bottleneckConvs.map((c: any) => c.user_id)).size,
+          frequency_count: bottleneckConvs.length,
+          metadata: {
+            common_issues: bottleneckConvs.slice(0, 5).map((c: any) => c.content),
+            detection_method: "bottleneck_keyword_analysis"
+          }
+        });
+    }
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -209,8 +314,9 @@ serve(async (req) => {
     const assistantMessage = aiData.choices[0].message;
 
     // Store conversation history
+    let conversationIds: string[] = [];
     try {
-      await supabase.from("conversation_history").insert([
+      const { data: insertedConvs } = await supabase.from("conversation_history").insert([
         {
           customer_id: customerId,
           user_id: user.id,
@@ -228,9 +334,21 @@ serve(async (req) => {
           content: assistantMessage.content || "Response generated",
           tool_calls: assistantMessage.tool_calls,
         },
-      ]);
+      ]).select('id');
+      
+      if (insertedConvs) {
+        conversationIds = insertedConvs.map(c => c.id);
+      }
     } catch (err) {
       console.error("Failed to store conversation history:", err);
+    }
+
+    // Phase 2: Insight Generation
+    // Check for patterns and generate insights after storing conversation
+    try {
+      await generateInsightsIfNeeded(supabase, customerId, department, user.id, query, assistantMessage.content, conversationIds);
+    } catch (err) {
+      console.error("Failed to generate insights:", err);
     }
 
     // Handle tool calls if present
