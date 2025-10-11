@@ -192,6 +192,29 @@ serve(async (req) => {
       .eq("is_active", true)
       .maybeSingle();
 
+    // PHASE 4: Fetch relevant global insights and feedback for this department
+    const { data: globalFeedback } = await supabase
+      .from('insight_feedback')
+      .select(`
+        *,
+        global_insights (
+          insight_type,
+          title,
+          description,
+          confidence_score,
+          affected_departments,
+          recommended_actions
+        )
+      `)
+      .eq('customer_id', customerId)
+      .eq('department', department)
+      .eq('acknowledged', false)
+      .order('priority', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    console.log(`Found ${globalFeedback?.length || 0} global feedback items for ${department}`);
+
     // Get knowledge articles accessible to this department
     const { data: knowledgeArticles } = await supabase
       .from("knowledge_articles")
@@ -264,6 +287,31 @@ serve(async (req) => {
     if (knowledgeContext) {
       systemPrompt += knowledgeContext;
       systemPrompt += "\n\nUse the above knowledge base to answer questions accurately. Reference specific articles when relevant.";
+    }
+
+    // PHASE 4: Add global insights and feedback to system prompt
+    if (globalFeedback && globalFeedback.length > 0) {
+      systemPrompt += "\n\n=== ORGANIZATION-WIDE INSIGHTS & RECOMMENDATIONS ===\n";
+      systemPrompt += "The following insights have been identified across multiple departments:\n\n";
+      
+      for (const feedback of globalFeedback) {
+        const insight = feedback.global_insights as any;
+        systemPrompt += `📊 ${feedback.feedback_type.toUpperCase()}: ${feedback.feedback_content}\n`;
+        if (insight) {
+          systemPrompt += `   Related Pattern: ${insight.title}\n`;
+          systemPrompt += `   Confidence: ${Math.round((insight.confidence_score || 0) * 100)}%\n`;
+          const actions = insight.recommended_actions;
+          if (actions && Array.isArray(actions) && actions.length > 0) {
+            systemPrompt += `   Recommended Actions:\n`;
+            for (const action of actions) {
+              systemPrompt += `   - ${action}\n`;
+            }
+          }
+        }
+        systemPrompt += `   Priority: ${feedback.priority.toUpperCase()}\n\n`;
+      }
+      
+      systemPrompt += "When relevant to the user's query, proactively mention these insights and recommendations.\n";
     }
 
     // Build messages array

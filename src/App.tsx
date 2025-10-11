@@ -64,6 +64,7 @@ import RBACPortal from "./pages/RBACPortal";
 import PredictiveInsights from "./pages/PredictiveInsights";
 import DepartmentInsights from "./pages/DepartmentInsights";
 import GlobalInsights from "./pages/GlobalInsights";
+import DepartmentFeedback from "./pages/DepartmentFeedback";
 import WorkflowOrchestration from "./pages/WorkflowOrchestration";
 import VisualWorkflowBuilder from "./pages/VisualWorkflowBuilder";
 import CustomerAdmin from "./pages/CustomerAdmin";
@@ -225,6 +226,23 @@ const App = () => (
           <Route path="/intelligent-assistant" element={
             <ProtectedRoute>
               <IntelligentAssistant />
+            </ProtectedRoute>
+          } />
+          
+          {/* Department Insights & Feedback - Protected */}
+          <Route path="/department-insights" element={
+            <ProtectedRoute>
+              <DepartmentInsights />
+            </ProtectedRoute>
+          } />
+          <Route path="/global-insights" element={
+            <ProtectedRoute>
+              <GlobalInsights />
+            </ProtectedRoute>
+          } />
+          <Route path="/department-feedback" element={
+            <ProtectedRoute>
+              <DepartmentFeedback />
             </ProtectedRoute>
           } />
           

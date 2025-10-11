@@ -4355,6 +4355,71 @@ export type Database = {
         }
         Relationships: []
       }
+      insight_feedback: {
+        Row: {
+          acknowledged: boolean | null
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          application_notes: string | null
+          applied: boolean | null
+          created_at: string
+          customer_id: string
+          department: string
+          expires_at: string | null
+          feedback_content: string
+          feedback_type: string
+          global_insight_id: string | null
+          id: string
+          metadata: Json | null
+          priority: string
+          updated_at: string
+        }
+        Insert: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          application_notes?: string | null
+          applied?: boolean | null
+          created_at?: string
+          customer_id: string
+          department: string
+          expires_at?: string | null
+          feedback_content: string
+          feedback_type: string
+          global_insight_id?: string | null
+          id?: string
+          metadata?: Json | null
+          priority?: string
+          updated_at?: string
+        }
+        Update: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          application_notes?: string | null
+          applied?: boolean | null
+          created_at?: string
+          customer_id?: string
+          department?: string
+          expires_at?: string | null
+          feedback_content?: string
+          feedback_type?: string
+          global_insight_id?: string | null
+          id?: string
+          metadata?: Json | null
+          priority?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insight_feedback_global_insight_id_fkey"
+            columns: ["global_insight_id"]
+            isOneToOne: false
+            referencedRelation: "global_insights"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       insight_to_article: {
         Row: {
           article_id: string
