@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { Shield, CheckCircle, AlertTriangle, FileText, FileCheck, ChevronDown, ClipboardList, FolderOpen, Server } from "lucide-react";
+import { Shield, Activity, CheckCircle, AlertTriangle, FileText, FileCheck, ChevronDown, ClipboardList, FolderOpen, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 
@@ -308,7 +308,26 @@ const ComplianceDashboard = () => {
           </CardContent>
         </Card>
 
-        <DepartmentAIAssistant 
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Security & Risk</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-3">
+              <Button variant="outline" className="flex-1 justify-start" onClick={() => navigate('/risk-assessment')}>
+                <Shield className="h-4 w-4 mr-2" />
+                Risk Assessment Portal
+              </Button>
+              <Button variant="outline" className="flex-1 justify-start" onClick={() => navigate('/dashboard/soc')}>
+                <Activity className="h-4 w-4 mr-2" />
+                Security Operations
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <DepartmentAIAssistant
           department="compliance" 
           departmentLabel="Compliance & GRC" 
         />

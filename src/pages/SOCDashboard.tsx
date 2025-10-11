@@ -543,6 +543,10 @@ const SOCDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 md:grid-cols-4">
+              <Button variant="outline" className="justify-start" onClick={() => navigate('/risk-assessment')}>
+                <Shield className="h-4 w-4 mr-2" />
+                Risk Assessment
+              </Button>
               <Button variant="outline" className="justify-start">
                 <Zap className="h-4 w-4 mr-2" />
                 Run Security Scan
@@ -554,10 +558,6 @@ const SOCDashboard = () => {
               <Button variant="outline" className="justify-start">
                 <FileWarning className="h-4 w-4 mr-2" />
                 Generate Report
-              </Button>
-              <Button variant="outline" className="justify-start">
-                <Lock className="h-4 w-4 mr-2" />
-                Update Policies
               </Button>
             </div>
           </CardContent>

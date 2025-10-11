@@ -137,6 +137,7 @@ const Portal = () => {
     { name: "Integrations", icon: Zap, path: "/integrations", description: "Connected systems and tools" },
     { name: "CMDB", icon: Database, path: "/cmdb", description: "Configuration items and assets" },
     { name: "Incidents & Auto-Remediation", icon: AlertTriangle, path: "/incidents", description: "Monitor and resolve incidents" },
+    { name: "Risk Assessment", icon: Shield, path: "/risk-assessment", description: "CISSP risk analysis and controls" },
     { name: "Client Portal", icon: Users, path: "/client-portal", description: "Support tickets and services" },
     { name: "Custom Reports", icon: FileText, path: "/reports/builder", description: "Build and schedule reports" },
     { name: "Testing Dashboard", icon: Settings, path: "/testing-dashboard", description: "System validation and testing" },
