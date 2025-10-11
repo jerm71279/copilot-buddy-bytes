@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Mail, Phone, Calendar, Building, Briefcase, User } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Calendar, Building, Briefcase, User, MapPin, Home } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 
 interface Onboarding {
@@ -22,6 +22,15 @@ interface Onboarding {
   completion_percentage: number;
   notes: string | null;
   created_at: string;
+  date_of_birth: string | null;
+  work_location: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  state_province: string | null;
+  postal_code: string | null;
+  country: string | null;
+  manager_id: string | null;
 }
 
 interface Template {
@@ -36,6 +45,7 @@ export default function EmployeeOnboardingDetail() {
   const { toast } = useToast();
   const [onboarding, setOnboarding] = useState<Onboarding | null>(null);
   const [template, setTemplate] = useState<Template | null>(null);
+  const [managerName, setManagerName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -48,12 +58,15 @@ export default function EmployeeOnboardingDetail() {
     try {
       const { data: onboardingData, error: onboardingError } = await supabase
         .from('employee_onboardings')
-        .select('*, template_id')
+        .select(`
+          *,
+          template_id
+        `)
         .eq('id', id)
         .single();
 
       if (onboardingError) throw onboardingError;
-      setOnboarding(onboardingData);
+      setOnboarding(onboardingData as any as Onboarding);
 
       if (onboardingData.template_id) {
         const { data: templateData, error: templateError } = await supabase
@@ -64,6 +77,18 @@ export default function EmployeeOnboardingDetail() {
 
         if (!templateError && templateData) {
           setTemplate(templateData);
+        }
+      }
+
+      if (onboardingData.manager_id) {
+        const { data: managerData, error: managerError } = await supabase
+          .from('user_profiles')
+          .select('full_name')
+          .eq('user_id', onboardingData.manager_id)
+          .single();
+
+        if (!managerError && managerData) {
+          setManagerName(managerData.full_name);
         }
       }
     } catch (error) {
@@ -195,6 +220,36 @@ export default function EmployeeOnboardingDetail() {
                   <p className="font-medium capitalize">{onboarding.employment_type.replace('-', ' ')}</p>
                 </div>
               </div>
+
+              {onboarding.date_of_birth && (
+                <div className="flex items-center gap-3">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Date of Birth</p>
+                    <p className="font-medium">{new Date(onboarding.date_of_birth).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              )}
+
+              {onboarding.work_location && (
+                <div className="flex items-center gap-3">
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Work Location</p>
+                    <p className="font-medium">{onboarding.work_location}</p>
+                  </div>
+                </div>
+              )}
+
+              {managerName && (
+                <div className="flex items-center gap-3">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Manager</p>
+                    <p className="font-medium">{managerName}</p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -224,6 +279,29 @@ export default function EmployeeOnboardingDetail() {
             </CardContent>
           </Card>
         </div>
+
+        {(onboarding.address_line1 || onboarding.city || onboarding.country) && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Home className="h-5 w-5" />
+                Address Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                {onboarding.address_line1 && <p className="font-medium">{onboarding.address_line1}</p>}
+                {onboarding.address_line2 && <p className="font-medium">{onboarding.address_line2}</p>}
+                {(onboarding.city || onboarding.state_province || onboarding.postal_code) && (
+                  <p className="text-muted-foreground">
+                    {[onboarding.city, onboarding.state_province, onboarding.postal_code].filter(Boolean).join(', ')}
+                  </p>
+                )}
+                {onboarding.country && <p className="text-muted-foreground">{onboarding.country}</p>}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {onboarding.notes && (
           <Card>

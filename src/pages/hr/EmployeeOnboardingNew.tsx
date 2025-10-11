@@ -25,6 +25,11 @@ interface Role {
   description: string | null;
 }
 
+interface User {
+  user_id: string;
+  full_name: string;
+}
+
 export default function EmployeeOnboardingNew() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -32,6 +37,7 @@ export default function EmployeeOnboardingNew() {
   const preselectedTemplateId = searchParams.get('template');
   const [templates, setTemplates] = useState<Template[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     employee_name: "",
@@ -44,6 +50,15 @@ export default function EmployeeOnboardingNew() {
     start_date: new Date().toISOString().split('T')[0],
     assigned_role_id: "",
     notes: "",
+    date_of_birth: "",
+    work_location: "",
+    address_line1: "",
+    address_line2: "",
+    city: "",
+    state_province: "",
+    postal_code: "",
+    country: "",
+    manager_id: "",
   });
 
   const selectedTemplate = templates.find(t => t.id === formData.template_id);
@@ -51,6 +66,7 @@ export default function EmployeeOnboardingNew() {
   useEffect(() => {
     loadTemplates();
     loadRoles();
+    loadUsers();
   }, []);
 
   const loadTemplates = async () => {
@@ -84,6 +100,20 @@ export default function EmployeeOnboardingNew() {
       setRoles(data || []);
     } catch (error) {
       console.error('Error loading roles:', error);
+    }
+  };
+
+  const loadUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('user_id, full_name')
+        .order('full_name');
+
+      if (error) throw error;
+      setUsers(data || []);
+    } catch (error) {
+      console.error('Error loading users:', error);
     }
   };
 
@@ -127,6 +157,15 @@ export default function EmployeeOnboardingNew() {
           start_date: formData.start_date,
           assigned_role_id: formData.assigned_role_id || null,
           notes: formData.notes || null,
+          date_of_birth: formData.date_of_birth || null,
+          work_location: formData.work_location || null,
+          address_line1: formData.address_line1 || null,
+          address_line2: formData.address_line2 || null,
+          city: formData.city || null,
+          state_province: formData.state_province || null,
+          postal_code: formData.postal_code || null,
+          country: formData.country || null,
+          manager_id: formData.manager_id || null,
           status: 'not_started',
           completion_percentage: 0,
           created_by: user.id
@@ -324,6 +363,110 @@ export default function EmployeeOnboardingNew() {
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                     required
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="date_of_birth">Date of Birth</Label>
+                  <Input
+                    id="date_of_birth"
+                    type="date"
+                    value={formData.date_of_birth}
+                    onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="work_location">Work Location</Label>
+                  <Input
+                    id="work_location"
+                    value={formData.work_location}
+                    onChange={(e) => setFormData({ ...formData, work_location: e.target.value })}
+                    placeholder="e.g., Remote, HQ Office, etc."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="manager_id">Manager</Label>
+                  <Select
+                    value={formData.manager_id}
+                    onValueChange={(value) => setFormData({ ...formData, manager_id: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a manager" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users.map((user) => (
+                        <SelectItem key={user.user_id} value={user.user_id}>
+                          {user.full_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Address Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="address_line1">Address Line 1</Label>
+                    <Input
+                      id="address_line1"
+                      value={formData.address_line1}
+                      onChange={(e) => setFormData({ ...formData, address_line1: e.target.value })}
+                      placeholder="Street address"
+                    />
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="address_line2">Address Line 2</Label>
+                    <Input
+                      id="address_line2"
+                      value={formData.address_line2}
+                      onChange={(e) => setFormData({ ...formData, address_line2: e.target.value })}
+                      placeholder="Apartment, suite, unit, etc. (optional)"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="city">City</Label>
+                    <Input
+                      id="city"
+                      value={formData.city}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      placeholder="City"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="state_province">State/Province</Label>
+                    <Input
+                      id="state_province"
+                      value={formData.state_province}
+                      onChange={(e) => setFormData({ ...formData, state_province: e.target.value })}
+                      placeholder="State or Province"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="postal_code">Postal Code</Label>
+                    <Input
+                      id="postal_code"
+                      value={formData.postal_code}
+                      onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
+                      placeholder="ZIP or Postal Code"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Country</Label>
+                    <Input
+                      id="country"
+                      value={formData.country}
+                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                      placeholder="Country"
+                    />
+                  </div>
                 </div>
               </div>
 
