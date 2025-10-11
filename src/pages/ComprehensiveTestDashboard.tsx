@@ -1,10 +1,27 @@
 import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import Navigation from '@/components/Navigation';
+import DashboardNavigation from '@/components/DashboardNavigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, XCircle, AlertCircle, Clock, FileText, Play } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { 
+  CheckCircle2, 
+  XCircle, 
+  AlertCircle, 
+  Clock, 
+  FileText, 
+  Play,
+  Zap,
+  Database,
+  Shield,
+  Activity,
+  GitBranch,
+  ArrowRight
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface TestCase {
@@ -32,6 +49,30 @@ export default function ComprehensiveTestDashboard() {
   const [testDataResult, setTestDataResult] = useState<any>(null);
   const [fuzzResult, setFuzzResult] = useState<any>(null);
   const [flowTrace, setFlowTrace] = useState<any>(null);
+  
+  const [testPhases] = useState<TestPhase[]>([
+    {
+      id: 'feedback-loop',
+      name: 'Feedback Loop',
+      description: 'Test all 4 phases',
+      tests: [
+        { id: 'phase1', name: 'AI Assistant', description: 'Test AI responses', status: 'not-started', priority: 'critical', route: '/intelligent-assistant' },
+        { id: 'phase2', name: 'Insights', description: 'View insights', status: 'not-started', priority: 'critical', route: '/department-insights' },
+        { id: 'phase3', name: 'MML Engine', description: 'Global insights', status: 'not-started', priority: 'critical', route: '/global-insights' },
+        { id: 'phase4', name: 'Feedback', description: 'Distribute feedback', status: 'not-started', priority: 'critical', route: '/department-feedback' }
+      ]
+    }
+  ]);
+
+  const getStatusIcon = (status: TestCase['status']) => {
+    switch (status) {
+      case 'passed': return <CheckCircle2 className="h-5 w-5 text-green-500" />;
+      case 'failed': return <XCircle className="h-5 w-5 text-red-500" />;
+      case 'blocked': return <AlertCircle className="h-5 w-5 text-yellow-500" />;
+      case 'in-progress': return <Clock className="h-5 w-5 text-blue-500" />;
+      default: return <div className="h-5 w-5 rounded-full border-2 border-muted" />;
+    }
+  };
 
   const generateTestData = async () => {
     setIsGenerating(true);
@@ -177,22 +218,26 @@ export default function ComprehensiveTestDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="h-5 w-5" />
-                  Testing Coverage
+                  Two-Tier Feedback Loop Tests
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Badge variant="outline">✓ Knowledge Base</Badge>
-                    <Badge variant="outline">✓ AI Systems</Badge>
-                    <Badge variant="outline">✓ Security & Compliance</Badge>
+              <CardContent className="space-y-3">
+                {testPhases[0].tests.map(test => (
+                  <div key={test.id} className="flex items-center justify-between p-4 border rounded">
+                    <div className="flex items-center gap-3">
+                      {getStatusIcon(test.status)}
+                      <div>
+                        <h4 className="font-semibold">{test.name}</h4>
+                        <p className="text-sm text-muted-foreground">{test.description}</p>
+                      </div>
+                    </div>
+                    {test.route && (
+                      <Button size="sm" onClick={() => navigate(test.route!)}>
+                        <Play className="h-4 w-4 mr-2" />Test
+                      </Button>
+                    )}
                   </div>
-                  <div className="space-y-2">
-                    <Badge variant="outline">✓ Workflow Automation</Badge>
-                    <Badge variant="outline">✓ MCP Servers</Badge>
-                    <Badge variant="outline">✓ Client Onboarding</Badge>
-                  </div>
-                </div>
+                ))}
               </CardContent>
             </Card>
           </TabsContent>
