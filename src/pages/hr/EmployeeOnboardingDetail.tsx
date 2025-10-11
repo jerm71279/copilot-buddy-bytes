@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Mail, Phone, Calendar, Building, Briefcase, User, MapPin, Home, Pencil } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Calendar, Building, Briefcase, User, MapPin, Home, Pencil, CheckCircle2, Circle, Clock } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 
 interface Onboarding {
@@ -31,6 +32,7 @@ interface Onboarding {
   postal_code: string | null;
   country: string | null;
   manager_id: string | null;
+  template_id: string | null;
 }
 
 interface Template {
@@ -39,12 +41,26 @@ interface Template {
   description: string | null;
 }
 
+interface OnboardingTask {
+  id: string;
+  task_name: string;
+  description: string | null;
+  task_category: string;
+  status: string;
+  sequence_order: number;
+  assigned_role: string | null;
+  estimated_hours: number | null;
+  completed_at: string | null;
+  due_date: string | null;
+}
+
 export default function EmployeeOnboardingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [onboarding, setOnboarding] = useState<Onboarding | null>(null);
   const [template, setTemplate] = useState<Template | null>(null);
+  const [tasks, setTasks] = useState<OnboardingTask[]>([]);
   const [managerName, setManagerName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -67,6 +83,17 @@ export default function EmployeeOnboardingDetail() {
 
       if (onboardingError) throw onboardingError;
       setOnboarding(onboardingData as any as Onboarding);
+
+      // Load tasks
+      const { data: tasksData, error: tasksError } = await supabase
+        .from('employee_onboarding_tasks')
+        .select('*')
+        .eq('onboarding_id', id)
+        .order('sequence_order');
+
+      if (!tasksError && tasksData) {
+        setTasks(tasksData as any);
+      }
 
       if (onboardingData.template_id) {
         const { data: templateData, error: templateError } = await supabase
@@ -103,6 +130,54 @@ export default function EmployeeOnboardingDetail() {
     }
   };
 
+  const handleTaskStatusChange = async (taskId: string, newStatus: string) => {
+    try {
+      const updates: any = { status: newStatus };
+      if (newStatus === 'completed') {
+        updates.completed_at = new Date().toISOString();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          updates.completed_by = user.id;
+        }
+      }
+
+      const { error } = await supabase
+        .from('employee_onboarding_tasks')
+        .update(updates)
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      // Recalculate completion percentage
+      const completedTasks = tasks.filter(t => 
+        t.id === taskId ? newStatus === 'completed' : t.status === 'completed'
+      ).length;
+      const completionPercentage = Math.round((completedTasks / tasks.length) * 100);
+
+      await supabase
+        .from('employee_onboardings')
+        .update({ 
+          completion_percentage: completionPercentage,
+          status: completionPercentage === 100 ? 'completed' : 'in_progress'
+        })
+        .eq('id', id);
+
+      toast({
+        title: "Success",
+        description: "Task status updated"
+      });
+
+      loadOnboarding();
+    } catch (error) {
+      console.error('Error updating task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update task status",
+        variant: "destructive"
+      });
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
       not_started: { label: "Not Started", variant: "secondary" },
@@ -114,6 +189,25 @@ export default function EmployeeOnboardingDetail() {
     const config = statusConfig[status] || { label: status, variant: "secondary" };
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
+
+  const getTaskIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle2 className="h-5 w-5 text-green-600" />;
+      case 'in_progress':
+        return <Clock className="h-5 w-5 text-blue-600" />;
+      default:
+        return <Circle className="h-5 w-5 text-muted-foreground" />;
+    }
+  };
+
+  const groupedTasks = tasks.reduce((acc, task) => {
+    if (!acc[task.task_category]) {
+      acc[task.task_category] = [];
+    }
+    acc[task.task_category].push(task);
+    return acc;
+  }, {} as Record<string, OnboardingTask[]>);
 
   if (isLoading) {
     return (
@@ -304,6 +398,77 @@ export default function EmployeeOnboardingDetail() {
                   </p>
                 )}
                 {onboarding.country && <p className="text-muted-foreground">{onboarding.country}</p>}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Onboarding Tasks */}
+        {tasks.length > 0 && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Onboarding Tasks ({tasks.filter(t => t.status === 'completed').length}/{tasks.length} Completed)</CardTitle>
+              <CardDescription>Complete these steps to finish onboarding</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {Object.entries(groupedTasks).map(([category, categoryTasks]) => (
+                  <div key={category} className="space-y-3">
+                    <h3 className="font-semibold text-lg">{category}</h3>
+                    <div className="space-y-2">
+                      {categoryTasks.map((task) => (
+                        <div 
+                          key={task.id} 
+                          className="flex items-start gap-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                        >
+                          <div className="mt-1">
+                            {getTaskIcon(task.status)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1">
+                                <p className="font-medium">{task.task_name}</p>
+                                {task.description && (
+                                  <p className="text-sm text-muted-foreground mt-1">{task.description}</p>
+                                )}
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                  {task.assigned_role && (
+                                    <Badge variant="outline" className="text-xs">
+                                      {task.assigned_role}
+                                    </Badge>
+                                  )}
+                                  {task.estimated_hours && (
+                                    <Badge variant="outline" className="text-xs">
+                                      {task.estimated_hours}h estimated
+                                    </Badge>
+                                  )}
+                                  {task.due_date && (
+                                    <Badge variant="outline" className="text-xs">
+                                      Due: {new Date(task.due_date).toLocaleDateString()}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                              <Select
+                                value={task.status}
+                                onValueChange={(value) => handleTaskStatusChange(task.id, value)}
+                              >
+                                <SelectTrigger className="w-[140px]">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="pending">Pending</SelectItem>
+                                  <SelectItem value="in_progress">In Progress</SelectItem>
+                                  <SelectItem value="completed">Completed</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
