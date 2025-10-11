@@ -103,6 +103,9 @@ import EmployeeOnboardingTemplates from "./pages/hr/EmployeeOnboardingTemplates"
 import EmployeeOnboardingNew from "./pages/hr/EmployeeOnboardingNew";
 import EmployeeOnboardingDetail from "./pages/hr/EmployeeOnboardingDetail";
 import EmployeeOnboardingEdit from "./pages/hr/EmployeeOnboardingEdit";
+import RecruitmentPipeline from "./pages/hr/RecruitmentPipeline";
+import TrainingDevelopment from "./pages/hr/TrainingDevelopment";
+import BenefitsAdministration from "./pages/hr/BenefitsAdministration";
 
 const queryClient = new QueryClient();
 
@@ -631,6 +634,23 @@ const App = () => (
           <Route path="/hr/employee-onboarding/:id" element={
             <ProtectedRoute>
               <EmployeeOnboardingDetail />
+            </ProtectedRoute>
+          } />
+          
+          {/* HR Recruitment, Training, Benefits - Protected */}
+          <Route path="/hr/recruitment" element={
+            <ProtectedRoute>
+              <RecruitmentPipeline />
+            </ProtectedRoute>
+          } />
+          <Route path="/hr/training" element={
+            <ProtectedRoute>
+              <TrainingDevelopment />
+            </ProtectedRoute>
+          } />
+          <Route path="/hr/benefits" element={
+            <ProtectedRoute>
+              <BenefitsAdministration />
             </ProtectedRoute>
           } />
           
