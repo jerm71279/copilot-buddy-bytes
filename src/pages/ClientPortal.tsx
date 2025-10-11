@@ -126,7 +126,7 @@ export default function ClientPortal() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 space-y-6" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+      <main className="container mx-auto px-4 pb-8 space-y-6" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
         <DashboardNavigation 
           title="Client Portal"
           dashboards={[
@@ -361,7 +361,7 @@ export default function ClientPortal() {
           </div>
         </TabsContent>
       </Tabs>
-      </div>
+      </main>
     </div>
   );
 }

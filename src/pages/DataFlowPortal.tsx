@@ -45,7 +45,7 @@ const DataFlowPortal = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-background">
-      <div className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
         <DashboardNavigation />
         
         <div className="mb-8">
@@ -517,7 +517,7 @@ const DataFlowPortal = () => {
             </Tabs>
           </CardContent>
         </Card>
-      </div>
+      </main>
     </div>
   );
 };

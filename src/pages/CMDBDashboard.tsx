@@ -205,8 +205,8 @@ const CMDBDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <div className="min-h-screen bg-background">
+      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
 
         {/* Floating Add CI Button - Partially Hidden */}
         <Button
@@ -395,7 +395,7 @@ const CMDBDashboard = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

@@ -164,8 +164,7 @@ const ComplianceDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-
-      <div className="container mx-auto px-4 pb-8 space-y-6" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+      <main className="container mx-auto px-4 pb-8 space-y-6" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
 
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Compliance Dashboard</h1>
@@ -331,7 +330,7 @@ const ComplianceDashboard = () => {
           department="compliance" 
           departmentLabel="Compliance & GRC" 
         />
-      </div>
+      </main>
     </div>
   );
 };

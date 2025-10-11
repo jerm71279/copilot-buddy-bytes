@@ -200,7 +200,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 space-y-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+      <main className="container mx-auto px-4 pb-8 space-y-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
         
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
@@ -328,7 +328,7 @@ const AdminDashboard = () => {
             )}
           </CardContent>
         </Card>
-      </div>
+      </main>
     </div>
   );
 };

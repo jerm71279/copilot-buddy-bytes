@@ -282,8 +282,7 @@ const SOCDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-
-      <div className="container mx-auto px-4 pb-8 space-y-6" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+      <main className="container mx-auto px-4 pb-8 space-y-6" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
 
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Security Operations Center</h1>
@@ -562,7 +561,7 @@ const SOCDashboard = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </main>
     </div>
   );
 };
