@@ -9146,6 +9146,19 @@ export type Database = {
         }
         Returns: boolean
       }
+      validate_array_input: {
+        Args: {
+          field_name?: string
+          input_array: string[]
+          max_item_length?: number
+          max_items?: number
+        }
+        Returns: boolean
+      }
+      validate_text_input: {
+        Args: { field_name?: string; input_text: string; max_length?: number }
+        Returns: boolean
+      }
       validate_uuid_not_undefined: {
         Args: { uuid_value: string }
         Returns: boolean

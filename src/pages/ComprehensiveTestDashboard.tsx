@@ -220,6 +220,45 @@ export default function ComprehensiveTestDashboard() {
               </CardContent>
             </Card>
 
+            <Alert className="border-green-200 bg-green-50">
+              <Shield className="h-4 w-4 text-green-600" />
+              <AlertTitle className="text-green-900">Input Validation System Active</AlertTitle>
+              <AlertDescription className="text-green-800">
+                <div className="space-y-2 mt-2">
+                  <p>Multi-layer protection against SQL injection, XSS, path traversal, and other attacks:</p>
+                  <div className="grid grid-cols-2 gap-2 mt-3">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Client-side validation</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Edge function validation</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Database triggers</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Real-time sanitization</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-green-200">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="text-green-700 border-green-300"
+                      onClick={() => window.open('/INPUT_VALIDATION_GUIDE.md', '_blank')}
+                    >
+                      <FileText className="h-3 w-3 mr-2" />
+                      View Validation Guide
+                    </Button>
+                  </div>
+                </div>
+              </AlertDescription>
+            </Alert>
+
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
