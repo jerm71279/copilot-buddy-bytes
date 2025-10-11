@@ -111,7 +111,12 @@ Deno.serve(async (req) => {
         kbCount += articles?.length || 0;
 
       } catch (err) {
-        kbErrors.push(err instanceof Error ? err.message : String(err));
+        const errorMsg = err instanceof Error 
+          ? err.message 
+          : typeof err === 'object' && err !== null
+          ? JSON.stringify(err)
+          : String(err);
+        kbErrors.push(errorMsg);
       }
     } else {
       kbErrors.push('Skipped: No user available');
@@ -170,7 +175,12 @@ Deno.serve(async (req) => {
         aiCount = interactions?.length || 0;
 
       } catch (err) {
-        aiErrors.push(err instanceof Error ? err.message : String(err));
+        const errorMsg = err instanceof Error 
+          ? err.message 
+          : typeof err === 'object' && err !== null
+          ? JSON.stringify(err)
+          : String(err);
+        aiErrors.push(errorMsg);
       }
     } else {
       aiErrors.push('Skipped: No user available');
@@ -225,7 +235,12 @@ Deno.serve(async (req) => {
         auditCount = logs?.length || 0;
 
       } catch (err) {
-        auditErrors.push(err instanceof Error ? err.message : String(err));
+        const errorMsg = err instanceof Error 
+          ? err.message 
+          : typeof err === 'object' && err !== null
+          ? JSON.stringify(err)
+          : String(err);
+        auditErrors.push(errorMsg);
       }
     } else {
       auditErrors.push('Skipped: No user available');
@@ -276,7 +291,12 @@ Deno.serve(async (req) => {
         behaviorCount = events?.length || 0;
 
       } catch (err) {
-        behaviorErrors.push(err instanceof Error ? err.message : String(err));
+        const errorMsg = err instanceof Error 
+          ? err.message 
+          : typeof err === 'object' && err !== null
+          ? JSON.stringify(err)
+          : String(err);
+        behaviorErrors.push(errorMsg);
       }
     } else {
       behaviorErrors.push('Skipped: No user available');
@@ -329,7 +349,12 @@ Deno.serve(async (req) => {
       anomalyCount = anomalies?.length || 0;
 
     } catch (err) {
-      anomalyErrors.push(err instanceof Error ? err.message : String(err));
+      const errorMsg = err instanceof Error 
+        ? err.message 
+        : typeof err === 'object' && err !== null
+        ? JSON.stringify(err)
+        : String(err);
+      anomalyErrors.push(errorMsg);
     }
 
     results.push({
@@ -399,7 +424,12 @@ Deno.serve(async (req) => {
       }
 
     } catch (err) {
-      mcpErrors.push(err instanceof Error ? err.message : String(err));
+      const errorMsg = err instanceof Error 
+        ? err.message 
+        : typeof err === 'object' && err !== null
+        ? JSON.stringify(err)
+        : String(err);
+      mcpErrors.push(errorMsg);
     }
 
     results.push({
@@ -446,7 +476,12 @@ Deno.serve(async (req) => {
       mlCount = insights?.length || 0;
 
     } catch (err) {
-      mlErrors.push(err instanceof Error ? err.message : String(err));
+      const errorMsg = err instanceof Error 
+        ? err.message 
+        : typeof err === 'object' && err !== null
+        ? JSON.stringify(err)
+        : String(err);
+      mlErrors.push(errorMsg);
     }
 
     results.push({
@@ -503,7 +538,12 @@ Deno.serve(async (req) => {
         }
 
       } catch (err) {
-        onboardingErrors.push(err instanceof Error ? err.message : String(err));
+        const errorMsg = err instanceof Error 
+          ? err.message 
+          : typeof err === 'object' && err !== null
+          ? JSON.stringify(err)
+          : String(err);
+        onboardingErrors.push(errorMsg);
       }
     } else {
       onboardingErrors.push('Skipped: No user available');
