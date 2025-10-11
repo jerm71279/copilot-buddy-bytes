@@ -1,27 +1,30 @@
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { 
-  Play, 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle, 
-  Database, 
-  Shield,
-  Zap,
-  Activity,
-  GitBranch,
-  ArrowRight
-} from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { CheckCircle2, XCircle, AlertCircle, Clock, FileText, Play } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+interface TestCase {
+  id: string;
+  name: string;
+  description: string;
+  status: 'not-started' | 'in-progress' | 'passed' | 'failed' | 'blocked';
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  route?: string;
+}
+
+interface TestPhase {
+  id: string;
+  name: string;
+  description: string;
+  tests: TestCase[];
+}
 
 export default function ComprehensiveTestDashboard() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isFuzzing, setIsFuzzing] = useState(false);
