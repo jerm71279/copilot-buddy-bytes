@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Mail, Phone, Calendar, Building, Briefcase, User, MapPin, Home } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Calendar, Building, Briefcase, User, MapPin, Home, Pencil } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 
 interface Onboarding {
@@ -166,7 +166,13 @@ export default function EmployeeOnboardingDetail() {
               <h1 className="text-4xl font-bold mb-2">{onboarding.employee_name}</h1>
               <p className="text-muted-foreground">{onboarding.job_title || 'No job title specified'}</p>
             </div>
-            {getStatusBadge(onboarding.status)}
+            <div className="flex items-center gap-2">
+              {getStatusBadge(onboarding.status)}
+              <Button onClick={() => navigate(`/hr/employee-onboarding/${id}/edit`)}>
+                <Pencil className="mr-2 h-4 w-4" />
+                Edit Demographics
+              </Button>
+            </div>
           </div>
         </div>
 
