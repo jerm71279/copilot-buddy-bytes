@@ -63,6 +63,7 @@ import DataFlowPortal from "./pages/DataFlowPortal";
 import RBACPortal from "./pages/RBACPortal";
 import PredictiveInsights from "./pages/PredictiveInsights";
 import DepartmentInsights from "./pages/DepartmentInsights";
+import GlobalInsights from "./pages/GlobalInsights";
 import WorkflowOrchestration from "./pages/WorkflowOrchestration";
 import VisualWorkflowBuilder from "./pages/VisualWorkflowBuilder";
 import CustomerAdmin from "./pages/CustomerAdmin";
@@ -349,6 +350,13 @@ const App = () => (
           <Route path="/department-insights" element={
             <ProtectedRoute>
               <DepartmentInsights />
+            </ProtectedRoute>
+          } />
+          
+          {/* Global Insights - Protected */}
+          <Route path="/global-insights" element={
+            <ProtectedRoute>
+              <GlobalInsights />
             </ProtectedRoute>
           } />
           

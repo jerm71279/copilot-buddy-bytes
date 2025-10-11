@@ -15,6 +15,9 @@ verify_jwt = false
 [functions.department-assistant]
 verify_jwt = false
 
+[functions.central-mml-processor]
+verify_jwt = false
+
 [functions.workflow-executor]
 verify_jwt = false
 

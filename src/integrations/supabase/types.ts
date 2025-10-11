@@ -3163,6 +3163,7 @@ export type Database = {
           description: string
           first_detected_at: string | null
           frequency_count: number | null
+          global_insight_id: string | null
           id: string
           impact_score: number | null
           insight_type: string
@@ -3182,6 +3183,7 @@ export type Database = {
           description: string
           first_detected_at?: string | null
           frequency_count?: number | null
+          global_insight_id?: string | null
           id?: string
           impact_score?: number | null
           insight_type: string
@@ -3201,6 +3203,7 @@ export type Database = {
           description?: string
           first_detected_at?: string | null
           frequency_count?: number | null
+          global_insight_id?: string | null
           id?: string
           impact_score?: number | null
           insight_type?: string
@@ -3211,7 +3214,15 @@ export type Database = {
           title?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "department_insights_global_insight_id_fkey"
+            columns: ["global_insight_id"]
+            isOneToOne: false
+            referencedRelation: "global_insights"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       department_permissions: {
         Row: {
@@ -4170,6 +4181,72 @@ export type Database = {
           },
         ]
       }
+      global_insights: {
+        Row: {
+          affected_departments: string[]
+          confidence_score: number | null
+          created_at: string | null
+          customer_id: string
+          description: string
+          expected_impact: string | null
+          id: string
+          impact_level: string | null
+          implementation_complexity: string | null
+          insight_type: string
+          metadata: Json | null
+          priority: number | null
+          recommended_actions: Json | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_insight_ids: string[]
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          affected_departments?: string[]
+          confidence_score?: number | null
+          created_at?: string | null
+          customer_id: string
+          description: string
+          expected_impact?: string | null
+          id?: string
+          impact_level?: string | null
+          implementation_complexity?: string | null
+          insight_type: string
+          metadata?: Json | null
+          priority?: number | null
+          recommended_actions?: Json | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_insight_ids?: string[]
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          affected_departments?: string[]
+          confidence_score?: number | null
+          created_at?: string | null
+          customer_id?: string
+          description?: string
+          expected_impact?: string | null
+          id?: string
+          impact_level?: string | null
+          implementation_complexity?: string | null
+          insight_type?: string
+          metadata?: Json | null
+          priority?: number | null
+          recommended_actions?: Json | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_insight_ids?: string[]
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       incidents: {
         Row: {
           affected_ci_ids: string[] | null
@@ -4239,6 +4316,42 @@ export type Database = {
           status?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      insight_correlations: {
+        Row: {
+          correlation_strength: number | null
+          correlation_type: string
+          customer_id: string
+          description: string | null
+          discovered_at: string | null
+          id: string
+          insight_a_id: string
+          insight_b_id: string
+          metadata: Json | null
+        }
+        Insert: {
+          correlation_strength?: number | null
+          correlation_type: string
+          customer_id: string
+          description?: string | null
+          discovered_at?: string | null
+          id?: string
+          insight_a_id: string
+          insight_b_id: string
+          metadata?: Json | null
+        }
+        Update: {
+          correlation_strength?: number | null
+          correlation_type?: string
+          customer_id?: string
+          description?: string | null
+          discovered_at?: string | null
+          id?: string
+          insight_a_id?: string
+          insight_b_id?: string
+          metadata?: Json | null
         }
         Relationships: []
       }
