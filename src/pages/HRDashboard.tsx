@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Users, UserCheck, Clock, TrendingUp, ChevronDown, FileText, ClipboardList, UserPlus, Server, Briefcase, BookOpen, Heart } from "lucide-react";
+import { Users, UserCheck, Clock, TrendingUp, ChevronDown, FileText, ClipboardList, UserPlus, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
 
@@ -241,60 +241,6 @@ const HRDashboard = () => {
             <CardContent>
               <Button variant="outline" className="w-full">
                 View Dashboard
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate('/hr/recruitment')}
-          >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Briefcase className="h-5 w-5" />
-                Recruitment Pipeline
-              </CardTitle>
-              <CardDescription>Manage job postings and track candidates</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" className="w-full">
-                View Jobs
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate('/hr/training')}
-          >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
-                Training & Development
-              </CardTitle>
-              <CardDescription>Manage training courses and certifications</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" className="w-full">
-                View Training
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate('/hr/benefits')}
-          >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Heart className="h-5 w-5" />
-                Benefits Administration
-              </CardTitle>
-              <CardDescription>Manage employee benefit plans</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" className="w-full">
-                View Benefits
               </Button>
             </CardContent>
           </Card>
