@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Settings, Bell, Palette, Lock, Database, Download, Upload, Sun, Moon } from "lucide-react";
+import { Settings, Bell, Palette, Lock, Database, Download, Upload, Sun, Moon, TestTube } from "lucide-react";
 import { AccessHistoryDialog } from "./AccessHistoryDialog";
+import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +31,7 @@ interface DashboardSettingsMenuProps {
 }
 
 export const DashboardSettingsMenu = ({ dashboardName, onExportData }: DashboardSettingsMenuProps) => {
+  const navigate = useNavigate();
   const [notificationDialogOpen, setNotificationDialogOpen] = useState(false);
   const [privacyDialogOpen, setPrivacyDialogOpen] = useState(false);
   const [accessHistoryOpen, setAccessHistoryOpen] = useState(false);
@@ -90,6 +92,13 @@ export const DashboardSettingsMenu = ({ dashboardName, onExportData }: Dashboard
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56 bg-background z-[60]">
           <DropdownMenuLabel>{dashboardName} Settings</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          
+          <DropdownMenuItem onClick={() => navigate('/testing-dashboard')}>
+            <TestTube className="h-4 w-4 mr-2" />
+            Testing Dashboard
+          </DropdownMenuItem>
+          
           <DropdownMenuSeparator />
           
           <DropdownMenuItem onClick={() => setNotificationDialogOpen(true)}>
