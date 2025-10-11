@@ -8,8 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
 import { 
-  CheckCircle2, 
+  CheckCircle2,
   XCircle, 
   AlertCircle, 
   Clock, 
@@ -20,7 +22,11 @@ import {
   Shield,
   Activity,
   GitBranch,
-  ArrowRight
+  ArrowRight,
+  Bug,
+  AlertTriangle,
+  Copy,
+  ExternalLink
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -272,32 +278,192 @@ export default function ComprehensiveTestDashboard() {
             )}
 
             {fuzzResult && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Security Fuzz Results</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="text-sm text-muted-foreground">Total Tests</p>
-                      <p className="text-2xl font-bold">{fuzzResult.summary.total_tests}</p>
+              <>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Security Fuzz Results</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-4 gap-4">
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">Total Tests</p>
+                        <p className="text-2xl font-bold">{fuzzResult.summary.total_tests}</p>
+                      </div>
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">Passed</p>
+                        <p className="text-2xl font-bold text-green-600">{fuzzResult.summary.passed}</p>
+                      </div>
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">Failed</p>
+                        <p className="text-2xl font-bold text-yellow-600">{fuzzResult.summary.failed}</p>
+                      </div>
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">Vulnerabilities</p>
+                        <p className="text-2xl font-bold text-red-600">{fuzzResult.summary.vulnerabilities_found}</p>
+                      </div>
                     </div>
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="text-sm text-muted-foreground">Passed</p>
-                      <p className="text-2xl font-bold text-green-600">{fuzzResult.summary.passed}</p>
-                    </div>
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="text-sm text-muted-foreground">Failed</p>
-                      <p className="text-2xl font-bold text-yellow-600">{fuzzResult.summary.failed}</p>
-                    </div>
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="text-sm text-muted-foreground">Vulnerabilities</p>
-                      <p className="text-2xl font-bold text-red-600">{fuzzResult.summary.vulnerabilities_found}</p>
-                    </div>
-                  </div>
-                  <Progress value={(fuzzResult.summary.passed / fuzzResult.summary.total_tests) * 100} />
-                </CardContent>
-              </Card>
+                    <Progress value={(fuzzResult.summary.passed / fuzzResult.summary.total_tests) * 100} />
+                  </CardContent>
+                </Card>
+
+                {fuzzResult.vulnerabilities && fuzzResult.vulnerabilities.length > 0 && (
+                  <Card className="border-destructive">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-destructive">
+                        <AlertTriangle className="h-5 w-5" />
+                        Critical Vulnerabilities Detected
+                      </CardTitle>
+                      <CardDescription>
+                        {fuzzResult.vulnerabilities.length} security vulnerabilities found that require immediate attention
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {fuzzResult.vulnerabilities.map((vuln: any, idx: number) => (
+                        <Alert key={idx} variant="destructive">
+                          <Bug className="h-4 w-4" />
+                          <AlertTitle className="flex items-center justify-between">
+                            <span>{vuln.test_type} Vulnerability in {vuln.table}.{vuln.field}</span>
+                            <Badge variant="destructive">{vuln.test_type}</Badge>
+                          </AlertTitle>
+                          <AlertDescription className="space-y-3 mt-2">
+                            <div className="space-y-2">
+                              <div className="flex items-start gap-2">
+                                <span className="font-semibold text-sm">Test Value:</span>
+                                <code className="text-xs bg-muted px-2 py-1 rounded flex-1 break-all">
+                                  {vuln.test_value}
+                                </code>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-sm">Expected:</span>
+                                <Badge variant="outline">{vuln.expected_result}</Badge>
+                                <span className="font-semibold text-sm ml-4">Actual:</span>
+                                <Badge variant="destructive">{vuln.actual_result}</Badge>
+                              </div>
+                            </div>
+                            
+                            <Separator />
+                            
+                            <div className="bg-muted p-3 rounded-lg space-y-2">
+                              <h4 className="font-semibold text-sm flex items-center gap-2">
+                                <Shield className="h-4 w-4" />
+                                Remediation Steps
+                              </h4>
+                              {vuln.test_type === 'SQL Injection' && (
+                                <ul className="text-sm space-y-1 ml-6 list-disc">
+                                  <li>Add input validation using parameterized queries</li>
+                                  <li>Implement input sanitization for special characters</li>
+                                  <li>Add database-level constraints on {vuln.field}</li>
+                                  <li>Review RLS policies for {vuln.table}</li>
+                                </ul>
+                              )}
+                              {vuln.test_type === 'XSS' && (
+                                <ul className="text-sm space-y-1 ml-6 list-disc">
+                                  <li>Sanitize HTML content before rendering</li>
+                                  <li>Implement Content Security Policy (CSP) headers</li>
+                                  <li>Encode output when displaying {vuln.field}</li>
+                                  <li>Add input validation to reject script tags</li>
+                                </ul>
+                              )}
+                              {vuln.test_type === 'Special Chars' && (
+                                <ul className="text-sm space-y-1 ml-6 list-disc">
+                                  <li>Add character whitelist validation</li>
+                                  <li>Implement proper encoding for special characters</li>
+                                  <li>Add length constraints on {vuln.field}</li>
+                                  <li>Sanitize null bytes and control characters</li>
+                                </ul>
+                              )}
+                              {vuln.test_type === 'Format String' && (
+                                <ul className="text-sm space-y-1 ml-6 list-disc">
+                                  <li>Validate and reject format string characters</li>
+                                  <li>Use safe string formatting methods</li>
+                                  <li>Add input validation on {vuln.field}</li>
+                                </ul>
+                              )}
+                            </div>
+
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(vuln.test_value);
+                                  toast({ title: "Copied", description: "Test value copied to clipboard" });
+                                }}
+                              >
+                                <Copy className="h-3 w-3 mr-1" />
+                                Copy Test Value
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => window.open('https://owasp.org/www-project-top-ten/', '_blank')}
+                              >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                OWASP Guidelines
+                              </Button>
+                            </div>
+                          </AlertDescription>
+                        </Alert>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {fuzzResult.all_tests && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        All Test Results
+                      </CardTitle>
+                      <CardDescription>
+                        Detailed results for all {fuzzResult.all_tests.length} fuzz tests
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2 max-h-96 overflow-y-auto">
+                        {fuzzResult.all_tests.map((test: any, idx: number) => (
+                          <div 
+                            key={idx} 
+                            className={`flex items-center justify-between p-3 border rounded-lg ${
+                              test.actual_result === 'rejected' ? 'bg-green-50 dark:bg-green-950/20' : 
+                              test.actual_result === 'accepted' ? 'bg-red-50 dark:bg-red-950/20' : 
+                              'bg-yellow-50 dark:bg-yellow-950/20'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3 flex-1">
+                              {test.actual_result === 'rejected' ? (
+                                <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+                              ) : test.actual_result === 'accepted' ? (
+                                <XCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
+                              ) : (
+                                <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <Badge variant="outline" className="text-xs">{test.test_type}</Badge>
+                                  <span className="text-sm font-medium">{test.table}.{test.field}</span>
+                                </div>
+                                {test.error_message && (
+                                  <p className="text-xs text-muted-foreground mt-1 truncate">
+                                    {test.error_message}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <Badge 
+                              variant={test.actual_result === 'rejected' ? 'default' : 'destructive'}
+                              className="ml-2"
+                            >
+                              {test.actual_result}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
             )}
           </TabsContent>
 
