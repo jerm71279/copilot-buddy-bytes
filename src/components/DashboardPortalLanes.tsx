@@ -95,6 +95,7 @@ const portals: Portal[] = [
       { name: "Frameworks", path: "/compliance/frameworks" },
       { name: "Evidence Upload", path: "/compliance/evidence" },
       { name: "Remediation Rules", path: "/remediation-rules" },
+      { name: "Risk Assessment", path: "/risk-assessment" },
     ],
   },
   {
