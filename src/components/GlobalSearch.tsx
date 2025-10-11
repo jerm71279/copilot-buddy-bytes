@@ -26,6 +26,32 @@ const typeIcons = {
   cmdb: Database,
   knowledge: FileText,
   change: GitBranch,
+  project: GitBranch,
+  vendor: FileText,
+  budget: FileText,
+  incident: Shield,
+  "service-request": FileText,
+  lead: FileText,
+  opportunity: FileText,
+  quote: FileText,
+  "purchase-order": FileText,
+  invoice: FileText,
+  expense: FileText,
+  "employee-onboarding": FileText,
+  contract: FileText,
+  "config-item": Database,
+  "cipp-policy": Shield,
+  product: FileText,
+  "customer-account": FileText,
+  page: Sparkles,
+  anomaly: Shield,
+  audit: Shield,
+  user: FileText,
+  application: FileText,
+  tenant: Database,
+  onboarding: FileText,
+  framework: Shield,
+  "ai-chat": Sparkles,
 };
 
 const typeLabels = {
@@ -34,6 +60,32 @@ const typeLabels = {
   cmdb: "CMDB",
   knowledge: "Knowledge",
   change: "Change Request",
+  project: "Project",
+  vendor: "Vendor",
+  budget: "Budget",
+  incident: "Incident",
+  "service-request": "Service Request",
+  lead: "Lead",
+  opportunity: "Opportunity",
+  quote: "Quote",
+  "purchase-order": "Purchase Order",
+  invoice: "Invoice",
+  expense: "Expense",
+  "employee-onboarding": "Employee Onboarding",
+  contract: "Contract",
+  "config-item": "Configuration Item",
+  "cipp-policy": "CIPP Policy",
+  product: "Product",
+  "customer-account": "Customer Account",
+  page: "Page",
+  anomaly: "Anomaly",
+  audit: "Audit Log",
+  user: "User",
+  application: "Application",
+  tenant: "Tenant",
+  onboarding: "Client Onboarding",
+  framework: "Framework",
+  "ai-chat": "AI Chat",
 };
 
 export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
@@ -107,7 +159,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Search workflows, compliance, CMDB, knowledge..."
+            placeholder="Search anything - workflows, projects, vendors, incidents, pages..."
             className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             autoFocus
           />
