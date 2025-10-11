@@ -6905,6 +6905,327 @@ export type Database = {
           },
         ]
       }
+      risk_assessments: {
+        Row: {
+          category: Database["public"]["Enums"]["risk_category"]
+          compliance_frameworks: string[] | null
+          created_at: string
+          created_by: string
+          customer_id: string
+          id: string
+          identified_by: string
+          identified_date: string
+          inherent_impact: Database["public"]["Enums"]["risk_impact"]
+          inherent_likelihood: Database["public"]["Enums"]["risk_likelihood"]
+          inherent_score: number
+          last_review_date: string | null
+          next_review_date: string | null
+          notes: string | null
+          related_changes: string[] | null
+          related_compliance_findings: string[] | null
+          related_incidents: string[] | null
+          related_vulnerabilities: string[] | null
+          residual_impact: Database["public"]["Enums"]["risk_impact"] | null
+          residual_likelihood:
+            | Database["public"]["Enums"]["risk_likelihood"]
+            | null
+          residual_score: number | null
+          review_frequency_days: number | null
+          risk_description: string
+          risk_id: string
+          risk_owner_id: string | null
+          risk_title: string
+          status: Database["public"]["Enums"]["risk_status"]
+          tags: string[] | null
+          treatment_deadline: string | null
+          treatment_plan: string | null
+          treatment_type:
+            | Database["public"]["Enums"]["risk_treatment_type"]
+            | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["risk_category"]
+          compliance_frameworks?: string[] | null
+          created_at?: string
+          created_by: string
+          customer_id: string
+          id?: string
+          identified_by: string
+          identified_date?: string
+          inherent_impact: Database["public"]["Enums"]["risk_impact"]
+          inherent_likelihood: Database["public"]["Enums"]["risk_likelihood"]
+          inherent_score: number
+          last_review_date?: string | null
+          next_review_date?: string | null
+          notes?: string | null
+          related_changes?: string[] | null
+          related_compliance_findings?: string[] | null
+          related_incidents?: string[] | null
+          related_vulnerabilities?: string[] | null
+          residual_impact?: Database["public"]["Enums"]["risk_impact"] | null
+          residual_likelihood?:
+            | Database["public"]["Enums"]["risk_likelihood"]
+            | null
+          residual_score?: number | null
+          review_frequency_days?: number | null
+          risk_description: string
+          risk_id: string
+          risk_owner_id?: string | null
+          risk_title: string
+          status?: Database["public"]["Enums"]["risk_status"]
+          tags?: string[] | null
+          treatment_deadline?: string | null
+          treatment_plan?: string | null
+          treatment_type?:
+            | Database["public"]["Enums"]["risk_treatment_type"]
+            | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["risk_category"]
+          compliance_frameworks?: string[] | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          id?: string
+          identified_by?: string
+          identified_date?: string
+          inherent_impact?: Database["public"]["Enums"]["risk_impact"]
+          inherent_likelihood?: Database["public"]["Enums"]["risk_likelihood"]
+          inherent_score?: number
+          last_review_date?: string | null
+          next_review_date?: string | null
+          notes?: string | null
+          related_changes?: string[] | null
+          related_compliance_findings?: string[] | null
+          related_incidents?: string[] | null
+          related_vulnerabilities?: string[] | null
+          residual_impact?: Database["public"]["Enums"]["risk_impact"] | null
+          residual_likelihood?:
+            | Database["public"]["Enums"]["risk_likelihood"]
+            | null
+          residual_score?: number | null
+          review_frequency_days?: number | null
+          risk_description?: string
+          risk_id?: string
+          risk_owner_id?: string | null
+          risk_title?: string
+          status?: Database["public"]["Enums"]["risk_status"]
+          tags?: string[] | null
+          treatment_deadline?: string | null
+          treatment_plan?: string | null
+          treatment_type?:
+            | Database["public"]["Enums"]["risk_treatment_type"]
+            | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      risk_controls: {
+        Row: {
+          control_description: string
+          control_id: string
+          control_name: string
+          control_owner_id: string | null
+          control_type: string
+          created_at: string
+          created_by: string
+          customer_id: string
+          effectiveness_rating: string | null
+          evidence_references: string[] | null
+          id: string
+          implementation_status: string
+          last_tested_date: string | null
+          next_test_date: string | null
+          risk_id: string
+          test_frequency_days: number | null
+          test_results: string | null
+          updated_at: string
+        }
+        Insert: {
+          control_description: string
+          control_id: string
+          control_name: string
+          control_owner_id?: string | null
+          control_type: string
+          created_at?: string
+          created_by: string
+          customer_id: string
+          effectiveness_rating?: string | null
+          evidence_references?: string[] | null
+          id?: string
+          implementation_status?: string
+          last_tested_date?: string | null
+          next_test_date?: string | null
+          risk_id: string
+          test_frequency_days?: number | null
+          test_results?: string | null
+          updated_at?: string
+        }
+        Update: {
+          control_description?: string
+          control_id?: string
+          control_name?: string
+          control_owner_id?: string | null
+          control_type?: string
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          effectiveness_rating?: string | null
+          evidence_references?: string[] | null
+          id?: string
+          implementation_status?: string
+          last_tested_date?: string | null
+          next_test_date?: string | null
+          risk_id?: string
+          test_frequency_days?: number | null
+          test_results?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risk_controls_risk_id_fkey"
+            columns: ["risk_id"]
+            isOneToOne: false
+            referencedRelation: "risk_assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      risk_events: {
+        Row: {
+          actual_impact: string | null
+          created_at: string
+          created_by: string
+          customer_id: string
+          event_date: string
+          event_description: string
+          event_type: string
+          financial_impact: number | null
+          id: string
+          incident_id: string | null
+          lessons_learned: string | null
+          response_actions: string | null
+          risk_id: string | null
+        }
+        Insert: {
+          actual_impact?: string | null
+          created_at?: string
+          created_by: string
+          customer_id: string
+          event_date: string
+          event_description: string
+          event_type: string
+          financial_impact?: number | null
+          id?: string
+          incident_id?: string | null
+          lessons_learned?: string | null
+          response_actions?: string | null
+          risk_id?: string | null
+        }
+        Update: {
+          actual_impact?: string | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          event_date?: string
+          event_description?: string
+          event_type?: string
+          financial_impact?: number | null
+          id?: string
+          incident_id?: string | null
+          lessons_learned?: string | null
+          response_actions?: string | null
+          risk_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risk_events_risk_id_fkey"
+            columns: ["risk_id"]
+            isOneToOne: false
+            referencedRelation: "risk_assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      risk_treatments: {
+        Row: {
+          actual_cost: number | null
+          assigned_to: string | null
+          completed_date: string | null
+          completion_notes: string | null
+          created_at: string
+          created_by: string
+          customer_id: string
+          due_date: string
+          estimated_cost: number | null
+          id: string
+          notes: string | null
+          priority: string
+          progress_percentage: number | null
+          risk_id: string
+          start_date: string | null
+          status: string
+          treatment_action: string
+          treatment_description: string
+          updated_at: string
+        }
+        Insert: {
+          actual_cost?: number | null
+          assigned_to?: string | null
+          completed_date?: string | null
+          completion_notes?: string | null
+          created_at?: string
+          created_by: string
+          customer_id: string
+          due_date: string
+          estimated_cost?: number | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          progress_percentage?: number | null
+          risk_id: string
+          start_date?: string | null
+          status?: string
+          treatment_action: string
+          treatment_description: string
+          updated_at?: string
+        }
+        Update: {
+          actual_cost?: number | null
+          assigned_to?: string | null
+          completed_date?: string | null
+          completion_notes?: string | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          due_date?: string
+          estimated_cost?: number | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          progress_percentage?: number | null
+          risk_id?: string
+          start_date?: string | null
+          status?: string
+          treatment_action?: string
+          treatment_description?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risk_treatments_risk_id_fkey"
+            columns: ["risk_id"]
+            isOneToOne: false
+            referencedRelation: "risk_assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       role_permissions: {
         Row: {
           created_at: string
@@ -9030,6 +9351,13 @@ export type Database = {
         Args: { ci_id_param: string }
         Returns: number
       }
+      calculate_risk_score: {
+        Args: {
+          impact: Database["public"]["Enums"]["risk_impact"]
+          likelihood: Database["public"]["Enums"]["risk_likelihood"]
+        }
+        Returns: number
+      }
       can_manage_roles: {
         Args: { _user_id: string }
         Returns: boolean
@@ -9055,6 +9383,10 @@ export type Database = {
         Returns: string
       }
       generate_contract_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_control_id: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
@@ -9091,6 +9423,10 @@ export type Database = {
         Returns: string
       }
       generate_quote_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_risk_id: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
@@ -9215,6 +9551,33 @@ export type Database = {
         | "monitors"
         | "protects"
         | "integrates_with"
+      risk_category:
+        | "cybersecurity"
+        | "operational"
+        | "financial"
+        | "compliance"
+        | "strategic"
+        | "reputational"
+      risk_impact:
+        | "negligible"
+        | "minor"
+        | "moderate"
+        | "major"
+        | "catastrophic"
+      risk_likelihood:
+        | "rare"
+        | "unlikely"
+        | "possible"
+        | "likely"
+        | "almost_certain"
+      risk_status:
+        | "identified"
+        | "assessed"
+        | "treated"
+        | "monitored"
+        | "closed"
+        | "accepted"
+      risk_treatment_type: "mitigate" | "transfer" | "avoid" | "accept"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -9396,6 +9759,31 @@ export const Constants = {
         "protects",
         "integrates_with",
       ],
+      risk_category: [
+        "cybersecurity",
+        "operational",
+        "financial",
+        "compliance",
+        "strategic",
+        "reputational",
+      ],
+      risk_impact: ["negligible", "minor", "moderate", "major", "catastrophic"],
+      risk_likelihood: [
+        "rare",
+        "unlikely",
+        "possible",
+        "likely",
+        "almost_certain",
+      ],
+      risk_status: [
+        "identified",
+        "assessed",
+        "treated",
+        "monitored",
+        "closed",
+        "accepted",
+      ],
+      risk_treatment_type: ["mitigate", "transfer", "avoid", "accept"],
     },
   },
 } as const
