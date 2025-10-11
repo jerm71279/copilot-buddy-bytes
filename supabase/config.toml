@@ -77,3 +77,15 @@ verify_jwt = true
 
 [functions.workflow-intelligence]
 verify_jwt = true
+
+[functions.create-test-user]
+verify_jwt = true
+
+[functions.comprehensive-test-data-generator]
+verify_jwt = true
+
+[functions.input-fuzzer]
+verify_jwt = true
+
+[functions.database-flow-logger]
+verify_jwt = true

@@ -36,13 +36,25 @@ Deno.serve(async (req) => {
     
     const customerId = customers?.[0]?.id || '710092dc-c33c-4f8e-8c65-11fc62982c96';
     
-    // Get a real user ID from auth.users (not user_profiles) for foreign key constraints
+    // Try to get the dedicated test user first (test.user@obera.app)
     const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers();
-    const testUserId = users && users.length > 0 ? users[0].id : null;
+    let testUserId = users?.find(u => u.email === 'test.user@obera.app')?.id;
+    
+    // If test user doesn't exist, use first available user
+    if (!testUserId && users && users.length > 0) {
+      testUserId = users[0].id;
+    }
     
     // Skip tests that require a user if no user exists
     if (!testUserId) {
-      console.log('Warning: No user found in user_profiles, skipping user-dependent tests');
+      console.log('Warning: No user found. Please create a test user first.');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'No test user found. Please create a test user using the "Create Test User" button in the Testing Dashboard.'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // 1. Knowledge Base Component
@@ -50,72 +62,46 @@ Deno.serve(async (req) => {
     const kbErrors: string[] = [];
     let kbCount = 0;
 
-    if (testUserId) {
-      try {
-        // Create categories
-        const { data: categories, error: catError } = await supabase
-          .from('knowledge_categories')
-          .insert([
-            { name: 'Security Policies', description: 'Security and compliance policies', icon_name: 'Shield' },
-            { name: 'IT Operations', description: 'IT operational procedures', icon_name: 'Server' },
-            { name: 'HR Procedures', description: 'Human resources guidelines', icon_name: 'Users' },
-            { name: 'Troubleshooting', description: 'Technical troubleshooting guides', icon_name: 'Tool' }
-          ])
-          .select();
+    try {
+      // Create categories
+      const { data: categories, error: catError } = await supabase
+        .from('knowledge_categories')
+        .insert([
+          { name: 'Security', description: 'Security policies', icon_name: 'Shield' },
+          { name: 'IT Ops', description: 'IT procedures', icon_name: 'Server' },
+        ])
+        .select();
 
-        if (catError) throw catError;
-        kbCount += categories?.length || 0;
+      if (catError) throw catError;
+      kbCount += categories?.length || 0;
 
-        // Create articles
-        const { data: articles, error: artError } = await supabase
-          .from('knowledge_articles')
-          .insert([
-            {
-              customer_id: customerId,
-              category_id: categories?.[0]?.id,
-              title: 'Password Policy',
-              content: 'Passwords must be at least 12 characters.',
-              article_type: 'sop',
-              status: 'published',
-              created_by: testUserId,
-              tags: ['security']
-            },
-            {
-              customer_id: customerId,
-              category_id: categories?.[1]?.id,
-              title: 'Backup Procedures',
-              content: 'Daily backups run at 2 AM.',
-              article_type: 'sop',
-              status: 'published',
-              created_by: testUserId,
-              tags: ['backup']
-            },
-            {
-              customer_id: customerId,
-              category_id: categories?.[2]?.id,
-              title: 'Onboarding Checklist',
-              content: 'Setup email and assign equipment.',
-              article_type: 'guide',
-              status: 'published',
-              created_by: testUserId,
-              tags: ['onboarding']
-            }
-          ])
-          .select();
+      // Create articles
+      const { data: articles, error: artError } = await supabase
+        .from('knowledge_articles')
+        .insert([
+          {
+            customer_id: customerId,
+            category_id: categories?.[0]?.id,
+            title: 'Password Policy',
+            content: 'Passwords must be 12+ chars.',
+            article_type: 'sop',
+            status: 'published',
+            created_by: testUserId,
+            tags: ['security']
+          },
+        ])
+        .select();
 
-        if (artError) throw artError;
-        kbCount += articles?.length || 0;
+      if (artError) throw artError;
+      kbCount += articles?.length || 0;
 
-      } catch (err) {
-        const errorMsg = err instanceof Error 
-          ? err.message 
-          : typeof err === 'object' && err !== null
-          ? JSON.stringify(err)
-          : String(err);
-        kbErrors.push(errorMsg);
-      }
-    } else {
-      kbErrors.push('Skipped: No user available');
+    } catch (err) {
+      const errorMsg = err instanceof Error 
+        ? err.message 
+        : typeof err === 'object' && err !== null
+        ? JSON.stringify(err)
+        : String(err);
+      kbErrors.push(errorMsg);
     }
 
     results.push({
@@ -131,55 +117,38 @@ Deno.serve(async (req) => {
     const aiErrors: string[] = [];
     let aiCount = 0;
 
-    if (testUserId) {
-      try {
-        const conversationId = crypto.randomUUID();
-        
-        const { data: interactions, error: aiError } = await supabase
-          .from('ai_interactions')
-          .insert([
-            {
-              customer_id: customerId,
-              user_id: testUserId,
-              conversation_id: conversationId,
-              interaction_type: 'query',
-          user_query: 'What is our password policy?',
-              ai_response: 'Passwords must be at least 12 characters long.',
-              confidence_score: 0.95,
-              insight_generated: true,
-              was_helpful: true,
-              feedback_rating: 5,
-              compliance_tags: ['security', 'policy']
-            },
-            {
-              customer_id: customerId,
-              user_id: testUserId,
-              conversation_id: conversationId,
-              interaction_type: 'query',
-              user_query: 'How do I request time off?',
-              ai_response: 'Submit a time-off request through the HR portal at least 2 weeks in advance.',
-              confidence_score: 0.88,
-              insight_generated: false,
-              was_helpful: true,
-              feedback_rating: 4,
-              compliance_tags: ['hr', 'policy']
-            }
-          ])
-          .select();
+    try {
+      const conversationId = crypto.randomUUID();
+      
+      const { data: interactions, error: aiError } = await supabase
+        .from('ai_interactions')
+        .insert([
+          {
+            customer_id: customerId,
+            user_id: testUserId,
+            conversation_id: conversationId,
+            interaction_type: 'query',
+            user_query: 'What is our password policy?',
+            ai_response: 'Passwords must be 12+ characters.',
+            confidence_score: 0.95,
+            insight_generated: true,
+            was_helpful: true,
+            feedback_rating: 5,
+            compliance_tags: ['security']
+          },
+        ])
+        .select();
 
-        if (aiError) throw aiError;
-        aiCount = interactions?.length || 0;
+      if (aiError) throw aiError;
+      aiCount = interactions?.length || 0;
 
-      } catch (err) {
-        const errorMsg = err instanceof Error 
-          ? err.message 
-          : typeof err === 'object' && err !== null
-          ? JSON.stringify(err)
-          : String(err);
-        aiErrors.push(errorMsg);
-      }
-    } else {
-      aiErrors.push('Skipped: No user available');
+    } catch (err) {
+      const errorMsg = err instanceof Error 
+        ? err.message 
+        : typeof err === 'object' && err !== null
+        ? JSON.stringify(err)
+        : String(err);
+      aiErrors.push(errorMsg);
     }
 
     results.push({
@@ -195,43 +164,31 @@ Deno.serve(async (req) => {
     const auditErrors: string[] = [];
     let auditCount = 0;
 
-    if (testUserId) {
-      try {
-        const { data: logs, error: auditError } = await supabase
-          .from('audit_logs')
-          .insert([
-            {
-              customer_id: customerId,
-              user_id: testUserId,
-              system_name: 'users',
-              action_type: 'created',
-              action_details: { username: 'testuser' },
-              compliance_tags: ['access']
-            },
-            {
-              customer_id: customerId,
-              user_id: testUserId,
-              system_name: 'files',
-              action_type: 'uploaded',
-              action_details: { filename: 'doc.pdf' },
-              compliance_tags: ['compliance']
-            }
-          ])
-          .select();
+    try {
+      const { data: logs, error: auditError } = await supabase
+        .from('audit_logs')
+        .insert([
+          {
+            customer_id: customerId,
+            user_id: testUserId,
+            system_name: 'users',
+            action_type: 'created',
+            action_details: { username: 'testuser' },
+            compliance_tags: ['access']
+          },
+        ])
+        .select();
 
-        if (auditError) throw auditError;
-        auditCount = logs?.length || 0;
+      if (auditError) throw auditError;
+      auditCount = logs?.length || 0;
 
-      } catch (err) {
-        const errorMsg = err instanceof Error 
-          ? err.message 
-          : typeof err === 'object' && err !== null
-          ? JSON.stringify(err)
-          : String(err);
-        auditErrors.push(errorMsg);
-      }
-    } else {
-      auditErrors.push('Skipped: No user available');
+    } catch (err) {
+      const errorMsg = err instanceof Error 
+        ? err.message 
+        : typeof err === 'object' && err !== null
+        ? JSON.stringify(err)
+        : String(err);
+      auditErrors.push(errorMsg);
     }
 
     results.push({
@@ -247,47 +204,33 @@ Deno.serve(async (req) => {
     const behaviorErrors: string[] = [];
     let behaviorCount = 0;
 
-    if (testUserId) {
-      try {
-        const { data: events, error: behaviorError } = await supabase
-          .from('behavioral_events')
-          .insert([
-            {
-              customer_id: customerId,
-              user_id: testUserId,
-              system_name: 'portal',
-              event_type: 'page_view',
-              action: 'viewed_dashboard',
-              duration_ms: 45000,
-              context: { page: '/dashboard' },
-              compliance_tags: ['usage']
-            },
-            {
-              customer_id: customerId,
-              user_id: testUserId,
-              system_name: 'search',
-              event_type: 'search',
-              action: 'searched',
-              duration_ms: 2500,
-              context: { query: 'test' },
-              compliance_tags: ['search']
-            }
-          ])
-          .select();
+    try {
+      const { data: events, error: behaviorError } = await supabase
+        .from('behavioral_events')
+        .insert([
+          {
+            customer_id: customerId,
+            user_id: testUserId,
+            system_name: 'portal',
+            event_type: 'page_view',
+            action: 'viewed_dashboard',
+            duration_ms: 45000,
+            context: { page: '/dashboard' },
+            compliance_tags: ['usage']
+          },
+        ])
+        .select();
 
-        if (behaviorError) throw behaviorError;
-        behaviorCount = events?.length || 0;
+      if (behaviorError) throw behaviorError;
+      behaviorCount = events?.length || 0;
 
-      } catch (err) {
-        const errorMsg = err instanceof Error 
-          ? err.message 
-          : typeof err === 'object' && err !== null
-          ? JSON.stringify(err)
-          : String(err);
-        behaviorErrors.push(errorMsg);
-      }
-    } else {
-      behaviorErrors.push('Skipped: No user available');
+    } catch (err) {
+      const errorMsg = err instanceof Error 
+        ? err.message 
+        : typeof err === 'object' && err !== null
+        ? JSON.stringify(err)
+        : String(err);
+      behaviorErrors.push(errorMsg);
     }
 
     results.push({
@@ -485,46 +428,42 @@ Deno.serve(async (req) => {
     const onboardingErrors: string[] = [];
     let onboardingCount = 0;
 
-    if (testUserId) {
-      try {
-        // Get a template
-        const { data: templates } = await supabase
-          .from('onboarding_templates')
-          .select('id')
-          .limit(1);
+    try {
+      // Get a template
+      const { data: templates } = await supabase
+        .from('onboarding_templates')
+        .select('id')
+        .limit(1);
 
-        if (templates && templates.length > 0) {
-          const { data: onboardings, error: onboardingError } = await supabase
-            .from('client_onboardings')
-            .insert([
-              {
-                customer_id: customerId,
-                template_id: templates[0].id,
-                client_name: 'Test Corp',
-                client_contact_email: 'test@test.com',
-                client_contact_name: 'Test User',
-                status: 'in_progress',
-                start_date: new Date().toISOString().split('T')[0],
-                created_by: testUserId,
-                completion_percentage: 35
-              }
-            ])
-            .select();
+      if (templates && templates.length > 0) {
+        const { data: onboardings, error: onboardingError } = await supabase
+          .from('client_onboardings')
+          .insert([
+            {
+              customer_id: customerId,
+              template_id: templates[0].id,
+              client_name: 'Test Corp',
+              client_contact_email: 'test@test.com',
+              client_contact_name: 'Test User',
+              status: 'in_progress',
+              start_date: new Date().toISOString().split('T')[0],
+              created_by: testUserId,
+              completion_percentage: 35
+            }
+          ])
+          .select();
 
-          if (onboardingError) throw onboardingError;
-          onboardingCount = onboardings?.length || 0;
-        }
-
-      } catch (err) {
-        const errorMsg = err instanceof Error 
-          ? err.message 
-          : typeof err === 'object' && err !== null
-          ? JSON.stringify(err)
-          : String(err);
-        onboardingErrors.push(errorMsg);
+        if (onboardingError) throw onboardingError;
+        onboardingCount = onboardings?.length || 0;
       }
-    } else {
-      onboardingErrors.push('Skipped: No user available');
+
+    } catch (err) {
+      const errorMsg = err instanceof Error 
+        ? err.message 
+        : typeof err === 'object' && err !== null
+        ? JSON.stringify(err)
+        : String(err);
+      onboardingErrors.push(errorMsg);
     }
 
     results.push({

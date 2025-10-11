@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import Navigation from '@/components/Navigation';
 import DashboardNavigation from '@/components/DashboardNavigation';
@@ -55,6 +55,8 @@ export default function ComprehensiveTestDashboard() {
   const [testDataResult, setTestDataResult] = useState<any>(null);
   const [fuzzResult, setFuzzResult] = useState<any>(null);
   const [flowTrace, setFlowTrace] = useState<any>(null);
+  const [testUser, setTestUser] = useState<any>(null);
+  const [isManagingUser, setIsManagingUser] = useState(false);
   
   const [testPhases] = useState<TestPhase[]>([
     {
@@ -160,6 +162,70 @@ export default function ComprehensiveTestDashboard() {
     await runFuzzTests();
   };
 
+  const checkTestUser = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('create-test-user', {
+        body: { action: 'get' }
+      });
+      if (error) throw error;
+      if (data.success) {
+        setTestUser(data);
+      }
+    } catch (error) {
+      console.error('Error checking test user:', error);
+    }
+  };
+
+  const createTestUser = async () => {
+    setIsManagingUser(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-test-user', {
+        body: { action: 'create' }
+      });
+      if (error) throw error;
+      setTestUser(data);
+      toast({
+        title: "Success",
+        description: "Test user created: test.user@obera.app",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create test user",
+        variant: "destructive"
+      });
+    } finally {
+      setIsManagingUser(false);
+    }
+  };
+
+  const deleteTestUser = async () => {
+    setIsManagingUser(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-test-user', {
+        body: { action: 'delete' }
+      });
+      if (error) throw error;
+      setTestUser(null);
+      toast({
+        title: "Success",
+        description: "Test user deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete test user",
+        variant: "destructive"
+      });
+    } finally {
+      setIsManagingUser(false);
+    }
+  };
+
+  useEffect(() => {
+    checkTestUser();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -197,6 +263,61 @@ export default function ComprehensiveTestDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  Test User Setup
+                </CardTitle>
+                <CardDescription>
+                  Create a dedicated test user for realistic test data validation
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {testUser ? (
+                  <Alert>
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <AlertTitle>Test User Active</AlertTitle>
+                    <AlertDescription className="space-y-3">
+                      <div className="flex items-center gap-4 mt-2">
+                        <div>
+                          <p className="text-sm"><strong>Email:</strong> {testUser.email}</p>
+                          <p className="text-sm"><strong>User ID:</strong> {testUser.user_id}</p>
+                          <p className="text-sm text-muted-foreground">Password: TestUser123!</p>
+                        </div>
+                      </div>
+                      <Button 
+                        onClick={deleteTestUser} 
+                        disabled={isManagingUser}
+                        variant="destructive"
+                        size="sm"
+                      >
+                        Delete Test User
+                      </Button>
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <div className="flex items-center gap-4">
+                    <Button 
+                      onClick={createTestUser} 
+                      disabled={isManagingUser}
+                      variant="outline"
+                    >
+                      {isManagingUser ? "Creating..." : "Create Test User"}
+                    </Button>
+                    <Button 
+                      onClick={checkTestUser} 
+                      disabled={isManagingUser}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      Check for Existing User
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
