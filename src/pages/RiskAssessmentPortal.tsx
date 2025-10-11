@@ -118,7 +118,7 @@ const RiskAssessmentPortal = () => {
   return (
     <div className="min-h-screen bg-background">
       <DashboardNavigation />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Risk Assessment Portal</h1>
