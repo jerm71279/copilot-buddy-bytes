@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
 
       if (authError) throw authError;
 
-      // Get customer_id from a random existing customer or create one
+      // Get customer_id from a random existing customer
       const { data: customers } = await supabase
         .from('customers')
         .select('id')
@@ -58,16 +58,15 @@ Deno.serve(async (req) => {
       
       const customerId = customers?.[0]?.id;
 
-      // Create user profile
+      // Update user profile created by trigger with customer_id
       if (customerId) {
         await supabase
           .from('user_profiles')
-          .insert({
-            user_id: authData.user.id,
-            full_name: 'Test User',
+          .update({
             customer_id: customerId,
             department: 'Testing'
-          });
+          })
+          .eq('user_id', authData.user.id);
       }
 
       return new Response(
