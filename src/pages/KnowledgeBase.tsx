@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, FileText, BookOpen, Lightbulb, Plus, Upload, Download, Cloud, Brain } from "lucide-react";
+import { Search, FileText, BookOpen, Lightbulb, Plus, Upload, Download, Cloud, Brain, Award, BookMarked, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
@@ -25,11 +25,29 @@ export default function KnowledgeBase() {
 
   const loadKnowledgeBase = async () => {
     try {
-      // Load articles
+      // Get user profile to determine department
+      const { data: { session } } = await supabase.auth.getSession();
+      let userDepartment = 'all';
+      
+      if (session) {
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("department")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+        
+        if (profile?.department) {
+          userDepartment = profile.department;
+        }
+      }
+
+      // Load articles accessible by user's department
+      // Show articles where accessible_departments contains 'all' OR user's department
       const { data: articlesData, error: articlesError } = await supabase
         .from("knowledge_articles")
         .select("*")
         .eq("status", "published")
+        .or(`accessible_departments.cs.{all},accessible_departments.cs.{${userDepartment}}`)
         .order("updated_at", { ascending: false });
 
       if (articlesError) throw articlesError;
@@ -70,6 +88,10 @@ export default function KnowledgeBase() {
 
   const getArticleIcon = (type: string) => {
     switch (type) {
+      case "policy": return <Award className="h-4 w-4" />;
+      case "best_practice": return <BookMarked className="h-4 w-4" />;
+      case "innovation": return <Sparkles className="h-4 w-4" />;
+      case "lesson_learned": return <Lightbulb className="h-4 w-4" />;
       case "sop": return <FileText className="h-4 w-4" />;
       case "guide": return <BookOpen className="h-4 w-4" />;
       case "faq": return <Lightbulb className="h-4 w-4" />;
@@ -79,6 +101,10 @@ export default function KnowledgeBase() {
 
   const getArticleTypeColor = (type: string) => {
     switch (type) {
+      case "policy": return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
+      case "best_practice": return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
+      case "innovation": return "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300";
+      case "lesson_learned": return "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300";
       case "sop": return "bg-primary/10 text-primary";
       case "guide": return "bg-secondary/10 text-secondary";
       case "faq": return "bg-accent/10 text-accent";
@@ -184,12 +210,12 @@ export default function KnowledgeBase() {
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-2">
-                          {getArticleIcon(article.article_type)}
-                          <Badge className={getArticleTypeColor(article.article_type)}>
-                            {article.article_type.toUpperCase()}
+                          {getArticleIcon(article.knowledge_type || article.article_type)}
+                          <Badge className={getArticleTypeColor(article.knowledge_type || article.article_type)}>
+                            {(article.knowledge_type || article.article_type || 'article').replace('_', ' ').toUpperCase()}
                           </Badge>
                         </div>
-                        <span className="text-xs text-muted-foreground">v{article.version}</span>
+                        <span className="text-xs text-muted-foreground">v{article.version || '1.0'}</span>
                       </div>
                       <CardTitle className="text-lg">{article.title}</CardTitle>
                       <CardDescription className="line-clamp-2">
@@ -197,13 +223,28 @@ export default function KnowledgeBase() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-1 mb-2">
                         {article.tags?.slice(0, 3).map((tag: string, idx: number) => (
                           <Badge key={idx} variant="outline" className="text-xs">
                             {tag}
                           </Badge>
                         ))}
                       </div>
+                      {article.accessible_departments && article.accessible_departments.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {article.accessible_departments.includes('all') ? (
+                            <Badge variant="secondary" className="text-xs">
+                              All Departments
+                            </Badge>
+                          ) : (
+                            article.accessible_departments.map((dept: string, idx: number) => (
+                              <Badge key={idx} variant="secondary" className="text-xs capitalize">
+                                {dept}
+                              </Badge>
+                            ))
+                          )}
+                        </div>
+                      )}
                       <p className="text-xs text-muted-foreground mt-2">
                         Updated {new Date(article.updated_at).toLocaleDateString()}
                       </p>

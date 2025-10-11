@@ -51,6 +51,61 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Get user's customer_id
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error("No authorization header");
+    }
+    
+    const { data: { user }, error: authError } = await supabase.auth.getUser(
+      authHeader.replace('Bearer ', '')
+    );
+    
+    if (authError || !user) {
+      throw new Error("Unauthorized");
+    }
+
+    const { data: userProfile } = await supabase
+      .from("user_profiles")
+      .select("customer_id, department")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!userProfile) {
+      throw new Error("User profile not found");
+    }
+
+    const customerId = userProfile.customer_id;
+    const userDepartment = userProfile.department || department;
+
+    // Get department LLM configuration
+    const { data: deptConfig } = await supabase
+      .from("department_llm_config")
+      .select("*")
+      .eq("customer_id", customerId)
+      .eq("department", department)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    // Get knowledge articles accessible to this department
+    const { data: knowledgeArticles } = await supabase
+      .from("knowledge_articles")
+      .select("title, content, category, tags, knowledge_type")
+      .eq("status", "published")
+      .or(`accessible_departments.cs.{all},accessible_departments.cs.{${department}}`)
+      .limit(5);
+
+    console.log(`Found ${knowledgeArticles?.length || 0} knowledge articles for ${department}`);
+
+    // Build knowledge context from articles
+    let knowledgeContext = "";
+    if (knowledgeArticles && knowledgeArticles.length > 0) {
+      knowledgeContext = "\n\n## Available Knowledge Base:\n" + 
+        knowledgeArticles.map(article => 
+          `### ${article.title} (${article.knowledge_type})\n${article.content.substring(0, 500)}...\n`
+        ).join("\n");
+    }
+
     // Get MCP server and tools for this department
     const { data: mcpServers } = await supabase
       .from("mcp_servers")
@@ -97,7 +152,14 @@ serve(async (req) => {
       executive: "You are an Executive Intelligence AI assistant. Help leaders with strategic insights, KPI aggregation, and cross-department analytics. Use the available MCP tools to provide executive-level insights."
     };
 
-    const systemPrompt = systemPrompts[department] || "You are a helpful AI assistant.";
+    // System prompt based on department configuration or fallback
+    let systemPrompt = deptConfig?.system_prompt || systemPrompts[department] || "You are a helpful AI assistant.";
+    
+    // Append knowledge context to system prompt
+    if (knowledgeContext) {
+      systemPrompt += knowledgeContext;
+      systemPrompt += "\n\nUse the above knowledge base to answer questions accurately. Reference specific articles when relevant.";
+    }
 
     // Build messages array
     const messages = [
@@ -107,6 +169,9 @@ serve(async (req) => {
     ];
 
     // Call Lovable AI with tool calling enabled
+    const modelName = deptConfig?.model_name || "google/gemini-2.5-flash";
+    const temperature = deptConfig?.temperature || 0.7;
+    
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -114,8 +179,9 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: modelName,
         messages,
+        temperature,
         tools: toolDefinitions.length > 0 ? toolDefinitions : undefined,
         tool_choice: toolDefinitions.length > 0 ? "auto" : undefined,
       }),
@@ -141,6 +207,31 @@ serve(async (req) => {
 
     const aiData = await aiResponse.json();
     const assistantMessage = aiData.choices[0].message;
+
+    // Store conversation history
+    try {
+      await supabase.from("conversation_history").insert([
+        {
+          customer_id: customerId,
+          user_id: user.id,
+          department,
+          conversation_id: user.id, // Could be enhanced with proper conversation tracking
+          role: "user",
+          content: query,
+        },
+        {
+          customer_id: customerId,
+          user_id: user.id,
+          department,
+          conversation_id: user.id,
+          role: "assistant",
+          content: assistantMessage.content || "Response generated",
+          tool_calls: assistantMessage.tool_calls,
+        },
+      ]);
+    } catch (err) {
+      console.error("Failed to store conversation history:", err);
+    }
 
     // Handle tool calls if present
     if (assistantMessage.tool_calls && assistantMessage.tool_calls.length > 0) {
