@@ -424,29 +424,135 @@ Residual Risk Score = (Threat × Vulnerability × Asset Value) × (1 - Control E
 
 ---
 
+**R-006: Third-Party Integration Risk**
+- **Threat**: Compromised third-party service (CIPP, NinjaOne, Revio, M365)
+- **Vulnerability**: Dependency on external platforms, credential storage
+- **Asset**: Customer tenant access, API credentials, integrated data
+- **Inherent Risk**: 3 (Threat) × 3 (Vuln) × 5 (Asset) = 45 → **4.5/10 MEDIUM**
+- **Current Controls**:
+  - Encrypted credential storage (✅)
+  - Service role-only access to credentials (✅)
+  - Audit logging of credential access (✅)
+  - API-level authentication (OAuth 2.0) (✅)
+- **Control Effectiveness**: 65%
+- **Residual Risk**: 45 × 0.35 = **1.6/10** (conservative **4/10**)
+- **Impact Analysis**:
+  - Financial: $250K-$2M (tenant compromise, data breach)
+  - Reputational: Critical (MSP trusted with client environments)
+  - Operational: High (potential multi-tenant impact)
+  - Legal: High (breach of client trust, liability)
+- **Mitigation Plan**:
+  1. Implement API key rotation policy (90-day max lifetime)
+  2. Deploy API call anomaly detection
+  3. Establish third-party security review process
+  4. Implement service health monitoring
+  5. Create third-party incident response playbook
+- **Timeline**: 90 days
+- **Owner**: Integration Team + Security
+- **Status**: ⚠️ Monitoring
+
+---
+
+**R-007: Supply Chain - Frontend Dependency Vulnerability**
+- **Threat**: Malicious code injection via compromised npm package
+- **Vulnerability**: 100+ npm dependencies, limited vulnerability scanning
+- **Asset**: Application code integrity, customer session data
+- **Inherent Risk**: 2 (Threat) × 4 (Vuln) × 5 (Asset) = 40 → **4/10 MEDIUM**
+- **Current Controls**:
+  - Package-lock.json (prevents unauthorized changes) (✅)
+  - Established React/TypeScript ecosystem (✅)
+  - Code review process (✅)
+- **Control Effectiveness**: 60%
+- **Residual Risk**: 40 × 0.4 = **1.6/10** (conservative **4/10**)
+- **Recent Industry Examples**:
+  - event-stream (Bitcoin wallet theft)
+  - ua-parser-js (malware injection)
+  - node-ipc (anti-Russia sabotage)
+- **Mitigation Plan**:
+  1. Enable GitHub Dependabot alerts
+  2. Implement automated npm audit in CI/CD
+  3. Pin all dependencies to exact versions
+  4. Conduct quarterly dependency review
+  5. Implement Software Composition Analysis (SCA) tool
+- **Timeline**: 30 days
+- **Owner**: Development Team
+- **Status**: ⚠️ Planned
+
+---
+
+**R-008: Compliance Risk - Data Subject Rights**
+- **Threat**: GDPR/CCPA enforcement actions for non-compliance
+- **Vulnerability**: No documented data subject rights fulfillment process
+- **Asset**: Regulatory compliance standing, financial resources
+- **Inherent Risk**: 3 (Likelihood) × 3 (Impact) × 3 (Asset) = 27 → **2.7/10 MEDIUM**
+- **Current Controls**:
+  - Data encryption at rest and in transit (✅)
+  - Organization-scoped data isolation (✅)
+  - Audit logging of data access (✅)
+- **Control Effectiveness**: 50%
+- **Residual Risk**: 27 × 0.5 = **1.35/10** (conservative **3/10**)
+- **Regulatory Impact**:
+  - GDPR fines: Up to €20M or 4% annual revenue
+  - CCPA fines: $2,500 per unintentional violation, $7,500 per intentional
+  - Regulatory audit costs: $50K-$200K
+- **Mitigation Plan**:
+  1. Document data subject rights procedures (access, rectification, erasure, portability)
+  2. Implement automated data export functionality
+  3. Create secure data deletion workflow
+  4. Establish 30-day response SLA
+  5. Train customer support on DSR handling
+- **Timeline**: 60 days
+- **Owner**: Legal + Engineering
+- **Status**: ⚠️ Planned
+
+---
+
+**R-009: Business Continuity - Key Personnel Dependency**
+- **Threat**: Loss of critical personnel with system knowledge
+- **Vulnerability**: Single points of failure, undocumented procedures
+- **Asset**: Operational continuity, system recovery capability
+- **Inherent Risk**: 2 (Threat) × 4 (Vuln) × 4 (Asset) = 32 → **3.2/10 MEDIUM**
+- **Current Controls**:
+  - Cloud-based platform (reduces infrastructure dependency) (✅)
+  - Automated backups (✅)
+  - Source code repository access (✅)
+- **Control Effectiveness**: 40%
+- **Residual Risk**: 32 × 0.6 = **1.9/10** (conservative **3/10**)
+- **Mitigation Plan**:
+  1. Document system architecture and runbooks
+  2. Implement knowledge transfer program
+  3. Cross-train personnel on critical systems
+  4. Establish on-call rotation (no single point of failure)
+  5. Create emergency access procedures
+- **Timeline**: 90 days
+- **Owner**: Engineering Management
+- **Status**: ⚠️ Planning
+
+---
+
 **LOW RISKS (Score 0-2):**
 
-**R-006: SQL Injection**
+**R-010: SQL Injection**
 - **Residual Risk**: **1/10 LOW**
 - **Status**: ✅ Effectively Mitigated
 - **Controls**: Parameterized queries (Supabase client), Zod validation, no raw SQL
 
-**R-007: Cross-Site Scripting (XSS)**
+**R-011: Cross-Site Scripting (XSS)**
 - **Residual Risk**: **1/10 LOW**
 - **Status**: ✅ Effectively Mitigated
 - **Controls**: React auto-escaping, sanitizeText function, no dangerouslySetInnerHTML
 
-**R-008: Cross-Tenant Data Leakage**
+**R-012: Cross-Tenant Data Leakage**
 - **Residual Risk**: **0.5/10 VERY LOW**
 - **Status**: ✅ Fully Mitigated
 - **Controls**: 100% RLS coverage, organization-scoped policies, tested isolation
 
-**R-009: Session Hijacking**
+**R-013: Session Hijacking**
 - **Residual Risk**: **2/10 LOW**
 - **Status**: ✅ Effectively Mitigated
 - **Controls**: TLS 1.3, HTTPOnly cookies, short-lived JWTs, Secure flags
 
-**R-010: Privilege Escalation**
+**R-014: Privilege Escalation**
 - **Residual Risk**: **1/10 LOW**
 - **Status**: ✅ Effectively Mitigated
 - **Controls**: Security definer functions, role hierarchy, audit logging
@@ -582,7 +688,7 @@ Residual Risk Score = (Threat × Vulnerability × Asset Value) × (1 - Control E
 **Risk Distribution:**
 - Critical Risks: 0
 - High Risks: 2 (credential stuffing, DDoS)
-- Medium Risks: 3 (insider threat, supply chain, data exfiltration)
+- Medium Risks: 8 (insider threat, supply chain-frontend, data exfiltration, third-party integration, supply chain-frontend dependency, compliance-DSR, business continuity)
 - Low Risks: 5 (technical vulnerabilities effectively mitigated)
 
 **Aggregate Risk Score**: **3.2/10 (MEDIUM)** - trending toward LOW with planned mitigations
@@ -1413,27 +1519,910 @@ CREATE TABLE system_admins (
 
 ## Domain 7: Security Operations
 
-### 7.1 Incident Response
+### 7.1 Comprehensive Incident Response Framework (NIST SP 800-61 Rev. 3)
 
-#### **Incident Detection:** ⚠️ Limited
-- ✅ Audit logging captures security events
-- ✅ `incidents` table for incident tracking
-- ✅ `anomaly_detections` table for ML-detected issues
-- ⚠️ No real-time alerting system
-- ⚠️ No 24/7 monitoring
-- ⚠️ No SIEM integration
+#### **NIST IR Lifecycle Implementation Status**
 
-#### **Incident Response Plan:** ❌ NOT DOCUMENTED
-**Critical Gap:** No documented IR plan
+**Framework Alignment:** NIST SP 800-61 Rev. 3 - Computer Security Incident Handling Guide
 
-**Recommendation:** Create IR plan covering:
-1. **Preparation:** IR team, tools, playbooks
-2. **Detection:** Alerting thresholds, escalation matrix
-3. **Analysis:** Log correlation, forensics procedures
-4. **Containment:** Isolation procedures, communication plan
-5. **Eradication:** Remediation steps, patch management
-6. **Recovery:** Service restoration, validation
-7. **Lessons Learned:** Post-incident review process
+This section implements the six-phase incident response lifecycle as defined by NIST:
+1. Preparation
+2. Detection and Analysis  
+3. Containment, Eradication, and Recovery
+4. Post-Incident Activity
+5. Coordination
+6. Information Sharing
+
+---
+
+#### **Phase 1: Preparation** ⚠️ PARTIAL
+
+**Current Capabilities:**
+- ✅ Incident tracking infrastructure (`incidents`, `security_incidents` tables)
+- ✅ Audit logging system (comprehensive across 93 tables)
+- ✅ Anomaly detection capability (`anomaly_detections` table)
+- ✅ Change management workflow (containment support)
+- ⚠️ No formal IR team designated
+- ⚠️ No IR playbooks documented
+- ⚠️ No IR training conducted
+- ⚠️ No IR testing/exercises performed
+
+**Required IR Team Structure:**
+
+| Role | Responsibilities | Primary | Backup | 24/7 Contact |
+|------|-----------------|---------|--------|--------------|
+| **Incident Commander** | Overall response coordination, executive communication | CTO | CISO | ✅ Required |
+| **Security Lead** | Technical investigation, forensics, threat analysis | CISO | Sr. Security Engineer | ✅ Required |
+| **Engineering Lead** | System access, containment actions, recovery | VP Engineering | Lead DevOps | ✅ Required |
+| **Communications Lead** | Customer notifications, regulatory reporting | Legal Counsel | PR Manager | ⚠️ Business hours |
+| **Legal Counsel** | Regulatory compliance, breach notification, liability | General Counsel | External Counsel | ⚠️ Business hours |
+| **Customer Success** | Customer communication, impact assessment | VP CS | CS Manager | ⚠️ Business hours |
+
+**IR Tools & Resources:**
+
+**Investigation Tools:**
+- ✅ Supabase Dashboard (database forensics)
+- ✅ Edge function logs (behavioral analysis)
+- ✅ Audit log queries (user action tracking)
+- ⚠️ Network packet capture (not implemented)
+- ⚠️ Memory forensics tools (not available)
+- ⚠️ Malware analysis sandbox (not available)
+
+**Communication Channels:**
+- ⚠️ Dedicated incident Slack channel (#security-incidents)
+- ⚠️ War room (virtual meeting space)
+- ⚠️ Secure incident documentation system
+- ⚠️ Customer notification templates
+- ⚠️ Regulatory notification templates
+
+**Documentation Templates Required:**
+1. Incident Response Plan (IRP)
+2. Incident Classification Matrix
+3. Escalation Procedures
+4. Communication Templates
+5. Forensics Procedures
+6. Playbooks (by incident type)
+7. Post-Incident Review Template
+
+---
+
+#### **Phase 2: Detection and Analysis** ⚠️ LIMITED
+
+**2.1 Detection Mechanisms**
+
+**Current Detection Capabilities:**
+
+| Detection Method | Implementation Status | Coverage | Response Time |
+|-----------------|----------------------|----------|---------------|
+| **Audit Log Monitoring** | ✅ Implemented | All 93 tables | Manual review |
+| **Authentication Anomalies** | ✅ Basic (Supabase Auth) | Login events | Real-time |
+| **Failed Login Tracking** | ✅ Implemented | All auth attempts | Real-time |
+| **Anomaly Detection** | ✅ Table exists | Limited patterns | Batch processing |
+| **Real-Time Alerting** | ❌ Not implemented | None | N/A |
+| **SIEM Integration** | ❌ Not implemented | None | N/A |
+| **Intrusion Detection** | ❌ Not implemented | None | N/A |
+| **File Integrity Monitoring** | ❌ Not implemented | None | N/A |
+
+**2.2 Incident Classification Matrix (NIST-Aligned)**
+
+**Severity Levels:**
+
+| Level | Criteria | Examples | Response Time | Notification |
+|-------|----------|----------|---------------|-------------|
+| **SEV-0 (Critical)** | Active data breach, multiple tenants affected, RLS bypass | Mass credential theft, tenant data crossover, ransomware | < 15 minutes | CEO, All customers, Regulators |
+| **SEV-1 (High)** | Single tenant compromise, PII exposure, service outage | Account takeover, credential leak, DDoS attack | < 1 hour | CTO, Affected customers |
+| **SEV-2 (Medium)** | Security control failure, attempted breach, suspicious activity | Failed intrusion, anomaly detection, privilege escalation attempt | < 4 hours | Security team, Engineering |
+| **SEV-3 (Low)** | Policy violation, informational finding, false positive | Excessive failed logins, suspicious user behavior | < 24 hours | Security team |
+
+**Incident Categories (NIST):**
+
+1. **CAT-1: Unauthorized Access**
+   - Unauthorized account access
+   - Privilege escalation
+   - Credential compromise
+   - Session hijacking
+
+2. **CAT-2: Denial of Service**
+   - DDoS attack
+   - Resource exhaustion
+   - API abuse
+   - Database connection flooding
+
+3. **CAT-3: Malicious Code**
+   - Malware infection
+   - Supply chain compromise
+   - Code injection
+   - XSS/SQLi attempts
+
+4. **CAT-4: Improper Usage**
+   - Policy violations
+   - Data exfiltration
+   - Unauthorized changes
+   - Audit log tampering
+
+5. **CAT-5: Investigation**
+   - Threat hunting findings
+   - Anomaly investigation
+   - Vulnerability validation
+   - Security testing findings
+
+**2.3 Initial Incident Assessment**
+
+**Triage Questions (NIST SP 800-61):**
+1. What systems/data are affected?
+2. How was the incident detected?
+3. Is the threat actor still active?
+4. What is the business impact?
+5. What is the potential data exposure?
+6. Are there regulatory notification requirements?
+7. What containment actions are required?
+
+**Evidence Collection Requirements:**
+- ✅ Audit logs (PostgreSQL query: `SELECT * FROM audit_logs WHERE timestamp > incident_start`)
+- ✅ Authentication logs (Supabase Auth events)
+- ✅ Edge function logs (Supabase Functions dashboard)
+- ⚠️ Network traffic (not captured - infrastructure level)
+- ⚠️ System snapshots (database state preservation)
+- ⚠️ Memory dumps (not applicable for serverless)
+
+**Chain of Custody:**
+```sql
+-- Example: Preserve incident evidence
+CREATE TABLE incident_evidence (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  incident_id UUID REFERENCES incidents(id),
+  evidence_type TEXT NOT NULL, -- 'audit_log', 'system_snapshot', 'network_capture'
+  collected_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  collected_by UUID REFERENCES user_profiles(user_id),
+  evidence_hash TEXT NOT NULL, -- SHA-256 hash for integrity
+  evidence_location TEXT NOT NULL, -- S3 bucket, file path, etc.
+  chain_of_custody JSONB NOT NULL -- [{timestamp, action, person, notes}]
+);
+```
+
+---
+
+#### **Phase 3: Containment, Eradication, and Recovery** ⚠️ NEEDS DOCUMENTATION
+
+**3.1 Containment Strategies**
+
+**Short-Term Containment (Immediate Actions):**
+
+| Incident Type | Containment Action | Implementation | Recovery Time |
+|---------------|-------------------|----------------|---------------|
+| **Account Compromise** | Revoke sessions, force password reset | `supabase.auth.admin.signOut(userId)` | < 5 minutes |
+| **API Abuse** | Rate limit enforcement, IP blocking | Edge function middleware | < 15 minutes |
+| **Data Breach** | Disable affected user access, revoke API keys | RLS policy update, credential rotation | < 30 minutes |
+| **DDoS Attack** | Enable rate limiting, activate WAF | Cloudflare activation | < 30 minutes |
+| **Malicious Insider** | Suspend account, audit all recent actions | User role removal, forensic analysis | < 15 minutes |
+| **RLS Bypass** | Emergency database read-only mode | `ALTER DATABASE postgres SET default_transaction_read_only = on;` | < 5 minutes |
+
+**Long-Term Containment (Sustained Actions):**
+- System hardening (patch deployment)
+- Enhanced monitoring (SIEM rules)
+- Access control updates (RBAC refinement)
+- Network segmentation (if applicable)
+- Forensic preservation (evidence backup)
+
+**3.2 Eradication Procedures**
+
+**Threat Removal Steps:**
+
+1. **Malicious Access Removal**
+   ```sql
+   -- Revoke all sessions for compromised user
+   DELETE FROM auth.sessions WHERE user_id = '<compromised_user_id>';
+   
+   -- Audit all actions by compromised user
+   SELECT * FROM audit_logs 
+   WHERE user_id = '<compromised_user_id>' 
+   AND timestamp > '<compromise_start_time>';
+   ```
+
+2. **Credential Rotation**
+   ```sql
+   -- Rotate integration credentials
+   UPDATE integration_credentials 
+   SET encrypted_data = '<new_encrypted_credential>',
+       updated_at = now(),
+       rotation_reason = 'Security incident'
+   WHERE id = '<credential_id>';
+   
+   -- Log credential rotation
+   INSERT INTO audit_logs (customer_id, user_id, action_type, system_name, action_details)
+   VALUES ('<customer_id>', '<admin_user_id>', 'credential_rotation', 'integration_credentials', 
+           jsonb_build_object('reason', 'security_incident', 'incident_id', '<incident_id>'));
+   ```
+
+3. **Malicious Code Removal**
+   - Review recent code deployments
+   - Compare against version control (Git)
+   - Scan dependencies for compromises
+   - Redeploy from known-good state
+
+4. **Configuration Hardening**
+   - Review RLS policies for bypass attempts
+   - Audit edge function permissions
+   - Validate authentication configurations
+   - Update security baselines
+
+**3.3 Recovery Procedures**
+
+**Service Restoration Checklist:**
+
+- [ ] **Verify Threat Eliminated**: Confirm eradication through monitoring (24-48 hours)
+- [ ] **System Validation**: Test all critical functions
+  - Authentication system
+  - CMDB operations
+  - Change management workflow
+  - Compliance reporting
+  - Integrations (CIPP, NinjaOne)
+- [ ] **Data Integrity Check**: Compare against backups, validate RLS policies
+- [ ] **Security Control Validation**: Confirm all controls operational
+- [ ] **Monitoring Enhancement**: Deploy additional detection rules
+- [ ] **Communication**: Notify stakeholders of restoration
+
+**Recovery Prioritization (Based on BIA):**
+
+| System | RTO | RPO | Recovery Priority |
+|--------|-----|-----|-------------------|
+| Authentication | 15 min | 0 min | CRITICAL (P0) |
+| Database Core | 1 hour | 5 min | CRITICAL (P0) |
+| CMDB | 4 hours | 15 min | HIGH (P1) |
+| Change Management | 8 hours | 30 min | MEDIUM (P2) |
+| Reporting | 24 hours | 1 hour | LOW (P3) |
+
+---
+
+#### **Phase 4: Post-Incident Activity** ❌ NOT DOCUMENTED
+
+**4.1 Post-Incident Review (PIR) Process**
+
+**Timing:** Within 5 business days of incident closure
+
+**PIR Agenda:**
+1. **Incident Summary** (15 minutes)
+   - Timeline reconstruction
+   - Attack vector analysis
+   - Impact assessment
+   - Response actions taken
+
+2. **What Went Well** (15 minutes)
+   - Effective detection mechanisms
+   - Successful containment actions
+   - Communication effectiveness
+   - Tool/process successes
+
+3. **What Went Wrong** (30 minutes)
+   - Detection delays
+   - Containment challenges
+   - Communication breakdowns
+   - Tool/process failures
+
+4. **Action Items** (30 minutes)
+   - Control improvements
+   - Process updates
+   - Training needs
+   - Tool enhancements
+
+**PIR Template:**
+
+```markdown
+# Post-Incident Review: [Incident ID]
+
+**Date:** [PIR Date]
+**Incident Date:** [Incident Date]
+**Incident Commander:** [Name]
+**Attendees:** [List]
+
+## Incident Summary
+- **Severity:** SEV-[0-3]
+- **Category:** CAT-[1-5]
+- **Detection Time:** [Time]
+- **Containment Time:** [Time]
+- **Resolution Time:** [Time]
+- **Total Duration:** [Hours/Days]
+
+## Timeline
+| Time | Event | Action Taken |
+|------|-------|--------------|
+| T+0 | Initial detection | Alert triggered |
+| T+15min | Investigation started | IR team assembled |
+| ... | ... | ... |
+
+## Root Cause Analysis
+[Five Whys or Fishbone analysis]
+
+## Impact Assessment
+- **Users Affected:** [Count]
+- **Data Exposed:** [Type/Volume]
+- **Downtime:** [Duration]
+- **Financial Impact:** $[Amount]
+
+## Lessons Learned
+### What Went Well
+1. [Success 1]
+2. [Success 2]
+
+### What Went Wrong
+1. [Failure 1]
+2. [Failure 2]
+
+## Action Items
+| Action | Owner | Deadline | Priority |
+|--------|-------|----------|----------|
+| [Action 1] | [Owner] | [Date] | [P0-P3] |
+
+## Recommendations
+[Strategic improvements]
+```
+
+**4.2 Incident Metrics & KPIs**
+
+| Metric | Target | Current | Status |
+|--------|--------|---------|--------|
+| **Mean Time to Detect (MTTD)** | < 1 hour | Unknown | ⚠️ No baseline |
+| **Mean Time to Respond (MTTR)** | < 4 hours | Unknown | ⚠️ No baseline |
+| **Mean Time to Contain (MTTC)** | < 8 hours | Unknown | ⚠️ No baseline |
+| **Mean Time to Recover (MTTR)** | < 24 hours | Unknown | ⚠️ No baseline |
+| **False Positive Rate** | < 20% | Unknown | ⚠️ No baseline |
+| **Incident Recurrence Rate** | < 5% | Unknown | ⚠️ No baseline |
+
+---
+
+#### **Phase 5: Coordination** ⚠️ NEEDS IMPROVEMENT
+
+**5.1 Internal Coordination**
+
+**Communication Flow:**
+```
+Detection → Security Team → Incident Commander → Engineering Lead
+                ↓                    ↓                    ↓
+         CISO/CTO         →    Executive Team   →   Legal Counsel
+                                       ↓
+                              Customer Success → Customers (if required)
+```
+
+**Escalation Matrix:**
+
+| Severity | Notification Time | Notify | Method |
+|----------|------------------|--------|--------|
+| **SEV-0** | Immediate (< 15 min) | CEO, Board, All Executives, Legal | Phone + Emergency meeting |
+| **SEV-1** | < 1 hour | CTO, CISO, Engineering VPs, Legal | Phone + Slack |
+| **SEV-2** | < 4 hours | CISO, Engineering Director | Slack + Email |
+| **SEV-3** | < 24 hours | Security Team | Ticket system |
+
+**5.2 External Coordination**
+
+**Regulatory Notification Requirements:**
+
+| Regulation | Trigger | Timeline | Regulator | Penalty for Late Filing |
+|------------|---------|----------|-----------|------------------------|
+| **GDPR (EU)** | Personal data breach | 72 hours | Supervisory Authority | Up to €20M or 4% revenue |
+| **CCPA (California)** | Unauthorized access to unencrypted PI | "Without unreasonable delay" | Attorney General | $100-750 per consumer per incident |
+| **HIPAA (Healthcare)** | PHI breach > 500 records | 60 days (large breach) | HHS OCR | $100-$50,000 per violation |
+| **SOX (Public Companies)** | Material weakness in controls | 4 business days (8-K filing) | SEC | Civil/criminal penalties |
+| **State Breach Laws** | Varies by state | 30-90 days typically | State AG | Varies by state |
+
+**Customer Notification Template:**
+```markdown
+Subject: Security Incident Notification - [Incident ID]
+
+Dear [Customer Name],
+
+We are writing to inform you of a security incident that may have affected your account.
+
+**What Happened:**
+[Brief description of the incident]
+
+**What Information Was Involved:**
+[Types of data potentially affected]
+
+**What We're Doing:**
+[Containment and remediation actions]
+
+**What You Should Do:**
+1. [Action 1 - e.g., Reset your password]
+2. [Action 2 - e.g., Monitor your account]
+3. [Action 3 - e.g., Contact support with questions]
+
+**For More Information:**
+Security Incident Hotline: [Phone]
+Email: security@oberaconnect.com
+Reference Number: [Incident ID]
+
+We take the security of your information very seriously and apologize for any inconvenience.
+
+Sincerely,
+[Name]
+[Title]
+```
+
+**5.3 Law Enforcement Coordination**
+
+**When to Contact Law Enforcement:**
+- Ransomware attack
+- Nation-state threat actor
+- Organized cybercrime involvement
+- Financial theft/fraud
+- Customer request
+- Regulatory requirement
+
+**FBI Cyber Division:**
+- Internet Crime Complaint Center (IC3): www.ic3.gov
+- Local FBI field office
+- InfraGard (private sector partnership)
+
+**Evidence Preservation for Law Enforcement:**
+- Maintain chain of custody
+- Do not delete logs
+- Preserve system images
+- Document all actions
+- Prepare timeline
+
+---
+
+#### **Phase 6: Information Sharing** ⚠️ NOT IMPLEMENTED
+
+**6.1 Threat Intelligence Sharing**
+
+**Internal Sharing:**
+- Security team knowledge base
+- Incident database (`incidents` table)
+- Playbook updates based on lessons learned
+- Training materials
+
+**External Sharing (Recommended):**
+- **MS-ISAC** (Multi-State Information Sharing and Analysis Center)
+- **FS-ISAC** (Financial Services ISAC) - if applicable
+- **IT-ISAC** (Information Technology ISAC)
+- **CISA** (Cybersecurity and Infrastructure Security Agency)
+
+**Indicators of Compromise (IOC) Sharing:**
+```sql
+-- Store IOCs for threat intelligence
+CREATE TABLE threat_intelligence (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ioc_type TEXT NOT NULL, -- 'ip_address', 'domain', 'file_hash', 'user_agent'
+  ioc_value TEXT NOT NULL,
+  threat_level TEXT NOT NULL, -- 'critical', 'high', 'medium', 'low'
+  first_seen TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_seen TIMESTAMPTZ NOT NULL DEFAULT now(),
+  incident_id UUID REFERENCES incidents(id),
+  source TEXT, -- 'internal_detection', 'vendor_feed', 'isac'
+  confidence_score INTEGER CHECK (confidence_score BETWEEN 0 AND 100),
+  notes TEXT
+);
+```
+
+---
+
+### 7.1.1 Technical Controls Implementation
+
+#### **Control TC-001: API Rate Limiting**
+
+**Implementation Status:** ⚠️ NOT IMPLEMENTED
+
+**Purpose:** Mitigates R-001 (Credential Stuffing) and R-002 (DDoS)
+
+**Architecture:**
+```typescript
+// supabase/functions/_shared/rate-limiter.ts
+import { createClient } from '@supabase/supabase-js';
+
+interface RateLimitConfig {
+  windowMs: number;      // Time window in milliseconds
+  maxRequests: number;   // Max requests per window
+  keyPrefix: string;     // Redis key prefix
+}
+
+export class RateLimiter {
+  private supabase: any;
+  
+  constructor(supabaseUrl: string, supabaseKey: string) {
+    this.supabase = createClient(supabaseUrl, supabaseKey);
+  }
+  
+  async checkLimit(identifier: string, config: RateLimitConfig): Promise<{
+    allowed: boolean;
+    remaining: number;
+    resetAt: Date;
+  }> {
+    const now = Date.now();
+    const windowStart = now - config.windowMs;
+    const key = `${config.keyPrefix}:${identifier}`;
+    
+    // Query recent requests
+    const { data: requests } = await this.supabase
+      .from('rate_limit_tracking')
+      .select('timestamp')
+      .eq('identifier_key', key)
+      .gte('timestamp', new Date(windowStart).toISOString());
+    
+    const requestCount = requests?.length || 0;
+    const allowed = requestCount < config.maxRequests;
+    
+    if (allowed) {
+      // Record this request
+      await this.supabase
+        .from('rate_limit_tracking')
+        .insert({
+          identifier_key: key,
+          timestamp: new Date(now).toISOString()
+        });
+    }
+    
+    return {
+      allowed,
+      remaining: Math.max(0, config.maxRequests - requestCount - 1),
+      resetAt: new Date(windowStart + config.windowMs)
+    };
+  }
+}
+
+// Rate limit configurations
+export const RATE_LIMITS = {
+  AUTH_ATTEMPT: { windowMs: 900000, maxRequests: 5, keyPrefix: 'auth' },      // 5 per 15min
+  API_USER: { windowMs: 60000, maxRequests: 100, keyPrefix: 'api_user' },     // 100 per minute
+  API_IP: { windowMs: 60000, maxRequests: 1000, keyPrefix: 'api_ip' },        // 1000 per minute
+  EXPORT: { windowMs: 3600000, maxRequests: 10, keyPrefix: 'export' }         // 10 per hour
+};
+```
+
+**Database Schema:**
+```sql
+CREATE TABLE rate_limit_tracking (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  identifier_key TEXT NOT NULL,
+  timestamp TIMESTAMPTZ NOT NULL DEFAULT now(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_rate_limit_key_time ON rate_limit_tracking(identifier_key, timestamp DESC);
+
+-- Cleanup old entries (run daily)
+DELETE FROM rate_limit_tracking WHERE timestamp < now() - INTERVAL '1 hour';
+```
+
+**Edge Function Middleware:**
+```typescript
+// Apply to all edge functions
+import { RateLimiter, RATE_LIMITS } from './_shared/rate-limiter.ts';
+
+export async function applyRateLimit(req: Request): Promise<Response | null> {
+  const limiter = new RateLimiter(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  );
+  
+  // Extract user ID or IP address
+  const userId = req.headers.get('x-user-id');
+  const ipAddress = req.headers.get('x-forwarded-for') || 'unknown';
+  
+  // Check user-based rate limit
+  if (userId) {
+    const userLimit = await limiter.checkLimit(userId, RATE_LIMITS.API_USER);
+    if (!userLimit.allowed) {
+      return new Response(JSON.stringify({
+        error: 'Rate limit exceeded',
+        resetAt: userLimit.resetAt
+      }), {
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'Retry-After': String(Math.ceil((userLimit.resetAt.getTime() - Date.now()) / 1000)),
+          'X-RateLimit-Remaining': String(userLimit.remaining)
+        }
+      });
+    }
+  }
+  
+  // Check IP-based rate limit
+  const ipLimit = await limiter.checkLimit(ipAddress, RATE_LIMITS.API_IP);
+  if (!ipLimit.allowed) {
+    return new Response(JSON.stringify({
+      error: 'IP rate limit exceeded',
+      resetAt: ipLimit.resetAt
+    }), {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': String(Math.ceil((ipLimit.resetAt.getTime() - Date.now()) / 1000))
+      }
+    });
+  }
+  
+  return null; // Allow request to proceed
+}
+```
+
+**Deployment Plan:**
+1. Deploy rate_limit_tracking table (Week 1)
+2. Implement RateLimiter class (Week 1)
+3. Apply to authentication endpoints (Week 2)
+4. Apply to all edge functions (Week 3)
+5. Monitor and tune thresholds (Week 4)
+
+**Success Metrics:**
+- 429 responses < 1% of total requests
+- Successful attack mitigation (0 credential stuffing successes)
+- Legitimate user impact < 0.1%
+
+---
+
+#### **Control TC-002: Multi-Factor Authentication (MFA)**
+
+**Implementation Status:** ⚠️ OPTIONAL (Should be MANDATORY)
+
+**Purpose:** Mitigates R-001 (Credential Stuffing) from 6/10 to 2/10
+
+**Configuration:**
+```sql
+-- Enable MFA enforcement
+-- Configure in Supabase Auth settings or via SQL
+
+-- Track MFA enrollment
+CREATE TABLE user_mfa_status (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id),
+  mfa_enabled BOOLEAN NOT NULL DEFAULT false,
+  mfa_method TEXT, -- 'totp', 'sms', 'email'
+  enrollment_date TIMESTAMPTZ,
+  last_verified TIMESTAMPTZ,
+  grace_period_ends TIMESTAMPTZ, -- Allow time for enrollment
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- RLS policy: Users can only see their own MFA status
+CREATE POLICY "Users can view own MFA status"
+ON user_mfa_status FOR SELECT
+TO authenticated
+USING (user_id = auth.uid());
+```
+
+**Enforcement Logic:**
+```typescript
+// Check MFA status before granting access
+async function checkMFARequired(userId: string): Promise<boolean> {
+  const { data } = await supabase
+    .from('user_mfa_status')
+    .select('mfa_enabled, grace_period_ends')
+    .eq('user_id', userId)
+    .single();
+  
+  if (!data) return false; // New user, enroll
+  
+  if (!data.mfa_enabled) {
+    const gracePeriodExpired = data.grace_period_ends && 
+      new Date(data.grace_period_ends) < new Date();
+    return gracePeriodExpired; // Block access if grace period expired
+  }
+  
+  return true; // MFA enabled
+}
+```
+
+**Rollout Plan:**
+1. **Phase 1 (Week 1):** Enable MFA for admin users (mandatory)
+2. **Phase 2 (Week 2):** Enable MFA for all users (optional, 90-day grace period)
+3. **Phase 3 (Month 3):** Enforce MFA for all users (mandatory)
+4. **Phase 4 (Ongoing):** Monitor MFA bypass attempts, alert on failures
+
+**User Communication:**
+- Email notification 30 days before enforcement
+- In-app banner notification
+- MFA setup wizard
+- Support documentation
+
+---
+
+#### **Control TC-003: Leaked Password Protection**
+
+**Implementation Status:** ❌ DISABLED (Should be ENABLED)
+
+**Purpose:** Mitigates R-001 (Credential Stuffing) from 6/10 to 4/10
+
+**Configuration:**
+```bash
+# Enable in Supabase Auth settings
+# Dashboard → Authentication → Policies → Leaked Password Protection → Enable
+
+# Or via SQL
+UPDATE auth.config 
+SET leaked_password_protection = true;
+```
+
+**How It Works:**
+- Uses HaveIBeenPwned API (k-anonymity model)
+- Checks password hash against known breaches
+- Blocks registration/password change if leaked
+- Zero performance impact (< 50ms per check)
+
+**Deployment:**
+1. Enable setting (immediate)
+2. Force password reset for existing users with leaked passwords (30-day notice)
+3. Monitor blocked password attempts
+4. User education on password managers
+
+**Risk Reduction:**
+- Credential stuffing success rate: 20% → 4%
+- R-001 residual risk: 6/10 → 4/10 (combined with MFA → 2/10)
+
+---
+
+#### **Control TC-004: Web Application Firewall (WAF)**
+
+**Implementation Status:** ⚠️ NOT DEPLOYED
+
+**Purpose:** Mitigates R-002 (DDoS), R-003 (Application attacks)
+
+**Recommended Solution:** Cloudflare WAF
+
+**Configuration:**
+```yaml
+# Cloudflare WAF Rules
+rules:
+  - name: "Rate limit authentication"
+    expression: "(http.request.uri.path eq '/auth/v1/token') and (http.request.method eq 'POST')"
+    action: "challenge"
+    rate_limit: 5 requests per 15 minutes per IP
+  
+  - name: "Block suspicious user agents"
+    expression: "(http.user_agent contains 'sqlmap') or (http.user_agent contains 'nikto')"
+    action: "block"
+  
+  - name: "Geo-blocking (if required)"
+    expression: "(ip.geoip.country in {'CN' 'RU' 'KP'})"
+    action: "challenge"
+  
+  - name: "DDoS protection"
+    expression: "(http.request.uri.path matches '^/functions/v1/')"
+    action: "managed_challenge"
+    rate_limit: 1000 requests per minute per IP
+  
+  - name: "SQL injection patterns"
+    expression: "(http.request.uri.query contains 'union select') or (http.request.uri.query contains 'drop table')"
+    action: "block"
+```
+
+**Managed Rulesets:**
+- OWASP ModSecurity Core Rule Set
+- Cloudflare Managed Ruleset
+- DDoS mitigation (automatic)
+
+**Deployment Plan:**
+1. Configure Cloudflare account (Week 1)
+2. Route traffic through Cloudflare (Week 1)
+3. Enable WAF in monitor mode (Week 2)
+4. Tune rules, eliminate false positives (Week 3-4)
+5. Enable blocking mode (Week 5)
+
+**Cost:** $20-$200/month (Pro/Business plan)
+
+---
+
+#### **Control TC-005: Intrusion Detection & SIEM**
+
+**Implementation Status:** ❌ NOT IMPLEMENTED
+
+**Purpose:** Mitigates R-003 (Insider Threat), improves detection (Phase 2 NIST IR)
+
+**Recommended Solution:** Splunk Cloud / Elastic Security / Datadog Security
+
+**Log Sources to Integrate:**
+- Supabase audit logs (`audit_logs` table)
+- Authentication events (Supabase Auth)
+- Edge function logs (Supabase Functions)
+- Database queries (PostgreSQL logs)
+- RLS policy violations
+- Privilege escalation attempts
+
+**SIEM Use Cases:**
+
+| Use Case | Detection Logic | Alert Threshold | Response |
+|----------|----------------|-----------------|----------|
+| **UC-001: Credential Stuffing** | Failed login attempts from single IP | > 20 attempts in 5 minutes | Block IP, notify security team |
+| **UC-002: Insider Threat** | User accessing > 10x normal data volume | 10x baseline | Alert CISO, review audit logs |
+| **UC-003: Privilege Escalation** | User role change to admin | Any occurrence | Alert immediately, require approval |
+| **UC-004: After-Hours Access** | Admin activity outside business hours | After 10pm or weekends | Challenge MFA, log for review |
+| **UC-005: Data Exfiltration** | Large export query (> 1000 records) | > 5 per hour | Throttle, require approval |
+| **UC-006: API Abuse** | Excessive API calls | > 500 calls/minute | Rate limit, investigate |
+| **UC-007: RLS Bypass Attempt** | Query pattern suggests RLS bypass | Pattern match | Block immediately, alert CISO |
+
+**Implementation:**
+```typescript
+// Send logs to SIEM
+async function sendToSIEM(event: AuditLogEvent) {
+  await fetch('https://siem-endpoint.company.com/api/logs', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${SIEM_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      timestamp: event.timestamp,
+      source: 'oberaconnect',
+      severity: event.severity,
+      user_id: event.user_id,
+      customer_id: event.customer_id,
+      action: event.action_type,
+      details: event.action_details,
+      compliance_tags: event.compliance_tags
+    })
+  });
+}
+```
+
+**Deployment Timeline:** 90 days
+**Cost:** $5,000-$15,000/year
+
+---
+
+#### **Control TC-006: Automated Vulnerability Scanning**
+
+**Implementation Status:** ⚠️ NOT IMPLEMENTED
+
+**Purpose:** Mitigates R-007 (Supply Chain) and identifies new vulnerabilities
+
+**Tools:**
+1. **npm audit** (Free, built-in)
+   ```bash
+   # Run in CI/CD pipeline
+   npm audit --audit-level=high
+   npm audit fix --force # Auto-fix vulnerabilities
+   ```
+
+2. **Snyk** (Recommended, $$$)
+   - Monitors dependencies in real-time
+   - Automated PR fixes
+   - License compliance checking
+   - Container scanning (if applicable)
+
+3. **GitHub Dependabot** (Free)
+   - Automated dependency updates
+   - Security vulnerability alerts
+   - Automatic PR creation
+
+**CI/CD Integration:**
+```yaml
+# .github/workflows/security-scan.yml
+name: Security Scan
+on: [push, pull_request]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+      - name: Run Snyk
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+```
+
+**Policy:** Block deployment if:
+- Critical vulnerabilities found (CVSS >= 9.0)
+- High vulnerabilities found (CVSS >= 7.0) older than 30 days
+
+**Timeline:** 30 days
+
+---
+
+### 7.1.2 Summary: Technical Controls Implementation Roadmap
+
+| Control | Risk Reduced | Priority | Timeline | Cost | Status |
+|---------|-------------|----------|----------|------|--------|
+| TC-001: Rate Limiting | R-001, R-002 | P0 | 30 days | $0 | ⚠️ Planned |
+| TC-002: MFA | R-001 | P0 | 90 days (phased) | $0 | ⚠️ Planned |
+| TC-003: Leaked Password | R-001 | P0 | Immediate | $0 | ⚠️ Config change |
+| TC-004: WAF | R-002, R-003 | P1 | 30 days | $2,400/yr | ⚠️ Planned |
+| TC-005: SIEM | R-003, All | P2 | 90 days | $10,000/yr | ⚠️ Planned |
+| TC-006: Vuln Scanning | R-007 | P1 | 30 days | $0-$1,000/yr | ⚠️ Planned |
+
+**Total Implementation Cost (Year 1):** ~$25,000-$35,000
+**Risk Reduction:** HIGH risks → LOW risks
+**ROI:** $920K annual loss avoidance (per FAIR analysis)
 
 ### 7.2 Logging and Monitoring
 
