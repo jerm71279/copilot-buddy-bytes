@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { RiskAssessmentDialog } from "@/components/RiskAssessmentDialog";
 import { 
   Shield, 
   AlertTriangle, 
@@ -23,9 +24,10 @@ import {
 const RiskAssessmentPortal = () => {
   const { toast } = useToast();
   const [selectedTab, setSelectedTab] = useState("register");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   // Fetch risk assessments
-  const { data: risks, isLoading: risksLoading } = useQuery({
+  const { data: risks, isLoading: risksLoading, refetch: refetchRisks } = useQuery({
     queryKey: ["risk-assessments"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -126,11 +128,17 @@ const RiskAssessmentPortal = () => {
               Comprehensive CISSP-aligned risk management and assessment framework
             </p>
           </div>
-          <Button onClick={() => toast({ title: "Feature Coming Soon", description: "Risk creation wizard will be available shortly" })}>
+          <Button onClick={() => setDialogOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             New Risk Assessment
           </Button>
         </div>
+
+        <RiskAssessmentDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          onSuccess={() => refetchRisks()}
+        />
 
         {/* Key Metrics */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
