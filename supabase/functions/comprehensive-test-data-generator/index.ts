@@ -35,70 +35,86 @@ Deno.serve(async (req) => {
       .limit(1);
     
     const customerId = customers?.[0]?.id || '710092dc-c33c-4f8e-8c65-11fc62982c96';
-    const testUserId = '00000000-0000-0000-0000-000000000001';
+    
+    // Get a real user ID from user_profiles
+    const { data: userProfiles } = await supabase
+      .from('user_profiles')
+      .select('user_id')
+      .limit(1);
+    
+    const testUserId = userProfiles?.[0]?.user_id || null;
+    
+    // Skip tests that require a user if no user exists
+    if (!testUserId) {
+      console.log('Warning: No user found in user_profiles, skipping user-dependent tests');
+    }
 
     // 1. Knowledge Base Component
     const kbStart = Date.now();
     const kbErrors: string[] = [];
     let kbCount = 0;
 
-    try {
-      // Create categories
-      const { data: categories, error: catError } = await supabase
-        .from('knowledge_categories')
-        .insert([
-          { name: 'Security Policies', description: 'Security and compliance policies', icon_name: 'Shield' },
-          { name: 'IT Operations', description: 'IT operational procedures', icon_name: 'Server' },
-          { name: 'HR Procedures', description: 'Human resources guidelines', icon_name: 'Users' },
-          { name: 'Troubleshooting', description: 'Technical troubleshooting guides', icon_name: 'Tool' }
-        ])
-        .select();
+    if (testUserId) {
+      try {
+        // Create categories
+        const { data: categories, error: catError } = await supabase
+          .from('knowledge_categories')
+          .insert([
+            { name: 'Security Policies', description: 'Security and compliance policies', icon_name: 'Shield' },
+            { name: 'IT Operations', description: 'IT operational procedures', icon_name: 'Server' },
+            { name: 'HR Procedures', description: 'Human resources guidelines', icon_name: 'Users' },
+            { name: 'Troubleshooting', description: 'Technical troubleshooting guides', icon_name: 'Tool' }
+          ])
+          .select();
 
-      if (catError) throw catError;
-      kbCount += categories?.length || 0;
+        if (catError) throw catError;
+        kbCount += categories?.length || 0;
 
-      // Create articles
-      const { data: articles, error: artError } = await supabase
-        .from('knowledge_articles')
-        .insert([
-          {
-            customer_id: customerId,
-            category_id: categories?.[0]?.id,
-            title: 'Password Policy Requirements',
-            content: 'All passwords must be at least 12 characters and include uppercase, lowercase, numbers, and special characters.',
-            article_type: 'sop',
-            status: 'published',
-            created_by: testUserId,
-            tags: ['security', 'authentication', 'policy']
-          },
-          {
-            customer_id: customerId,
-            category_id: categories?.[1]?.id,
-            title: 'Server Backup Procedures',
-            content: 'Daily automated backups run at 2 AM. Manual backups can be triggered from the admin panel.',
-            article_type: 'sop',
-            status: 'published',
-            created_by: testUserId,
-            tags: ['backup', 'operations', 'maintenance']
-          },
-          {
-            customer_id: customerId,
-            category_id: categories?.[2]?.id,
-            title: 'Employee Onboarding Checklist',
-            content: 'Complete background check, setup email, assign equipment, schedule training sessions.',
-            article_type: 'guide',
-            status: 'published',
-            created_by: testUserId,
-            tags: ['onboarding', 'hr', 'checklist']
-          }
-        ])
-        .select();
+        // Create articles
+        const { data: articles, error: artError } = await supabase
+          .from('knowledge_articles')
+          .insert([
+            {
+              customer_id: customerId,
+              category_id: categories?.[0]?.id,
+              title: 'Password Policy Requirements',
+              content: 'All passwords must be at least 12 characters and include uppercase, lowercase, numbers, and special characters.',
+              article_type: 'sop',
+              status: 'published',
+              created_by: testUserId,
+              tags: ['security', 'authentication', 'policy']
+            },
+            {
+              customer_id: customerId,
+              category_id: categories?.[1]?.id,
+              title: 'Server Backup Procedures',
+              content: 'Daily automated backups run at 2 AM. Manual backups can be triggered from the admin panel.',
+              article_type: 'sop',
+              status: 'published',
+              created_by: testUserId,
+              tags: ['backup', 'operations', 'maintenance']
+            },
+            {
+              customer_id: customerId,
+              category_id: categories?.[2]?.id,
+              title: 'Employee Onboarding Checklist',
+              content: 'Complete background check, setup email, assign equipment, schedule training sessions.',
+              article_type: 'guide',
+              status: 'published',
+              created_by: testUserId,
+              tags: ['onboarding', 'hr', 'checklist']
+            }
+          ])
+          .select();
 
-      if (artError) throw artError;
-      kbCount += articles?.length || 0;
+        if (artError) throw artError;
+        kbCount += articles?.length || 0;
 
-    } catch (err) {
-      kbErrors.push(err instanceof Error ? err.message : String(err));
+      } catch (err) {
+        kbErrors.push(err instanceof Error ? err.message : String(err));
+      }
+    } else {
+      kbErrors.push('Skipped: No user available');
     }
 
     results.push({
@@ -114,46 +130,50 @@ Deno.serve(async (req) => {
     const aiErrors: string[] = [];
     let aiCount = 0;
 
-    try {
-      const conversationId = crypto.randomUUID();
-      
-      const { data: interactions, error: aiError } = await supabase
-        .from('ai_interactions')
-        .insert([
-          {
-            customer_id: customerId,
-            user_id: testUserId,
-            conversation_id: conversationId,
-            interaction_type: 'query',
-            user_query: 'What is our password policy?',
-            ai_response: 'All passwords must be at least 12 characters long and include a mix of uppercase, lowercase, numbers, and special characters.',
-            confidence_score: 0.95,
-            insight_generated: true,
-            was_helpful: true,
-            feedback_rating: 5,
-            compliance_tags: ['security', 'policy']
-          },
-          {
-            customer_id: customerId,
-            user_id: testUserId,
-            conversation_id: conversationId,
-            interaction_type: 'query',
-            user_query: 'How do I request time off?',
-            ai_response: 'Submit a time-off request through the HR portal at least 2 weeks in advance.',
-            confidence_score: 0.88,
-            insight_generated: false,
-            was_helpful: true,
-            feedback_rating: 4,
-            compliance_tags: ['hr', 'policy']
-          }
-        ])
-        .select();
+    if (testUserId) {
+      try {
+        const conversationId = crypto.randomUUID();
+        
+        const { data: interactions, error: aiError } = await supabase
+          .from('ai_interactions')
+          .insert([
+            {
+              customer_id: customerId,
+              user_id: testUserId,
+              conversation_id: conversationId,
+              interaction_type: 'query',
+              user_query: 'What is our password policy?',
+              ai_response: 'All passwords must be at least 12 characters long and include a mix of uppercase, lowercase, numbers, and special characters.',
+              confidence_score: 0.95,
+              insight_generated: true,
+              was_helpful: true,
+              feedback_rating: 5,
+              compliance_tags: ['security', 'policy']
+            },
+            {
+              customer_id: customerId,
+              user_id: testUserId,
+              conversation_id: conversationId,
+              interaction_type: 'query',
+              user_query: 'How do I request time off?',
+              ai_response: 'Submit a time-off request through the HR portal at least 2 weeks in advance.',
+              confidence_score: 0.88,
+              insight_generated: false,
+              was_helpful: true,
+              feedback_rating: 4,
+              compliance_tags: ['hr', 'policy']
+            }
+          ])
+          .select();
 
-      if (aiError) throw aiError;
-      aiCount = interactions?.length || 0;
+        if (aiError) throw aiError;
+        aiCount = interactions?.length || 0;
 
-    } catch (err) {
-      aiErrors.push(err instanceof Error ? err.message : String(err));
+      } catch (err) {
+        aiErrors.push(err instanceof Error ? err.message : String(err));
+      }
+    } else {
+      aiErrors.push('Skipped: No user available');
     }
 
     results.push({
@@ -169,42 +189,46 @@ Deno.serve(async (req) => {
     const auditErrors: string[] = [];
     let auditCount = 0;
 
-    try {
-      const { data: logs, error: auditError } = await supabase
-        .from('audit_logs')
-        .insert([
-          {
-            customer_id: customerId,
-            user_id: testUserId,
-            system_name: 'user_management',
-            action_type: 'user_created',
-            action_details: { username: 'john.doe', department: 'IT' },
-            compliance_tags: ['access_control', 'user_management']
-          },
-          {
-            customer_id: customerId,
-            user_id: testUserId,
-            system_name: 'evidence_management',
-            action_type: 'file_uploaded',
-            action_details: { file_name: 'security_policy.pdf', size: 524288 },
-            compliance_tags: ['compliance', 'evidence']
-          },
-          {
-            customer_id: customerId,
-            user_id: testUserId,
-            system_name: 'workflow_automation',
-            action_type: 'workflow_executed',
-            action_details: { workflow_name: 'User Access Provisioning', status: 'completed' },
-            compliance_tags: ['automation', 'access_control']
-          }
-        ])
-        .select();
+    if (testUserId) {
+      try {
+        const { data: logs, error: auditError } = await supabase
+          .from('audit_logs')
+          .insert([
+            {
+              customer_id: customerId,
+              user_id: testUserId,
+              system_name: 'user_management',
+              action_type: 'user_created',
+              action_details: { username: 'john.doe', department: 'IT' },
+              compliance_tags: ['access_control', 'user_management']
+            },
+            {
+              customer_id: customerId,
+              user_id: testUserId,
+              system_name: 'evidence_management',
+              action_type: 'file_uploaded',
+              action_details: { file_name: 'security_policy.pdf', size: 524288 },
+              compliance_tags: ['compliance', 'evidence']
+            },
+            {
+              customer_id: customerId,
+              user_id: testUserId,
+              system_name: 'workflow_automation',
+              action_type: 'workflow_executed',
+              action_details: { workflow_name: 'User Access Provisioning', status: 'completed' },
+              compliance_tags: ['automation', 'access_control']
+            }
+          ])
+          .select();
 
-      if (auditError) throw auditError;
-      auditCount = logs?.length || 0;
+        if (auditError) throw auditError;
+        auditCount = logs?.length || 0;
 
-    } catch (err) {
-      auditErrors.push(err instanceof Error ? err.message : String(err));
+      } catch (err) {
+        auditErrors.push(err instanceof Error ? err.message : String(err));
+      }
+    } else {
+      auditErrors.push('Skipped: No user available');
     }
 
     results.push({
@@ -220,38 +244,42 @@ Deno.serve(async (req) => {
     const behaviorErrors: string[] = [];
     let behaviorCount = 0;
 
-    try {
-      const { data: events, error: behaviorError } = await supabase
-        .from('behavioral_events')
-        .insert([
-          {
-            customer_id: customerId,
-            user_id: testUserId,
-            system_name: 'portal',
-            event_type: 'page_view',
-            action: 'viewed_compliance_dashboard',
-            duration_ms: 45000,
-            context: { page: '/compliance', browser: 'Chrome' },
-            compliance_tags: ['usage', 'compliance']
-          },
-          {
-            customer_id: customerId,
-            user_id: testUserId,
-            system_name: 'knowledge_base',
-            event_type: 'search',
-            action: 'searched_articles',
-            duration_ms: 2500,
-            context: { query: 'password policy', results: 5 },
-            compliance_tags: ['knowledge', 'search']
-          }
-        ])
-        .select();
+    if (testUserId) {
+      try {
+        const { data: events, error: behaviorError } = await supabase
+          .from('behavioral_events')
+          .insert([
+            {
+              customer_id: customerId,
+              user_id: testUserId,
+              system_name: 'portal',
+              event_type: 'page_view',
+              action: 'viewed_compliance_dashboard',
+              duration_ms: 45000,
+              context: { page: '/compliance', browser: 'Chrome' },
+              compliance_tags: ['usage', 'compliance']
+            },
+            {
+              customer_id: customerId,
+              user_id: testUserId,
+              system_name: 'knowledge_base',
+              event_type: 'search',
+              action: 'searched_articles',
+              duration_ms: 2500,
+              context: { query: 'password policy', results: 5 },
+              compliance_tags: ['knowledge', 'search']
+            }
+          ])
+          .select();
 
-      if (behaviorError) throw behaviorError;
-      behaviorCount = events?.length || 0;
+        if (behaviorError) throw behaviorError;
+        behaviorCount = events?.length || 0;
 
-    } catch (err) {
-      behaviorErrors.push(err instanceof Error ? err.message : String(err));
+      } catch (err) {
+        behaviorErrors.push(err instanceof Error ? err.message : String(err));
+      }
+    } else {
+      behaviorErrors.push('Skipped: No user available');
     }
 
     results.push({
@@ -434,47 +462,51 @@ Deno.serve(async (req) => {
     const onboardingErrors: string[] = [];
     let onboardingCount = 0;
 
-    try {
-      // Get a template
-      const { data: templates } = await supabase
-        .from('onboarding_templates')
-        .select('id')
-        .limit(1);
+    if (testUserId) {
+      try {
+        // Get a template
+        const { data: templates } = await supabase
+          .from('onboarding_templates')
+          .select('id')
+          .limit(1);
 
-      if (templates && templates.length > 0) {
-        const { data: onboardings, error: onboardingError } = await supabase
-          .from('client_onboardings')
-          .insert([
-            {
-              customer_id: customerId,
-              template_id: templates[0].id,
-              client_name: 'Acme Corporation',
-              client_contact_email: 'contact@acme.com',
-              client_contact_name: 'Jane Smith',
-              status: 'in_progress',
-              start_date: new Date().toISOString().split('T')[0],
-              created_by: testUserId,
-              completion_percentage: 35
-            },
-            {
-              customer_id: customerId,
-              template_id: templates[0].id,
-              client_name: 'TechStart Inc',
-              client_contact_email: 'admin@techstart.io',
-              client_contact_name: 'Bob Johnson',
-              status: 'not_started',
-              created_by: testUserId,
-              completion_percentage: 0
-            }
-          ])
-          .select();
+        if (templates && templates.length > 0) {
+          const { data: onboardings, error: onboardingError } = await supabase
+            .from('client_onboardings')
+            .insert([
+              {
+                customer_id: customerId,
+                template_id: templates[0].id,
+                client_name: 'Acme Corporation',
+                client_contact_email: 'contact@acme.com',
+                client_contact_name: 'Jane Smith',
+                status: 'in_progress',
+                start_date: new Date().toISOString().split('T')[0],
+                created_by: testUserId,
+                completion_percentage: 35
+              },
+              {
+                customer_id: customerId,
+                template_id: templates[0].id,
+                client_name: 'TechStart Inc',
+                client_contact_email: 'admin@techstart.io',
+                client_contact_name: 'Bob Johnson',
+                status: 'not_started',
+                created_by: testUserId,
+                completion_percentage: 0
+              }
+            ])
+            .select();
 
-        if (onboardingError) throw onboardingError;
-        onboardingCount = onboardings?.length || 0;
+          if (onboardingError) throw onboardingError;
+          onboardingCount = onboardings?.length || 0;
+        }
+
+      } catch (err) {
+        onboardingErrors.push(err instanceof Error ? err.message : String(err));
       }
-
-    } catch (err) {
-      onboardingErrors.push(err instanceof Error ? err.message : String(err));
+    } else {
+      onboardingErrors.push('Skipped: No user available');
     }
 
     results.push({
