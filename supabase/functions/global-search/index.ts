@@ -152,7 +152,7 @@ serve(async (req) => {
       // Audit Logs - search system, action, details, and tags
       supabase.from("audit_logs").select("*").or(`system_name.ilike.%${query}%,action_type.ilike.%${query}%,action_details::text.ilike.%${query}%,compliance_tags::text.ilike.%${query}%`).limit(5),
       supabase.from("user_profiles").select("*").or(`full_name.ilike.%${query}%,department.ilike.%${query}%`).limit(5),
-      supabase.from("applications").select("*").or(`name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
+      supabase.from("applications").select("*").or(`name.ilike.%${query}%,description.ilike.%${query}%,app_url.ilike.%${query}%,category.ilike.%${query}%`).limit(5),
       supabase.from("cipp_tenants").select("*").or(`tenant_name.ilike.%${query}%,display_name.ilike.%${query}%`).limit(5),
       supabase.from("client_onboardings").select("*").or(`client_name.ilike.%${query}%,client_contact_name.ilike.%${query}%`).limit(5),
       supabase.from("compliance_frameworks").select("*").or(`framework_name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
@@ -280,7 +280,13 @@ serve(async (req) => {
       ...(anomalies.data || []).map(a => ({ type: "anomaly", data: a, title: `${a.anomaly_type} - ${a.system_name}`, url: `/dashboard/soc` })),
       ...(auditLogs.data || []).map(al => ({ type: "audit", data: al, title: `${al.action_type} - ${al.system_name}`, url: `/compliance/audit-reports` })),
       ...(users.data || []).map(u => ({ type: "user", data: u, title: u.full_name || "User", url: `/employee-directory` })),
-      ...(applications.data || []).map(app => ({ type: "application", data: app, title: app.name, url: `/admin/applications` })),
+      ...(applications.data || []).map(app => ({ 
+        type: "application", 
+        data: app, 
+        title: app.name, 
+        url: app.app_url || `/admin/applications`,
+        description: app.description || app.app_url
+      })),
       ...(tenants.data || []).map(t => ({ type: "tenant", data: t, title: t.tenant_name, url: `/cipp` })),
       ...(onboardings.data || []).map(o => ({ type: "onboarding", data: o, title: `${o.client_name} Onboarding`, url: `/onboarding` })),
       ...(complianceFrameworks.data || []).map(cf => ({ type: "framework", data: cf, title: cf.framework_name, url: `/compliance/frameworks/${cf.id}` })),
