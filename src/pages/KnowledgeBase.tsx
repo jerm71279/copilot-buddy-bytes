@@ -178,6 +178,12 @@ export default function KnowledgeBase() {
             <Lightbulb className="mr-2 h-4 w-4" />
             Generate from Workflows
           </Button>
+          <Link to="/documentation">
+            <Button variant="outline">
+              <Download className="mr-2 h-4 w-4" />
+              Export Documentation
+            </Button>
+          </Link>
         </div>
 
         <Tabs defaultValue="articles" className="space-y-6">
