@@ -128,7 +128,11 @@ serve(async (req) => {
       assetFinancials,
       changeSchedules,
       workflowNodes,
-      taskRepetition
+      taskRepetition,
+      ciRelationships,
+      ciAuditLog,
+      workflowExecutionSteps,
+      mcpExecutionLogs
     ] = await Promise.all([
       // Workflows - search name, description, AND execution logs (metadata)
       supabase.from("workflow_executions").select("*").or(`workflow_name.ilike.%${query}%,execution_logs.cs.${query}`).limit(5),
@@ -196,7 +200,7 @@ serve(async (req) => {
       supabase.from("task_repetition_analysis").select("*").or(`task_pattern.ilike.%${query}%,suggested_automation.ilike.%${query}%,workflow_suggestion::text.ilike.%${query}%`).limit(5),
       
       // CI Relationships - search for items connected to the query
-      supabase.from("ci_relationships").select("*, source:source_ci_id(ci_name), target:target_ci_id(ci_name)").or(`description.ilike.%${query}%`).limit(5),
+      supabase.from("ci_relationships").select("*").or(`description.ilike.%${query}%,relationship_type.ilike.%${query}%`).limit(5),
       
       // CI Audit Log - search for change history mentions
       supabase.from("ci_audit_log").select("*").or(`field_name.ilike.%${query}%,old_value::text.ilike.%${query}%,new_value::text.ilike.%${query}%,change_reason.ilike.%${query}%`).limit(5),
@@ -315,42 +319,10 @@ serve(async (req) => {
       ...(changeSchedules.data || []).map(cs => ({ type: "change-schedule", data: cs, title: `Maintenance Schedule`, url: `/change-management` })),
       ...(workflowNodes.data || []).map(wn => ({ type: "workflow-node", data: wn, title: wn.node_name, url: `/workflow-builder` })),
       ...(taskRepetition.data || []).map(tr => ({ type: "automation-suggestion", data: tr, title: `Automation: ${tr.task_pattern}`, url: `/portal` })),
-      
-      // Add CI relationships as searchable items
-      ...((await supabase.from("ci_relationships").select("*, source:source_ci_id(ci_name), target:target_ci_id(ci_name)").or(`description.ilike.%${query}%`).limit(5)).data || []).map((rel: any) => ({
-        type: "ci-relationship",
-        data: rel,
-        title: `${rel.source?.ci_name || 'Unknown'} → ${rel.target?.ci_name || 'Unknown'}`,
-        url: `/cmdb`,
-        description: rel.relationship_type
-      })),
-      
-      // Add audit log entries
-      ...((await supabase.from("ci_audit_log").select("*").or(`field_name.ilike.%${query}%,old_value::text.ilike.%${query}%,new_value::text.ilike.%${query}%`).limit(5)).data || []).map((log: any) => ({
-        type: "audit-entry",
-        data: log,
-        title: `${log.change_type} - ${log.field_name || 'Multiple fields'}`,
-        url: `/cmdb`,
-        description: log.change_reason
-      })),
-      
-      // Add workflow execution steps
-      ...((await supabase.from("workflow_execution_steps").select("*").or(`step_name.ilike.%${query}%,error_message.ilike.%${query}%`).limit(5)).data || []).map((step: any) => ({
-        type: "workflow-step",
-        data: step,
-        title: `Step: ${step.step_name}`,
-        url: `/workflow-orchestration`,
-        description: step.status
-      })),
-      
-      // Add MCP execution logs
-      ...((await supabase.from("mcp_execution_logs").select("*").or(`operation_type.ilike.%${query}%,error_message.ilike.%${query}%`).limit(5)).data || []).map((log: any) => ({
-        type: "mcp-log",
-        data: log,
-        title: `MCP: ${log.operation_type}`,
-        url: `/mcp-server-dashboard`,
-        description: log.status
-      })),
+      ...(ciRelationships.data || []).map(rel => ({ type: "ci-relationship", data: rel, title: `Relationship: ${rel.relationship_type}`, url: `/cmdb`, description: rel.description })),
+      ...(ciAuditLog.data || []).map(log => ({ type: "audit-entry", data: log, title: `${log.change_type} - ${log.field_name || 'Multiple fields'}`, url: `/cmdb`, description: log.change_reason })),
+      ...(workflowExecutionSteps.data || []).map(step => ({ type: "workflow-step", data: step, title: `Step: ${step.step_name}`, url: `/workflow-orchestration`, description: step.status })),
+      ...(mcpExecutionLogs.data || []).map(log => ({ type: "mcp-log", data: log, title: `MCP: ${log.operation_type}`, url: `/mcp-server-dashboard`, description: log.status })),
       ...staticPages,
     ].filter(result => {
       // Apply RBAC filtering
