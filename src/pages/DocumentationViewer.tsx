@@ -104,19 +104,16 @@ const DocumentationViewer = () => {
 
     try {
       const element = contentRef.current;
+      const filename = `${docTitles[doc || ''] || doc || "documentation"}.pdf`;
       const opt = {
         margin: 1,
+        filename,
         image: { type: "jpeg" as const, quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: (contentRef.current?.scrollWidth || 800) + 40, windowHeight: (contentRef.current?.scrollHeight || 1120) + 40, scrollX: 0, scrollY: 0 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
         jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
       };
 
-      const worker = html2pdf().set(opt).from(element).toPdf();
-      const pdf = await worker.get('pdf');
-      const pdfBlob = pdf.output('blob');
-      const filename = `${docTitles[doc || ''] || doc || "documentation"}.pdf`;
-      
-      downloadBlob(pdfBlob, filename);
+      await html2pdf().from(element).set(opt).save();
       
       toast({
         title: "PDF Exported",
@@ -252,9 +249,7 @@ const DocumentationViewer = () => {
             jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
           };
 
-          const worker = html2pdf().set(opt).from(docContent).toPdf();
-          const pdf = await worker.get('pdf');
-          const pdfBlob = pdf.output('blob');
+          const pdfBlob = await html2pdf().from(docContent).set(opt).outputPdf('blob');
           const filename = `${docTitles[docKey] || docKey}.pdf`;
           zip.file(filename, pdfBlob);
 
