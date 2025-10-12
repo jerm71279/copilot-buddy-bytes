@@ -9,6 +9,13 @@ const DevOpsPortal = () => {
 
   const testingTools = [
     {
+      title: "Link Validation Tool",
+      description: "Comprehensive testing tool to validate all routes, buttons, and links across the entire application",
+      icon: Bug,
+      path: "/test/link-validation",
+      color: "text-red-500"
+    },
+    {
       title: "Input Validation Testing",
       description: "Test input validation and sanitization for security vulnerabilities including SQL injection, XSS, and path traversal",
       icon: Shield,
@@ -50,14 +57,14 @@ const DevOpsPortal = () => {
       title: "Architecture Canvas",
       description: "Visual system architecture diagram with component relationships and data flows",
       icon: Code,
-      path: "/architecture-canvas",
+      path: "/architecture/canvas",
       color: "text-cyan-500"
     },
     {
       title: "Data Flow Portal",
       description: "Visualize data flows across CMDB, CIPP, Compliance, Change Management, and Workflows",
       icon: Activity,
-      path: "/data-flow-portal",
+      path: "/data-flow",
       color: "text-pink-500"
     },
     {

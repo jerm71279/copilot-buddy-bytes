@@ -57,6 +57,7 @@ import ValidationTesting from "./pages/ValidationTesting";
 import SystemValidationDashboard from "./pages/SystemValidationDashboard";
 import DevOpsPortal from "./pages/DevOpsPortal";
 import DocumentationViewer from "./pages/DocumentationViewer";
+import LinkValidationTool from "./pages/LinkValidationTool";
 
 import WorkflowBuilder from "./pages/WorkflowBuilder";
 import MCPServerDashboard from "./pages/MCPServerDashboard";
@@ -496,6 +497,20 @@ const App = () => (
           <Route path="/mcp-servers" element={
             <ProtectedRoute>
               <MCPServerDashboard />
+            </ProtectedRoute>
+          } />
+          
+          {/* Data Flow Portal - Admin Only */}
+          <Route path="/data-flow" element={
+            <ProtectedRoute requireAdmin>
+              <DataFlowPortal />
+            </ProtectedRoute>
+          } />
+          
+          {/* Link Validation Tool - Admin Only */}
+          <Route path="/test/link-validation" element={
+            <ProtectedRoute requireAdmin>
+              <LinkValidationTool />
             </ProtectedRoute>
           } />
           
