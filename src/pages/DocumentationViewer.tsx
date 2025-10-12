@@ -139,21 +139,29 @@ const DocumentationViewer = () => {
 
     try {
       const combinedContent = document.createElement("div");
+      combinedContent.style.position = "absolute";
+      combinedContent.style.left = "-9999px";
+      combinedContent.style.padding = "20px";
+      combinedContent.style.backgroundColor = "white";
+      combinedContent.style.color = "black";
       
       for (const docKey of selectedDocs) {
         const response = await fetch(`/${docKey}.md`);
         if (response.ok) {
           const text = await response.text();
           const docSection = document.createElement("div");
-          docSection.className = "prose prose-sm max-w-none dark:prose-invert mb-8";
+          docSection.style.marginBottom = "40px";
           docSection.innerHTML = `
-            <h1 class="text-3xl font-bold mb-6 pb-4 border-b">${docTitles[docKey] || docKey}</h1>
+            <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #333;">${docTitles[docKey] || docKey}</h1>
             ${formatMarkdown(text)}
             <div style="page-break-after: always;"></div>
           `;
           combinedContent.appendChild(docSection);
         }
       }
+
+      // Temporarily add to DOM for html2pdf to render
+      document.body.appendChild(combinedContent);
 
       const filename = selectedDocs.length === 1 
         ? `${docTitles[selectedDocs[0]] || selectedDocs[0]}.pdf`
@@ -168,6 +176,9 @@ const DocumentationViewer = () => {
       };
 
       await html2pdf().set(opt).from(combinedContent).save();
+      
+      // Remove from DOM after export
+      document.body.removeChild(combinedContent);
       
       toast({
         title: "PDF Exported",
