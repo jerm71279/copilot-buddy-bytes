@@ -55,6 +55,7 @@ import TestWorkflowEvidence from "./pages/TestWorkflowEvidence";
 import ComprehensiveTestDashboard from "./pages/ComprehensiveTestDashboard";
 import ValidationTesting from "./pages/ValidationTesting";
 import SystemValidationDashboard from "./pages/SystemValidationDashboard";
+import DevOpsPortal from "./pages/DevOpsPortal";
 
 import WorkflowBuilder from "./pages/WorkflowBuilder";
 import MCPServerDashboard from "./pages/MCPServerDashboard";
@@ -432,6 +433,13 @@ const App = () => (
           <Route path="/compliance/evidence/upload" element={
             <ProtectedRoute>
               <ComplianceEvidenceUpload />
+            </ProtectedRoute>
+          } />
+          
+          {/* DevOps Portal - Admin Only */}
+          <Route path="/devops" element={
+            <ProtectedRoute requireAdmin>
+              <DevOpsPortal />
             </ProtectedRoute>
           } />
           
