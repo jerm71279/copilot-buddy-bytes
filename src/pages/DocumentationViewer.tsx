@@ -155,9 +155,13 @@ const DocumentationViewer = () => {
         }
       }
 
+      const filename = selectedDocs.length === 1 
+        ? `${docTitles[selectedDocs[0]] || selectedDocs[0]}.pdf`
+        : `Combined-Documentation-${new Date().toISOString().split('T')[0]}.pdf`;
+
       const opt = {
         margin: 1,
-        filename: `documentation-export-${new Date().toISOString().split('T')[0]}.pdf`,
+        filename,
         image: { type: "jpeg" as const, quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
