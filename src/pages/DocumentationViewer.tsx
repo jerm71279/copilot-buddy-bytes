@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, Download } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import html2pdf from "html2pdf.js";
+import { useToast } from "@/hooks/use-toast";
 
 const DocumentationViewer = () => {
   const [searchParams] = useSearchParams();
@@ -12,6 +14,9 @@ const DocumentationViewer = () => {
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
+  const [exporting, setExporting] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const docTitles: Record<string, string> = {
     "TESTING_GUIDE": "Testing Guide",
@@ -59,6 +64,42 @@ const DocumentationViewer = () => {
 
     loadDocument();
   }, [doc]);
+
+  const exportToPDF = async () => {
+    if (!contentRef.current || !content) return;
+
+    setExporting(true);
+    toast({
+      title: "Generating PDF",
+      description: "Please wait while we create your PDF...",
+    });
+
+    try {
+      const element = contentRef.current;
+      const opt = {
+        margin: 1,
+        filename: `${doc || "documentation"}.pdf`,
+        image: { type: "jpeg" as const, quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
+      };
+
+      await html2pdf().set(opt).from(element).save();
+      
+      toast({
+        title: "PDF Exported",
+        description: "Your documentation has been downloaded successfully.",
+      });
+    } catch (err) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setExporting(false);
+    }
+  };
 
   // Simple markdown to HTML conversion for basic formatting
   const formatMarkdown = (text: string): string => {
@@ -110,18 +151,31 @@ const DocumentationViewer = () => {
 
         <Card>
           <CardHeader className="border-b">
-            <div className="flex items-center gap-3">
-              <FileText className="h-8 w-8 text-primary" />
-              <div>
-                <CardTitle className="text-2xl">
-                  {doc ? docTitles[doc] || doc : "Documentation"}
-                </CardTitle>
-                {doc && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {doc}.md
-                  </p>
-                )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <FileText className="h-8 w-8 text-primary" />
+                <div>
+                  <CardTitle className="text-2xl">
+                    {doc ? docTitles[doc] || doc : "Documentation"}
+                  </CardTitle>
+                  {doc && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {doc}.md
+                    </p>
+                  )}
+                </div>
               </div>
+              {doc && content && !loading && !error && (
+                <Button 
+                  onClick={exportToPDF} 
+                  disabled={exporting}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  {exporting ? "Exporting..." : "Export PDF"}
+                </Button>
+              )}
             </div>
           </CardHeader>
           
@@ -148,6 +202,7 @@ const DocumentationViewer = () => {
             {!loading && !error && content && (
               <ScrollArea className="h-[calc(100vh-300px)]">
                 <div 
+                  ref={contentRef}
                   className="prose prose-sm max-w-none dark:prose-invert"
                   dangerouslySetInnerHTML={{ __html: formatMarkdown(content) }}
                 />
