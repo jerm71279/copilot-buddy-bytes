@@ -188,7 +188,7 @@ const DevOpsPortal = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => window.open('https://github.com/repository/blob/main/TESTING_GUIDE.md', '_blank')}
+                onClick={() => navigate('/docs?doc=TESTING_GUIDE')}
               >
                 View
               </Button>
@@ -204,7 +204,7 @@ const DevOpsPortal = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => window.open('https://github.com/repository/blob/main/TESTING_PROCEDURES.md', '_blank')}
+                onClick={() => navigate('/docs?doc=TESTING_PROCEDURES')}
               >
                 View
               </Button>
@@ -220,7 +220,7 @@ const DevOpsPortal = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => window.open('https://github.com/repository/blob/main/INPUT_VALIDATION_GUIDE.md', '_blank')}
+                onClick={() => navigate('/docs?doc=INPUT_VALIDATION_GUIDE')}
               >
                 View
               </Button>
@@ -236,7 +236,7 @@ const DevOpsPortal = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => window.open('https://github.com/repository/blob/main/DEBUG_PROCEDURES.md', '_blank')}
+                onClick={() => navigate('/docs?doc=DEBUG_PROCEDURES')}
               >
                 View
               </Button>
@@ -252,7 +252,7 @@ const DevOpsPortal = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => window.open('https://github.com/repository/blob/main/SECURITY_AUDIT_REPORT.md', '_blank')}
+                onClick={() => navigate('/docs?doc=SECURITY_AUDIT_REPORT')}
               >
                 View
               </Button>
@@ -268,7 +268,7 @@ const DevOpsPortal = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => window.open('https://github.com/repository/blob/main/ARCHITECTURE.md', '_blank')}
+                onClick={() => navigate('/docs?doc=ARCHITECTURE')}
               >
                 View
               </Button>
@@ -284,7 +284,7 @@ const DevOpsPortal = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => window.open('https://github.com/repository/blob/main/API_REFERENCE.md', '_blank')}
+                onClick={() => navigate('/docs?doc=API_REFERENCE')}
               >
                 View
               </Button>
