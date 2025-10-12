@@ -22,16 +22,22 @@ export function sanitizeString(input: string, maxLength: number = 1000): Validat
   const errors: string[] = [];
   let sanitized = input;
 
-  // Check length
+  // Check length - REJECT if too long
   if (input.length > maxLength) {
-    errors.push(`Input exceeds maximum length of ${maxLength} characters`);
-    sanitized = input.substring(0, maxLength);
+    return {
+      isValid: false,
+      sanitized: '',
+      errors: [`Input exceeds maximum length of ${maxLength} characters`]
+    };
   }
 
-  // Remove null bytes
+  // Detect null bytes - REJECT if found
   if (sanitized.includes('\0') || sanitized.includes('\x00')) {
-    errors.push('Null bytes detected and removed');
-    sanitized = sanitized.replace(/\0/g, '').replace(/\x00/g, '');
+    return {
+      isValid: false,
+      sanitized: '',
+      errors: ['Null bytes detected']
+    };
   }
 
   // Detect and block SQL injection patterns
@@ -84,20 +90,26 @@ export function sanitizeString(input: string, maxLength: number = 1000): Validat
 
   // Detect format string attacks
   if (/%[nsx]/i.test(sanitized)) {
-    errors.push('Format string pattern detected');
-    sanitized = sanitized.replace(/%[nsx]/gi, '');
+    return {
+      isValid: false,
+      sanitized: '',
+      errors: ['Format string pattern detected']
+    };
   }
 
   // Detect template injection
   if (/\{\{.*\}\}|\$\{.*\}/.test(sanitized)) {
-    errors.push('Template injection pattern detected');
-    sanitized = sanitized.replace(/\{\{/g, '').replace(/\}\}/g, '').replace(/\$\{/g, '').replace(/\}/g, '');
+    return {
+      isValid: false,
+      sanitized: '',
+      errors: ['Template injection pattern detected']
+    };
   }
 
   return {
-    isValid: errors.length === 0,
+    isValid: true,
     sanitized: sanitized.trim(),
-    errors
+    errors: []
   };
 }
 
@@ -284,7 +296,7 @@ export function validateFileName(fileName: string): ValidationResult {
   const errors: string[] = [];
   let sanitized = fileName.trim();
 
-  // Block path traversal
+  // Block path traversal - REJECT immediately
   if (sanitized.includes('../') || sanitized.includes('..\\')) {
     return {
       isValid: false,
@@ -293,7 +305,7 @@ export function validateFileName(fileName: string): ValidationResult {
     };
   }
 
-  // Block absolute paths
+  // Block absolute paths - REJECT immediately
   if (sanitized.startsWith('/') || /^[a-zA-Z]:/.test(sanitized)) {
     return {
       isValid: false,
@@ -302,23 +314,28 @@ export function validateFileName(fileName: string): ValidationResult {
     };
   }
 
-  // Remove special characters but keep basic ones
-  const cleanFileName = sanitized.replace(/[^a-zA-Z0-9._-]/g, '_');
-  
-  if (cleanFileName !== sanitized) {
-    errors.push('Special characters replaced with underscores');
-    sanitized = cleanFileName;
+  // Check for invalid filename characters
+  if (/[<>:"|?*\\\/]/.test(sanitized)) {
+    return {
+      isValid: false,
+      sanitized: '',
+      errors: ['Invalid characters in file name']
+    };
   }
 
+  // Check length
   if (sanitized.length > 255) {
-    errors.push('File name truncated to 255 characters');
-    sanitized = sanitized.substring(0, 255);
+    return {
+      isValid: false,
+      sanitized: '',
+      errors: ['File name exceeds 255 characters']
+    };
   }
 
   return {
-    isValid: errors.length === 0,
+    isValid: true,
     sanitized,
-    errors
+    errors: []
   };
 }
 
