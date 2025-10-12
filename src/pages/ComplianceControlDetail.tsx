@@ -113,7 +113,7 @@ export default function ComplianceControlDetail() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 py-8">
+        <main className="container mx-auto px-4 pt-56 pb-8">
           <Card>
             <CardContent className="py-12 text-center">
               <Shield className="mx-auto h-12 w-12 text-muted-foreground mb-4" />

@@ -130,7 +130,7 @@ const DocumentationViewer = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 pt-56 pb-8">
         <div className="mb-6 flex gap-2">
           {doc ? (
             <Link to="/docs">

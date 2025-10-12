@@ -171,7 +171,7 @@ const CustomerAccountDetail = () => {
       <Navigation />
       <DashboardNavigation />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 pt-56 pb-8">
         <Button
           variant="ghost"
           onClick={() => navigate("/customers")}

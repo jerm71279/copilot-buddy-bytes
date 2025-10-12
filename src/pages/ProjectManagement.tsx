@@ -153,7 +153,7 @@ const ProjectManagement = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <DashboardNavigation />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 pt-56 pb-8">
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">

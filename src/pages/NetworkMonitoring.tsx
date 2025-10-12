@@ -137,7 +137,7 @@ export default function NetworkMonitoring() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 py-8">
+        <main className="container mx-auto px-4 pt-56 pb-8">
           <Card>
             <CardContent className="py-8 text-center">
               Loading network monitoring data...

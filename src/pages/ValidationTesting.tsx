@@ -191,7 +191,7 @@ export default function ValidationTesting() {
       <Navigation />
       <DashboardNavigation />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 pt-56 pb-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Input Validation Testing</h1>
           <p className="text-muted-foreground">
