@@ -15,6 +15,14 @@ interface SearchResult {
   data: any;
 }
 
+interface SearchResponse {
+  results: SearchResult[];
+  aiSummary?: string;
+  topMatch?: string;
+  devMode?: boolean;
+  userRoles?: string[];
+}
+
 interface GlobalSearchProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -134,6 +142,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
   const [aiSummary, setAiSummary] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [devMode, setDevMode] = useState(false);
   const navigate = useNavigate();
 
   const performSearch = useCallback(async (searchQuery: string) => {
@@ -145,14 +154,21 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
 
     setLoading(true);
     try {
+      const { data: session } = await supabase.auth.getSession();
+      
       const { data, error } = await supabase.functions.invoke("global-search", {
         body: { query: searchQuery },
+        headers: session?.session ? {
+          Authorization: `Bearer ${session.session.access_token}`
+        } : {}
       });
 
       if (error) throw error;
 
-      setResults(data.results || []);
-      setAiSummary(data.aiSummary || "");
+      const response = data as SearchResponse;
+      setResults(response.results || []);
+      setAiSummary(response.aiSummary || "");
+      setDevMode(response.devMode || false);
       setSelectedIndex(0);
     } catch (error) {
       console.error("Search error:", error);
@@ -209,6 +225,14 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
           <div className="px-4 py-3 bg-muted/50 border-b flex items-start gap-2">
             <Sparkles className="h-4 w-4 mt-0.5 text-primary" />
             <p className="text-sm text-muted-foreground">{aiSummary}</p>
+          </div>
+        )}
+
+        {devMode && (
+          <div className="px-4 py-2 bg-amber-50 dark:bg-amber-950 border-b border-amber-200 dark:border-amber-800">
+            <p className="text-xs text-amber-800 dark:text-amber-200 font-medium">
+              🔓 Development Mode: Showing all results without RBAC filtering
+            </p>
           </div>
         )}
 

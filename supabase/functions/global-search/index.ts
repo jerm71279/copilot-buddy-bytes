@@ -22,7 +22,52 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    
+    // Use service role for initial queries, then filter by RBAC
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Get authorization header to identify user
+    const authHeader = req.headers.get("Authorization");
+    let userId: string | null = null;
+    let userRoles: string[] = [];
+    let isDevMode = Deno.env.get("ENVIRONMENT") === "development";
+
+    if (authHeader) {
+      // Verify user and get their roles
+      const anonSupabase = createClient(supabaseUrl, supabaseKey, {
+        global: { headers: { Authorization: authHeader } }
+      });
+      
+      const { data: { user } } = await anonSupabase.auth.getUser();
+      
+      if (user) {
+        userId = user.id;
+        
+        // Get user's roles for RBAC filtering
+        const { data: roles } = await supabase
+          .from("user_roles")
+          .select("role_id, roles(name)")
+          .eq("user_id", userId);
+        
+        if (roles) {
+          userRoles = roles
+            .map(r => (r as any).roles?.name)
+            .filter(Boolean);
+        }
+      }
+    }
+    
+    // In production, require authentication for search
+    if (!isDevMode && !userId) {
+      return new Response(JSON.stringify({ 
+        results: [], 
+        error: "Authentication required for search in production" 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401
+      });
+    }
 
     // Search across ALL tables comprehensively
     const [
@@ -151,6 +196,40 @@ serve(async (req) => {
       staticPages.push({ type: "page", data: { name: "Feedback" }, title: "Department Feedback", url: "/department-feedback" });
     }
 
+    // Helper function to check if user has permission for a resource
+    const hasPermission = (resourceType: string, resourceName: string): boolean => {
+      // In dev mode, allow all
+      if (isDevMode) return true;
+      
+      // Admins and Super Admins can see everything
+      if (userRoles.includes("Super Admin") || userRoles.includes("Admin")) {
+        return true;
+      }
+      
+      // Check specific permissions based on resource type
+      const permissionMap: Record<string, string[]> = {
+        "workflow": ["Operations", "IT", "Admin"],
+        "compliance": ["Compliance", "Security", "Admin"],
+        "cmdb": ["IT", "Operations", "Admin"],
+        "change": ["IT", "Operations", "Admin"],
+        "incident": ["IT", "Security", "Operations", "Admin"],
+        "risk": ["Security", "Compliance", "Admin"],
+        "vendor": ["Finance", "Admin"],
+        "budget": ["Finance", "Admin"],
+        "project": ["Operations", "Admin"],
+        "employee": ["HR", "Admin"],
+        "contract": ["Finance", "Legal", "Admin"],
+        "sla": ["Operations", "IT", "Admin"],
+        // Default: any authenticated user can see these
+        "knowledge": ["User"],
+        "application": ["User"],
+        "page": ["User"],
+      };
+      
+      const allowedRoles = permissionMap[resourceType] || ["Admin"];
+      return allowedRoles.some(role => userRoles.includes(role)) || allowedRoles.includes("User");
+    };
+
     const allResults = [
       ...(workflows.data || []).map(w => ({ type: "workflow", data: w, title: w.workflow_name, url: `/workflow-execution/${w.id}` })),
       ...(workflowTemplates.data || []).map(wt => ({ type: "workflow-template", data: wt, title: wt.workflow_name, url: `/workflow-orchestration` })),
@@ -203,7 +282,10 @@ serve(async (req) => {
       ...(workflowNodes.data || []).map(wn => ({ type: "workflow-node", data: wn, title: wn.node_name, url: `/workflow-builder` })),
       ...(taskRepetition.data || []).map(tr => ({ type: "automation-suggestion", data: tr, title: `Automation: ${tr.task_pattern}`, url: `/portal` })),
       ...staticPages,
-    ];
+    ].filter(result => {
+      // Apply RBAC filtering
+      return hasPermission(result.type, result.type);
+    });
 
     if (LOVABLE_API_KEY && allResults.length > 0) {
       try {
@@ -260,7 +342,11 @@ serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ results: allResults }), {
+    return new Response(JSON.stringify({ 
+      results: allResults,
+      devMode: isDevMode,
+      userRoles: isDevMode ? userRoles : undefined // Only expose in dev mode
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
