@@ -193,7 +193,7 @@ export default function ValidationTesting() {
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Validation Testing</h1>
+          <h1 className="text-4xl font-bold mb-2">Input Validation Testing</h1>
           <p className="text-muted-foreground">
             Test input validation functions with various attack vectors and edge cases
           </p>
