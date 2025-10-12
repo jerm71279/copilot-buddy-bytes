@@ -37,6 +37,7 @@ const portals: Portal[] = [
     name: "DevOps Portal",
     path: "/devops",
     children: [
+      { name: "Documentation", path: "/docs" },
       { name: "Input Validation", path: "/test/input-validation" },
       { name: "System Validation", path: "/test/validation" },
       { name: "Comprehensive Tests", path: "/test/comprehensive" },
