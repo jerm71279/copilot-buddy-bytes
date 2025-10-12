@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  ArrowLeft,
   CheckCircle,
   XCircle,
   Clock,
@@ -17,8 +16,11 @@ import {
   Sparkles,
   Ticket,
   ExternalLink,
+  FileText,
+  Database,
 } from "lucide-react";
 import { toast } from "sonner";
+import { LinkTray } from "@/components/LinkTray";
 
 const ChangeManagementDetail = () => {
   const { id } = useParams();
@@ -160,10 +162,13 @@ const ChangeManagementDetail = () => {
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" onClick={() => navigate("/change-management")}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Change Management
-          </Button>
+          <LinkTray
+            items={[
+              { label: "Change Management", path: "/change-management", icon: FileText },
+              { label: "CMDB", path: "/cmdb", icon: Database },
+            ]}
+            maxVisibleItems={2}
+          />
           <div className="flex gap-2">
             {!change.ninjaone_ticket_id && (
               <Button

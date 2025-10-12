@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LayoutDashboard } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import EvidenceUpload from "@/components/EvidenceUpload";
+import { LinkTray } from "@/components/LinkTray";
+import { useNavigate } from "react-router-dom";
 
 export default function ComplianceEvidenceUpload() {
   const navigate = useNavigate();
@@ -31,26 +30,12 @@ export default function ComplianceEvidenceUpload() {
           ]}
         />
         
-        <div className="flex items-center gap-3 mb-6">
-          <Button 
-            onClick={() => navigate(-1)} 
-            variant="outline" 
-            size="sm"
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-          <Button 
-            onClick={() => navigate('/portal')} 
-            variant="outline" 
-            size="sm"
-            className="gap-2"
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboards
-          </Button>
-        </div>
+        <LinkTray
+          items={[
+            { label: "Dashboards", path: "/portal", icon: LayoutDashboard },
+          ]}
+          maxVisibleItems={2}
+        />
 
         <EvidenceUpload onUploadComplete={() => navigate('/compliance')} />
       </main>

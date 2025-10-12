@@ -6,8 +6,9 @@ import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Shield, FileText, CheckCircle2 } from "lucide-react";
+import { Shield, FileText, CheckCircle2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { LinkTray } from "@/components/LinkTray";
 
 interface Control {
   id: string;
@@ -167,10 +168,14 @@ export default function ComplianceControlDetail() {
             </h1>
             <p className="text-muted-foreground">{framework.framework_name}</p>
           </div>
-          <Button variant="outline" onClick={() => navigate(`/compliance/frameworks/${frameworkId}`)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Framework
-          </Button>
+          <LinkTray
+            items={[
+              { label: "Framework", path: `/compliance/frameworks/${frameworkId}`, icon: Shield },
+              { label: "Compliance", path: "/compliance", icon: FileText },
+            ]}
+            maxVisibleItems={2}
+            showBack={false}
+          />
         </div>
 
         <div className="grid gap-6">

@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save, Sparkles } from "lucide-react";
+import { Save, Sparkles, Database, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { LinkTray } from "@/components/LinkTray";
 
 const changeRequestSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(200),
@@ -193,10 +194,13 @@ const ChangeManagementNew = () => {
         />
 
         <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" onClick={() => navigate("/change-management")}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Change Management
-          </Button>
+          <LinkTray
+            items={[
+              { label: "Change Management", path: "/change-management", icon: FileText },
+              { label: "CMDB", path: "/cmdb", icon: Database },
+            ]}
+            maxVisibleItems={2}
+          />
           {formData.title && formData.description && formData.affected_ci_ids.length > 0 && (
             <Button
               variant="outline"
