@@ -53,7 +53,7 @@ import ChangeManagementNew from "./pages/ChangeManagementNew";
 import ChangeManagementDetail from "./pages/ChangeManagementDetail";
 import TestWorkflowEvidence from "./pages/TestWorkflowEvidence";
 import ComprehensiveTestDashboard from "./pages/ComprehensiveTestDashboard";
-
+import ValidationTesting from "./pages/ValidationTesting";
 import SystemValidationDashboard from "./pages/SystemValidationDashboard";
 
 import WorkflowBuilder from "./pages/WorkflowBuilder";
@@ -460,6 +460,13 @@ const App = () => (
           <Route path="/test/validation" element={
             <ProtectedRoute requireAdmin>
               <SystemValidationDashboard />
+            </ProtectedRoute>
+          } />
+          
+          {/* Input Validation Testing - Admin Only */}
+          <Route path="/test/input-validation" element={
+            <ProtectedRoute requireAdmin>
+              <ValidationTesting />
             </ProtectedRoute>
           } />
           
