@@ -214,19 +214,22 @@ const DocumentationViewer = () => {
         if (response.ok) {
           const text = await response.text();
           const docContent = document.createElement("div");
-          docContent.style.position = "fixed";
+          docContent.style.position = "absolute";
           docContent.style.top = "0";
-          docContent.style.left = "0";
+          docContent.style.left = "-10000px";
           docContent.style.width = "800px";
           docContent.style.padding = "20px";
           docContent.style.backgroundColor = "#ffffff";
           docContent.style.color = "#000000";
-          docContent.style.opacity = "0";
-          docContent.style.pointerEvents = "none";
-          docContent.style.zIndex = "-1";
-          docContent.innerHTML = formatMarkdown(text);
+          docContent.style.fontFamily = "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif";
+          docContent.style.fontSize = "14px";
+          docContent.style.lineHeight = "1.5";
+          docContent.innerHTML = `<h1 style="font-size:24px;font-weight:700;margin:0 0 16px">${docTitles[docKey] || docKey}</h1>` + formatMarkdown(text);
 
           document.body.appendChild(docContent);
+
+          // Allow layout to occur
+          await new Promise((r) => setTimeout(r, 50));
 
           const opt = {
             margin: 1,
