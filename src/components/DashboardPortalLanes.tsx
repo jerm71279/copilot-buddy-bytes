@@ -34,6 +34,20 @@ interface Category {
 
 const portals: Portal[] = [
   {
+    name: "DevOps Portal",
+    path: "/devops",
+    children: [
+      { name: "Input Validation", path: "/test/input-validation" },
+      { name: "System Validation", path: "/test/validation" },
+      { name: "Comprehensive Tests", path: "/test/comprehensive" },
+      { name: "Workflow Evidence", path: "/test/workflow-evidence" },
+      { name: "Network Monitoring", path: "/network-monitoring" },
+      { name: "Architecture Canvas", path: "/architecture-canvas" },
+      { name: "Data Flow Portal", path: "/data-flow-portal" },
+      { name: "MCP Servers", path: "/mcp-servers" },
+    ],
+  },
+  {
     name: "Employee Portal",
     path: "/portal",
     children: [
