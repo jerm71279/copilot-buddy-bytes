@@ -107,12 +107,14 @@ const DocumentationViewer = () => {
       const opt = {
         margin: 1,
         image: { type: "jpeg" as const, quality: 0.98 },
-        html2canvas: { scale: 2 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
         jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
       };
 
-      const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
-      const filename = `${doc || "documentation"}.pdf`;
+      const worker = html2pdf().set(opt).from(element).toPdf();
+      const pdf = await worker.get('pdf');
+      const pdfBlob = pdf.output('blob');
+      const filename = `${docTitles[doc || ''] || doc || "documentation"}.pdf`;
       
       downloadBlob(pdfBlob, filename);
       
@@ -212,11 +214,16 @@ const DocumentationViewer = () => {
         if (response.ok) {
           const text = await response.text();
           const docContent = document.createElement("div");
-          docContent.style.position = "absolute";
-          docContent.style.left = "-9999px";
+          docContent.style.position = "fixed";
+          docContent.style.top = "0";
+          docContent.style.left = "0";
+          docContent.style.width = "800px";
           docContent.style.padding = "20px";
-          docContent.style.backgroundColor = "white";
-          docContent.style.color = "black";
+          docContent.style.backgroundColor = "#ffffff";
+          docContent.style.color = "#000000";
+          docContent.style.opacity = "0";
+          docContent.style.pointerEvents = "none";
+          docContent.style.zIndex = "-1";
           docContent.innerHTML = formatMarkdown(text);
 
           document.body.appendChild(docContent);
@@ -224,11 +231,13 @@ const DocumentationViewer = () => {
           const opt = {
             margin: 1,
             image: { type: "jpeg" as const, quality: 0.98 },
-            html2canvas: { scale: 2 },
+            html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
             jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
           };
 
-          const pdfBlob = await html2pdf().set(opt).from(docContent).outputPdf('blob');
+          const worker = html2pdf().set(opt).from(docContent).toPdf();
+          const pdf = await worker.get('pdf');
+          const pdfBlob = pdf.output('blob');
           const filename = `${docTitles[docKey] || docKey}.pdf`;
           zip.file(filename, pdfBlob);
 
