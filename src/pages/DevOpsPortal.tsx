@@ -171,24 +171,123 @@ const DevOpsPortal = () => {
           </div>
         </div>
 
-        {/* Quick Stats */}
+        {/* Documentation Resources */}
         <Card className="mt-12 border-primary/20">
           <CardHeader>
-            <CardTitle>DevOps Resources</CardTitle>
-            <CardDescription>Additional documentation and guides</CardDescription>
+            <CardTitle>DevOps Documentation</CardTitle>
+            <CardDescription>Comprehensive guides for testing, validation, and security</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-              <span className="font-medium">Testing Guide</span>
-              <Button variant="outline" size="sm">View Docs</Button>
+          <CardContent className="space-y-3">
+            <div className="flex items-start justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+              <div className="flex-1">
+                <h4 className="font-semibold mb-1">Testing Guide (TESTING_GUIDE.md)</h4>
+                <p className="text-sm text-muted-foreground">
+                  Complete framework covering system validation, comprehensive testing, security measures, performance benchmarks, and CI/CD integration
+                </p>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open('https://github.com/repository/blob/main/TESTING_GUIDE.md', '_blank')}
+              >
+                View
+              </Button>
             </div>
-            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-              <span className="font-medium">Testing Procedures</span>
-              <Button variant="outline" size="sm">View Docs</Button>
+            
+            <div className="flex items-start justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+              <div className="flex-1">
+                <h4 className="font-semibold mb-1">Testing Procedures (TESTING_PROCEDURES.md)</h4>
+                <p className="text-sm text-muted-foreground">
+                  Detailed step-by-step procedures for Phase 1-6 testing including Two-Tier Feedback Loop, Core Platform Features, Integration Testing, Security, Performance, and UAT
+                </p>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open('https://github.com/repository/blob/main/TESTING_PROCEDURES.md', '_blank')}
+              >
+                View
+              </Button>
             </div>
-            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-              <span className="font-medium">Input Validation Guide</span>
-              <Button variant="outline" size="sm">View Docs</Button>
+            
+            <div className="flex items-start justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+              <div className="flex-1">
+                <h4 className="font-semibold mb-1">Input Validation Guide (INPUT_VALIDATION_GUIDE.md)</h4>
+                <p className="text-sm text-muted-foreground">
+                  Multi-layered validation approach covering client-side, component-level, edge function, and database validation to prevent SQL injection, XSS, and other attacks
+                </p>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open('https://github.com/repository/blob/main/INPUT_VALIDATION_GUIDE.md', '_blank')}
+              >
+                View
+              </Button>
+            </div>
+
+            <div className="flex items-start justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+              <div className="flex-1">
+                <h4 className="font-semibold mb-1">Debug Procedures (DEBUG_PROCEDURES.md)</h4>
+                <p className="text-sm text-muted-foreground">
+                  Systematic debugging approach for edge functions, database queries, RLS policies, and common integration issues
+                </p>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open('https://github.com/repository/blob/main/DEBUG_PROCEDURES.md', '_blank')}
+              >
+                View
+              </Button>
+            </div>
+
+            <div className="flex items-start justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+              <div className="flex-1">
+                <h4 className="font-semibold mb-1">Security Audit Report (SECURITY_AUDIT_REPORT.md)</h4>
+                <p className="text-sm text-muted-foreground">
+                  Comprehensive security audit covering authentication, data protection, input validation, RLS policies, and compliance requirements
+                </p>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open('https://github.com/repository/blob/main/SECURITY_AUDIT_REPORT.md', '_blank')}
+              >
+                View
+              </Button>
+            </div>
+
+            <div className="flex items-start justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+              <div className="flex-1">
+                <h4 className="font-semibold mb-1">Architecture Documentation (ARCHITECTURE.md)</h4>
+                <p className="text-sm text-muted-foreground">
+                  System architecture overview including frontend/backend structure, database schema, integrations, and data flow patterns
+                </p>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open('https://github.com/repository/blob/main/ARCHITECTURE.md', '_blank')}
+              >
+                View
+              </Button>
+            </div>
+
+            <div className="flex items-start justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+              <div className="flex-1">
+                <h4 className="font-semibold mb-1">API Reference (API_REFERENCE.md)</h4>
+                <p className="text-sm text-muted-foreground">
+                  Complete API documentation for all edge functions including authentication, parameters, responses, and error handling
+                </p>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open('https://github.com/repository/blob/main/API_REFERENCE.md', '_blank')}
+              >
+                View
+              </Button>
             </div>
           </CardContent>
         </Card>
