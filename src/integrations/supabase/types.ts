@@ -6646,6 +6646,107 @@ export type Database = {
           },
         ]
       }
+      prompt_templates: {
+        Row: {
+          category: string
+          context_hints: Json | null
+          created_at: string | null
+          created_by: string | null
+          customer_id: string
+          department: string | null
+          description: string | null
+          example_usage: string | null
+          id: string
+          is_active: boolean | null
+          prompt_template: string
+          role_level: string | null
+          tags: string[] | null
+          template_name: string
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          category: string
+          context_hints?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          customer_id: string
+          department?: string | null
+          description?: string | null
+          example_usage?: string | null
+          id?: string
+          is_active?: boolean | null
+          prompt_template: string
+          role_level?: string | null
+          tags?: string[] | null
+          template_name: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          category?: string
+          context_hints?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          customer_id?: string
+          department?: string | null
+          description?: string | null
+          example_usage?: string | null
+          id?: string
+          is_active?: boolean | null
+          prompt_template?: string
+          role_level?: string | null
+          tags?: string[] | null
+          template_name?: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
+      prompt_usage: {
+        Row: {
+          context_injected: Json | null
+          created_at: string | null
+          customer_id: string
+          feedback_rating: number | null
+          id: string
+          prompt_text: string
+          template_id: string | null
+          user_id: string
+          was_effective: boolean | null
+        }
+        Insert: {
+          context_injected?: Json | null
+          created_at?: string | null
+          customer_id: string
+          feedback_rating?: number | null
+          id?: string
+          prompt_text: string
+          template_id?: string | null
+          user_id: string
+          was_effective?: boolean | null
+        }
+        Update: {
+          context_injected?: Json | null
+          created_at?: string | null
+          customer_id?: string
+          feedback_rating?: number | null
+          id?: string
+          prompt_text?: string
+          template_id?: string | null
+          user_id?: string
+          was_effective?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompt_usage_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "prompt_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       purchase_orders: {
         Row: {
           approval_workflow: Json | null
@@ -9481,6 +9582,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_template_usage: {
+        Args: { template_id_param: string }
+        Returns: undefined
       }
       validate_array_input: {
         Args: {

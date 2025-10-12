@@ -80,6 +80,7 @@ import Developers from "./pages/Developers";
 import ArchitectureDiagram from "./pages/ArchitectureDiagram";
 import ArchitectureCanvas from "./pages/ArchitectureCanvas";
 import WorkflowIntelligence from "./pages/WorkflowIntelligence";
+import PromptLibraryPage from "./pages/PromptLibraryPage";
 import SLAManagement from "./pages/SLAManagement";
 import TimeTracking from "./pages/TimeTracking";
 import ProjectManagement from "./pages/ProjectManagement";
@@ -125,6 +126,11 @@ const App = () => (
           <Route path="/architecture-diagram" element={<ArchitectureDiagram />} />
           <Route path="/architecture/canvas" element={<ArchitectureCanvas />} />
           <Route path="/workflow-intelligence" element={<WorkflowIntelligence />} />
+          <Route path="/prompt-library" element={
+            <ProtectedRoute>
+              <PromptLibraryPage />
+            </ProtectedRoute>
+          } />
           <Route path="/auth" element={<Auth />} />
           <Route path="/demo" element={<DemoSelector />} />
           

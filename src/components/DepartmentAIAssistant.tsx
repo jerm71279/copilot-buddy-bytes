@@ -6,12 +6,23 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Bot, Send, Loader2 } from "lucide-react";
+import { Bot, Send, Loader2, Sparkles } from "lucide-react";
+import { PromptTemplateSelector } from "./PromptTemplateSelector";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type Message = {
   role: "user" | "assistant";
   content: string;
+  templateUsed?: string;
+  contextInjected?: string[];
 };
+
+interface PromptTemplate {
+  id: string;
+  template_name: string;
+  prompt_template: string;
+  context_hints: any;
+}
 
 interface DepartmentAIAssistantProps {
   department: string;
@@ -22,13 +33,30 @@ export const DepartmentAIAssistant = ({ department, departmentLabel }: Departmen
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<PromptTemplate | null>(null);
+  const [showTemplates, setShowTemplates] = useState(false);
+
+  const handleTemplateSelect = (template: PromptTemplate) => {
+    setSelectedTemplate(template);
+    // Fill in the template with placeholders visible to user
+    const templateText = template.prompt_template.replace(
+      /\{(\w+)\}/g, 
+      (_, key) => `[${key}]`
+    );
+    setInput(templateText);
+    setShowTemplates(false);
+  };
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
     const userMessage = input.trim();
     setInput("");
-    setMessages(prev => [...prev, { role: "user", content: userMessage }]);
+    setMessages(prev => [...prev, { 
+      role: "user", 
+      content: userMessage,
+      templateUsed: selectedTemplate?.template_name 
+    }]);
     setIsLoading(true);
 
     try {
@@ -36,7 +64,9 @@ export const DepartmentAIAssistant = ({ department, departmentLabel }: Departmen
         body: {
           department,
           query: userMessage,
-          conversationHistory: messages
+          conversationHistory: messages,
+          templateId: selectedTemplate?.id,
+          useContextInjection: true
         }
       });
 
@@ -53,12 +83,25 @@ export const DepartmentAIAssistant = ({ department, departmentLabel }: Departmen
       }
 
       if (data?.response) {
-        setMessages(prev => [...prev, { role: "assistant", content: data.response }]);
+        setMessages(prev => [...prev, { 
+          role: "assistant", 
+          content: data.response,
+          contextInjected: data.contextInjected 
+        }]);
         
         if (data.toolCalled) {
           toast.success(`Used ${data.toolCalled} tool for analysis`);
         }
+        
+        if (data.contextInjected && data.contextInjected.length > 0) {
+          toast.success(`Auto-injected ${data.contextInjected.length} context items`, {
+            description: data.contextInjected.join(", ")
+          });
+        }
       }
+      
+      // Reset template selection after use
+      setSelectedTemplate(null);
     } catch (err) {
       console.error("Error calling AI assistant:", err);
       toast.error("Failed to connect to AI assistant");
@@ -89,22 +132,52 @@ export const DepartmentAIAssistant = ({ department, departmentLabel }: Departmen
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <Collapsible open={showTemplates} onOpenChange={setShowTemplates}>
+          <CollapsibleTrigger asChild>
+            <Button variant="outline" className="w-full" size="sm">
+              <Sparkles className="h-4 w-4 mr-2" />
+              {showTemplates ? "Hide" : "Show"} Smart Prompts
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-2">
+            <PromptTemplateSelector 
+              onSelectTemplate={handleTemplateSelect}
+              department={department}
+            />
+          </CollapsibleContent>
+        </Collapsible>
+
         <ScrollArea className="h-[400px] w-full border rounded-md p-4">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
               <Bot className="h-12 w-12 mb-4 opacity-50" />
               <p className="text-sm">
                 Ask me anything about {departmentLabel.toLowerCase()}.<br />
-                I have access to AI-powered analytics tools.
+                I have access to AI-powered analytics tools and smart prompts.
               </p>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="mt-4"
+                onClick={() => setShowTemplates(true)}
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Browse Smart Prompts
+              </Button>
             </div>
           ) : (
             <div className="space-y-4">
               {messages.map((msg, idx) => (
                 <div
                   key={idx}
-                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
                 >
+                  {msg.templateUsed && (
+                    <Badge variant="secondary" className="mb-1 text-xs">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      {msg.templateUsed}
+                    </Badge>
+                  )}
                   <div
                     className={`max-w-[80%] rounded-lg px-4 py-2 ${
                       msg.role === "user"
@@ -114,6 +187,15 @@ export const DepartmentAIAssistant = ({ department, departmentLabel }: Departmen
                   >
                     <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                   </div>
+                  {msg.contextInjected && msg.contextInjected.length > 0 && (
+                    <div className="flex gap-1 mt-1 flex-wrap">
+                      {msg.contextInjected.map((ctx, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">
+                          {ctx}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
               {isLoading && (

@@ -15,6 +15,8 @@ const assistantRequestSchema = z.object({
     role: z.enum(["user", "assistant", "system"]),
     content: z.string(),
   })).optional(),
+  templateId: z.string().uuid().optional(),
+  useContextInjection: z.boolean().optional(),
 });
 
 // Maximum payload size (2MB)
@@ -144,7 +146,13 @@ serve(async (req) => {
     
     // Validate input
     const validatedInput = assistantRequestSchema.parse(requestBody);
-    const { department, query, conversationHistory = [] } = validatedInput;
+    const { 
+      department, 
+      query, 
+      conversationHistory = [], 
+      templateId, 
+      useContextInjection = true 
+    } = validatedInput;
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -224,6 +232,144 @@ serve(async (req) => {
       .limit(5);
 
     console.log(`Found ${knowledgeArticles?.length || 0} knowledge articles for ${department}`);
+
+    // NEW: Fetch and apply prompt template if provided
+    let promptTemplate: any = null;
+    let contextInjected: string[] = [];
+    let enhancedQuery = query;
+
+    if (templateId) {
+      const { data: template } = await supabase
+        .from("prompt_templates")
+        .select("*")
+        .eq("id", templateId)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (template) {
+        promptTemplate = template;
+        console.log(`Using template: ${template.template_name}`);
+
+        // Increment usage count
+        await supabase.rpc("increment_template_usage", { template_id_param: templateId });
+
+        // Context injection based on hints
+        if (useContextInjection && template.context_hints?.inject) {
+          const hints = template.context_hints.inject;
+          let businessContext = "\n\n=== INJECTED BUSINESS CONTEXT ===\n";
+
+          // Inject recent metrics if requested
+          if (hints.includes("recent_metrics") || hints.includes("department_kpis")) {
+            const { data: recentMetrics } = await supabase
+              .from("workflow_executions")
+              .select("workflow_name, status, executed_at")
+              .eq("customer_id", customerId)
+              .gte("executed_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+              .order("executed_at", { ascending: false })
+              .limit(10);
+
+            if (recentMetrics && recentMetrics.length > 0) {
+              businessContext += `\nRecent Workflow Metrics (Last 7 days):\n`;
+              businessContext += recentMetrics.map(m => 
+                `- ${m.workflow_name}: ${m.status} (${new Date(m.executed_at).toLocaleDateString()})`
+              ).join("\n");
+              contextInjected.push("recent_metrics");
+            }
+          }
+
+          // Inject related incidents if requested
+          if (hints.includes("related_incidents") || hints.includes("system_logs")) {
+            const { data: incidents } = await supabase
+              .from("anomaly_detections")
+              .select("anomaly_type, description, severity, created_at")
+              .eq("customer_id", customerId)
+              .eq("status", "new")
+              .order("created_at", { ascending: false })
+              .limit(5);
+
+            if (incidents && incidents.length > 0) {
+              businessContext += `\n\nRecent System Incidents:\n`;
+              businessContext += incidents.map(i => 
+                `- [${i.severity.toUpperCase()}] ${i.anomaly_type}: ${i.description}`
+              ).join("\n");
+              contextInjected.push("related_incidents");
+            }
+          }
+
+          // Inject recent changes if requested
+          if (hints.includes("recent_changes")) {
+            const { data: changes } = await supabase
+              .from("change_requests")
+              .select("title, change_status, created_at")
+              .eq("customer_id", customerId)
+              .gte("created_at", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+              .order("created_at", { ascending: false })
+              .limit(10);
+
+            if (changes && changes.length > 0) {
+              businessContext += `\n\nRecent Changes (Last 30 days):\n`;
+              businessContext += changes.map(c => 
+                `- ${c.title}: ${c.change_status} (${new Date(c.created_at).toLocaleDateString()})`
+              ).join("\n");
+              contextInjected.push("recent_changes");
+            }
+          }
+
+          // Inject compliance requirements if requested
+          if (hints.includes("compliance_requirements")) {
+            const { data: frameworks } = await supabase
+              .from("compliance_frameworks")
+              .select("framework_name, overall_compliance_percentage")
+              .eq("customer_id", customerId)
+              .eq("is_active", true)
+              .order("overall_compliance_percentage", { ascending: true })
+              .limit(5);
+
+            if (frameworks && frameworks.length > 0) {
+              businessContext += `\n\nCompliance Status:\n`;
+              businessContext += frameworks.map(f => 
+                `- ${f.framework_name}: ${f.overall_compliance_percentage}% compliant`
+              ).join("\n");
+              contextInjected.push("compliance_requirements");
+            }
+          }
+
+          // Inject department goals if requested
+          if (hints.includes("department_goals")) {
+            const { data: insights } = await supabase
+              .from("department_insights")
+              .select("title, insight_type, confidence_score")
+              .eq("customer_id", customerId)
+              .eq("department", department)
+              .eq("status", "active")
+              .order("confidence_score", { ascending: false })
+              .limit(5);
+
+            if (insights && insights.length > 0) {
+              businessContext += `\n\nDepartment Insights:\n`;
+              businessContext += insights.map(i => 
+                `- ${i.title} (${i.insight_type}, confidence: ${Math.round((i.confidence_score || 0) * 100)}%)`
+              ).join("\n");
+              contextInjected.push("department_goals");
+            }
+          }
+
+          if (contextInjected.length > 0) {
+            enhancedQuery = query + businessContext;
+            console.log(`Context injected: ${contextInjected.join(", ")}`);
+          }
+        }
+
+        // Track template usage
+        await supabase.from("prompt_usage").insert({
+          customer_id: customerId,
+          user_id: user.id,
+          template_id: templateId,
+          prompt_text: query,
+          context_injected: contextInjected.length > 0 ? { items: contextInjected } : {}
+        });
+      }
+    }
 
     // Build knowledge context from articles
     let knowledgeContext = "";
@@ -314,11 +460,11 @@ serve(async (req) => {
       systemPrompt += "When relevant to the user's query, proactively mention these insights and recommendations.\n";
     }
 
-    // Build messages array
+    // Build messages array using enhanced query with context
     const messages = [
       { role: "system", content: systemPrompt },
       ...conversationHistory,
-      { role: "user", content: query }
+      { role: "user", content: enhancedQuery }
     ];
 
     // Call Lovable AI with tool calling enabled
@@ -431,6 +577,7 @@ serve(async (req) => {
           response: assistantMessage.content || `I've analyzed your request using ${toolName}. Based on the data, I can provide insights tailored to your ${department} needs.`,
           toolCalled: toolName,
           toolArgs,
+          contextInjected,
           conversationHistory: [
             ...conversationHistory,
             { role: "user", content: query },
@@ -441,10 +588,11 @@ serve(async (req) => {
       );
     }
 
-    // Return regular response
+    // Return regular response with context info
     return new Response(
       JSON.stringify({
         response: assistantMessage.content,
+        contextInjected,
         conversationHistory: [
           ...conversationHistory,
           { role: "user", content: query },
