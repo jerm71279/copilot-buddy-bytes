@@ -69,7 +69,15 @@ serve(async (req) => {
       });
     }
 
-    // Search across ALL tables comprehensively
+    // Helper to search JSONB fields for any mention
+    const searchJsonb = (field: string, value: string) => 
+      `${field}::text ilike '%${value}%'`;
+    
+    // Helper to search array fields
+    const searchArray = (field: string, value: string) =>
+      `EXISTS (SELECT 1 FROM unnest(${field}) AS elem WHERE elem::text ilike '%${value}%')`;
+
+    // Search across ALL tables comprehensively - including metadata, relationships, and references
     const [
       workflows, 
       workflowTemplates,
@@ -122,26 +130,36 @@ serve(async (req) => {
       workflowNodes,
       taskRepetition
     ] = await Promise.all([
-      supabase.from("workflow_executions").select("*").ilike("workflow_name", `%${query}%`).limit(5),
-      supabase.from("workflow_templates").select("*").or(`workflow_name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
-      supabase.from("compliance_audit_reports").select("*").ilike("report_title", `%${query}%`).limit(5),
-      supabase.from("compliance_controls").select("*").or(`control_name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
-      supabase.from("compliance_evidence").select("*").or(`title.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
-      supabase.from("cmdb_items").select("*").or(`name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
-      supabase.from("knowledge_articles").select("*").or(`title.ilike.%${query}%,content.ilike.%${query}%`).limit(5),
-      supabase.from("change_requests").select("*").or(`title.ilike.%${query}%,description.ilike.%${query}%,change_number.ilike.%${query}%`).limit(5),
-      supabase.from("anomaly_detections").select("*").or(`description.ilike.%${query}%,system_name.ilike.%${query}%,anomaly_type.ilike.%${query}%`).limit(5),
-      supabase.from("audit_logs").select("*").or(`system_name.ilike.%${query}%,action_type.ilike.%${query}%`).limit(5),
+      // Workflows - search name, description, AND execution logs (metadata)
+      supabase.from("workflow_executions").select("*").or(`workflow_name.ilike.%${query}%,execution_logs.cs.${query}`).limit(5),
+      supabase.from("workflow_templates").select("*").or(`workflow_name.ilike.%${query}%,description.ilike.%${query}%,workflow_config::text.ilike.%${query}%`).limit(5),
+      // Compliance - search titles, descriptions, findings metadata, and tags
+      supabase.from("compliance_audit_reports").select("*").or(`report_title.ilike.%${query}%,findings::text.ilike.%${query}%`).limit(5),
+      supabase.from("compliance_controls").select("*").or(`control_name.ilike.%${query}%,description.ilike.%${query}%,control_id.ilike.%${query}%,implementation_notes::text.ilike.%${query}%`).limit(5),
+      supabase.from("compliance_evidence").select("*").or(`title.ilike.%${query}%,description.ilike.%${query}%,file_name.ilike.%${query}%,compliance_tags::text.ilike.%${query}%`).limit(5),
+      // CMDB - search name, description, attributes, and relationships
+      supabase.from("cmdb_items").select("*").or(`name.ilike.%${query}%,description.ilike.%${query}%,attributes::text.ilike.%${query}%,item_type.ilike.%${query}%`).limit(5),
+      // Knowledge - search title, content, tags, and author references
+      supabase.from("knowledge_articles").select("*").or(`title.ilike.%${query}%,content.ilike.%${query}%,tags::text.ilike.%${query}%,category.ilike.%${query}%`).limit(5),
+      // Change Requests - search all text fields, affected CIs, services, compliance tags, and audit trail
+      supabase.from("change_requests").select("*").or(`title.ilike.%${query}%,description.ilike.%${query}%,change_number.ilike.%${query}%,justification.ilike.%${query}%,implementation_plan.ilike.%${query}%,rollback_plan.ilike.%${query}%,affected_ci_ids::text.ilike.%${query}%,affected_services::text.ilike.%${query}%,compliance_tags::text.ilike.%${query}%,audit_trail::text.ilike.%${query}%`).limit(5),
+      // Anomalies - search description, system, type, raw data, and tags
+      supabase.from("anomaly_detections").select("*").or(`description.ilike.%${query}%,system_name.ilike.%${query}%,anomaly_type.ilike.%${query}%,raw_data::text.ilike.%${query}%,compliance_tags::text.ilike.%${query}%`).limit(5),
+      // Audit Logs - search system, action, details, and tags
+      supabase.from("audit_logs").select("*").or(`system_name.ilike.%${query}%,action_type.ilike.%${query}%,action_details::text.ilike.%${query}%,compliance_tags::text.ilike.%${query}%`).limit(5),
       supabase.from("user_profiles").select("*").or(`full_name.ilike.%${query}%,department.ilike.%${query}%`).limit(5),
       supabase.from("applications").select("*").or(`name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
       supabase.from("cipp_tenants").select("*").or(`tenant_name.ilike.%${query}%,display_name.ilike.%${query}%`).limit(5),
       supabase.from("client_onboardings").select("*").or(`client_name.ilike.%${query}%,client_contact_name.ilike.%${query}%`).limit(5),
       supabase.from("compliance_frameworks").select("*").or(`framework_name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
-      supabase.from("ai_interactions").select("*").or(`user_query.ilike.%${query}%,ai_response.ilike.%${query}%`).limit(5),
-      supabase.from("projects").select("*").or(`project_name.ilike.%${query}%,description.ilike.%${query}%,project_number.ilike.%${query}%`).limit(5),
+      // AI Interactions - search queries, responses, knowledge sources, and metadata
+      supabase.from("ai_interactions").select("*").or(`user_query.ilike.%${query}%,ai_response.ilike.%${query}%,knowledge_sources::text.ilike.%${query}%,compliance_tags::text.ilike.%${query}%,metadata::text.ilike.%${query}%`).limit(5),
+      // Projects - search name, description, number, metadata, and team members
+      supabase.from("projects").select("*").or(`project_name.ilike.%${query}%,description.ilike.%${query}%,project_number.ilike.%${query}%,metadata::text.ilike.%${query}%,objectives.ilike.%${query}%`).limit(5),
       supabase.from("vendors").select("*").or(`vendor_name.ilike.%${query}%,vendor_code.ilike.%${query}%`).limit(5),
       supabase.from("budgets").select("*").or(`budget_name.ilike.%${query}%,department.ilike.%${query}%`).limit(5),
-      supabase.from("incidents").select("*").or(`title.ilike.%${query}%,incident_number.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
+      // Incidents - search title, number, description, resolution notes, and affected systems
+      supabase.from("incidents").select("*").or(`title.ilike.%${query}%,incident_number.ilike.%${query}%,description.ilike.%${query}%,resolution_notes.ilike.%${query}%,root_cause.ilike.%${query}%,affected_systems::text.ilike.%${query}%`).limit(5),
       supabase.from("service_requests").select("*").or(`title.ilike.%${query}%,request_number.ilike.%${query}%`).limit(5),
       supabase.from("leads").select("*").or(`lead_name.ilike.%${query}%,company_name.ilike.%${query}%,lead_number.ilike.%${query}%`).limit(5),
       supabase.from("sales_opportunities").select("*").or(`opportunity_name.ilike.%${query}%,opportunity_number.ilike.%${query}%`).limit(5),
@@ -150,9 +168,12 @@ serve(async (req) => {
       supabase.from("invoices").select("*").or(`invoice_number.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
       supabase.from("expenses").select("*").or(`expense_number.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
       supabase.from("employee_onboardings").select("*").or(`employee_name.ilike.%${query}%,employee_number.ilike.%${query}%`).limit(5),
-      supabase.from("vendor_contracts").select("*").or(`contract_number.ilike.%${query}%,contract_title.ilike.%${query}%`).limit(5),
-      supabase.from("configuration_items").select("*").or(`ci_name.ilike.%${query}%,description.ilike.%${query}%,asset_tag.ilike.%${query}%,serial_number.ilike.%${query}%`).limit(5),
-      supabase.from("cipp_policies").select("*").or(`policy_name.ilike.%${query}%,policy_type.ilike.%${query}%`).limit(5),
+      // Contracts - search number, title, terms, and parties involved
+      supabase.from("vendor_contracts").select("*").or(`contract_number.ilike.%${query}%,contract_title.ilike.%${query}%,contract_terms.ilike.%${query}%,payment_terms.ilike.%${query}%`).limit(5),
+      // Configuration Items - search name, tags, serial, attributes, hostname, OS, and all metadata
+      supabase.from("configuration_items").select("*").or(`ci_name.ilike.%${query}%,description.ilike.%${query}%,asset_tag.ilike.%${query}%,serial_number.ilike.%${query}%,attributes::text.ilike.%${query}%,hostname.ilike.%${query}%,operating_system.ilike.%${query}%,manufacturer.ilike.%${query}%,model.ilike.%${query}%,location.ilike.%${query}%,department.ilike.%${query}%,compliance_tags::text.ilike.%${query}%,notes.ilike.%${query}%`).limit(5),
+      // CIPP Policies - search name, type, configuration, and tags
+      supabase.from("cipp_policies").select("*").or(`policy_name.ilike.%${query}%,policy_type.ilike.%${query}%,policy_id.ilike.%${query}%,configuration::text.ilike.%${query}%,compliance_tags::text.ilike.%${query}%`).limit(5),
       supabase.from("products").select("*").or(`product_name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
       supabase.from("customer_accounts").select("*").or(`account_name.ilike.%${query}%,account_number.ilike.%${query}%`).limit(5),
       supabase.from("risk_assessments").select("*").or(`risk_id.ilike.%${query}%,risk_name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
@@ -171,7 +192,20 @@ serve(async (req) => {
       supabase.from("asset_financials").select("*").or(`depreciation_method.ilike.%${query}%`).limit(5),
       supabase.from("change_schedules").select("*").or(`blackout_reason.ilike.%${query}%`).limit(5),
       supabase.from("workflow_nodes").select("*").or(`node_name.ilike.%${query}%,description.ilike.%${query}%`).limit(5),
-      supabase.from("task_repetition_analysis").select("*").or(`task_pattern.ilike.%${query}%,suggested_automation.ilike.%${query}%`).limit(5),
+      // Task Repetition - search patterns, suggestions, and detection data
+      supabase.from("task_repetition_analysis").select("*").or(`task_pattern.ilike.%${query}%,suggested_automation.ilike.%${query}%,workflow_suggestion::text.ilike.%${query}%`).limit(5),
+      
+      // CI Relationships - search for items connected to the query
+      supabase.from("ci_relationships").select("*, source:source_ci_id(ci_name), target:target_ci_id(ci_name)").or(`description.ilike.%${query}%`).limit(5),
+      
+      // CI Audit Log - search for change history mentions
+      supabase.from("ci_audit_log").select("*").or(`field_name.ilike.%${query}%,old_value::text.ilike.%${query}%,new_value::text.ilike.%${query}%,change_reason.ilike.%${query}%`).limit(5),
+      
+      // Workflow Execution Steps - search step details
+      supabase.from("workflow_execution_steps").select("*").or(`step_name.ilike.%${query}%,step_output::text.ilike.%${query}%,error_message.ilike.%${query}%`).limit(5),
+      
+      // MCP Execution Logs - search MCP server operations
+      supabase.from("mcp_execution_logs").select("*").or(`operation_type.ilike.%${query}%,request_data::text.ilike.%${query}%,response_data::text.ilike.%${query}%,error_message.ilike.%${query}%`).limit(5),
     ]);
 
     // Use AI to rank and contextualize results
@@ -281,6 +315,42 @@ serve(async (req) => {
       ...(changeSchedules.data || []).map(cs => ({ type: "change-schedule", data: cs, title: `Maintenance Schedule`, url: `/change-management` })),
       ...(workflowNodes.data || []).map(wn => ({ type: "workflow-node", data: wn, title: wn.node_name, url: `/workflow-builder` })),
       ...(taskRepetition.data || []).map(tr => ({ type: "automation-suggestion", data: tr, title: `Automation: ${tr.task_pattern}`, url: `/portal` })),
+      
+      // Add CI relationships as searchable items
+      ...((await supabase.from("ci_relationships").select("*, source:source_ci_id(ci_name), target:target_ci_id(ci_name)").or(`description.ilike.%${query}%`).limit(5)).data || []).map((rel: any) => ({
+        type: "ci-relationship",
+        data: rel,
+        title: `${rel.source?.ci_name || 'Unknown'} → ${rel.target?.ci_name || 'Unknown'}`,
+        url: `/cmdb`,
+        description: rel.relationship_type
+      })),
+      
+      // Add audit log entries
+      ...((await supabase.from("ci_audit_log").select("*").or(`field_name.ilike.%${query}%,old_value::text.ilike.%${query}%,new_value::text.ilike.%${query}%`).limit(5)).data || []).map((log: any) => ({
+        type: "audit-entry",
+        data: log,
+        title: `${log.change_type} - ${log.field_name || 'Multiple fields'}`,
+        url: `/cmdb`,
+        description: log.change_reason
+      })),
+      
+      // Add workflow execution steps
+      ...((await supabase.from("workflow_execution_steps").select("*").or(`step_name.ilike.%${query}%,error_message.ilike.%${query}%`).limit(5)).data || []).map((step: any) => ({
+        type: "workflow-step",
+        data: step,
+        title: `Step: ${step.step_name}`,
+        url: `/workflow-orchestration`,
+        description: step.status
+      })),
+      
+      // Add MCP execution logs
+      ...((await supabase.from("mcp_execution_logs").select("*").or(`operation_type.ilike.%${query}%,error_message.ilike.%${query}%`).limit(5)).data || []).map((log: any) => ({
+        type: "mcp-log",
+        data: log,
+        title: `MCP: ${log.operation_type}`,
+        url: `/mcp-server-dashboard`,
+        description: log.status
+      })),
       ...staticPages,
     ].filter(result => {
       // Apply RBAC filtering

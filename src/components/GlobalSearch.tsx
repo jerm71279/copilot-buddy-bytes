@@ -80,6 +80,10 @@ const typeIcons = {
   role: Shield,
   "asset-financial": FileText,
   "automation-suggestion": Sparkles,
+  "ci-relationship": GitBranch,
+  "audit-entry": Shield,
+  "workflow-step": Workflow,
+  "mcp-log": Database,
 };
 
 const typeLabels = {
@@ -134,6 +138,10 @@ const typeLabels = {
   role: "Role",
   "asset-financial": "Asset Financial",
   "automation-suggestion": "Automation",
+  "ci-relationship": "CI Relationship",
+  "audit-entry": "Audit Entry",
+  "workflow-step": "Workflow Step",
+  "mcp-log": "MCP Log",
 };
 
 export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
