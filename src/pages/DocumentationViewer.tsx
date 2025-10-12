@@ -107,7 +107,7 @@ const DocumentationViewer = () => {
       const opt = {
         margin: 1,
         image: { type: "jpeg" as const, quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: (contentRef.current?.scrollWidth || 800) + 40, windowHeight: (contentRef.current?.scrollHeight || 1120) + 40, scrollX: 0, scrollY: 0 },
         jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
       };
 
@@ -214,9 +214,9 @@ const DocumentationViewer = () => {
         if (response.ok) {
           const text = await response.text();
           const docContent = document.createElement("div");
-          docContent.style.position = "absolute";
+          docContent.style.position = "fixed";
           docContent.style.top = "0";
-          docContent.style.left = "-10000px";
+          docContent.style.left = "0";
           docContent.style.width = "800px";
           docContent.style.padding = "20px";
           docContent.style.backgroundColor = "#ffffff";
@@ -224,9 +224,15 @@ const DocumentationViewer = () => {
           docContent.style.fontFamily = "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif";
           docContent.style.fontSize = "14px";
           docContent.style.lineHeight = "1.5";
+          docContent.style.boxShadow = "0 0 0 1px transparent"; // ensure layout
+          docContent.style.pointerEvents = "none";
           docContent.innerHTML = `<h1 style="font-size:24px;font-weight:700;margin:0 0 16px">${docTitles[docKey] || docKey}</h1>` + formatMarkdown(text);
 
           document.body.appendChild(docContent);
+
+          await new Promise((r) => setTimeout(r, 100));
+
+          console.log("[PDF] Rendering", docKey, { len: text.length, w: docContent.scrollWidth, h: docContent.scrollHeight });
 
           // Allow layout to occur
           await new Promise((r) => setTimeout(r, 50));
@@ -234,7 +240,15 @@ const DocumentationViewer = () => {
           const opt = {
             margin: 1,
             image: { type: "jpeg" as const, quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+            html2canvas: { 
+              scale: 2, 
+              useCORS: true, 
+              backgroundColor: '#ffffff',
+              windowWidth: docContent.scrollWidth + 40,
+              windowHeight: docContent.scrollHeight + 40,
+              scrollX: 0,
+              scrollY: 0,
+            },
             jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
           };
 
