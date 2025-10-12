@@ -33,36 +33,59 @@ serve(async (req) => {
     let userRoles: string[] = [];
     let isDevMode = Deno.env.get("ENVIRONMENT") === "development";
 
+    console.log("[GlobalSearch] Auth check:", { 
+      hasAuthHeader: !!authHeader, 
+      isDevMode,
+      environment: Deno.env.get("ENVIRONMENT")
+    });
+
     if (authHeader) {
-      // Verify user and get their roles
-      const anonSupabase = createClient(supabaseUrl, supabaseKey, {
-        global: { headers: { Authorization: authHeader } }
-      });
-      
-      const { data: { user } } = await anonSupabase.auth.getUser();
-      
-      if (user) {
-        userId = user.id;
+      try {
+        // Verify user and get their roles
+        const anonSupabase = createClient(supabaseUrl, supabaseKey, {
+          global: { headers: { Authorization: authHeader } }
+        });
         
-        // Get user's roles for RBAC filtering
-        const { data: roles } = await supabase
-          .from("user_roles")
-          .select("role_id, roles(name)")
-          .eq("user_id", userId);
+        const { data: { user }, error: authError } = await anonSupabase.auth.getUser();
         
-        if (roles) {
-          userRoles = roles
-            .map(r => (r as any).roles?.name)
-            .filter(Boolean);
+        if (authError) {
+          console.error("[GlobalSearch] Auth error:", authError);
         }
+        
+        if (user) {
+          userId = user.id;
+          console.log("[GlobalSearch] User authenticated:", userId);
+          
+          // Get user's roles for RBAC filtering
+          const { data: roles, error: rolesError } = await supabase
+            .from("user_roles")
+            .select("role_id, roles(name)")
+            .eq("user_id", userId);
+          
+          if (rolesError) {
+            console.error("[GlobalSearch] Roles error:", rolesError);
+          }
+          
+          if (roles) {
+            userRoles = roles
+              .map(r => (r as any).roles?.name)
+              .filter(Boolean);
+            console.log("[GlobalSearch] User roles:", userRoles);
+          }
+        } else {
+          console.log("[GlobalSearch] No user found from auth header");
+        }
+      } catch (authErr) {
+        console.error("[GlobalSearch] Exception during auth:", authErr);
       }
     }
     
-    // In production, require authentication for search
-    if (!isDevMode && !userId) {
+    // Allow searches for authenticated users (remove production-only restriction)
+    if (!userId) {
+      console.log("[GlobalSearch] No authenticated user, returning 401");
       return new Response(JSON.stringify({ 
         results: [], 
-        error: "Authentication required for search in production" 
+        error: "Authentication required for search" 
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 401
