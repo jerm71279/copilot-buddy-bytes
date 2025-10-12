@@ -106,13 +106,15 @@ const DocumentationViewer = () => {
       const element = contentRef.current;
       const opt = {
         margin: 1,
-        filename: `${doc || "documentation"}.pdf`,
         image: { type: "jpeg" as const, quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
       };
 
-      await html2pdf().set(opt).from(element).save();
+      const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+      const filename = `${doc || "documentation"}.pdf`;
+      
+      downloadBlob(pdfBlob, filename);
       
       toast({
         title: "PDF Exported",
@@ -126,6 +128,63 @@ const DocumentationViewer = () => {
       });
     } finally {
       setExporting(false);
+    }
+  };
+
+  const downloadBlob = (blob: Blob, filename: string) => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
+    if (isIOS) {
+      // iOS: Open in new tab with proper MIME type
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result as string;
+        const newWindow = window.open();
+        if (newWindow) {
+          newWindow.document.write(`
+            <html>
+              <head>
+                <title>${filename}</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <style>
+                  body { margin: 0; padding: 20px; font-family: system-ui; text-align: center; }
+                  .download-btn { 
+                    display: inline-block; 
+                    padding: 12px 24px; 
+                    background: #007AFF; 
+                    color: white; 
+                    text-decoration: none; 
+                    border-radius: 8px; 
+                    margin: 20px 0;
+                    font-size: 16px;
+                  }
+                  .info { color: #666; margin-top: 20px; }
+                </style>
+              </head>
+              <body>
+                <h2>${filename}</h2>
+                <a href="${base64data}" download="${filename}" class="download-btn">
+                  Download File
+                </a>
+                <p class="info">
+                  Tap the button above to download, then you can save to Files or Google Drive
+                </p>
+              </body>
+            </html>
+          `);
+        }
+      };
+      reader.readAsDataURL(blob);
+    } else {
+      // Standard download for other browsers
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     }
   };
 
@@ -178,14 +237,9 @@ const DocumentationViewer = () => {
       }
 
       const zipBlob = await zip.generateAsync({ type: "blob" });
-      const url = URL.createObjectURL(zipBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `Documentation-${new Date().toISOString().split('T')[0]}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      const filename = `Documentation-${new Date().toISOString().split('T')[0]}.zip`;
+      
+      downloadBlob(zipBlob, filename);
       
       toast({
         title: "ZIP Exported",
