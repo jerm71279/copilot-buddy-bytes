@@ -153,7 +153,7 @@ export default function KnowledgeBase() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-6">
           <Link to="/intelligent-assistant">
             <Button size="lg" className="gap-2">
               <Brain className="h-5 w-5" />

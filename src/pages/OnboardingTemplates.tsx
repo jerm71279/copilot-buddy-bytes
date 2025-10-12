@@ -208,7 +208,7 @@ export default function OnboardingTemplates() {
             <h1 className="text-4xl font-bold mb-2">Onboarding Templates</h1>
             <p className="text-muted-foreground">Create and manage reusable client onboarding checklists for MSP customers</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => navigate('/onboarding')}>
               Back to Dashboard
             </Button>

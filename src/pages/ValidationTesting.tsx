@@ -199,7 +199,7 @@ export default function ValidationTesting() {
           </p>
         </div>
 
-        <div className="flex gap-4 mb-6">
+        <div className="flex flex-wrap gap-4 mb-6">
           <Button onClick={runAllTests} size="lg">
             <Play className="mr-2 h-4 w-4" />
             Run All Tests

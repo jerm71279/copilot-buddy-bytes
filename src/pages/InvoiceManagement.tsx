@@ -291,7 +291,7 @@ export default function InvoiceManagement() {
             <CardDescription>View and manage all invoices</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-4 mb-4">
+            <div className="flex flex-wrap gap-4 mb-4">
               <div className="relative flex-1">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input

@@ -233,7 +233,7 @@ const DepartmentFeedback = () => {
       </div>
 
       {/* Department Filter */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6">
         <Button
           variant={selectedDept === "all" ? "default" : "outline"}
           onClick={() => setSelectedDept("all")}

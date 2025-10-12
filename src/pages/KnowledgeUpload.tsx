@@ -114,7 +114,7 @@ export default function KnowledgeUpload() {
               </div>
             )}
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 onClick={handleUpload}
                 disabled={isUploading || !selectedFiles || selectedFiles.length === 0}

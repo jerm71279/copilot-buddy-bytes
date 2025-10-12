@@ -113,7 +113,7 @@ export default function FinancialReporting() {
             <h1 className="text-3xl font-bold">Financial Reporting</h1>
             <p className="text-muted-foreground">Comprehensive financial analytics and insights</p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <Select value={reportPeriod} onValueChange={setReportPeriod}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue />

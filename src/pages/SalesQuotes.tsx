@@ -291,7 +291,7 @@ const SalesQuotes = () => {
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>All Quotes</CardTitle>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input

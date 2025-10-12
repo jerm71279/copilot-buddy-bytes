@@ -127,7 +127,7 @@ export default function ComplianceFrameworkDetail() {
           <div className="flex-1">
             <h1 className="text-4xl font-bold mb-2">{framework.framework_name}</h1>
             <p className="text-muted-foreground mb-4">{framework.description}</p>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Badge variant="outline">{framework.framework_code}</Badge>
               <Badge variant="outline">{framework.industry}</Badge>
               {framework.version && <Badge variant="outline">v{framework.version}</Badge>}
