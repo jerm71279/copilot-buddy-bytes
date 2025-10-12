@@ -2,12 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, FileText, Download, CheckSquare, Square } from "lucide-react";
+import { ArrowLeft, FileText, Download } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import html2pdf from "html2pdf.js";
-import JSZip from "jszip";
 import { useToast } from "@/hooks/use-toast";
 
 const DocumentationViewer = () => {
@@ -17,7 +16,6 @@ const DocumentationViewer = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [exporting, setExporting] = useState(false);
-  const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
   const contentRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -104,16 +102,15 @@ const DocumentationViewer = () => {
 
     try {
       const element = contentRef.current;
-      const filename = `${docTitles[doc || ''] || doc || "documentation"}.pdf`;
       const opt = {
         margin: 1,
-        filename,
+        filename: `${doc || "documentation"}.pdf`,
         image: { type: "jpeg" as const, quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+        html2canvas: { scale: 2 },
         jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
       };
 
-      await html2pdf().from(element).set(opt).save();
+      await html2pdf().set(opt).from(element).save();
       
       toast({
         title: "PDF Exported",
@@ -130,170 +127,6 @@ const DocumentationViewer = () => {
     }
   };
 
-  const downloadBlob = (blob: Blob, filename: string) => {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    
-    if (isIOS) {
-      // iOS: Open in new tab with proper MIME type
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64data = reader.result as string;
-        const newWindow = window.open();
-        if (newWindow) {
-          newWindow.document.write(`
-            <html>
-              <head>
-                <title>${filename}</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <style>
-                  body { margin: 0; padding: 20px; font-family: system-ui; text-align: center; }
-                  .download-btn { 
-                    display: inline-block; 
-                    padding: 12px 24px; 
-                    background: #007AFF; 
-                    color: white; 
-                    text-decoration: none; 
-                    border-radius: 8px; 
-                    margin: 20px 0;
-                    font-size: 16px;
-                  }
-                  .info { color: #666; margin-top: 20px; }
-                </style>
-              </head>
-              <body>
-                <h2>${filename}</h2>
-                <a href="${base64data}" download="${filename}" class="download-btn">
-                  Download File
-                </a>
-                <p class="info">
-                  Tap the button above to download, then you can save to Files or Google Drive
-                </p>
-              </body>
-            </html>
-          `);
-        }
-      };
-      reader.readAsDataURL(blob);
-    } else {
-      // Standard download for other browsers
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
-  };
-
-  const exportMultipleToPDF = async () => {
-    if (selectedDocs.length === 0) return;
-
-    setExporting(true);
-    toast({
-      title: "Generating PDFs",
-      description: `Exporting ${selectedDocs.length} document(s)...`,
-    });
-
-    try {
-      const zip = new JSZip();
-      
-      for (let i = 0; i < selectedDocs.length; i++) {
-        const docKey = selectedDocs[i];
-        
-        toast({
-          title: "Processing",
-          description: `Generating PDF ${i + 1} of ${selectedDocs.length}...`,
-        });
-
-        const response = await fetch(`/${docKey}.md`);
-        if (response.ok) {
-          const text = await response.text();
-          const docContent = document.createElement("div");
-          docContent.style.position = "fixed";
-          docContent.style.top = "0";
-          docContent.style.left = "0";
-          docContent.style.width = "800px";
-          docContent.style.padding = "20px";
-          docContent.style.backgroundColor = "#ffffff";
-          docContent.style.color = "#000000";
-          docContent.style.fontFamily = "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif";
-          docContent.style.fontSize = "14px";
-          docContent.style.lineHeight = "1.5";
-          docContent.style.boxShadow = "0 0 0 1px transparent"; // ensure layout
-          docContent.style.pointerEvents = "none";
-          docContent.innerHTML = `<h1 style="font-size:24px;font-weight:700;margin:0 0 16px">${docTitles[docKey] || docKey}</h1>` + formatMarkdown(text);
-
-          document.body.appendChild(docContent);
-
-          await new Promise((r) => setTimeout(r, 100));
-
-          console.log("[PDF] Rendering", docKey, { len: text.length, w: docContent.scrollWidth, h: docContent.scrollHeight });
-
-          // Allow layout to occur
-          await new Promise((r) => setTimeout(r, 50));
-
-          const opt = {
-            margin: 1,
-            image: { type: "jpeg" as const, quality: 0.98 },
-            html2canvas: { 
-              scale: 2, 
-              useCORS: true, 
-              backgroundColor: '#ffffff',
-              windowWidth: docContent.scrollWidth + 40,
-              windowHeight: docContent.scrollHeight + 40,
-              scrollX: 0,
-              scrollY: 0,
-            },
-            jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
-          };
-
-          const pdfBlob = await html2pdf().from(docContent).set(opt).outputPdf('blob');
-          const filename = `${docTitles[docKey] || docKey}.pdf`;
-          zip.file(filename, pdfBlob);
-
-          document.body.removeChild(docContent);
-        }
-      }
-
-      const zipBlob = await zip.generateAsync({ type: "blob" });
-      const filename = `Documentation-${new Date().toISOString().split('T')[0]}.zip`;
-      
-      downloadBlob(zipBlob, filename);
-      
-      toast({
-        title: "ZIP Exported",
-        description: `Successfully exported ${selectedDocs.length} document(s) as separate PDFs.`,
-      });
-    } catch (err) {
-      toast({
-        title: "Export Failed",
-        description: "Failed to generate PDFs. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  const toggleDocSelection = (docKey: string) => {
-    setSelectedDocs(prev => 
-      prev.includes(docKey) 
-        ? prev.filter(k => k !== docKey)
-        : [...prev, docKey]
-    );
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedDocs.length === availableDocs.length) {
-      setSelectedDocs([]);
-    } else {
-      setSelectedDocs(availableDocs.map(d => d.key));
-    }
-  };
-
-  const allSelected = selectedDocs.length === availableDocs.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
@@ -380,54 +213,17 @@ const DocumentationViewer = () => {
 
             {!loading && !doc && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold">Available Documentation</h2>
-                  <div className="flex items-center gap-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={toggleSelectAll}
-                      className="gap-2"
-                    >
-                      {allSelected ? (
-                        <CheckSquare className="h-4 w-4" />
-                      ) : (
-                        <Square className="h-4 w-4" />
-                      )}
-                      {allSelected ? "Deselect All" : "Select All"}
-                    </Button>
-                    {selectedDocs.length > 0 && (
-                      <Button
-                        onClick={exportMultipleToPDF}
-                        disabled={exporting}
-                        className="gap-2"
-                      >
-                        <Download className="h-4 w-4" />
-                        Export {selectedDocs.length} Document{selectedDocs.length > 1 ? 's' : ''}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
+                <h2 className="text-xl font-semibold mb-4">Available Documentation</h2>
                 <div className="grid gap-4">
                   {availableDocs.map((docItem) => (
-                    <div
+                    <Link
                       key={docItem.key}
-                      className="flex items-start gap-4 p-4 bg-muted/50 hover:bg-muted/70 rounded-lg transition-colors"
+                      to={`/documentation?doc=${docItem.key}`}
+                      className="p-4 bg-muted/50 hover:bg-muted/70 rounded-lg transition-colors"
                     >
-                      <Checkbox
-                        checked={selectedDocs.includes(docItem.key)}
-                        onCheckedChange={() => toggleDocSelection(docItem.key)}
-                        className="mt-1"
-                      />
-                      <Link
-                        to={`/documentation?doc=${docItem.key}`}
-                        className="flex-1"
-                      >
-                        <h3 className="font-semibold mb-1 hover:text-primary">{docItem.title}</h3>
-                        <p className="text-sm text-muted-foreground">{docItem.description}</p>
-                      </Link>
-                    </div>
+                      <h3 className="font-semibold mb-1">{docItem.title}</h3>
+                      <p className="text-sm text-muted-foreground">{docItem.description}</p>
+                    </Link>
                   ))}
                 </div>
               </div>
