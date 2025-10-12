@@ -89,3 +89,6 @@ verify_jwt = true
 
 [functions.database-flow-logger]
 verify_jwt = true
+
+[functions.global-search]
+verify_jwt = false
