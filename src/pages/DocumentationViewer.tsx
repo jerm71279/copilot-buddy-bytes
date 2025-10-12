@@ -7,6 +7,7 @@ import Navigation from "@/components/Navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import html2pdf from "html2pdf.js";
+import JSZip from "jszip";
 import { useToast } from "@/hooks/use-toast";
 
 const DocumentationViewer = () => {
@@ -133,61 +134,67 @@ const DocumentationViewer = () => {
 
     setExporting(true);
     toast({
-      title: "Generating PDF",
+      title: "Generating PDFs",
       description: `Exporting ${selectedDocs.length} document(s)...`,
     });
 
     try {
-      const combinedContent = document.createElement("div");
-      combinedContent.style.position = "absolute";
-      combinedContent.style.left = "-9999px";
-      combinedContent.style.padding = "20px";
-      combinedContent.style.backgroundColor = "white";
-      combinedContent.style.color = "black";
+      const zip = new JSZip();
       
-      for (const docKey of selectedDocs) {
+      for (let i = 0; i < selectedDocs.length; i++) {
+        const docKey = selectedDocs[i];
+        
+        toast({
+          title: "Processing",
+          description: `Generating PDF ${i + 1} of ${selectedDocs.length}...`,
+        });
+
         const response = await fetch(`/${docKey}.md`);
         if (response.ok) {
           const text = await response.text();
-          const docSection = document.createElement("div");
-          docSection.style.marginBottom = "40px";
-          docSection.innerHTML = `
-            <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #333;">${docTitles[docKey] || docKey}</h1>
-            ${formatMarkdown(text)}
-            <div style="page-break-after: always;"></div>
-          `;
-          combinedContent.appendChild(docSection);
+          const docContent = document.createElement("div");
+          docContent.style.position = "absolute";
+          docContent.style.left = "-9999px";
+          docContent.style.padding = "20px";
+          docContent.style.backgroundColor = "white";
+          docContent.style.color = "black";
+          docContent.innerHTML = formatMarkdown(text);
+
+          document.body.appendChild(docContent);
+
+          const opt = {
+            margin: 1,
+            image: { type: "jpeg" as const, quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
+          };
+
+          const pdfBlob = await html2pdf().set(opt).from(docContent).outputPdf('blob');
+          const filename = `${docTitles[docKey] || docKey}.pdf`;
+          zip.file(filename, pdfBlob);
+
+          document.body.removeChild(docContent);
         }
       }
 
-      // Temporarily add to DOM for html2pdf to render
-      document.body.appendChild(combinedContent);
-
-      const filename = selectedDocs.length === 1 
-        ? `${docTitles[selectedDocs[0]] || selectedDocs[0]}.pdf`
-        : `Combined-Documentation-${new Date().toISOString().split('T')[0]}.pdf`;
-
-      const opt = {
-        margin: 1,
-        filename,
-        image: { type: "jpeg" as const, quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
-      };
-
-      await html2pdf().set(opt).from(combinedContent).save();
-      
-      // Remove from DOM after export
-      document.body.removeChild(combinedContent);
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(zipBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Documentation-${new Date().toISOString().split('T')[0]}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
       
       toast({
-        title: "PDF Exported",
-        description: `Successfully exported ${selectedDocs.length} document(s).`,
+        title: "ZIP Exported",
+        description: `Successfully exported ${selectedDocs.length} document(s) as separate PDFs.`,
       });
     } catch (err) {
       toast({
         title: "Export Failed",
-        description: "Failed to generate PDF. Please try again.",
+        description: "Failed to generate PDFs. Please try again.",
         variant: "destructive",
       });
     } finally {
