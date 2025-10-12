@@ -23,10 +23,19 @@ const DocumentationViewer = () => {
     "API_REFERENCE": "API Reference",
   };
 
+  const availableDocs = [
+    { key: "TESTING_GUIDE", title: "Testing Guide", description: "System validation, comprehensive testing, and CI/CD integration" },
+    { key: "TESTING_PROCEDURES", title: "Testing Procedures", description: "Step-by-step procedures for all testing phases" },
+    { key: "INPUT_VALIDATION_GUIDE", title: "Input Validation Guide", description: "Multi-layered validation to prevent security vulnerabilities" },
+    { key: "DEBUG_PROCEDURES", title: "Debug Procedures", description: "Debugging edge functions, database queries, and RLS policies" },
+    { key: "SECURITY_AUDIT_REPORT", title: "Security Audit Report", description: "Comprehensive security audit and compliance requirements" },
+    { key: "ARCHITECTURE", title: "Architecture Documentation", description: "System architecture and data flow patterns" },
+    { key: "API_REFERENCE", title: "API Reference", description: "Complete edge function API documentation" },
+  ];
+
   useEffect(() => {
     const loadDocument = async () => {
       if (!doc) {
-        setError("No document specified");
         setLoading(false);
         return;
       }
@@ -136,7 +145,25 @@ const DocumentationViewer = () => {
               </ScrollArea>
             )}
 
-            {!loading && !error && !content && (
+            {!loading && !doc && (
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold mb-4">Available Documentation</h2>
+                <div className="grid gap-4">
+                  {availableDocs.map((docItem) => (
+                    <Link
+                      key={docItem.key}
+                      to={`/docs?doc=${docItem.key}`}
+                      className="block p-4 bg-muted/50 hover:bg-muted/70 rounded-lg transition-colors"
+                    >
+                      <h3 className="font-semibold mb-1">{docItem.title}</h3>
+                      <p className="text-sm text-muted-foreground">{docItem.description}</p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!loading && !error && !content && doc && (
               <div className="text-center py-12 text-muted-foreground">
                 No content available
               </div>
