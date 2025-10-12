@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Play, CheckCircle, AlertCircle } from "lucide-react";
+import { Play, CheckCircle, AlertCircle, ArrowLeft, LayoutDashboard, FileText, Database } from "lucide-react";
 
 export default function TestWorkflowEvidence() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<any>(null);
 
@@ -52,6 +54,46 @@ export default function TestWorkflowEvidence() {
       
       <main className="container mx-auto px-4 pt-56 pb-8">
         <h1 className="text-3xl font-bold mb-6">Test Workflow Evidence Generation</h1>
+
+        {/* Link Tray */}
+        <div className="flex items-center gap-3 mb-6">
+          <Button 
+            onClick={() => navigate(-1)} 
+            variant="outline" 
+            size="sm"
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          <Button 
+            onClick={() => navigate('/devops')} 
+            variant="outline" 
+            size="sm"
+            className="gap-2"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            DevOps Portal
+          </Button>
+          <Button 
+            onClick={() => navigate('/compliance')} 
+            variant="outline" 
+            size="sm"
+            className="gap-2"
+          >
+            <FileText className="h-4 w-4" />
+            Compliance Portal
+          </Button>
+          <Button 
+            onClick={() => navigate('/cmdb')} 
+            variant="outline" 
+            size="sm"
+            className="gap-2"
+          >
+            <Database className="h-4 w-4" />
+            CMDB
+          </Button>
+        </div>
 
         <Card className="mb-6">
           <CardHeader>
