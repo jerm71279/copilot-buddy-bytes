@@ -90,13 +90,22 @@ const DocumentationViewer = () => {
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <Link to="/devops">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to DevOps Portal
-            </Button>
-          </Link>
+        <div className="mb-6 flex gap-2">
+          {doc ? (
+            <Link to="/docs">
+              <Button variant="outline" size="sm">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Docs List
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/devops">
+              <Button variant="outline" size="sm">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to DevOps Portal
+              </Button>
+            </Link>
+          )}
         </div>
 
         <Card>
