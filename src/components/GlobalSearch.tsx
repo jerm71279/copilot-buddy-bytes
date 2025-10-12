@@ -195,7 +195,11 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
   }, [query, performSearch]);
 
   const handleSelect = (result: SearchResult) => {
-    navigate(result.url);
+    if (result.url?.startsWith("http")) {
+      window.open(result.url, "_blank", "noopener,noreferrer");
+    } else {
+      navigate(result.url);
+    }
     onOpenChange(false);
     setQuery("");
   };
@@ -268,9 +272,9 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-medium truncate">{result.title}</div>
-                      {result.data.description && (
+                      {(result.data.description || (result.url?.startsWith('http') ? result.url : '')) && (
                         <div className="text-sm text-muted-foreground truncate">
-                          {result.data.description}
+                          {result.data.description || (result.url?.startsWith('http') ? result.url : '')}
                         </div>
                       )}
                     </div>

@@ -217,21 +217,26 @@ serve(async (req) => {
     
     // Static pages that can be searched
     const staticPages = [];
-    if (query.toLowerCase().includes('test') || query.toLowerCase().includes('dashboard')) {
+    const q = query.toLowerCase();
+    if (q.includes('test') || q.includes('dashboard')) {
       staticPages.push({ type: "page", data: { name: "Test Dashboard" }, title: "Comprehensive Test Dashboard", url: "/testing-dashboard" });
     }
-    if (query.toLowerCase().includes('analytics')) {
+    if (q.includes('analytics')) {
       staticPages.push({ type: "page", data: { name: "Analytics" }, title: "Analytics Portal", url: "/analytics" });
     }
-    if (query.toLowerCase().includes('executive')) {
+    if (q.includes('executive')) {
       staticPages.push({ type: "page", data: { name: "Executive" }, title: "Executive Dashboard", url: "/executive" });
     }
-    if (query.toLowerCase().includes('insight')) {
+    if (q.includes('insight')) {
       staticPages.push({ type: "page", data: { name: "Insights" }, title: "Department Insights", url: "/department-insights" });
       staticPages.push({ type: "page", data: { name: "Global Insights" }, title: "Global Insights", url: "/global-insights" });
     }
-    if (query.toLowerCase().includes('feedback')) {
+    if (q.includes('feedback')) {
       staticPages.push({ type: "page", data: { name: "Feedback" }, title: "Department Feedback", url: "/department-feedback" });
+    }
+    // Direct GitHub related shortcuts -> Developer Portal (contains GitHub links)
+    if (q.includes('github') || q.includes('repo') || q.includes('repository') || q.includes('code')) {
+      staticPages.push({ type: "page", data: { name: "Developers" }, title: "GitHub Repository", url: "/developers" });
     }
 
     // Helper function to check if user has permission for a resource
