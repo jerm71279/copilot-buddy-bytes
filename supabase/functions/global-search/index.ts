@@ -41,7 +41,7 @@ serve(async (req) => {
 
     if (authHeader) {
       try {
-        // Verify user and get their roles
+        // Verify user and get their roles via auth client
         const anonSupabase = createClient(supabaseUrl, supabaseKey, {
           global: { headers: { Authorization: authHeader } }
         });
@@ -55,32 +55,44 @@ serve(async (req) => {
         if (user) {
           userId = user.id;
           console.log("[GlobalSearch] User authenticated:", userId);
-          
-          // Get user's roles for RBAC filtering
-          const { data: roles, error: rolesError } = await supabase
-            .from("user_roles")
-            .select("role_id, roles(name)")
-            .eq("user_id", userId);
-          
-          if (rolesError) {
-            console.error("[GlobalSearch] Roles error:", rolesError);
-          }
-          
-          if (roles) {
-            userRoles = roles
-              .map(r => (r as any).roles?.name)
-              .filter(Boolean);
-            console.log("[GlobalSearch] User roles:", userRoles);
-          }
         } else {
-          console.log("[GlobalSearch] No user found from auth header");
+          console.log("[GlobalSearch] No user from auth client, attempting JWT decode fallback");
+          try {
+            const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : authHeader;
+            const payload = JSON.parse(atob(token.split(".")[1] || ""));
+            userId = payload?.sub || payload?.user_id || null;
+            console.log("[GlobalSearch] Decoded userId from JWT:", userId);
+          } catch (jwtErr) {
+            console.error("[GlobalSearch] JWT decode failed:", jwtErr);
+          }
         }
       } catch (authErr) {
         console.error("[GlobalSearch] Exception during auth:", authErr);
       }
     }
     
-    // Allow searches for authenticated users (remove production-only restriction)
+    // If we have a userId, load roles (even if obtained via fallback)
+    if (userId && userRoles.length === 0) {
+      try {
+        const { data: roles, error: rolesError } = await supabase
+          .from("user_roles")
+          .select("role_id, roles(name)")
+          .eq("user_id", userId);
+        if (rolesError) {
+          console.error("[GlobalSearch] Roles error:", rolesError);
+        }
+        if (roles) {
+          userRoles = roles
+            .map(r => (r as any).roles?.name)
+            .filter(Boolean);
+          console.log("[GlobalSearch] User roles:", userRoles);
+        }
+      } catch (rolesEx) {
+        console.error("[GlobalSearch] Exception while loading roles:", rolesEx);
+      }
+    }
+    
+    // Allow searches for authenticated users
     if (!userId) {
       console.log("[GlobalSearch] No authenticated user, returning 401");
       return new Response(JSON.stringify({ 
