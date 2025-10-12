@@ -155,19 +155,19 @@ const portals: Portal[] = [
     name: "Automation Portal",
     path: "/workflow-automation",
     children: [
-      { name: "Workflow Builder", path: "/workflow-builder" },
+      { name: "Workflow Builder", path: "/workflows/builder" },
       { name: "Workflow Orchestration", path: "/workflow-orchestration" },
-      { name: "Visual Builder", path: "/workflows/visual-build" },
+      { name: "Visual Builder", path: "/workflows/visual-builder" },
       { name: "Workflow Intelligence", path: "/workflow-intelligence" },
       { name: "Intelligent Assistant", path: "/intelligent-assistant" },
     ],
   },
   {
     name: "Knowledge Portal",
-    path: "/knowledge-base",
+    path: "/knowledge",
     children: [
-      { name: "Articles", path: "/knowledge-base" },
-      { name: "Upload", path: "/knowledge-base/upload" },
+      { name: "Articles", path: "/knowledge" },
+      { name: "Upload", path: "/knowledge/upload" },
     ],
   },
 ];

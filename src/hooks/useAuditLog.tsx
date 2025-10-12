@@ -37,9 +37,8 @@ export const useAuditLog = () => {
           customer_id: profile.customer_id,
           action_type: entry.action_type,
           system_name: entry.system_name,
-          action_details: entry.action_details,
-          compliance_tags: entry.compliance_tags || ['general'],
-          timestamp: new Date().toISOString()
+          action_details: JSON.parse(JSON.stringify(entry.action_details)), // Clean any null chars
+          compliance_tags: entry.compliance_tags || ['general']
         });
 
       if (error) {
