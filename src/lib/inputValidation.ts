@@ -65,21 +65,21 @@ export function sanitizeString(input: string, maxLength: number = 1000): Validat
 
   for (const pattern of xssPatterns) {
     if (pattern.test(sanitized)) {
-      errors.push('XSS pattern detected and escaped');
-      sanitized = sanitized
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#x27;')
-        .replace(/\//g, '&#x2F;');
-      break;
+      return {
+        isValid: false,
+        sanitized: '',
+        errors: ['XSS pattern detected']
+      };
     }
   }
 
   // Detect path traversal attempts
   if (sanitized.includes('../') || sanitized.includes('..\\')) {
-    errors.push('Path traversal detected');
-    sanitized = sanitized.replace(/\.\.[\/\\]/g, '');
+    return {
+      isValid: false,
+      sanitized: '',
+      errors: ['Path traversal detected']
+    };
   }
 
   // Detect format string attacks
@@ -95,7 +95,7 @@ export function sanitizeString(input: string, maxLength: number = 1000): Validat
   }
 
   return {
-    isValid: errors.length === 0 || errors.every(e => e.includes('removed') || e.includes('escaped')),
+    isValid: errors.length === 0,
     sanitized: sanitized.trim(),
     errors
   };
@@ -107,6 +107,15 @@ export function sanitizeString(input: string, maxLength: number = 1000): Validat
 export function validateEmail(email: string): ValidationResult {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const sanitized = email.trim().toLowerCase();
+  
+  // Check for XSS patterns in email
+  if (/<script|<iframe|javascript:|on\w+=/i.test(sanitized)) {
+    return {
+      isValid: false,
+      sanitized: '',
+      errors: ['XSS pattern detected in email']
+    };
+  }
   
   if (!emailRegex.test(sanitized)) {
     return {
@@ -180,22 +189,33 @@ export function sanitizeArray(input: string[], maxLength: number = 100, maxItemL
   const errors: string[] = [];
   
   if (input.length > maxLength) {
-    errors.push(`Array exceeds maximum length of ${maxLength} items`);
-    input = input.slice(0, maxLength);
+    return {
+      isValid: false,
+      sanitized: [],
+      errors: [`Array exceeds maximum length of ${maxLength} items`]
+    };
   }
 
-  const sanitized = input.map(item => {
+  const sanitized: string[] = [];
+  
+  for (const item of input) {
     const result = sanitizeString(item, maxItemLength);
     if (!result.isValid) {
-      errors.push(`Invalid item in array: ${result.errors.join(', ')}`);
+      return {
+        isValid: false,
+        sanitized: [],
+        errors: [`Invalid item in array: ${result.errors.join(', ')}`]
+      };
     }
-    return result.sanitized;
-  }).filter(item => item.length > 0);
+    if (result.sanitized.length > 0) {
+      sanitized.push(result.sanitized);
+    }
+  }
 
   return {
-    isValid: errors.length === 0,
+    isValid: true,
     sanitized,
-    errors
+    errors: []
   };
 }
 
