@@ -445,6 +445,13 @@ const App = () => (
             </ProtectedRoute>
           } />
           
+          {/* Documentation Viewer - Protected */}
+          <Route path="/documentation" element={
+            <ProtectedRoute>
+              <DocumentationViewer />
+            </ProtectedRoute>
+          } />
+          
           {/* Test Workflow Evidence - Admin Only */}
           <Route path="/test/workflow-evidence" element={
             <ProtectedRoute requireAdmin>
