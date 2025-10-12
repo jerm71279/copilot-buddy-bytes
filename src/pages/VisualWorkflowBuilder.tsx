@@ -7,14 +7,96 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ReactFlow, {
+  Background,
+  Controls,
+  MiniMap,
+  addEdge,
+  useNodesState,
+  useEdgesState,
+  Connection,
+  Edge,
+  Node,
+  NodeTypes,
+} from "reactflow";
+import "reactflow/dist/style.css";
 import { 
   Save, 
   Play, 
   ArrowLeft,
   Plus,
-  Trash2
+  Zap,
+  Settings,
+  GitBranch,
+  Repeat,
+  Clock,
+  Globe
 } from "lucide-react";
 import { toast } from "sonner";
+
+// Custom node components
+const TriggerNode = ({ data }: { data: any }) => (
+  <div className="px-4 py-2 shadow-md rounded-md bg-primary text-primary-foreground border-2 border-primary">
+    <div className="flex items-center gap-2">
+      <Zap className="h-4 w-4" />
+      <div className="font-bold">{data.label}</div>
+    </div>
+  </div>
+);
+
+const ActionNode = ({ data }: { data: any }) => (
+  <div className="px-4 py-2 shadow-md rounded-md bg-blue-500 text-white border-2 border-blue-600">
+    <div className="flex items-center gap-2">
+      <Settings className="h-4 w-4" />
+      <div className="font-bold">{data.label}</div>
+    </div>
+  </div>
+);
+
+const ConditionNode = ({ data }: { data: any }) => (
+  <div className="px-4 py-2 shadow-md rounded-md bg-yellow-500 text-white border-2 border-yellow-600">
+    <div className="flex items-center gap-2">
+      <GitBranch className="h-4 w-4" />
+      <div className="font-bold">{data.label}</div>
+    </div>
+  </div>
+);
+
+const LoopNode = ({ data }: { data: any }) => (
+  <div className="px-4 py-2 shadow-md rounded-md bg-purple-500 text-white border-2 border-purple-600">
+    <div className="flex items-center gap-2">
+      <Repeat className="h-4 w-4" />
+      <div className="font-bold">{data.label}</div>
+    </div>
+  </div>
+);
+
+const DelayNode = ({ data }: { data: any }) => (
+  <div className="px-4 py-2 shadow-md rounded-md bg-orange-500 text-white border-2 border-orange-600">
+    <div className="flex items-center gap-2">
+      <Clock className="h-4 w-4" />
+      <div className="font-bold">{data.label}</div>
+    </div>
+  </div>
+);
+
+const ApiCallNode = ({ data }: { data: any }) => (
+  <div className="px-4 py-2 shadow-md rounded-md bg-green-500 text-white border-2 border-green-600">
+    <div className="flex items-center gap-2">
+      <Globe className="h-4 w-4" />
+      <div className="font-bold">{data.label}</div>
+    </div>
+  </div>
+);
+
+const nodeTypes: NodeTypes = {
+  trigger: TriggerNode,
+  action: ActionNode,
+  condition: ConditionNode,
+  loop: LoopNode,
+  delay: DelayNode,
+  api_call: ApiCallNode,
+};
 
 export default function VisualWorkflowBuilder() {
   const navigate = useNavigate();
@@ -25,8 +107,8 @@ export default function VisualWorkflowBuilder() {
   const [workflowName, setWorkflowName] = useState("");
   const [workflowDescription, setWorkflowDescription] = useState("");
   const [workflowCategory, setWorkflowCategory] = useState("automation");
-  const [nodes, setNodes] = useState<any[]>([]);
-  const [edges, setEdges] = useState<any[]>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   // Fetch existing workflow if editing
   useQuery({
@@ -46,8 +128,8 @@ export default function VisualWorkflowBuilder() {
       setWorkflowName(workflow.name || "");
       setWorkflowDescription(workflow.description || "");
       setWorkflowCategory(workflow.category || "automation");
-      setNodes(workflow.nodes || []);
-      setEdges(workflow.edges || []);
+      if (workflow.nodes) setNodes(workflow.nodes);
+      if (workflow.edges) setEdges(workflow.edges);
       
       return data;
     },
@@ -101,20 +183,21 @@ export default function VisualWorkflowBuilder() {
     },
   });
 
+  const onConnect = useCallback(
+    (params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
+  );
+
   const addNode = useCallback((type: string) => {
-    const newNode = {
+    const newNode: Node = {
       id: `node_${Date.now()}`,
       type,
-      position: { x: 100, y: nodes.length * 100 + 100 },
-      data: { label: `${type} node` }
+      position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+      data: { label: `${type.charAt(0).toUpperCase() + type.slice(1)} Node` }
     };
-    setNodes([...nodes, newNode]);
-  }, [nodes]);
-
-  const removeNode = useCallback((nodeId: string) => {
-    setNodes(nodes.filter(n => n.id !== nodeId));
-    setEdges(edges.filter(e => e.source !== nodeId && e.target !== nodeId));
-  }, [nodes, edges]);
+    setNodes((nds) => nds.concat(newNode));
+    toast.success("Node added to canvas");
+  }, [setNodes]);
 
   return (
     <div className="container mx-auto px-4 pt-56 pb-8 space-y-6">
@@ -242,41 +325,28 @@ export default function VisualWorkflowBuilder() {
           </Card>
 
           {/* Canvas */}
-          <Card>
+          <Card className="h-[600px]">
             <CardHeader>
               <CardTitle>Workflow Canvas</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Drag nodes to reposition, connect nodes by dragging from edge to edge
+              </p>
             </CardHeader>
-            <CardContent>
-              <div className="min-h-[500px] border-2 border-dashed rounded-lg p-4 bg-muted/20">
-                {nodes.length === 0 ? (
-                  <div className="flex items-center justify-center h-full text-muted-foreground">
-                    Add nodes from the left panel to build your workflow
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {nodes.map((node, index) => (
-                      <div
-                        key={node.id}
-                        className="flex items-center gap-2 p-4 border rounded-lg bg-background"
-                      >
-                        <div className="flex-1">
-                          <div className="font-medium">{node.data.label}</div>
-                          <div className="text-sm text-muted-foreground">
-                            Type: {node.type}
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeNode(node.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+            <CardContent className="h-[calc(100%-80px)] p-0">
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
+                nodeTypes={nodeTypes}
+                fitView
+                className="bg-muted/20"
+              >
+                <Background />
+                <Controls />
+                <MiniMap />
+              </ReactFlow>
             </CardContent>
           </Card>
         </div>
