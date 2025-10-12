@@ -78,62 +78,9 @@ serve(async (req) => {
       `EXISTS (SELECT 1 FROM unnest(${field}) AS elem WHERE elem::text ilike '%${value}%')`;
 
     // Search across ALL tables comprehensively - including metadata, relationships, and references
-    const [
-      workflows, 
-      workflowTemplates,
-      compliance, 
-      complianceControls,
-      complianceEvidence,
-      cmdb, 
-      knowledge, 
-      changeRecords, 
-      anomalies,
-      auditLogs,
-      users,
-      applications,
-      tenants,
-      onboardings,
-      complianceFrameworks,
-      aiInteractions,
-      projects,
-      vendors,
-      budgets,
-      incidents,
-      serviceRequests,
-      leads,
-      opportunities,
-      quotes,
-      purchaseOrders,
-      invoices,
-      expenses,
-      employeeOnboardings,
-      contracts,
-      configItems,
-      cippPolicies,
-      products,
-      customerAccounts,
-      riskAssessments,
-      remediationRules,
-      slaManagement,
-      departments,
-      employees,
-      timeTracking,
-      leaveManagement,
-      warehouse,
-      inventory,
-      networkDevices,
-      mcpServers,
-      promptTemplates,
-      roles,
-      assetFinancials,
-      changeSchedules,
-      workflowNodes,
-      taskRepetition,
-      ciRelationships,
-      ciAuditLog,
-      workflowExecutionSteps,
-      mcpExecutionLogs
-    ] = await Promise.all([
+    console.log("[GlobalSearch] Starting comprehensive search for:", query);
+    
+    const searchPromises = [
       // Workflows - search name, description, AND execution logs (metadata)
       supabase.from("workflow_executions").select("*").or(`workflow_name.ilike.%${query}%,execution_logs.cs.${query}`).limit(5),
       supabase.from("workflow_templates").select("*").or(`workflow_name.ilike.%${query}%,description.ilike.%${query}%,workflow_config::text.ilike.%${query}%`).limit(5),
@@ -210,7 +157,76 @@ serve(async (req) => {
       
       // MCP Execution Logs - search MCP server operations
       supabase.from("mcp_execution_logs").select("*").or(`operation_type.ilike.%${query}%,request_data::text.ilike.%${query}%,response_data::text.ilike.%${query}%,error_message.ilike.%${query}%`).limit(5),
-    ]);
+    ];
+
+    console.log("[GlobalSearch] Executing", searchPromises.length, "parallel queries");
+    
+    let results;
+    try {
+      results = await Promise.all(searchPromises);
+    } catch (dbError) {
+      console.error("[GlobalSearch] Database query error:", dbError);
+      throw new Error(`Database query failed: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`);
+    }
+    
+    const [
+      workflows, 
+      workflowTemplates,
+      compliance, 
+      complianceControls,
+      complianceEvidence,
+      cmdb, 
+      knowledge, 
+      changeRecords, 
+      anomalies,
+      auditLogs,
+      users,
+      applications,
+      tenants,
+      onboardings,
+      complianceFrameworks,
+      aiInteractions,
+      projects,
+      vendors,
+      budgets,
+      incidents,
+      serviceRequests,
+      leads,
+      opportunities,
+      quotes,
+      purchaseOrders,
+      invoices,
+      expenses,
+      employeeOnboardings,
+      contracts,
+      configItems,
+      cippPolicies,
+      products,
+      customerAccounts,
+      riskAssessments,
+      remediationRules,
+      slaManagement,
+      departments,
+      employees,
+      timeTracking,
+      leaveManagement,
+      warehouse,
+      inventory,
+      networkDevices,
+      mcpServers,
+      promptTemplates,
+      roles,
+      assetFinancials,
+      changeSchedules,
+      workflowNodes,
+      taskRepetition,
+      ciRelationships,
+      ciAuditLog,
+      workflowExecutionSteps,
+      mcpExecutionLogs
+    ] = results;
+    
+    console.log("[GlobalSearch] Query complete, processing", results.filter(r => r.data?.length).length, "result sets");
 
     // Use AI to rank and contextualize results
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
