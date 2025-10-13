@@ -4,7 +4,7 @@
 **Document Owner:** Chief Security Officer  
 **Last Updated:** October 13, 2025  
 **Classification:** Internal Use Only  
-**Version:** 2.1
+**Version:** 2.2
 
 ---
 
@@ -13,11 +13,12 @@
 This master plan consolidates all security initiatives, rollout procedures, and operational guidelines for the OberaConnect platform. It integrates authentication, authorization, Secure Access Workstations (SAW), compliance frameworks, and ongoing security operations into a single actionable roadmap.
 
 ### Security Posture Overview
-- **Current Status:** Production-Ready with A+ Security Rating
-- **RLS Coverage:** 100% on 93 database tables
+- **Current Status:** Production-Ready with A (94/100) Security Rating
+- **RLS Coverage:** 100% on 160 database tables
 - **Compliance:** SOC 2, HIPAA, GDPR, ISO 27001, CMMC Level 2 ready
 - **SAW Implementation:** Azure, AWS, and on-premise workstations
 - **Platform Scale:** 70+ pages, 26 edge functions, 6-category navigation
+- **Recent Security Enhancements:** Role permissions exposure fixed, search path protection added (Oct 2025)
 
 ### Document Structure
 This master plan references and consolidates:
@@ -366,10 +367,11 @@ SELECT * FROM auth.users LIMIT 1;
 - Password history: prevent reuse of last 5 passwords
 - Maximum age: 90 days
 
-3. **Enable Leaked Password Protection**
+3. **Enable Leaked Password Protection** ⚠️ USER ACTION REQUIRED
 ```bash
 # Navigate to Lovable Cloud → Authentication → Password Protection
 # Enable "Leaked Password Protection"
+# Reference: https://docs.lovable.dev/features/security#leaked-password-protection-disabled
 ```
 
 **Verification Checklist:**
@@ -379,9 +381,11 @@ SELECT * FROM auth.users LIMIT 1;
 - [ ] Session tokens generated correctly
 - [ ] Password reset flow functional
 - [ ] Account lockout after 5 failed attempts
-- [ ] Leaked passwords blocked
+- [ ] Leaked passwords blocked ⚠️ PENDING USER ACTION
 
 **Rollback Trigger:** >5% authentication failure rate
+
+**Security Note:** This is currently the only outstanding MEDIUM priority security recommendation from the October 2025 comprehensive security review.
 
 ---
 
@@ -427,7 +431,8 @@ CREATE TABLE public.role_permissions (
     UNIQUE(role_id, resource_type, resource_name)
 );
 
--- Create security definer function to avoid RLS recursion
+-- CRITICAL SECURITY: Create security definer function to avoid RLS recursion
+-- Updated Oct 2025: Added SET search_path to prevent injection attacks
 CREATE OR REPLACE FUNCTION public.has_role(_user_id UUID, _role app_role)
 RETURNS BOOLEAN
 LANGUAGE SQL

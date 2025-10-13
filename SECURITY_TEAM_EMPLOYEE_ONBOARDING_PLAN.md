@@ -1,9 +1,10 @@
 # Security Team - Employee Security Onboarding Plan
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Department:** Information Security  
 **Timeline:** 2-3 weeks  
-**Team Lead:** Security Manager/CISO
+**Team Lead:** Security Manager/CISO  
+**Security Rating:** A (94/100) - Updated October 13, 2025
 
 ---
 
@@ -68,7 +69,7 @@ Security Control | Status | Issues Found | Remediation Required | Priority
 **RLS Policy Audit:**
 
 ```sql
--- Verify RLS is enabled on all critical tables
+-- Verify RLS is enabled on all critical tables (Updated Oct 2025: 160 total tables)
 SELECT 
   schemaname,
   tablename,
@@ -78,14 +79,22 @@ WHERE schemaname = 'public'
   AND tablename IN (
     'user_profiles',
     'user_roles',
+    'role_permissions', -- CRITICAL: Must be admin-only (fixed Oct 2025)
     'audit_logs',
     'configuration_items',
     'change_requests',
     'compliance_evidence'
   );
+
+-- SECURITY CHECKPOINT: Verify role_permissions is NOT publicly readable
+SELECT policyname, cmd, qual 
+FROM pg_policies 
+WHERE tablename = 'role_permissions'
+AND schemaname = 'public';
+-- Expected: Only admin-only policies, no public SELECT
 ```
 
-**Expected Result:** All tables should have `rls_enabled = true`
+**Expected Result:** All tables should have `rls_enabled = true` and `role_permissions` must have admin-only access
 
 **Policy Effectiveness Testing:**
 

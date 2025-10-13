@@ -1,8 +1,9 @@
 # Employee Security Onboarding Checklist - First Iteration
 
-**Version:** 1.0  
-**Last Updated:** October 2025  
-**Purpose:** Step-by-step baseline checklist for integrating all employees into the OberaConnect security framework
+**Version:** 1.1  
+**Last Updated:** October 13, 2025  
+**Purpose:** Step-by-step baseline checklist for integrating all employees into the OberaConnect security framework  
+**Security Status:** A (94/100) - Role permissions secured, search path protection added
 
 ---
 
@@ -26,6 +27,9 @@ This checklist provides a structured approach to onboard all employees into the 
 - [ ] Test user registration and login flows
 - [ ] Confirm audit logging is active
 - [ ] Verify email auto-confirm is enabled (for non-production)
+- [ ] **SECURITY CHECKPOINT:** Verify role_permissions table is admin-only (Oct 2025 fix)
+- [ ] **SECURITY CHECKPOINT:** Verify SECURITY DEFINER functions have search_path set (Oct 2025 fix)
+- [ ] ⚠️ **ACTION REQUIRED:** Enable leaked password protection in Lovable Cloud auth settings
 
 **Validation:**
 ```sql
