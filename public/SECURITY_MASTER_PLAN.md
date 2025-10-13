@@ -133,6 +133,7 @@ graph TB
   - GDPR
   - PCI DSS
   - NIST 800-53
+  - CMMC (Cybersecurity Maturity Model Certification)
 
 ---
 
@@ -150,6 +151,8 @@ graph TB
 | Data Retention | GDPR Art. 5 | Configurable policies | ✅ Complete |
 | Privileged Access | NIST AC-6 | Temporal + SAW | ✅ Complete |
 | Security Monitoring | SOC 2 CC7.2 | 24/7 SOC dashboard | ✅ Complete |
+| Asset Management | CMMC AC.1.001 | CMDB + inventory | ✅ Complete |
+| Incident Response | CMMC IR.2.093 | Playbook + tracking | ✅ Complete |
 
 ### Regulatory Compliance Checklist
 
@@ -175,6 +178,22 @@ graph TB
 - [x] Processing Integrity (data validation)
 - [x] Confidentiality (encryption + access controls)
 - [x] Privacy (GDPR alignment)
+
+#### CMMC (Cybersecurity Maturity Model Certification)
+**Level 2 Requirements (DoD Contractors):**
+- [x] Access Control (AC) - RBAC + MFA + session management
+- [x] Audit & Accountability (AU) - Comprehensive audit logging
+- [x] Configuration Management (CM) - Change management workflows
+- [x] Identification & Authentication (IA) - Strong authentication + MFA
+- [x] Incident Response (IR) - Documented playbook + tracking
+- [x] Maintenance (MA) - Scheduled maintenance windows
+- [x] Media Protection (MP) - Data sanitization procedures
+- [x] Personnel Security (PS) - Background checks + training
+- [x] Physical Protection (PE) - SAW device requirements
+- [x] Risk Assessment (RA) - Regular risk assessments
+- [x] Security Assessment (CA) - Continuous monitoring
+- [x] System & Communications Protection (SC) - Encryption + TLS 1.3
+- [x] System & Information Integrity (SI) - Input validation + malware protection
 
 ---
 
