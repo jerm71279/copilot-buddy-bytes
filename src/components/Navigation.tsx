@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Menu, LogOut, Brain, Search, LayoutDashboard, Globe } from "lucide-react";
+import { Menu, LogOut, Brain, Search, LayoutDashboard, Globe, User, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
 import { GlobalSearch } from "./GlobalSearch";
 import {
   DropdownMenu,
@@ -19,6 +20,7 @@ const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>("");
   const [searchOpen, setSearchOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,6 +51,7 @@ const Navigation = () => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     setIsLoggedIn(!!session);
+    setUserEmail(session?.user?.email || "");
 
     if (session) {
       const { data: roles } = await supabase
@@ -341,6 +344,13 @@ const Navigation = () => {
             <div className="hidden md:flex items-center gap-3 ml-auto">
               {isLoggedIn ? (
                 <>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-accent/10 rounded-lg border border-accent/20">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    <div className="flex flex-col">
+                      <span className="text-xs font-medium">Logged In</span>
+                      <span className="text-xs text-muted-foreground truncate max-w-[150px]">{userEmail}</span>
+                    </div>
+                  </div>
                   <Link to="/portal">
                     <Button variant="ghost" size="sm">
                       Portal
