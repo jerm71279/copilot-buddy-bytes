@@ -12,6 +12,12 @@
 
 This master plan consolidates all security initiatives, rollout procedures, and operational guidelines for the OberaConnect platform. It integrates authentication, authorization, Secure Access Workstations (SAW), compliance frameworks, and ongoing security operations into a single actionable roadmap.
 
+### Deployment Context
+- **Current Phase:** Internal Deployment (50-60 users)
+- **Location:** Daphne, Alabama
+- **Target Market:** Mid-size businesses requiring comprehensive MSP services
+- **Strategy:** Optimize internally before customer integration
+
 ### Security Posture Overview
 - **Current Status:** Production-Ready with A (94/100) Security Rating
 - **RLS Coverage:** 100% on 160 database tables
@@ -19,6 +25,21 @@ This master plan consolidates all security initiatives, rollout procedures, and 
 - **SAW Implementation:** Azure, AWS, and on-premise workstations
 - **Platform Scale:** 70+ pages, 26 edge functions, 6-category navigation
 - **Recent Security Enhancements:** Role permissions exposure fixed, search path protection added (Oct 2025)
+
+### Internal-First Security Priorities
+**Critical for Internal Deployment:**
+- 🔥 **Privileged Access Monitoring** - Internal users have elevated access
+- 🔥 **Data Classification & Handling** - Employees work with all customer data
+- 🔥 **Insider Threat Detection** - Behavioral anomaly monitoring
+- 🔥 **Security Awareness Training** - Mandatory for all employees
+- 🔥 **Access Recertification** - Quarterly reviews of internal permissions
+- 🔥 **Break-Glass Procedures** - Emergency admin access protocols
+
+**Can Be Phased (Customer-Specific):**
+- ⏸️ Customer-facing API rate limiting (different thresholds for internal)
+- ⏸️ Multi-tenant isolation testing (single organization initially)
+- ⏸️ Client portal white-labeling
+- ⏸️ External customer SSO integrations
 
 ### Document Structure
 This master plan references and consolidates:
