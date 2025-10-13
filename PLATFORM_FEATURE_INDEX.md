@@ -1,8 +1,8 @@
 # OberaConnect Platform Feature Index
 
-**Last Updated:** October 10, 2025  
-**Platform Version:** 2.1  
-**Total Pages:** 70+  
+**Last Updated:** October 13, 2025  
+**Platform Version:** 2.2  
+**Total Pages:** 74+  
 **Total Edge Functions:** 17
 
 ---
@@ -75,6 +75,14 @@
 | `/admin/customers` | CustomerAdmin | Customer management & settings | ✅ Active |
 | `/admin/products` | ProductsAdmin | Product catalog & pricing management | ✅ New (Oct 9) |
 | `/mcp-server` | MCPServerDashboard | MCP server management & monitoring | ✅ Active |
+
+### Internal Operations (NEW - Oct 13)
+| Route | Page | Description | Status |
+|-------|------|-------------|--------|
+| `/deployment-planner` | DeploymentPlanner | Project planner with Gantt charts & dependencies | ✅ New (Oct 13) |
+| `/security-training` | SecurityTraining | Mandatory security training portal | ✅ New (Oct 13) |
+| `/employee-feedback` | EmployeeFeedback | Employee feedback collection system | ✅ New (Oct 13) |
+| `/internal-operations` | InternalOperationsDashboard | Internal deployment metrics & monitoring | ✅ New (Oct 13) |
 
 ---
 
@@ -262,6 +270,12 @@
 
 ## Recently Added Features
 
+### October 13, 2025
+- **Deployment Planner**: Comprehensive project planning with Gantt charts, dependency graphs, risk matrices, resource timelines, and critical path analysis
+- **Security Training Portal**: Mandatory security training system with module tracking and certificate management
+- **Employee Feedback System**: Multi-category feedback collection with upvoting and status tracking
+- **Internal Operations Dashboard**: Real-time metrics for internal deployment readiness with employee champions program
+
 ### October 10, 2025
 - **Navigation Revamp**: New 6-category navigation system for better organization
 - **Customer & Account Management**: Full customer account management with contacts, sites, assets, service history
@@ -375,9 +389,9 @@ The platform features an organized 6-category horizontal scrolling navigation wi
 
 ## Database Statistics
 
-- **Total Tables**: 55+
+- **Total Tables**: 75+
 - **Core Tables**: 10 (customers, users, profiles, roles, etc.)
-- **Feature Tables**: 45+ (workflows, compliance, CMDB, etc.)
+- **Feature Tables**: 65+ (workflows, compliance, CMDB, project planning, internal operations, etc.)
 - **All tables protected by RLS**: ✅ Yes
 - **Authentication**: Supabase Auth (Email + OAuth)
 
@@ -403,4 +417,4 @@ The platform features an organized 6-category horizontal scrolling navigation wi
 
 ---
 
-**Note**: This index is automatically updated as new features are added. Last comprehensive review: October 9, 2025.
+**Note**: This index is automatically updated as new features are added. Last comprehensive review: October 13, 2025.
