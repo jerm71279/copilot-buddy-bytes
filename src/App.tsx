@@ -163,8 +163,12 @@ const App = () => (
             </ProtectedRoute>
           } />
           
-          {/* Workflow Detail Pages */}
-          <Route path="/workflow/:workflowType" element={<WorkflowDetail />} />
+          {/* Workflow Detail Pages - Protected */}
+          <Route path="/workflow/:workflowType" element={
+            <ProtectedRoute>
+              <WorkflowDetail />
+            </ProtectedRoute>
+          } />
           
           {/* Knowledge Base - Protected */}
           <Route path="/knowledge" element={
