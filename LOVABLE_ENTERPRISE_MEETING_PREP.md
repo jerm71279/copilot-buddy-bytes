@@ -50,7 +50,8 @@ OberaConnect is a comprehensive MSP (Managed Service Provider) platform built on
 - **Current Users:** 50-60 internal team members
 - **Deployment Type:** Internal operations platform (not customer-facing yet)
 - **Strategy:** Optimize and test internally before external customer integration
-- **Geographic Presence:** [Your primary location/region]
+- **Geographic Presence:** Daphne, Alabama
+- **Target Market:** Mid-size businesses requiring comprehensive MSP services
 
 ### Growth Projections (Post-Internal Testing)
 - **Phase 1 (Current):** 50-60 internal users

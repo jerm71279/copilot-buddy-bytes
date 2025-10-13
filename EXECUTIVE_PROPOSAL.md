@@ -32,6 +32,11 @@ OberaConnect MSP Platform represents a strategic transformation initiative desig
 
 ### Market Opportunity
 
+**OberaConnect Location & Target Market:**
+- **Based in:** Daphne, Alabama
+- **Target Customers:** Mid-size businesses requiring comprehensive MSP services
+- **Service Area:** Southeast U.S. with remote support capabilities
+
 The MSP industry is experiencing rapid transformation driven by:
 - **AI Adoption**: 78% of enterprise clients expect AI-powered service delivery by 2026
 - **Automation Demand**: Average MSP operational costs increasing 12-15% annually
