@@ -34,6 +34,10 @@ interface Category {
 
 const portals: Portal[] = [
   {
+    name: "Deployment Planner",
+    path: "/deployment-planner",
+  },
+  {
     name: "DevOps Portal",
     path: "/devops",
     children: [
@@ -93,6 +97,9 @@ const portals: Portal[] = [
       { name: "RBAC", path: "/rbac" },
       { name: "Privileged Access", path: "/audit/privileged-access" },
       { name: "Customers", path: "/customers" },
+      { name: "Security Training", path: "/security-training" },
+      { name: "Employee Feedback", path: "/employee-feedback" },
+      { name: "Internal Operations", path: "/internal-operations" },
     ],
   },
   {
