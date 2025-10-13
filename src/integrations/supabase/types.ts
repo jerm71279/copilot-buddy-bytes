@@ -7048,13 +7048,6 @@ export type Database = {
             referencedRelation: "customer_accounts"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "projects_project_manager_id_fkey"
-            columns: ["project_manager_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
         ]
       }
       prompt_templates: {
