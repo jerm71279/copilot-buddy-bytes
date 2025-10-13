@@ -1872,6 +1872,8 @@ export type Database = {
           description: string | null
           framework_id: string
           id: string
+          inherited_from_parent: boolean | null
+          parent_control_id: string | null
           required_evidence: string[] | null
         }
         Insert: {
@@ -1883,6 +1885,8 @@ export type Database = {
           description?: string | null
           framework_id: string
           id?: string
+          inherited_from_parent?: boolean | null
+          parent_control_id?: string | null
           required_evidence?: string[] | null
         }
         Update: {
@@ -1894,6 +1898,8 @@ export type Database = {
           description?: string | null
           framework_id?: string
           id?: string
+          inherited_from_parent?: boolean | null
+          parent_control_id?: string | null
           required_evidence?: string[] | null
         }
         Relationships: [
@@ -1902,6 +1908,13 @@ export type Database = {
             columns: ["framework_id"]
             isOneToOne: false
             referencedRelation: "compliance_frameworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_controls_parent_control_id_fkey"
+            columns: ["parent_control_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_controls"
             referencedColumns: ["id"]
           },
         ]
@@ -1914,7 +1927,9 @@ export type Database = {
           framework_name: string
           id: string
           industry: string
+          inherited_from_parent: boolean | null
           is_active: boolean
+          parent_framework_id: string | null
           updated_at: string
           version: string | null
         }
@@ -1925,7 +1940,9 @@ export type Database = {
           framework_name: string
           id?: string
           industry: string
+          inherited_from_parent?: boolean | null
           is_active?: boolean
+          parent_framework_id?: string | null
           updated_at?: string
           version?: string | null
         }
@@ -1936,11 +1953,21 @@ export type Database = {
           framework_name?: string
           id?: string
           industry?: string
+          inherited_from_parent?: boolean | null
           is_active?: boolean
+          parent_framework_id?: string | null
           updated_at?: string
           version?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "compliance_frameworks_parent_framework_id_fkey"
+            columns: ["parent_framework_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_frameworks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       compliance_reports: {
         Row: {
@@ -3127,8 +3154,11 @@ export type Database = {
           company_name: string
           contact_name: string
           created_at: string
+          customer_type: Database["public"]["Enums"]["customer_type"]
           email: string
           id: string
+          inherit_compliance: boolean | null
+          parent_customer_id: string | null
           phone: string | null
           plan_type: string
           status: string
@@ -3143,8 +3173,11 @@ export type Database = {
           company_name: string
           contact_name: string
           created_at?: string
+          customer_type?: Database["public"]["Enums"]["customer_type"]
           email: string
           id?: string
+          inherit_compliance?: boolean | null
+          parent_customer_id?: string | null
           phone?: string | null
           plan_type?: string
           status?: string
@@ -3159,8 +3192,11 @@ export type Database = {
           company_name?: string
           contact_name?: string
           created_at?: string
+          customer_type?: Database["public"]["Enums"]["customer_type"]
           email?: string
           id?: string
+          inherit_compliance?: boolean | null
+          parent_customer_id?: string | null
           phone?: string | null
           plan_type?: string
           status?: string
@@ -3172,6 +3208,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "customers_parent_customer_id_fkey"
+            columns: ["parent_customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "customers_subscription_plan_id_fkey"
             columns: ["subscription_plan_id"]
@@ -9717,6 +9760,10 @@ export type Database = {
         Args: { _user_id: string }
         Returns: boolean
       }
+      cascade_framework_to_children: {
+        Args: { _framework_id: string; _parent_customer_id: string }
+        Returns: undefined
+      }
       create_employee_onboarding_template: {
         Args: { _created_by: string; _customer_id: string }
         Returns: string
@@ -9796,6 +9843,23 @@ export type Database = {
       generate_vendor_code: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_child_customers: {
+        Args: { _parent_customer_id: string }
+        Returns: {
+          customer_id: string
+          customer_name: string
+          customer_type: Database["public"]["Enums"]["customer_type"]
+          level: number
+        }[]
+      }
+      get_customer_hierarchy: {
+        Args: { _customer_id: string }
+        Returns: {
+          customer_id: string
+          level: number
+          path: string[]
+        }[]
       }
       get_integration_credential: {
         Args: { _customer_id: string; _integration_id: string }
@@ -9908,6 +9972,7 @@ export type Database = {
         | "virtual_machine"
         | "cloud_resource"
         | "security_device"
+      customer_type: "msp" | "client" | "standalone"
       relationship_type:
         | "depends_on"
         | "uses"
@@ -10115,6 +10180,7 @@ export const Constants = {
         "cloud_resource",
         "security_device",
       ],
+      customer_type: ["msp", "client", "standalone"],
       relationship_type: [
         "depends_on",
         "uses",
