@@ -1034,6 +1034,17 @@ Session Date | Type | Invited | Attended | Completion % | Avg Score | Satisfacti
 
 ### Shared Tools & Tracking
 
+**Deployment Planner (Primary Tool):**
+
+Access the integrated Deployment Planner at `/deployment-planner` for comprehensive project management:
+
+- **Gantt Chart:** Visual timeline of all tasks and dependencies
+- **Dependency Graph:** Interactive map showing task relationships and blockers
+- **Critical Path Analysis:** Identifies tasks that could delay the project
+- **Risk Matrix:** Track and prioritize risks throughout implementation
+- **Resource Timeline:** Visualize team workload and capacity
+- **Real-time Tracking:** Updates across all teams for visibility
+
 **Master Tracking Dashboard (Shared Spreadsheet):**
 
 Update daily by all teams:
@@ -1379,6 +1390,11 @@ This master plan references detailed department-specific plans:
    - Purpose: Master coordination checklist
    - Audience: All teams
 
+7. **Deployment Planner**
+   - Location: `/deployment-planner` route in OberaConnect
+   - Purpose: Visual project management with Gantt charts, dependency tracking, risk matrices
+   - Audience: All team leads and project coordinators
+
 ---
 
 ### Appendix B: Database Queries Reference
@@ -1508,6 +1524,7 @@ ORDER BY failed_attempts DESC;
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | Oct 2025 | Security Team | Initial baseline master plan |
+| 1.1 | Oct 13, 2025 | Platform Team | Added Deployment Planner tool reference |
 | | | | |
 
 **Next Review Date:** 30 days post-implementation  
