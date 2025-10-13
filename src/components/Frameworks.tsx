@@ -38,6 +38,13 @@ const frameworks = [
     status: "Fully Supported",
     color: "bg-orange-500",
   },
+  {
+    name: "CMMC Level 2",
+    description: "DoD Cybersecurity Maturity Model",
+    clauses: 43,
+    status: "Fully Supported",
+    color: "bg-red-500",
+  },
 ];
 
 const Frameworks = () => {
