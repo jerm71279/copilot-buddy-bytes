@@ -435,6 +435,87 @@ export type Database = {
           },
         ]
       }
+      break_glass_access: {
+        Row: {
+          access_granted: boolean | null
+          access_type: string
+          approved_at: string | null
+          approved_by: string | null
+          audit_trail: Json | null
+          created_at: string
+          customer_id: string
+          device_id: string | null
+          expires_at: string
+          id: string
+          reason: string
+          requested_at: string
+          requested_by: string
+          revoked_at: string | null
+          revoked_by: string | null
+          session_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_granted?: boolean | null
+          access_type: string
+          approved_at?: string | null
+          approved_by?: string | null
+          audit_trail?: Json | null
+          created_at?: string
+          customer_id: string
+          device_id?: string | null
+          expires_at: string
+          id?: string
+          reason: string
+          requested_at?: string
+          requested_by: string
+          revoked_at?: string | null
+          revoked_by?: string | null
+          session_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_granted?: boolean | null
+          access_type?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          audit_trail?: Json | null
+          created_at?: string
+          customer_id?: string
+          device_id?: string | null
+          expires_at?: string
+          id?: string
+          reason?: string
+          requested_at?: string
+          requested_by?: string
+          revoked_at?: string | null
+          revoked_by?: string | null
+          session_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "break_glass_access_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "trusted_devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "break_glass_access_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "device_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       budget_transactions: {
         Row: {
           amount: number
@@ -3373,6 +3454,68 @@ export type Database = {
           },
         ]
       }
+      device_sessions: {
+        Row: {
+          anomalies_detected: Json | null
+          created_at: string
+          customer_id: string
+          device_fingerprint: string
+          device_id: string | null
+          id: string
+          ip_address: unknown
+          is_active: boolean | null
+          last_activity: string
+          privileged_operations: Json | null
+          risk_score: number | null
+          session_end: string | null
+          session_start: string
+          session_type: string
+          user_id: string
+        }
+        Insert: {
+          anomalies_detected?: Json | null
+          created_at?: string
+          customer_id: string
+          device_fingerprint: string
+          device_id?: string | null
+          id?: string
+          ip_address: unknown
+          is_active?: boolean | null
+          last_activity?: string
+          privileged_operations?: Json | null
+          risk_score?: number | null
+          session_end?: string | null
+          session_start?: string
+          session_type: string
+          user_id: string
+        }
+        Update: {
+          anomalies_detected?: Json | null
+          created_at?: string
+          customer_id?: string
+          device_fingerprint?: string
+          device_id?: string | null
+          id?: string
+          ip_address?: unknown
+          is_active?: boolean | null
+          last_activity?: string
+          privileged_operations?: Json | null
+          risk_score?: number | null
+          session_end?: string | null
+          session_start?: string
+          session_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_sessions_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "trusted_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employee_certifications: {
         Row: {
           certification_body: string | null
@@ -4813,6 +4956,45 @@ export type Database = {
           subtotal?: number
           tax_amount?: number | null
           total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ip_allowlist: {
+        Row: {
+          allowlist_type: string
+          created_at: string
+          created_by: string
+          customer_id: string
+          description: string | null
+          expires_at: string | null
+          id: string
+          ip_range: unknown
+          is_active: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          allowlist_type: string
+          created_at?: string
+          created_by: string
+          customer_id: string
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_range: unknown
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          allowlist_type?: string
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_range?: unknown
+          is_active?: boolean | null
           updated_at?: string
         }
         Relationships: []
@@ -8451,6 +8633,78 @@ export type Database = {
         }
         Relationships: []
       }
+      trusted_devices: {
+        Row: {
+          allowed_operations: string[] | null
+          created_at: string
+          customer_id: string
+          device_fingerprint: string
+          device_metadata: Json | null
+          device_name: string
+          device_type: string
+          hostname: string | null
+          id: string
+          ip_address: unknown | null
+          is_active: boolean | null
+          is_saw: boolean | null
+          last_seen_at: string | null
+          mac_address: unknown | null
+          notes: string | null
+          operating_system: string | null
+          registered_at: string
+          registered_by: string
+          requires_mfa: boolean | null
+          security_level: string
+          updated_at: string
+        }
+        Insert: {
+          allowed_operations?: string[] | null
+          created_at?: string
+          customer_id: string
+          device_fingerprint: string
+          device_metadata?: Json | null
+          device_name: string
+          device_type: string
+          hostname?: string | null
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          is_saw?: boolean | null
+          last_seen_at?: string | null
+          mac_address?: unknown | null
+          notes?: string | null
+          operating_system?: string | null
+          registered_at?: string
+          registered_by: string
+          requires_mfa?: boolean | null
+          security_level?: string
+          updated_at?: string
+        }
+        Update: {
+          allowed_operations?: string[] | null
+          created_at?: string
+          customer_id?: string
+          device_fingerprint?: string
+          device_metadata?: Json | null
+          device_name?: string
+          device_type?: string
+          hostname?: string | null
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          is_saw?: boolean | null
+          last_seen_at?: string | null
+          mac_address?: unknown | null
+          notes?: string | null
+          operating_system?: string | null
+          registered_at?: string
+          registered_by?: string
+          requires_mfa?: boolean | null
+          security_level?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       use_cases: {
         Row: {
           created_at: string
@@ -9595,6 +9849,15 @@ export type Database = {
           max_items?: number
         }
         Returns: boolean
+      }
+      validate_device_access: {
+        Args: {
+          _customer_id: string
+          _device_fingerprint: string
+          _ip_address: unknown
+          _requires_privileged?: boolean
+        }
+        Returns: Json
       }
       validate_text_input: {
         Args: { field_name?: string; input_text: string; max_length?: number }

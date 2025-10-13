@@ -65,6 +65,7 @@ import SalesPortal from "./pages/SalesPortal";
 import CIPPDashboard from "./pages/CIPPDashboard";
 import DataFlowPortal from "./pages/DataFlowPortal";
 import RBACPortal from "./pages/RBACPortal";
+import SAWManagement from "./pages/SAWManagement";
 import PredictiveInsights from "./pages/PredictiveInsights";
 import DepartmentInsights from "./pages/DepartmentInsights";
 import GlobalInsights from "./pages/GlobalInsights";
@@ -369,6 +370,13 @@ const App = () => (
           <Route path="/rbac" element={
             <ProtectedRoute requireAdmin>
               <RBACPortal />
+            </ProtectedRoute>
+          } />
+          
+          {/* SAW Management - Admin Only */}
+          <Route path="/saw-management" element={
+            <ProtectedRoute requireAdmin>
+              <SAWManagement />
             </ProtectedRoute>
           } />
           
