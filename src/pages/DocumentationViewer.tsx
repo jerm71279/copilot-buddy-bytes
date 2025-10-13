@@ -103,22 +103,37 @@ const DocumentationViewer = () => {
     });
 
     try {
-      const element = contentRef.current;
+      // Clone content to avoid ScrollArea/overflow issues and ensure white background
+      const cloned = contentRef.current.cloneNode(true) as HTMLElement;
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "24px";
+      wrapper.style.background = "#ffffff";
+      wrapper.style.color = "#111827"; // neutral-800 for readability
+      wrapper.style.width = "816px"; // ~letter width at 96dpi
+      wrapper.style.maxWidth = "816px";
+      wrapper.style.margin = "0 auto";
+      wrapper.appendChild(cloned);
+      document.body.appendChild(wrapper);
+
       const opt = {
-        margin: 1,
+        margin: 0.5,
         filename: `${doc || "documentation"}.pdf`,
         image: { type: "jpeg" as const, quality: 0.98 },
-        html2canvas: { scale: 2 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
         jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
       };
 
-      await html2pdf().set(opt).from(element).save();
-      
+      await html2pdf().set(opt).from(wrapper).save();
+
       toast({
         title: "PDF Exported",
         description: "Your documentation has been downloaded successfully.",
       });
+
+      // Cleanup temporary DOM
+      document.body.removeChild(wrapper);
     } catch (err) {
+      console.error("PDF export failed", err);
       toast({
         title: "Export Failed",
         description: "Failed to generate PDF. Please try again.",
