@@ -1,10 +1,30 @@
 # Security Team - Employee Security Onboarding Plan
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Department:** Information Security  
 **Timeline:** 2-3 weeks  
 **Team Lead:** Security Manager/CISO  
 **Security Rating:** A (94/100) - Updated October 13, 2025
+
+---
+
+## ⏱️ Time Commitment Summary
+
+**Total Security Team Commitment:** ~115-130 hours over 3 weeks
+
+### Weekly Breakdown:
+- **Week 0 (Pre-Implementation):** 24 hours (3 days × 8 hours)
+- **Week 1 (Implementation):** 40-48 hours (5-6 days, variable)
+- **Week 2 (Training & Monitoring):** 32-40 hours (ongoing + training delivery)
+- **Week 3+ (Ongoing Support):** 20-30 hours (monitoring + incident response)
+
+### Team Resource Allocation:
+- **Security Manager/CISO:** 30-40 hours (approvals, oversight, strategic decisions)
+- **Security Engineer:** 40-50 hours (infrastructure validation, configuration)
+- **Security Analyst:** 30-40 hours (monitoring, baselines, reporting)
+- **Security Trainer/Coordinator:** 15-20 hours (training delivery, materials prep)
+
+**Note:** This is in addition to normal security operations. Plan for reduced availability of security team during weeks 1-2.
 
 ---
 
