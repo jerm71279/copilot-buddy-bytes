@@ -294,6 +294,8 @@ The implementation builds on existing security infrastructure:
 ## Deployment Checklist
 
 ### Pre-Deployment (Week 1)
+- [ ] Create project plan in Deployment Planner (`/deployment-planner`)
+- [ ] Map task dependencies and identify critical path
 - [ ] Review all security training content
 - [ ] Configure mandatory training requirements
 - [ ] Assign employee champions (1 per department)
@@ -400,6 +402,7 @@ All tables implement RLS policies:
 
 ### For Administrators
 - Operations Dashboard: `/internal-operations`
+- Deployment Planner: `/deployment-planner` - Visual project management with Gantt charts, dependency graphs, risk matrices, and critical path analysis
 - Training Management: Contact security team
 - Feedback Management: `/employee-feedback` (admin view)
 - Metrics Export: Available via dashboard

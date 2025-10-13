@@ -246,6 +246,8 @@
 - [ ] Backup systems tested
 
 #### Team Readiness
+- [ ] Use Deployment Planner (`/deployment-planner`) to coordinate launch tasks
+- [ ] Map dependencies and identify critical path for launch
 - [ ] Support team trained
 - [ ] On-call schedule established
 - [ ] Communication channels set up

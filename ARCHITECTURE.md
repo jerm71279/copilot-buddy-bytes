@@ -1,9 +1,9 @@
 # OberaConnect Platform Architecture
 
-**Last Updated:** October 10, 2025  
+**Last Updated:** October 13, 2025  
 **Version:** 2.1  
 **Total Tables:** 93  
-**Total Pages:** 70+  
+**Total Pages:** 71+  
 **Total Edge Functions:** 26
 
 ## 🆕 Recent Updates (October 10, 2025)
@@ -54,6 +54,7 @@ graph TB
         subgraph "Admin & Tools"
             AdminDash[Admin Dashboard]
             AppAdmin[Applications Admin]
+            DeployPlanner[Deployment Planner]
             WorkflowUI[Workflow Builder UI]
             WorkflowDetail[Workflow Execution Detail]
             KnowledgeUI[Knowledge Base UI]
