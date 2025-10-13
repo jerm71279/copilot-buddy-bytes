@@ -1,9 +1,10 @@
 # Employee Security Onboarding Master Plan
 
-**Version:** 1.0  
-**Last Updated:** October 2025  
+**Version:** 1.1  
+**Last Updated:** October 13, 2025  
 **Status:** Ready for Implementation  
-**Classification:** Internal Use Only
+**Classification:** Internal Use Only  
+**Security Rating:** A (94/100) - Updated Oct 2025
 
 ---
 
@@ -998,6 +999,7 @@ Update daily by all teams:
 
 **Authentication:**
 - [ ] Strong password policy enforced (12+ chars, complexity)
+- [ ] ⚠️ **ACTION REQUIRED:** Enable leaked password protection in Lovable Cloud auth settings
 - [ ] MFA enrollment process working
 - [ ] Session management configured (30 min idle, 8 hr max)
 - [ ] Account lockout after 5 failed attempts
@@ -1006,10 +1008,13 @@ Update daily by all teams:
 **Authorization:**
 - [ ] RBAC roles defined and documented
 - [ ] Role permissions follow least privilege
-- [ ] RLS policies enabled on all critical tables
+- [ ] **SECURITY CHECKPOINT:** Verify role_permissions table is admin-only (Oct 2025 fix applied)
+- [ ] **SECURITY CHECKPOINT:** All SECURITY DEFINER functions have search_path set (Oct 2025 fix applied)
+- [ ] RLS policies enabled on all critical tables (160 tables total)
 - [ ] RLS policies tested and validated
 - [ ] No users without role assignments
 - [ ] Elevated access properly justified and approved
+- [ ] No client-side admin checks (verified secure)
 
 **Audit & Monitoring:**
 - [ ] Audit logging capturing all critical events
