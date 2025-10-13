@@ -3618,6 +3618,132 @@ export type Database = {
           },
         ]
       }
+      employee_champions: {
+        Row: {
+          assigned_date: string
+          champion_type: string
+          contributions_count: number | null
+          created_at: string
+          customer_id: string
+          department: string | null
+          expertise_areas: string[] | null
+          feedback_provided_count: number | null
+          id: string
+          is_active: boolean
+          performance_metrics: Json | null
+          recognition_notes: string | null
+          training_sessions_led: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_date?: string
+          champion_type: string
+          contributions_count?: number | null
+          created_at?: string
+          customer_id: string
+          department?: string | null
+          expertise_areas?: string[] | null
+          feedback_provided_count?: number | null
+          id?: string
+          is_active?: boolean
+          performance_metrics?: Json | null
+          recognition_notes?: string | null
+          training_sessions_led?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_date?: string
+          champion_type?: string
+          contributions_count?: number | null
+          created_at?: string
+          customer_id?: string
+          department?: string | null
+          expertise_areas?: string[] | null
+          feedback_provided_count?: number | null
+          id?: string
+          is_active?: boolean
+          performance_metrics?: Json | null
+          recognition_notes?: string | null
+          training_sessions_led?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      employee_feedback: {
+        Row: {
+          actual_behavior: string | null
+          affected_module: string | null
+          assigned_to: string | null
+          attachments: Json | null
+          category: string
+          customer_id: string
+          description: string
+          expected_behavior: string | null
+          feedback_type: string
+          id: string
+          priority: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          steps_to_reproduce: string | null
+          submitted_at: string
+          submitted_by: string
+          title: string
+          updated_at: string
+          upvotes: number | null
+        }
+        Insert: {
+          actual_behavior?: string | null
+          affected_module?: string | null
+          assigned_to?: string | null
+          attachments?: Json | null
+          category: string
+          customer_id: string
+          description: string
+          expected_behavior?: string | null
+          feedback_type: string
+          id?: string
+          priority?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          steps_to_reproduce?: string | null
+          submitted_at?: string
+          submitted_by: string
+          title: string
+          updated_at?: string
+          upvotes?: number | null
+        }
+        Update: {
+          actual_behavior?: string | null
+          affected_module?: string | null
+          assigned_to?: string | null
+          attachments?: Json | null
+          category?: string
+          customer_id?: string
+          description?: string
+          expected_behavior?: string | null
+          feedback_type?: string
+          id?: string
+          priority?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          steps_to_reproduce?: string | null
+          submitted_at?: string
+          submitted_by?: string
+          title?: string
+          updated_at?: string
+          upvotes?: number | null
+        }
+        Relationships: []
+      }
       employee_leave: {
         Row: {
           approved_at: string | null
@@ -4739,6 +4865,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      internal_operations_metrics: {
+        Row: {
+          active_employees: number | null
+          average_session_duration_minutes: number | null
+          champion_activity_score: number | null
+          created_at: string
+          customer_id: string
+          feedback_resolution_rate: number | null
+          feedback_submissions_count: number | null
+          id: string
+          metric_date: string
+          metrics_data: Json | null
+          platform_adoption_rate: number | null
+          readiness_score: number | null
+          security_acknowledgment_rate: number | null
+          support_tickets_created: number | null
+          support_tickets_resolved: number | null
+          training_completion_rate: number | null
+        }
+        Insert: {
+          active_employees?: number | null
+          average_session_duration_minutes?: number | null
+          champion_activity_score?: number | null
+          created_at?: string
+          customer_id: string
+          feedback_resolution_rate?: number | null
+          feedback_submissions_count?: number | null
+          id?: string
+          metric_date?: string
+          metrics_data?: Json | null
+          platform_adoption_rate?: number | null
+          readiness_score?: number | null
+          security_acknowledgment_rate?: number | null
+          support_tickets_created?: number | null
+          support_tickets_resolved?: number | null
+          training_completion_rate?: number | null
+        }
+        Update: {
+          active_employees?: number | null
+          average_session_duration_minutes?: number | null
+          champion_activity_score?: number | null
+          created_at?: string
+          customer_id?: string
+          feedback_resolution_rate?: number | null
+          feedback_submissions_count?: number | null
+          id?: string
+          metric_date?: string
+          metrics_data?: Json | null
+          platform_adoption_rate?: number | null
+          readiness_score?: number | null
+          security_acknowledgment_rate?: number | null
+          support_tickets_created?: number | null
+          support_tickets_resolved?: number | null
+          training_completion_rate?: number | null
+        }
+        Relationships: []
       }
       inventory_items: {
         Row: {
@@ -7893,6 +8076,158 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      security_acknowledgments: {
+        Row: {
+          acknowledged_at: string
+          acknowledgment_text: string
+          created_at: string
+          customer_id: string
+          expires_at: string | null
+          id: string
+          ip_address: unknown | null
+          is_valid: boolean
+          policy_type: string
+          policy_version: string
+          signature_data: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string
+          acknowledgment_text: string
+          created_at?: string
+          customer_id: string
+          expires_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          is_valid?: boolean
+          policy_type: string
+          policy_version: string
+          signature_data?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string
+          acknowledgment_text?: string
+          created_at?: string
+          customer_id?: string
+          expires_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          is_valid?: boolean
+          policy_type?: string
+          policy_version?: string
+          signature_data?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      security_training_completions: {
+        Row: {
+          certificate_issued: boolean
+          certificate_url: string | null
+          completed_at: string | null
+          customer_id: string
+          id: string
+          module_id: string
+          notes: string | null
+          passed: boolean
+          score: number | null
+          started_at: string
+          time_spent_minutes: number | null
+          user_id: string
+        }
+        Insert: {
+          certificate_issued?: boolean
+          certificate_url?: string | null
+          completed_at?: string | null
+          customer_id: string
+          id?: string
+          module_id: string
+          notes?: string | null
+          passed?: boolean
+          score?: number | null
+          started_at?: string
+          time_spent_minutes?: number | null
+          user_id: string
+        }
+        Update: {
+          certificate_issued?: boolean
+          certificate_url?: string | null
+          completed_at?: string | null
+          customer_id?: string
+          id?: string
+          module_id?: string
+          notes?: string | null
+          passed?: boolean
+          score?: number | null
+          started_at?: string
+          time_spent_minutes?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_training_completions_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "security_training_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      security_training_modules: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          description: string | null
+          duration_minutes: number
+          effective_date: string
+          id: string
+          is_mandatory: boolean
+          module_name: string
+          module_type: string
+          target_roles: string[] | null
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          description?: string | null
+          duration_minutes: number
+          effective_date?: string
+          id?: string
+          is_mandatory?: boolean
+          module_name: string
+          module_type: string
+          target_roles?: string[] | null
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          description?: string | null
+          duration_minutes?: number
+          effective_date?: string
+          id?: string
+          is_mandatory?: boolean
+          module_name?: string
+          module_type?: string
+          target_roles?: string[] | null
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
       }
       service_catalog: {
         Row: {

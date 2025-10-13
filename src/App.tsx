@@ -113,6 +113,9 @@ import EmployeeOnboardingNew from "./pages/hr/EmployeeOnboardingNew";
 import EmployeeOnboardingDetail from "./pages/hr/EmployeeOnboardingDetail";
 import EmployeeOnboardingEdit from "./pages/hr/EmployeeOnboardingEdit";
 import ModuleManagement from "./pages/ModuleManagement";
+import SecurityTraining from "./pages/SecurityTraining";
+import EmployeeFeedback from "./pages/EmployeeFeedback";
+import InternalOperationsDashboard from "./pages/InternalOperationsDashboard";
 
 const queryClient = new QueryClient();
 
@@ -259,6 +262,23 @@ const App = () => (
           <Route path="/department-feedback" element={
             <ProtectedRoute>
               <DepartmentFeedback />
+            </ProtectedRoute>
+          } />
+          
+          {/* Internal Operations - Protected */}
+          <Route path="/security-training" element={
+            <ProtectedRoute>
+              <SecurityTraining />
+            </ProtectedRoute>
+          } />
+          <Route path="/employee-feedback" element={
+            <ProtectedRoute>
+              <EmployeeFeedback />
+            </ProtectedRoute>
+          } />
+          <Route path="/internal-operations" element={
+            <ProtectedRoute requireAdmin>
+              <InternalOperationsDashboard />
             </ProtectedRoute>
           } />
           
