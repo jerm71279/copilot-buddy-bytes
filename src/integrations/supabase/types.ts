@@ -6716,6 +6716,7 @@ export type Database = {
           estimated_hours: number | null
           id: string
           is_billable: boolean | null
+          is_critical_path: boolean | null
           notes: string | null
           parent_task_id: string | null
           priority: string
@@ -6739,6 +6740,7 @@ export type Database = {
           estimated_hours?: number | null
           id?: string
           is_billable?: boolean | null
+          is_critical_path?: boolean | null
           notes?: string | null
           parent_task_id?: string | null
           priority?: string
@@ -6762,6 +6764,7 @@ export type Database = {
           estimated_hours?: number | null
           id?: string
           is_billable?: boolean | null
+          is_critical_path?: boolean | null
           notes?: string | null
           parent_task_id?: string | null
           priority?: string
@@ -7414,6 +7417,63 @@ export type Database = {
           },
         ]
       }
+      resource_allocations: {
+        Row: {
+          allocation_percentage: number
+          created_at: string
+          customer_id: string
+          end_date: string
+          id: string
+          project_id: string
+          role: string | null
+          start_date: string
+          task_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allocation_percentage?: number
+          created_at?: string
+          customer_id: string
+          end_date: string
+          id?: string
+          project_id: string
+          role?: string | null
+          start_date: string
+          task_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allocation_percentage?: number
+          created_at?: string
+          customer_id?: string
+          end_date?: string
+          id?: string
+          project_id?: string
+          role?: string | null
+          start_date?: string
+          task_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_allocations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_allocations_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "project_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       risk_assessments: {
         Row: {
           category: Database["public"]["Enums"]["risk_category"]
@@ -7430,6 +7490,7 @@ export type Database = {
           last_review_date: string | null
           next_review_date: string | null
           notes: string | null
+          project_id: string | null
           related_changes: string[] | null
           related_compliance_findings: string[] | null
           related_incidents: string[] | null
@@ -7469,6 +7530,7 @@ export type Database = {
           last_review_date?: string | null
           next_review_date?: string | null
           notes?: string | null
+          project_id?: string | null
           related_changes?: string[] | null
           related_compliance_findings?: string[] | null
           related_incidents?: string[] | null
@@ -7508,6 +7570,7 @@ export type Database = {
           last_review_date?: string | null
           next_review_date?: string | null
           notes?: string | null
+          project_id?: string | null
           related_changes?: string[] | null
           related_compliance_findings?: string[] | null
           related_incidents?: string[] | null
@@ -7532,7 +7595,15 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "risk_assessments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       risk_controls: {
         Row: {
@@ -8816,6 +8887,67 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_dependencies: {
+        Row: {
+          created_at: string
+          customer_id: string
+          dependency_type: string
+          id: string
+          is_hard_dependency: boolean | null
+          lag_days: number | null
+          predecessor_task_id: string
+          project_id: string
+          successor_task_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          dependency_type?: string
+          id?: string
+          is_hard_dependency?: boolean | null
+          lag_days?: number | null
+          predecessor_task_id: string
+          project_id: string
+          successor_task_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          dependency_type?: string
+          id?: string
+          is_hard_dependency?: boolean | null
+          lag_days?: number | null
+          predecessor_task_id?: string
+          project_id?: string
+          successor_task_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_dependencies_predecessor_task_id_fkey"
+            columns: ["predecessor_task_id"]
+            isOneToOne: false
+            referencedRelation: "project_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_dependencies_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_dependencies_successor_task_id_fkey"
+            columns: ["successor_task_id"]
+            isOneToOne: false
+            referencedRelation: "project_tasks"
             referencedColumns: ["id"]
           },
         ]
