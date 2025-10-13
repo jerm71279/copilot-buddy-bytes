@@ -1,22 +1,30 @@
 # OberaConnect Platform Architecture
 
-**Last Updated:** October 9, 2025  
-**Version:** 2.0  
-**Total Tables:** 55+  
-**Total Pages:** 64+  
-**Total Edge Functions:** 17
+**Last Updated:** October 10, 2025  
+**Version:** 2.1  
+**Total Tables:** 93  
+**Total Pages:** 70+  
+**Total Edge Functions:** 26
 
-## 🆕 Recent Updates (October 9, 2025)
+## 🆕 Recent Updates (October 10, 2025)
 
-### New Features
+### Major Feature Additions (Version 2.1)
+- **Navigation System Revamp**: New 6-category horizontal navigation with grid overlay menus
+- **Customer & Account Management**: Comprehensive customer account, contact, site, and asset tracking
+- **HR & Employee Management**: Employee directory, department management, and leave tracking
+- **Enhanced Project Management**: Full project lifecycle with tasks, milestones, and team management
+- **Vendor Management**: Vendor relationship management with contract and performance tracking
+
+### Previous Features (October 9, 2025)
 - **Products Admin**: Full product catalog management system
 - **Keeper Security**: Password management app integration
 - **Customer Subscriptions**: Product subscription tracking
 
 ### Documentation Updates
-- Platform Feature Index created
+- Platform Feature Index updated to v2.1
 - Component Library documented
 - API Reference updated with new endpoints
+- Recent Features documentation created
 
 ---
 
@@ -213,9 +221,9 @@ graph TB
 
 **Architecture Layers**:
 
-1. **Frontend Layer (Purple)**: 8 department-specific dashboards, employee portal, admin tools, AI features, and CIPP management portal built in React with Vite
-2. **Edge Functions Layer**: 12 serverless functions handling AI assistants, workflows, integrations, CIPP tenant management, and external API connections
-3. **Backend Layer (Green/Red)**: Lovable Cloud (Supabase) with 55+ tables organized into core user data, workflows, AI/knowledge, MCP tools, compliance tracking, CIPP tenant management, and integrations - all protected by Row Level Security
+1. **Frontend Layer (Purple)**: 8 department-specific dashboards, employee portal, admin tools, AI features, CIPP management portal, and 6-category navigation system built in React with Vite
+2. **Edge Functions Layer**: 26 serverless functions handling AI assistants, workflows, integrations, CIPP tenant management, and external API connections
+3. **Backend Layer (Green/Red)**: Lovable Cloud (Supabase) with 93 tables organized into core user data, customer management, HR, projects, vendors, workflows, AI/knowledge, MCP tools, compliance tracking, CIPP tenant management, and integrations - all protected by Row Level Security
 4. **External Systems**: Microsoft 365, SharePoint, Revio billing, CIPP tenant management, NinjaOne RMM, and Lovable AI for LLM capabilities
 
 All data flows through authentication and RLS policies ensure users only access their organization's data based on their role and department.
@@ -263,7 +271,7 @@ Design decisions remain with OberaConnect leadership:
 
 ## 🗄️ Database Architecture
 
-### Schema Overview
+### Schema Overview (93 Tables)
 
 ```
 ┌─────────────────┐
@@ -275,26 +283,26 @@ Design decisions remain with OberaConnect leadership:
 │ status          │
 └────────┬────────┘
          │
-         ├──────────────────┬──────────────────┐
-         │                  │                  │
-┌────────▼────────┐  ┌──────▼──────────┐  ┌──▼──────────────────┐
-│ user_profiles   │  │ customer_       │  │ integrations        │
-│                 │  │ customizations  │  │                     │
-├─────────────────┤  ├─────────────────┤  ├─────────────────────┤
-│ user_id         │  │ customer_id     │  │ customer_id         │
-│ customer_id     │  │ company_logo    │  │ system_name         │
-│ full_name       │  │ primary_color   │  │ integration_type    │
-│ department      │  │ secondary_color │  │ status              │
-│ role            │  │ accent_color    │  │ auth_method         │
-└─────────────────┘  │ enabled_integ.. │  └─────────────────────┘
-                     │ enabled_feat... │
+         ├──────────────────┬──────────────────┬──────────────────┐
+         │                  │                  │                  │
+┌────────▼────────┐  ┌──────▼──────────┐  ┌──▼──────────────┐  ┌──▼──────────────┐
+│ user_profiles   │  │ customer_       │  │ customer_      │  │ integrations    │
+│                 │  │ customizations  │  │ accounts       │  │                 │
+├─────────────────┤  ├─────────────────┤  ├────────────────┤  ├─────────────────┤
+│ user_id         │  │ customer_id     │  │ customer_id    │  │ customer_id     │
+│ customer_id     │  │ company_logo    │  │ account_name   │  │ system_name     │
+│ full_name       │  │ primary_color   │  │ account_type   │  │ type            │
+│ department      │  │ secondary_color │  │ contacts       │  │ status          │
+│ role            │  │ accent_color    │  │ sites          │  │                 │
+└─────────────────┘  │ enabled_integ.. │  │ assets         │  └─────────────────┘
+                     │ enabled_feat... │  └────────────────┘
                      │ default_dash... │
                      │ dashboard_lay.. │
                      │ custom_settings │
                      └─────────────────┘
 ```
 
-### Key Tables
+### Key Tables (93 Total)
 
 #### `customers`
 Root entity representing client organizations.
@@ -371,6 +379,97 @@ Comprehensive audit trail for privileged access and system actions.
   - Compliance reporting (SOC2, HIPAA audit requirements)
   - Security incident investigation
   - Cross-platform activity correlation
+
+#### `customer_accounts` (NEW - Oct 10)
+Customer account management for tracking multiple accounts per customer.
+- **Primary Key**: `id` (UUID)
+- **Foreign Key**: `customer_id` → customers
+- **Fields**: account_name, account_number, account_type, billing_contact_id, primary_contact_id, status, annual_value, renewal_date, contract_start_date, contract_end_date, payment_terms, notes
+- **RLS Policy**: Users can manage accounts in their organization
+
+#### `customer_contacts` (NEW - Oct 10)
+Customer contact information and relationship tracking.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `customer_id` → customers, `account_id` → customer_accounts
+- **Fields**: first_name, last_name, email, phone, mobile, title, department, is_primary, is_billing, is_technical, notes
+- **RLS Policy**: Users can manage contacts in their organization
+
+#### `customer_sites` (NEW - Oct 10)
+Customer site and location management.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `customer_id` → customers, `account_id` → customer_accounts
+- **Fields**: site_name, address_line1, address_line2, city, state, postal_code, country, timezone, site_type, is_primary, contact_name, contact_phone, notes
+- **RLS Policy**: Users can manage sites in their organization
+
+#### `customer_assets` (NEW - Oct 10)
+Customer asset tracking linked to accounts and sites.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `customer_id` → customers, `account_id` → customer_accounts, `site_id` → customer_sites
+- **Fields**: asset_name, asset_type, serial_number, model, manufacturer, purchase_date, warranty_expiry, status, assigned_to, location, notes
+- **RLS Policy**: Users can manage assets in their organization
+
+#### `departments` (NEW - Oct 10)
+Department management for organizational structure.
+- **Primary Key**: `id` (UUID)
+- **Foreign Key**: `customer_id` → customers
+- **Fields**: department_name, department_code, manager_id, parent_department_id, budget, employee_count, description, is_active
+- **RLS Policy**: Users can view departments in their organization
+
+#### `employees` (NEW - Oct 10)
+Employee directory and management.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `customer_id` → customers, `department_id` → departments, `manager_id` → employees
+- **Fields**: employee_number, first_name, last_name, email, phone, job_title, employment_type, hire_date, termination_date, status, salary, location, notes
+- **RLS Policy**: Users can view employees in their organization
+
+#### `employee_leave` (NEW - Oct 10)
+Employee leave request tracking.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `customer_id` → customers, `employee_id` → employees, `approved_by` → employees
+- **Fields**: leave_type, start_date, end_date, days_count, reason, status, approved_at, notes
+- **RLS Policy**: Users can manage leave in their organization
+
+#### `vendors` (NEW - Oct 10)
+Vendor relationship management.
+- **Primary Key**: `id` (UUID)
+- **Foreign Key**: `customer_id` → customers
+- **Fields**: vendor_name, vendor_code, website, primary_contact_name, primary_contact_email, primary_contact_phone, address, city, state, postal_code, country, vendor_type, status, payment_terms, tax_id, notes
+- **RLS Policy**: Users can manage vendors in their organization
+
+#### `vendor_contracts` (NEW - Oct 10)
+Vendor contract tracking.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `customer_id` → customers, `vendor_id` → vendors
+- **Fields**: contract_number, contract_name, contract_type, start_date, end_date, annual_value, payment_frequency, auto_renew, renewal_notice_days, status, owner_id, notes
+- **RLS Policy**: Users can manage vendor contracts in their organization
+
+#### `vendor_performance` (NEW - Oct 10)
+Vendor performance metrics tracking.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `customer_id` → customers, `vendor_id` → vendors
+- **Fields**: review_period, quality_score, delivery_score, responsiveness_score, cost_score, overall_score, reviewed_by, review_notes, created_at
+- **RLS Policy**: Users can manage vendor performance in their organization
+
+#### `projects` (Enhanced - Oct 10)
+Enhanced project management with full lifecycle tracking.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `customer_id` → customers, `project_manager_id` → employees
+- **Fields**: project_name, project_code, description, status, priority, start_date, end_date, budget, actual_cost, completion_percentage, client_name, department_id, tags[], created_by, updated_by
+- **RLS Policy**: Users can manage projects in their organization
+
+#### `project_tasks` (NEW - Oct 10)
+Project task tracking and management.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `customer_id` → customers, `project_id` → projects, `assigned_to` → employees, `parent_task_id` → project_tasks
+- **Fields**: task_name, description, status, priority, start_date, due_date, completion_date, estimated_hours, actual_hours, completion_percentage, dependencies[], tags[]
+- **RLS Policy**: Users can manage tasks in their organization
+
+#### `project_milestones` (NEW - Oct 10)
+Project milestone tracking.
+- **Primary Key**: `id` (UUID)
+- **Foreign Keys**: `customer_id` → customers, `project_id` → projects
+- **Fields**: milestone_name, description, target_date, completion_date, status, deliverables[], dependencies[], notes
+- **RLS Policy**: Users can manage milestones in their organization
 
 ## 🧩 Frontend Architecture
 
