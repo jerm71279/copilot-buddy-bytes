@@ -116,6 +116,7 @@ import ModuleManagement from "./pages/ModuleManagement";
 import SecurityTraining from "./pages/SecurityTraining";
 import EmployeeFeedback from "./pages/EmployeeFeedback";
 import InternalOperationsDashboard from "./pages/InternalOperationsDashboard";
+import DeploymentPlanner from "./pages/DeploymentPlanner";
 
 const queryClient = new QueryClient();
 
@@ -279,6 +280,11 @@ const App = () => (
           <Route path="/internal-operations" element={
             <ProtectedRoute requireAdmin>
               <InternalOperationsDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/deployment-planner" element={
+            <ProtectedRoute requireAdmin>
+              <DeploymentPlanner />
             </ProtectedRoute>
           } />
           
