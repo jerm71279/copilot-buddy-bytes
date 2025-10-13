@@ -237,7 +237,7 @@
 | **Products & Billing** | ProductsAdmin | products, customer_subscriptions | - | ✅ New (Oct 9) |
 | **Applications** | ApplicationsAdmin, AppLauncher | applications, application_access | - | ✅ Production |
 | **Department Dashboards** | 8 dashboards | user_profiles (department) | department-assistant | ✅ Production |
-| **Compliance** | 7 pages | compliance_* (12 tables) | batch-evidence-generator | ✅ Production |
+| **Compliance** | 7 pages | compliance_* (12 tables) | batch-evidence-generator | ✅ Production + Hierarchical Model |
 | **CMDB** | 5 pages | configuration_items, ci_relationships | - | ✅ Production |
 | **Change Management** | 3 pages | change_requests, change_approvals | change-impact-analyzer | ✅ Production |
 | **Workflows** | 6 pages | workflows, workflow_executions | workflow-executor, workflow-orchestrator | ✅ Production |

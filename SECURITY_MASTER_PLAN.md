@@ -125,15 +125,35 @@ graph TB
   - Multi-factor authentication
   - Session monitoring
 
-#### 4. Compliance Frameworks
-- **Supported Standards:**
+#### 4. Compliance Frameworks - Hierarchical MSP Model
+
+**Architecture:** MSP-to-Client Cascade (Similar to NinjaOne)
+
+The platform implements a hierarchical compliance system where Obera (MSP) defines frameworks that automatically cascade to all client customers:
+
+- **MSP Level (Obera):**
+  - Defines master compliance frameworks
+  - Automatically propagates to all clients
+  - Maintains centralized framework definitions
+
+- **Client Level:**
+  - Inherits frameworks from MSP automatically
+  - Can activate/deactivate per framework
+  - Examples:
+    - Construction company: Deactivates HIPAA, keeps ISO 27001/SOC 2
+    - Healthcare: Activates all including HIPAA
+    - Financial: Activates PCI DSS and core frameworks
+
+**Supported Standards:**
   - ISO 27001:2013
   - SOC 2 Type II
-  - HIPAA
+  - HIPAA (deactivatable per client)
   - GDPR
-  - PCI DSS
+  - PCI DSS (deactivatable per client)
   - NIST 800-53
   - CMMC (Cybersecurity Maturity Model Certification)
+
+**Documentation:** See COMPLIANCE_HIERARCHICAL_MODEL.md for complete architecture
 
 ---
 
