@@ -50,11 +50,36 @@ OberaConnect is a comprehensive MSP (Managed Service Provider) platform built on
 - **Client Organizations:** [Number of MSP clients you'll serve]
 - **Geographic Presence:** [Your service regions]
 
+### Scale Projections
+- **Client Base:** 50-100 MSPs in Year 1
+- **Users per MSP:** 10-50 employees average
+- **Total Active Users:** 1,000-5,000 platform users
+
 ### Usage Projections
-- **Active Users:** [Daily/Monthly active users]
-- **Data Volume:** [Estimated database size]
-- **API Calls:** [Integration frequency]
-- **Storage Needs:** [Document/file storage requirements]
+- **Active Users:** 
+  - Daily: 500-2,000 concurrent users
+  - Monthly: 3,000-10,000 unique users
+  
+- **Data Volume:** 
+  - Initial Setup: ~10GB (customer configs, initial data)
+  - Year 1 Growth: 50-100GB (compliance evidence, audit logs, CMDB)
+  - Growth Rate: ~5-10MB per active user/month
+  - Projected Year 2: 200-300GB
+  
+- **API Calls:** 
+  - Microsoft 365 Graph API: 500k/month (tenant monitoring, user sync)
+  - NinjaOne Integration: 200k/month (device sync, tickets)
+  - RevIO/PSA: 100k/month (billing data)
+  - Internal Edge Functions: 1M+/month (AI processing, workflows)
+  - Peak Load: 50-100 requests/second
+  
+- **Storage Needs:** 
+  - Compliance Evidence Files: 20-50GB/year (documents, screenshots)
+  - Knowledge Base: 5-10GB (articles, documentation)
+  - Audit Logs: 10-20GB/year (comprehensive tracking)
+  - User Uploads: 10-15GB/year (tickets, projects)
+  - Backups: 2x production (redundancy)
+  - **Total Year 1: 150-200GB**
 
 ### Timeline
 - **Production Launch:** [Target date]
