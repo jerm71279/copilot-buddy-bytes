@@ -25,6 +25,7 @@ const DocumentationViewer = () => {
     "INPUT_VALIDATION_GUIDE": "Input Validation Guide",
     "DEBUG_PROCEDURES": "Debug Procedures",
     "SECURITY_AUDIT_REPORT": "Security Audit Report",
+    "SECURITY_MASTER_PLAN": "Security Master Plan",
     "ARCHITECTURE": "Architecture Documentation",
     "API_REFERENCE": "API Reference",
   };
@@ -35,6 +36,7 @@ const DocumentationViewer = () => {
     { key: "INPUT_VALIDATION_GUIDE", title: "Input Validation Guide", description: "Multi-layered validation to prevent security vulnerabilities" },
     { key: "DEBUG_PROCEDURES", title: "Debug Procedures", description: "Debugging edge functions, database queries, and RLS policies" },
     { key: "SECURITY_AUDIT_REPORT", title: "Security Audit Report", description: "Comprehensive security audit and compliance requirements" },
+    { key: "SECURITY_MASTER_PLAN", title: "Security Master Plan", description: "Comprehensive security rollout, operations, and SAW implementation guide" },
     { key: "ARCHITECTURE", title: "Architecture Documentation", description: "System architecture and data flow patterns" },
     { key: "API_REFERENCE", title: "API Reference", description: "Complete edge function API documentation" },
   ];
