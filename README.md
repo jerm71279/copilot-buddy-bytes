@@ -1,6 +1,6 @@
 # OberaConnect Platform
 
-**Version:** 2.2 | **Last Updated:** October 13, 2025 | **Status:** Production Ready ✅
+**Version:** 2.2 | **Last Updated:** October 14, 2025 | **Status:** Production Ready ✅
 
 ## 📦 Documentation Package
 
@@ -246,6 +246,7 @@ supabase/
 ### Integration Management
 - **Microsoft 365**: Calendar, Email, Teams, OneDrive (ACTIVE)
 - **CIPP**: Centralized M365 tenant management and security automation (ACTIVE)
+- **HubSpot**: CRM and sales automation integration (NEW)
 - **Network Monitoring**: SNMP trap collection, syslog analysis, device polling, and intelligent alerting (NEW)
 - **Revio**: Billing & Revenue data (Infrastructure complete, live API pending OneBill migration)
 - OneBill (Current billing system, migration to Revio in progress)
