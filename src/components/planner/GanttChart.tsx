@@ -104,13 +104,13 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
   return (
     <div className="space-y-4">
       {/* Timeline Header */}
-      <div className="overflow-x-auto">
-        <div className="min-w-[1200px]">
+      <div className="overflow-x-auto overflow-y-hidden">
+        <div className="min-w-full">
           <div className="flex border-b">
-            <div className="w-64 flex-shrink-0 p-4 font-semibold border-r">
+            <div className="w-64 flex-shrink-0 p-4 font-semibold border-r sticky left-0 bg-background z-10">
               Task Name
             </div>
-            <div className="flex-1 relative">
+            <div className="flex-1 relative" style={{ minWidth: `${timelineUnits.length * 40}px` }}>
               <div className="flex h-12 border-l">
                 {timelineUnits.map((unit, index) => (
                   <div
@@ -132,7 +132,7 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
               
               return (
                 <div key={task.id} className="flex items-center hover:bg-muted/50">
-                  <div className="w-64 flex-shrink-0 p-2 border-r">
+                  <div className="w-64 flex-shrink-0 p-2 border-r sticky left-0 bg-background z-10">
                     <div className="text-sm font-medium truncate" title={task.task_name}>
                       {task.task_name}
                     </div>
@@ -172,10 +172,10 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
           {milestones.length > 0 && (
             <div className="mt-4 border-t pt-4">
               <div className="flex">
-                <div className="w-64 flex-shrink-0 p-4 font-semibold border-r">
+                <div className="w-64 flex-shrink-0 p-4 font-semibold border-r sticky left-0 bg-background z-10">
                   Milestones
                 </div>
-                <div className="flex-1 relative h-12 border-l">
+                <div className="flex-1 relative h-12 border-l" style={{ minWidth: `${timelineUnits.length * 40}px` }}>
                   {milestones.map((milestone) => {
                     const position = calculateBarPosition(milestone.due_date, milestone.due_date);
                     
