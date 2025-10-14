@@ -316,6 +316,56 @@ Updated **30 pages** to use consistent top padding:
 </main>
 ```
 
+## Deployment Planner UI Fixes (2025-10-14)
+
+**Issue**: Deployment Planner page allowed unrestricted movement in all directions, causing poor UX during horizontal scrolling of Gantt chart
+
+### Changes Implemented
+
+#### 1. Page Container Overflow Control
+- **File**: `src/pages/DeploymentPlanner.tsx`
+- **Changes**: 
+  - Added `overflow-x-hidden` to outer div
+  - Added `overflow-x-hidden` to main container
+- **Impact**: Prevents horizontal page scrolling, restricts scroll to Gantt component only
+
+#### 2. Gantt Chart Sticky Columns
+- **File**: `src/components/planner/GanttChart.tsx`
+- **Changes**:
+  - Made "Task Name" column sticky with `sticky left-0 bg-background z-10`
+  - Made milestone labels sticky with same pattern
+  - Changed main container to `overflow-x-auto overflow-y-hidden`
+  - Set dynamic timeline width: `minWidth: ${timelineUnits.length * 40}px`
+- **Impact**: Task names remain visible while timeline scrolls horizontally
+
+### Technical Pattern
+```tsx
+// Page Container (DeploymentPlanner.tsx)
+<div className="min-h-screen bg-background overflow-x-hidden">
+  <main className="container mx-auto p-6 max-w-[1800px] overflow-x-hidden">
+    {/* Page content */}
+  </main>
+</div>
+
+// Gantt Chart Container (GanttChart.tsx)
+<div className="overflow-x-auto overflow-y-hidden">
+  <div style={{ minWidth: `${timelineUnits.length * 40}px` }}>
+    {/* Sticky column */}
+    <div className="w-64 flex-shrink-0 p-4 font-semibold border-r sticky left-0 bg-background z-10">
+      Task Name
+    </div>
+    {/* Scrollable timeline */}
+  </div>
+</div>
+```
+
+### Validation Results
+✅ **Page Overflow**: No unwanted horizontal/vertical scrolling  
+✅ **Gantt Scroll**: Timeline scrolls horizontally within container  
+✅ **Sticky Columns**: Task names remain visible during scroll  
+✅ **Visual Stability**: No layout shift or jumping  
+✅ **Responsive**: Works correctly across screen sizes  
+
 ## Deployment Status
 
 ✅ Production ready  
@@ -326,4 +376,5 @@ Updated **30 pages** to use consistent top padding:
 ✅ Validated across all dashboards  
 ✅ Sales Portal fully functional  
 ✅ Navigation scroller issues resolved  
-✅ All pages properly spaced from fixed banner
+✅ All pages properly spaced from fixed banner  
+✅ Deployment Planner scroll behavior optimized
