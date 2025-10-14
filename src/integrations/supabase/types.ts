@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_lockouts: {
+        Row: {
+          created_at: string
+          customer_id: string
+          email: string
+          failed_attempt_count: number
+          id: string
+          lock_reason: string
+          locked_at: string
+          locked_until: string
+          unlocked_at: string | null
+          unlocked_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          email: string
+          failed_attempt_count: number
+          id?: string
+          lock_reason: string
+          locked_at?: string
+          locked_until: string
+          unlocked_at?: string | null
+          unlocked_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          email?: string
+          failed_attempt_count?: number
+          id?: string
+          lock_reason?: string
+          locked_at?: string
+          locked_until?: string
+          unlocked_at?: string | null
+          unlocked_by?: string | null
+        }
+        Relationships: []
+      }
       ai_interactions: {
         Row: {
           ai_response: string
@@ -74,6 +113,13 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ai_interactions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
       }
       ai_learning_metrics: {
@@ -126,6 +172,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_learning_metrics_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -186,7 +239,56 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "anomaly_detections_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
+      }
+      api_rate_limits: {
+        Row: {
+          created_at: string
+          customer_id: string
+          endpoint: string
+          id: string
+          ip_address: unknown
+          request_count: number
+          updated_at: string
+          user_id: string | null
+          was_throttled: boolean | null
+          window_end: string
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          endpoint: string
+          id?: string
+          ip_address: unknown
+          request_count?: number
+          updated_at?: string
+          user_id?: string | null
+          was_throttled?: boolean | null
+          window_end: string
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          endpoint?: string
+          id?: string
+          ip_address?: unknown
+          request_count?: number
+          updated_at?: string
+          user_id?: string | null
+          was_throttled?: boolean | null
+          window_end?: string
+          window_start?: string
+        }
+        Relationships: []
       }
       application_access: {
         Row: {
@@ -338,6 +440,48 @@ export type Database = {
         }
         Relationships: []
       }
+      attack_chain_events: {
+        Row: {
+          chain_id: string
+          created_at: string
+          customer_id: string
+          detected_at: string
+          event_details: Json
+          id: string
+          ip_address: unknown | null
+          severity: string
+          stage: string
+          user_id: string | null
+          was_prevented: boolean | null
+        }
+        Insert: {
+          chain_id: string
+          created_at?: string
+          customer_id: string
+          detected_at?: string
+          event_details: Json
+          id?: string
+          ip_address?: unknown | null
+          severity: string
+          stage: string
+          user_id?: string | null
+          was_prevented?: boolean | null
+        }
+        Update: {
+          chain_id?: string
+          created_at?: string
+          customer_id?: string
+          detected_at?: string
+          event_details?: Json
+          id?: string
+          ip_address?: unknown | null
+          severity?: string
+          stage?: string
+          user_id?: string | null
+          was_prevented?: boolean | null
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action_details: Json | null
@@ -380,7 +524,104 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "audit_logs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
+      }
+      automated_response_rules: {
+        Row: {
+          actions: Json
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          id: string
+          is_active: boolean | null
+          rule_name: string
+          threshold: Json
+          trigger_type: string
+          updated_at: string
+        }
+        Insert: {
+          actions: Json
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          id?: string
+          is_active?: boolean | null
+          rule_name: string
+          threshold: Json
+          trigger_type: string
+          updated_at?: string
+        }
+        Update: {
+          actions?: Json
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          id?: string
+          is_active?: boolean | null
+          rule_name?: string
+          threshold?: Json
+          trigger_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      behavioral_deviations: {
+        Row: {
+          actual_value: string | null
+          baseline_value: string | null
+          created_at: string
+          customer_id: string
+          detected_at: string
+          deviation_score: number | null
+          deviation_type: string
+          id: string
+          investigated_by: string | null
+          investigation_notes: string | null
+          risk_level: string | null
+          user_id: string
+          was_flagged: boolean | null
+          was_investigated: boolean | null
+        }
+        Insert: {
+          actual_value?: string | null
+          baseline_value?: string | null
+          created_at?: string
+          customer_id: string
+          detected_at?: string
+          deviation_score?: number | null
+          deviation_type: string
+          id?: string
+          investigated_by?: string | null
+          investigation_notes?: string | null
+          risk_level?: string | null
+          user_id: string
+          was_flagged?: boolean | null
+          was_investigated?: boolean | null
+        }
+        Update: {
+          actual_value?: string | null
+          baseline_value?: string | null
+          created_at?: string
+          customer_id?: string
+          detected_at?: string
+          deviation_score?: number | null
+          deviation_type?: string
+          id?: string
+          investigated_by?: string | null
+          investigation_notes?: string | null
+          risk_level?: string | null
+          user_id?: string
+          was_flagged?: boolean | null
+          was_investigated?: boolean | null
+        }
+        Relationships: []
       }
       behavioral_events: {
         Row: {
@@ -432,6 +673,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "behavioral_events_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -1177,6 +1425,13 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ci_audit_log_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
       }
       ci_health_metrics: {
@@ -1246,6 +1501,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ci_health_metrics_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -1366,6 +1628,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "cipp_audit_logs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "cipp_audit_logs_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
@@ -1429,6 +1698,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "cipp_policies_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "cipp_policies_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
@@ -1484,6 +1760,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cipp_security_baselines_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -1590,6 +1873,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cipp_tenants_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -1745,6 +2035,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_onboardings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
           {
             foreignKeyName: "client_onboardings_template_id_fkey"
@@ -2022,6 +2319,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_reports_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -2632,6 +2936,13 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "customer_customizations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
       }
       customer_details: {
@@ -2798,6 +3109,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_frameworks_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
           {
             foreignKeyName: "customer_frameworks_framework_id_fkey"
@@ -3108,6 +3426,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "customer_subscriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "customer_subscriptions_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
@@ -3216,6 +3541,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "customers_parent_customer_id_fkey"
+            columns: ["parent_customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "customers_subscription_plan_id_fkey"
             columns: ["subscription_plan_id"]
             isOneToOne: false
@@ -3275,7 +3607,62 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "dashboard_widgets_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
+      }
+      data_access_anomalies: {
+        Row: {
+          created_at: string
+          customer_id: string
+          data_size_mb: number | null
+          details: Json | null
+          deviation_percentage: number | null
+          export_attempted: boolean | null
+          flagged_at: string
+          id: string
+          normal_baseline: number | null
+          records_queried: number
+          table_accessed: string
+          user_id: string
+          was_blocked: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          data_size_mb?: number | null
+          details?: Json | null
+          deviation_percentage?: number | null
+          export_attempted?: boolean | null
+          flagged_at?: string
+          id?: string
+          normal_baseline?: number | null
+          records_queried: number
+          table_accessed: string
+          user_id: string
+          was_blocked?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          data_size_mb?: number | null
+          details?: Json | null
+          deviation_percentage?: number | null
+          export_attempted?: boolean | null
+          flagged_at?: string
+          id?: string
+          normal_baseline?: number | null
+          records_queried?: number
+          table_accessed?: string
+          user_id?: string
+          was_blocked?: boolean | null
+        }
+        Relationships: []
       }
       department_insights: {
         Row: {
@@ -4014,6 +4401,13 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "employee_onboarding_templates_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
       }
       employee_onboardings: {
@@ -4126,6 +4520,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_onboardings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
           {
             foreignKeyName: "employee_onboardings_template_id_fkey"
@@ -4356,6 +4757,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "evidence_files_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "evidence_files_framework_id_fkey"
             columns: ["framework_id"]
             isOneToOne: false
@@ -4452,6 +4860,45 @@ export type Database = {
         }
         Relationships: []
       }
+      failed_login_attempts: {
+        Row: {
+          attempted_at: string
+          created_at: string
+          customer_id: string
+          email: string
+          failure_reason: string
+          geo_location: Json | null
+          id: string
+          ip_address: unknown
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          attempted_at?: string
+          created_at?: string
+          customer_id: string
+          email: string
+          failure_reason: string
+          geo_location?: Json | null
+          id?: string
+          ip_address: unknown
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          attempted_at?: string
+          created_at?: string
+          customer_id?: string
+          email?: string
+          failure_reason?: string
+          geo_location?: Json | null
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       feature_access_log: {
         Row: {
           access_granted: boolean
@@ -4490,6 +4937,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_access_log_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -4556,6 +5010,86 @@ export type Database = {
           status?: string | null
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      honeypot_access_log: {
+        Row: {
+          access_attempt: Json
+          accessed_at: string
+          auto_blocked: boolean | null
+          created_at: string
+          customer_id: string
+          id: string
+          incident_id: string | null
+          ip_address: unknown | null
+          resource_id: string
+          user_id: string | null
+        }
+        Insert: {
+          access_attempt: Json
+          accessed_at?: string
+          auto_blocked?: boolean | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          incident_id?: string | null
+          ip_address?: unknown | null
+          resource_id: string
+          user_id?: string | null
+        }
+        Update: {
+          access_attempt?: Json
+          accessed_at?: string
+          auto_blocked?: boolean | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          incident_id?: string | null
+          ip_address?: unknown | null
+          resource_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "honeypot_access_log_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "honeypot_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      honeypot_resources: {
+        Row: {
+          created_at: string
+          customer_id: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_trap: boolean | null
+          resource_name: string
+          resource_type: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_trap?: boolean | null
+          resource_name: string
+          resource_type: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_trap?: boolean | null
+          resource_name?: string
+          resource_type?: string
         }
         Relationships: []
       }
@@ -4811,6 +5345,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "integration_credentials_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "integration_credentials_integration_id_fkey"
             columns: ["integration_id"]
             isOneToOne: false
@@ -4863,6 +5404,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "integrations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -5511,6 +6059,48 @@ export type Database = {
           },
         ]
       }
+      lateral_movement_indicators: {
+        Row: {
+          access_pattern: string
+          created_at: string
+          customer_id: string
+          details: Json | null
+          from_resource: string
+          id: string
+          risk_score: number
+          to_resource: string
+          triggered_at: string
+          user_id: string
+          was_blocked: boolean
+        }
+        Insert: {
+          access_pattern: string
+          created_at?: string
+          customer_id: string
+          details?: Json | null
+          from_resource: string
+          id?: string
+          risk_score: number
+          to_resource: string
+          triggered_at?: string
+          user_id: string
+          was_blocked?: boolean
+        }
+        Update: {
+          access_pattern?: string
+          created_at?: string
+          customer_id?: string
+          details?: Json | null
+          from_resource?: string
+          id?: string
+          risk_score?: number
+          to_resource?: string
+          triggered_at?: string
+          user_id?: string
+          was_blocked?: boolean
+        }
+        Relationships: []
+      }
       leave_types: {
         Row: {
           annual_allowance_days: number | null
@@ -5806,6 +6396,13 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ml_insights_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
       }
       ml_models: {
@@ -5864,6 +6461,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ml_models_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -6119,6 +6723,13 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "notifications_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
       }
       onboarding_milestones: {
@@ -6301,6 +6912,13 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "onboarding_templates_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
       }
       performance_reviews: {
@@ -6436,10 +7054,73 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "prediction_history_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "prediction_history_model_id_fkey"
             columns: ["model_id"]
             isOneToOne: false
             referencedRelation: "ml_models"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      privilege_usage_patterns: {
+        Row: {
+          baseline_calculated_at: string | null
+          created_at: string
+          current_usage: number
+          customer_id: string
+          id: string
+          is_anomalous: boolean | null
+          last_used_at: string
+          permission_used: string
+          risk_score: number | null
+          role_id: string | null
+          updated_at: string
+          usage_frequency: number
+          user_id: string
+        }
+        Insert: {
+          baseline_calculated_at?: string | null
+          created_at?: string
+          current_usage?: number
+          customer_id: string
+          id?: string
+          is_anomalous?: boolean | null
+          last_used_at?: string
+          permission_used: string
+          risk_score?: number | null
+          role_id?: string | null
+          updated_at?: string
+          usage_frequency?: number
+          user_id: string
+        }
+        Update: {
+          baseline_calculated_at?: string | null
+          created_at?: string
+          current_usage?: number
+          customer_id?: string
+          id?: string
+          is_anomalous?: boolean | null
+          last_used_at?: string
+          permission_used?: string
+          risk_score?: number | null
+          role_id?: string | null
+          updated_at?: string
+          usage_frequency?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "privilege_usage_patterns_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
             referencedColumns: ["id"]
           },
         ]
@@ -7467,6 +8148,50 @@ export type Database = {
           },
         ]
       }
+      response_executions: {
+        Row: {
+          actions_taken: Json
+          created_at: string
+          customer_id: string
+          error_message: string | null
+          executed_at: string
+          id: string
+          rule_id: string
+          triggered_by_event: string | null
+          was_successful: boolean
+        }
+        Insert: {
+          actions_taken: Json
+          created_at?: string
+          customer_id: string
+          error_message?: string | null
+          executed_at?: string
+          id?: string
+          rule_id: string
+          triggered_by_event?: string | null
+          was_successful: boolean
+        }
+        Update: {
+          actions_taken?: Json
+          created_at?: string
+          customer_id?: string
+          error_message?: string | null
+          executed_at?: string
+          id?: string
+          rule_id?: string
+          triggered_by_event?: string | null
+          was_successful?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "response_executions_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "automated_response_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       risk_assessments: {
         Row: {
           category: Database["public"]["Enums"]["risk_category"]
@@ -8189,6 +8914,57 @@ export type Database = {
         }
         Relationships: []
       }
+      security_control_tests: {
+        Row: {
+          actual_result: string | null
+          control_category: string
+          control_name: string
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          expected_result: string
+          id: string
+          next_test_due: string | null
+          passed: boolean | null
+          test_frequency_days: number | null
+          test_scenario: string
+          tested_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          actual_result?: string | null
+          control_category: string
+          control_name: string
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          expected_result: string
+          id?: string
+          next_test_due?: string | null
+          passed?: boolean | null
+          test_frequency_days?: number | null
+          test_scenario: string
+          tested_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actual_result?: string | null
+          control_category?: string
+          control_name?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          expected_result?: string
+          id?: string
+          next_test_due?: string | null
+          passed?: boolean | null
+          test_frequency_days?: number | null
+          test_scenario?: string
+          tested_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       security_training_completions: {
         Row: {
           certificate_issued: boolean
@@ -8520,6 +9296,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sharepoint_sync_config_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -8882,6 +9665,13 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "system_access_logs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
       }
       task_dependencies: {
@@ -9037,6 +9827,54 @@ export type Database = {
           is_published?: boolean
           quote?: string
           rating?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      threat_indicators: {
+        Row: {
+          block_automatically: boolean | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          first_seen: string
+          id: string
+          indicator_type: string
+          indicator_value: string
+          last_seen: string
+          match_count: number | null
+          source: string
+          threat_level: string
+          updated_at: string
+        }
+        Insert: {
+          block_automatically?: boolean | null
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          first_seen?: string
+          id?: string
+          indicator_type: string
+          indicator_value: string
+          last_seen?: string
+          match_count?: number | null
+          source: string
+          threat_level: string
+          updated_at?: string
+        }
+        Update: {
+          block_automatically?: boolean | null
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          first_seen?: string
+          id?: string
+          indicator_type?: string
+          indicator_value?: string
+          last_seen?: string
+          match_count?: number | null
+          source?: string
+          threat_level?: string
           updated_at?: string
         }
         Relationships: []
@@ -9262,6 +10100,60 @@ export type Database = {
         }
         Relationships: []
       }
+      user_behavior_baselines: {
+        Row: {
+          avg_login_time: string | null
+          avg_session_duration_minutes: number | null
+          baseline_calculated_at: string
+          created_at: string
+          customer_id: string
+          data_points_count: number | null
+          id: string
+          normal_resources_accessed: string[] | null
+          standard_work_hours_end: string | null
+          standard_work_hours_start: string | null
+          typical_ip_ranges: unknown[] | null
+          typical_login_frequency: number | null
+          typical_query_patterns: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avg_login_time?: string | null
+          avg_session_duration_minutes?: number | null
+          baseline_calculated_at?: string
+          created_at?: string
+          customer_id: string
+          data_points_count?: number | null
+          id?: string
+          normal_resources_accessed?: string[] | null
+          standard_work_hours_end?: string | null
+          standard_work_hours_start?: string | null
+          typical_ip_ranges?: unknown[] | null
+          typical_login_frequency?: number | null
+          typical_query_patterns?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avg_login_time?: string | null
+          avg_session_duration_minutes?: number | null
+          baseline_calculated_at?: string
+          created_at?: string
+          customer_id?: string
+          data_points_count?: number | null
+          id?: string
+          normal_resources_accessed?: string[] | null
+          standard_work_hours_end?: string | null
+          standard_work_hours_start?: string | null
+          typical_ip_ranges?: unknown[] | null
+          typical_login_frequency?: number | null
+          typical_query_patterns?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_profiles: {
         Row: {
           avatar_url: string | null
@@ -9306,6 +10198,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_profiles_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -9382,6 +10281,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_sessions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -9899,6 +10805,13 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "workflows_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
         ]
       }
     }
@@ -10200,6 +11113,51 @@ export type Database = {
           monitor_type: string | null
           severity: string | null
           source_ip: unknown | null
+        }
+        Relationships: []
+      }
+      soc_security_overview: {
+        Row: {
+          active_attack_chains: number | null
+          active_lockouts: number | null
+          active_threats: number | null
+          auto_responses_24h: number | null
+          company_name: string | null
+          critical_deviations: number | null
+          customer_id: string | null
+          exfiltration_attempts_24h: number | null
+          failed_logins_24h: number | null
+          high_risk_anomalies_24h: number | null
+          honeypot_triggers_24h: number | null
+          lateral_movement_24h: number | null
+        }
+        Insert: {
+          active_attack_chains?: never
+          active_lockouts?: never
+          active_threats?: never
+          auto_responses_24h?: never
+          company_name?: string | null
+          critical_deviations?: never
+          customer_id?: string | null
+          exfiltration_attempts_24h?: never
+          failed_logins_24h?: never
+          high_risk_anomalies_24h?: never
+          honeypot_triggers_24h?: never
+          lateral_movement_24h?: never
+        }
+        Update: {
+          active_attack_chains?: never
+          active_lockouts?: never
+          active_threats?: never
+          auto_responses_24h?: never
+          company_name?: string | null
+          critical_deviations?: never
+          customer_id?: string | null
+          exfiltration_attempts_24h?: never
+          failed_logins_24h?: never
+          high_risk_anomalies_24h?: never
+          honeypot_triggers_24h?: never
+          lateral_movement_24h?: never
         }
         Relationships: []
       }

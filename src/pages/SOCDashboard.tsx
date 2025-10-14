@@ -98,6 +98,20 @@ interface SecurityMetrics {
   systemsMonitored: number;
   avgResponseTime: string;
   threatsPrevented: number;
+  failedLogins24h: number;
+  activeLockouts: number;
+  lateralMovement24h: number;
+  exfiltrationAttempts24h: number;
+  activeThreatsCount: number;
+  activeAttackChains: number;
+  honeypotTriggers24h: number;
+  criticalDeviations: number;
+}
+
+interface ThreatAnalysis {
+  analysis: string;
+  securityContext: any;
+  timestamp: string;
 }
 
 interface SecurityIncident {
@@ -123,12 +137,23 @@ const SOCDashboard = () => {
     complianceScore: 0,
     systemsMonitored: 0,
     avgResponseTime: "0m",
-    threatsPrevented: 0
+    threatsPrevented: 0,
+    failedLogins24h: 0,
+    activeLockouts: 0,
+    lateralMovement24h: 0,
+    exfiltrationAttempts24h: 0,
+    activeThreatsCount: 0,
+    activeAttackChains: 0,
+    honeypotTriggers24h: 0,
+    criticalDeviations: 0,
   });
   const [incidents, setIncidents] = useState<SecurityIncident[]>([]);
   const [anomalies, setAnomalies] = useState<any[]>([]);
   const [mcpServers, setMcpServers] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("incidents");
+  const [threatAnalysis, setThreatAnalysis] = useState<ThreatAnalysis | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [selectedTimeframe, setSelectedTimeframe] = useState("24h");
 
   useEffect(() => {
     checkAccess();
@@ -218,6 +243,12 @@ const SOCDashboard = () => {
         avgComplianceScore = scores.reduce((a, b) => a + b, 0) / scores.length;
       }
 
+      // Fetch new security metrics
+      const { data: securityOverview } = await supabase
+        .from('soc_security_overview')
+        .select('*')
+        .single();
+
       setMetrics({
         totalIncidents: anomalyData?.length || 0,
         criticalAlerts: criticalAnomalies,
@@ -226,7 +257,15 @@ const SOCDashboard = () => {
         complianceScore: Math.round(avgComplianceScore),
         systemsMonitored: integrationsData?.length || 0,
         avgResponseTime: "12m",
-        threatsPrevented: resolvedAnomalies * 3
+        threatsPrevented: resolvedAnomalies * 3,
+        failedLogins24h: securityOverview?.failed_logins_24h || 0,
+        activeLockouts: securityOverview?.active_lockouts || 0,
+        lateralMovement24h: securityOverview?.lateral_movement_24h || 0,
+        exfiltrationAttempts24h: securityOverview?.exfiltration_attempts_24h || 0,
+        activeThreatsCount: securityOverview?.active_threats || 0,
+        activeAttackChains: securityOverview?.active_attack_chains || 0,
+        honeypotTriggers24h: securityOverview?.honeypot_triggers_24h || 0,
+        criticalDeviations: securityOverview?.critical_deviations || 0,
       });
 
       // Transform anomalies to incidents
@@ -257,6 +296,26 @@ const SOCDashboard = () => {
     navigate("/auth");
   };
 
+  const runThreatAnalysis = async () => {
+    setIsAnalyzing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('soc-threat-analysis', {
+        body: { analysisType: 'comprehensive', timeframe: selectedTimeframe }
+      });
+
+      if (error) throw error;
+
+      setThreatAnalysis(data);
+      toast.success("Threat analysis complete");
+      setActiveTab("ai-analysis");
+    } catch (error) {
+      console.error('Threat analysis error:', error);
+      toast.error("Failed to run threat analysis");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "critical": return "text-red-600 bg-red-50 border-red-200";
@@ -285,8 +344,20 @@ const SOCDashboard = () => {
       <main className="container mx-auto px-4 pb-8 space-y-6" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
 
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Security Operations Center</h1>
-          <DashboardSettingsMenu dashboardName="SOC" />
+          <div>
+            <h1 className="text-2xl font-bold">Security Operations Center</h1>
+            <p className="text-sm text-muted-foreground">Advanced threat detection & response</p>
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              onClick={runThreatAnalysis} 
+              disabled={isAnalyzing}
+              variant="outline"
+            >
+              {isAnalyzing ? "Analyzing..." : "🤖 AI Threat Analysis"}
+            </Button>
+            <DashboardSettingsMenu dashboardName="SOC" />
+          </div>
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -388,12 +459,64 @@ const SOCDashboard = () => {
           </Card>
         </div>
 
+        {/* Advanced Security Metrics */}
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card className="border-orange-200 bg-orange-50/50">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Failed Logins (24h)</p>
+                  <p className="text-2xl font-bold mt-1 text-orange-600">{metrics.failedLogins24h}</p>
+                </div>
+                <AlertTriangle className="h-8 w-8 text-orange-600 opacity-50" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-red-200 bg-red-50/50">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Lateral Movement</p>
+                  <p className="text-2xl font-bold mt-1 text-red-600">{metrics.lateralMovement24h}</p>
+                </div>
+                <Users className="h-8 w-8 text-red-600 opacity-50" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-purple-200 bg-purple-50/50">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Exfiltration Attempts</p>
+                  <p className="text-2xl font-bold mt-1 text-purple-600">{metrics.exfiltrationAttempts24h}</p>
+                </div>
+                <FileWarning className="h-8 w-8 text-purple-600 opacity-50" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-blue-200 bg-blue-50/50">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Attack Chains</p>
+                  <p className="text-2xl font-bold mt-1 text-blue-600">{metrics.activeAttackChains}</p>
+                </div>
+                <Zap className="h-8 w-8 text-blue-600 opacity-50" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Tabs for Different Views */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="incidents">Security Incidents</TabsTrigger>
             <TabsTrigger value="anomalies">Anomaly Detection</TabsTrigger>
             <TabsTrigger value="compliance">Compliance Status</TabsTrigger>
+            <TabsTrigger value="ai-analysis">🤖 AI Threat Analysis</TabsTrigger>
           </TabsList>
 
           <TabsContent value="incidents" className="space-y-4">
@@ -530,6 +653,165 @@ const SOCDashboard = () => {
                     <Progress value={85} className="h-2" />
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="ai-analysis" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  🤖 AI-Powered Threat Analysis
+                  <Badge variant="secondary">Powered by Lovable AI</Badge>
+                </CardTitle>
+                <CardDescription>
+                  Comprehensive security posture analysis using advanced AI models
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {!threatAnalysis ? (
+                  <div className="text-center py-12">
+                    <Shield className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <h3 className="text-lg font-semibold mb-2">Run AI Threat Analysis</h3>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Get AI-powered insights into your security posture, attack patterns, and priority actions
+                    </p>
+                    <div className="flex justify-center gap-2 mb-4">
+                      <Button
+                        variant={selectedTimeframe === '1h' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedTimeframe('1h')}
+                      >
+                        Last Hour
+                      </Button>
+                      <Button
+                        variant={selectedTimeframe === '24h' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedTimeframe('24h')}
+                      >
+                        Last 24 Hours
+                      </Button>
+                      <Button
+                        variant={selectedTimeframe === '7d' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedTimeframe('7d')}
+                      >
+                        Last 7 Days
+                      </Button>
+                      <Button
+                        variant={selectedTimeframe === '30d' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedTimeframe('30d')}
+                      >
+                        Last 30 Days
+                      </Button>
+                    </div>
+                    <Button onClick={runThreatAnalysis} disabled={isAnalyzing} size="lg">
+                      {isAnalyzing ? 'Analyzing Security Data...' : 'Run Analysis'}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        <span className="text-sm font-medium">
+                          Analysis completed at {new Date(threatAnalysis.timestamp).toLocaleString()}
+                        </span>
+                      </div>
+                      <Button onClick={runThreatAnalysis} disabled={isAnalyzing} size="sm" variant="outline">
+                        Refresh Analysis
+                      </Button>
+                    </div>
+
+                    {/* Security Context Summary */}
+                    <div className="grid gap-4 md:grid-cols-4">
+                      <Card className="border-orange-200">
+                        <CardContent className="pt-6">
+                          <div className="text-center">
+                            <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+                            <p className="text-2xl font-bold">{threatAnalysis.securityContext.stats.failedLogins}</p>
+                            <p className="text-xs text-muted-foreground">Failed Logins</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="border-red-200">
+                        <CardContent className="pt-6">
+                          <div className="text-center">
+                            <Zap className="h-8 w-8 mx-auto mb-2 text-red-600" />
+                            <p className="text-2xl font-bold">{threatAnalysis.securityContext.stats.attackChains}</p>
+                            <p className="text-xs text-muted-foreground">Attack Chains</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="border-purple-200">
+                        <CardContent className="pt-6">
+                          <div className="text-center">
+                            <FileWarning className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+                            <p className="text-2xl font-bold">{threatAnalysis.securityContext.stats.dataAnomalies}</p>
+                            <p className="text-xs text-muted-foreground">Data Anomalies</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="border-blue-200">
+                        <CardContent className="pt-6">
+                          <div className="text-center">
+                            <Eye className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                            <p className="text-2xl font-bold">{threatAnalysis.securityContext.stats.honeypotTriggers}</p>
+                            <p className="text-xs text-muted-foreground">Honeypot Hits</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* AI Analysis */}
+                    <Card className="border-primary">
+                      <CardHeader>
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <Shield className="h-5 w-5" />
+                          AI Security Analysis
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="prose prose-sm max-w-none">
+                          <div className="whitespace-pre-wrap font-mono text-sm bg-muted p-4 rounded-lg">
+                            {threatAnalysis.analysis}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Top Threat Indicators */}
+                    {threatAnalysis.securityContext.recentEvents.activeThreats.length > 0 && (
+                      <Card className="border-red-200">
+                        <CardHeader>
+                          <CardTitle className="text-base flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5 text-red-600" />
+                            Active Threat Indicators
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            {threatAnalysis.securityContext.recentEvents.activeThreats.slice(0, 5).map((threat: any, idx: number) => (
+                              <div key={idx} className="flex items-center justify-between p-3 border border-red-200 rounded-lg bg-red-50/50">
+                                <div className="flex items-center gap-3">
+                                  <Badge variant="destructive">{threat.threat_level}</Badge>
+                                  <div>
+                                    <p className="font-medium text-sm">{threat.indicator_type}: {threat.indicator_value}</p>
+                                    <p className="text-xs text-muted-foreground">{threat.description || 'No description'}</p>
+                                  </div>
+                                </div>
+                                <span className="text-xs text-muted-foreground">
+                                  Seen: {threat.match_count}x
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
