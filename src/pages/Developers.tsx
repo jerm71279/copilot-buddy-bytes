@@ -3,10 +3,17 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Github, BookOpen, Code2, Database, FileText, ExternalLink, Workflow, Shield, Zap, Network } from "lucide-react";
+import { Github, BookOpen, Code2, Database, FileText, ExternalLink, Workflow, Shield, Zap, Network, ChevronDown, ChevronUp } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const Developers = () => {
+  const [expandedDocs, setExpandedDocs] = useState<Record<string, boolean>>({});
+  const [docContents, setDocContents] = useState<Record<string, string>>({});
+  const [loadingDocs, setLoadingDocs] = useState<Record<string, boolean>>({});
+
   const docs = [
     {
       title: "Architecture",
@@ -75,6 +82,48 @@ const Developers = () => {
       file: "CMDB_CHANGE_MANAGEMENT_GUIDE.md"
     }
   ];
+
+  const loadDocContent = async (filename: string) => {
+    if (docContents[filename]) return;
+    
+    setLoadingDocs(prev => ({ ...prev, [filename]: true }));
+    try {
+      const response = await fetch(`/${filename}`);
+      if (response.ok) {
+        const content = await response.text();
+        setDocContents(prev => ({ ...prev, [filename]: content }));
+      }
+    } catch (error) {
+      console.error(`Error loading ${filename}:`, error);
+    } finally {
+      setLoadingDocs(prev => ({ ...prev, [filename]: false }));
+    }
+  };
+
+  const toggleDoc = (filename: string) => {
+    const isExpanding = !expandedDocs[filename];
+    setExpandedDocs(prev => ({ ...prev, [filename]: isExpanding }));
+    if (isExpanding) {
+      loadDocContent(filename);
+    }
+  };
+
+  const formatMarkdown = (text: string): string => {
+    return text
+      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-6 mb-3">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-8 mb-4">$1</h1>')
+      .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/`(.+?)`/g, '<code class="bg-muted px-1 py-0.5 rounded text-sm">$1</code>')
+      .replace(/```([\s\S]+?)```/g, '<pre class="bg-muted p-4 rounded-lg overflow-x-auto my-4"><code>$1</code></pre>')
+      .replace(/^\* (.+)$/gim, '<li class="ml-4">• $1</li>')
+      .replace(/^\d+\. (.+)$/gim, '<li class="ml-4">$1</li>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary hover:underline" target="_blank" rel="noopener noreferrer">$1</a>')
+      .replace(/\n\n/g, '<br /><br />')
+      .replace(/\n/g, '<br />');
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -161,6 +210,9 @@ const Developers = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {docs.map((doc) => {
                 const Icon = doc.icon;
+                const isExpanded = expandedDocs[doc.file];
+                const isLoading = loadingDocs[doc.file];
+                
                 return (
                   <Card key={doc.file} className="hover:shadow-lg transition-shadow">
                     <CardHeader>
@@ -173,17 +225,27 @@ const Developers = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        <a 
-                          href={`https://github.com/yourusername/oberaconnect/blob/main/${doc.file}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Button variant="outline" className="w-full">
-                            <FileText className="mr-2 h-4 w-4" />
-                            View Documentation
-                            <ExternalLink className="ml-2 h-4 w-4" />
-                          </Button>
-                        </a>
+                        <Collapsible open={isExpanded} onOpenChange={() => toggleDoc(doc.file)}>
+                          <CollapsibleTrigger asChild>
+                            <Button variant="outline" className="w-full">
+                              <FileText className="mr-2 h-4 w-4" />
+                              {isExpanded ? "Hide" : "View"} Documentation
+                              {isExpanded ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
+                            </Button>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="mt-4">
+                            {isLoading ? (
+                              <div className="p-4 text-center text-muted-foreground">Loading...</div>
+                            ) : docContents[doc.file] ? (
+                              <ScrollArea className="h-[400px] w-full rounded-md border p-4">
+                                <div 
+                                  className="prose prose-sm max-w-none"
+                                  dangerouslySetInnerHTML={{ __html: formatMarkdown(docContents[doc.file]) }}
+                                />
+                              </ScrollArea>
+                            ) : null}
+                          </CollapsibleContent>
+                        </Collapsible>
                         {doc.diagram && (
                           <Link to="/architecture-diagram">
                             <Button variant="secondary" className="w-full">
@@ -207,27 +269,42 @@ const Developers = () => {
               <h2 className="text-3xl font-bold">Integration Guides</h2>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
-              {integrationDocs.map((doc) => (
-                <Card key={doc.file} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-lg">{doc.title}</CardTitle>
-                    <CardDescription>{doc.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <a 
-                      href={`https://github.com/yourusername/oberaconnect/blob/main/${doc.file}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button variant="outline" className="w-full">
-                        <FileText className="mr-2 h-4 w-4" />
-                        View Guide
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </Button>
-                    </a>
-                  </CardContent>
-                </Card>
-              ))}
+              {integrationDocs.map((doc) => {
+                const isExpanded = expandedDocs[doc.file];
+                const isLoading = loadingDocs[doc.file];
+                
+                return (
+                  <Card key={doc.file} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <CardTitle className="text-lg">{doc.title}</CardTitle>
+                      <CardDescription>{doc.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Collapsible open={isExpanded} onOpenChange={() => toggleDoc(doc.file)}>
+                        <CollapsibleTrigger asChild>
+                          <Button variant="outline" className="w-full">
+                            <FileText className="mr-2 h-4 w-4" />
+                            {isExpanded ? "Hide" : "View"} Guide
+                            {isExpanded ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-4">
+                          {isLoading ? (
+                            <div className="p-4 text-center text-muted-foreground">Loading...</div>
+                          ) : docContents[doc.file] ? (
+                            <ScrollArea className="h-[400px] w-full rounded-md border p-4">
+                              <div 
+                                className="prose prose-sm max-w-none"
+                                dangerouslySetInnerHTML={{ __html: formatMarkdown(docContents[doc.file]) }}
+                              />
+                            </ScrollArea>
+                          ) : null}
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
 
