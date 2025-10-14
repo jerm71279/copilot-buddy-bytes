@@ -11,25 +11,69 @@ import { AlertTriangle, Shield, CheckCircle, XCircle, Clock, TrendingUp } from "
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
+// Manual type definitions until Supabase types regenerate
+interface SecurityAlert {
+  id: string;
+  customer_id: string;
+  alert_id: string;
+  alert_name: string;
+  alert_type: string;
+  severity: string;
+  status: string;
+  source_system: string;
+  detection_method: string;
+  affected_entities: any;
+  indicators: any[];
+  confidence_score: number;
+  raw_log: any;
+  alert_details: any;
+  assigned_to?: string;
+  acknowledged_by?: string;
+  acknowledged_at?: string;
+  resolved_by?: string;
+  resolved_at?: string;
+  resolution_notes?: string;
+  incident_id?: string;
+  playbook_id?: string;
+  response_actions: any;
+  compliance_tags: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+interface SOCMetrics {
+  customer_id: string;
+  alerts_24h: number;
+  alerts_7d: number;
+  open_alerts: number;
+  critical_open: number;
+  avg_acknowledgment_time_minutes: number;
+  avg_resolution_time_minutes: number;
+  active_incidents: number;
+  critical_incidents: number;
+  active_threat_indicators: number;
+  running_playbooks: number;
+}
+
 export default function SecurityAlerts() {
-  const [selectedAlert, setSelectedAlert] = useState<any>(null);
+  const [selectedAlert, setSelectedAlert] = useState<SecurityAlert | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState("");
   const queryClient = useQueryClient();
 
-  const { data: alerts = [], isLoading } = useQuery({
+  const { data: alerts = [], isLoading } = useQuery<SecurityAlert[]>({
     queryKey: ['security-alerts'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('security_alerts')
+        .from('security_alerts' as any)
         .select('*')
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      return (data || []) as unknown as SecurityAlert[];
     }
   });
 
-  const { data: metrics } = useQuery({
+  const { data: metrics } = useQuery<SOCMetrics>({
     queryKey: ['soc-metrics'],
     queryFn: async () => {
       const { data: user } = await supabase.auth.getUser();
@@ -42,13 +86,13 @@ export default function SecurityAlerts() {
         .single();
 
       const { data, error } = await supabase
-        .from('soc_metrics_dashboard')
+        .from('soc_metrics_dashboard' as any)
         .select('*')
         .eq('customer_id', profile?.customer_id)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
-      return data;
+      return (data || {}) as unknown as SOCMetrics;
     }
   });
 
@@ -56,7 +100,7 @@ export default function SecurityAlerts() {
     mutationFn: async (alertId: string) => {
       const { data: user } = await supabase.auth.getUser();
       const { error } = await supabase
-        .from('security_alerts')
+        .from('security_alerts' as any)
         .update({
           status: 'acknowledged',
           acknowledged_by: user.user?.id,
@@ -76,7 +120,7 @@ export default function SecurityAlerts() {
     mutationFn: async ({ alertId, notes }: { alertId: string; notes: string }) => {
       const { data: user } = await supabase.auth.getUser();
       const { error } = await supabase
-        .from('security_alerts')
+        .from('security_alerts' as any)
         .update({
           status: 'resolved',
           resolved_by: user.user?.id,
@@ -98,10 +142,12 @@ export default function SecurityAlerts() {
   const escalateToIncident = useMutation({
     mutationFn: async (alertId: string) => {
       const alert = alerts.find(a => a.id === alertId);
+      if (!alert) throw new Error('Alert not found');
+      
       const { data: user } = await supabase.auth.getUser();
       
       const { data: incident, error: incidentError } = await supabase
-        .from('security_incidents')
+        .from('security_incidents' as any)
         .insert({
           customer_id: alert.customer_id,
           incident_name: `Escalated: ${alert.alert_name}`,
@@ -113,15 +159,17 @@ export default function SecurityAlerts() {
           reported_by: user.user?.id
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (incidentError) throw incidentError;
+      if (!incident) throw new Error('Failed to create incident');
 
+      const incidentData = incident as any;
       const { error: updateError } = await supabase
-        .from('security_alerts')
+        .from('security_alerts' as any)
         .update({
           status: 'escalated',
-          incident_id: incident.id
+          incident_id: incidentData.id
         })
         .eq('id', alertId);
 
@@ -233,7 +281,7 @@ export default function SecurityAlerts() {
                       <div className="flex items-center gap-2 mb-2">
                         {getSeverityIcon(alert.severity)}
                         <h3 className="font-semibold">{alert.alert_name}</h3>
-                        <Badge variant={getStatusColor(alert.status)}>{alert.status}</Badge>
+                        <Badge variant={getStatusColor(alert.status) as any}>{alert.status}</Badge>
                         <Badge>{alert.alert_type}</Badge>
                         {alert.confidence_score && (
                           <Badge variant="outline">{alert.confidence_score}% confidence</Badge>
@@ -303,7 +351,7 @@ export default function SecurityAlerts() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold">Status</p>
-                  <Badge variant={getStatusColor(selectedAlert.status)}>{selectedAlert.status}</Badge>
+                  <Badge variant={getStatusColor(selectedAlert.status) as any}>{selectedAlert.status}</Badge>
                 </div>
                 <div>
                   <p className="text-sm font-semibold">Severity</p>
