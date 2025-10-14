@@ -15,7 +15,7 @@ interface Task {
 interface Milestone {
   id: string;
   milestone_name: string;
-  target_date: string;
+  due_date: string;
   status: string;
 }
 
@@ -40,7 +40,7 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
     const allDates = [
       ...tasks.map(t => parseISO(t.start_date)),
       ...tasks.map(t => parseISO(t.end_date)),
-      ...milestones.map(m => parseISO(m.target_date)),
+      ...milestones.map(m => parseISO(m.due_date)),
     ];
 
     const start = new Date(Math.min(...allDates.map(d => d.getTime())));
@@ -175,7 +175,7 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
                 </div>
                 <div className="flex-1 relative h-12 border-l">
                   {milestones.map((milestone) => {
-                    const position = calculateBarPosition(milestone.target_date, milestone.target_date);
+                    const position = calculateBarPosition(milestone.due_date, milestone.due_date);
                     
                     return (
                       <div
