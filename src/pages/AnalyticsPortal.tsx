@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
-
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import MCPServerStatus from "@/components/MCPServerStatus";
 import { toast } from "sonner";
 import { 
   BarChart3, 
@@ -501,6 +502,11 @@ export default function AnalyticsPortal() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <DepartmentAIAssistant department="analytics" departmentLabel="Analytics" />
+          <MCPServerStatus filterByServerType="analytics" />
+        </div>
       </main>
     </div>
   );

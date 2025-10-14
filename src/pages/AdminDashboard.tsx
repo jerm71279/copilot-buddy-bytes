@@ -13,6 +13,7 @@ import { AIMCPGenerator } from "@/components/AIMCPGenerator";
 import MCPExecutionLogs from "@/components/MCPExecutionLogs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 
 
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
@@ -328,6 +329,8 @@ const AdminDashboard = () => {
             )}
           </CardContent>
         </Card>
+
+        <DepartmentAIAssistant department="admin" departmentLabel="Administration" />
       </main>
     </div>
   );

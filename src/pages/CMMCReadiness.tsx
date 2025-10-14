@@ -22,6 +22,7 @@ import {
   Play
 } from "lucide-react";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -483,6 +484,8 @@ const CMMCReadiness = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        <DepartmentAIAssistant department="compliance" departmentLabel="CMMC Compliance" />
 
       </main>
     </div>
