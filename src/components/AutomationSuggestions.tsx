@@ -170,7 +170,7 @@ export default function AutomationSuggestions() {
                 </Badge>
                 <Badge 
                   variant="outline" 
-                  className={`text-xs ${getDifficultyColor(suggestion.suggested_workflow.implementationDifficulty)} text-white`}
+                  className={`text-xs ${getDifficultyColor(suggestion.suggested_workflow.implementationDifficulty)}`}
                 >
                   {suggestion.suggested_workflow.implementationDifficulty}
                 </Badge>

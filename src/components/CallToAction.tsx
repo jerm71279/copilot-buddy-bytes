@@ -22,11 +22,11 @@ const CallToAction = () => {
     }
   };
   return (
-    <section className="py-24 bg-gradient-primary text-white relative overflow-hidden">
+    <section className="py-24 bg-gradient-primary text-primary-foreground relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+          backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`,
           backgroundSize: '40px 40px'
         }} />
       </div>
@@ -36,7 +36,7 @@ const CallToAction = () => {
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Ready to Transform Your Operations?
           </h2>
-          <p className="text-xl text-white/90 mb-12 max-w-2xl mx-auto">
+          <p className="text-xl text-primary-foreground/90 mb-12 max-w-2xl mx-auto">
             Join forward-thinking enterprises using OberaConnect to unify system access, capture 
             behavioral intelligence, and maintain compliance automatically. One login for your team, 
             unlimited insights for your business.
@@ -46,7 +46,7 @@ const CallToAction = () => {
             <Button 
               size="lg" 
               variant="hero" 
-              className="text-lg px-8 py-6 h-auto bg-white text-primary hover:bg-white/90"
+              className="text-lg px-8 py-6 h-auto bg-background text-primary hover:bg-background/90"
               onClick={() => navigate('/auth')}
             >
               Start Free Trial
@@ -55,7 +55,7 @@ const CallToAction = () => {
             <Button 
               size="lg" 
               variant="outline" 
-              className="text-lg px-8 py-6 h-auto bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20"
+              className="text-lg px-8 py-6 h-auto bg-primary-foreground/10 backdrop-blur-sm border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20"
               onClick={() => scrollToSection('case-study')}
             >
               <Calendar className="mr-2 h-5 w-5" />
@@ -64,7 +64,7 @@ const CallToAction = () => {
           </div>
 
           {/* Trust Indicators */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-white/70">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-primary-foreground/70">
             <div className="flex items-center gap-2">
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />

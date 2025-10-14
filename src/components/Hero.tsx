@@ -30,13 +30,13 @@ const Hero = () => {
       <div className="container relative z-10 mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-6 py-2 mb-8">
+          <div className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-full px-6 py-2 mb-8">
             <Shield className="h-4 w-4 text-accent" />
-            <span className="text-sm font-medium text-white">Unified Operational Intelligence Platform</span>
+            <span className="text-sm font-medium text-primary-foreground">Unified Operational Intelligence Platform</span>
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-5xl md:text-7xl font-bold text-primary-foreground mb-6 leading-tight">
             One Login. All Systems.
             <span className="block bg-gradient-to-r from-accent to-purple-300 bg-clip-text text-transparent">
               Infinite Intelligence.
@@ -44,7 +44,7 @@ const Hero = () => {
           </h1>
 
           {/* Subheading */}
-          <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-primary-foreground/90 mb-12 max-w-3xl mx-auto leading-relaxed">
             OberaConnect delivers enterprise-grade operational intelligence through unified system access. 
             Your team logs in once to access SAP, Workday, Salesforce, ServiceNow, and more. 
             Our ML platform learns from every action to predict problems, optimize workflows, 
@@ -65,7 +65,7 @@ const Hero = () => {
             <Button 
               size="lg" 
               variant="outline" 
-              className="text-lg px-8 py-6 h-auto bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20"
+              className="text-lg px-8 py-6 h-auto bg-primary-foreground/10 backdrop-blur-sm border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20"
               onClick={() => scrollToSection('case-study')}
             >
               View Demo
@@ -75,16 +75,16 @@ const Hero = () => {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-8 mt-20 max-w-2xl mx-auto">
             <div className="text-center">
-              <div className="text-4xl font-bold text-white mb-2">99.9%</div>
-              <div className="text-sm text-white/70">Audit Success Rate</div>
+              <div className="text-4xl font-bold text-primary-foreground mb-2">99.9%</div>
+              <div className="text-sm text-primary-foreground/70">Audit Success Rate</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-white mb-2">4+</div>
-              <div className="text-sm text-white/70">Frameworks Supported</div>
+              <div className="text-4xl font-bold text-primary-foreground mb-2">4+</div>
+              <div className="text-sm text-primary-foreground/70">Frameworks Supported</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-white mb-2">50%</div>
-              <div className="text-sm text-white/70">Time Savings</div>
+              <div className="text-4xl font-bold text-primary-foreground mb-2">50%</div>
+              <div className="text-sm text-primary-foreground/70">Time Savings</div>
             </div>
           </div>
         </div>

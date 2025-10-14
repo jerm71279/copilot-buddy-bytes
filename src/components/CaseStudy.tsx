@@ -213,19 +213,19 @@ const CaseStudy = () => {
         </Card>
 
         {/* Results */}
-        <Card className="bg-gradient-primary border-0 text-white">
+        <Card className="bg-gradient-primary border-0 text-primary-foreground">
           <CardHeader>
-            <CardTitle className="text-3xl text-white mb-2">
+            <CardTitle className="text-3xl mb-2">
               Measurable Results
             </CardTitle>
-            <CardDescription className="text-white/80 text-base">
+            <CardDescription className="text-primary-foreground/80 text-base">
               OberaConnect's transformation by the numbers
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-8 mb-8">
               <div>
-                <h4 className="font-semibold mb-4 flex items-center gap-2 text-white">
+                <h4 className="font-semibold mb-4 flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
                   Operational Improvements
                 </h4>
@@ -236,15 +236,15 @@ const CaseStudy = () => {
                     "75% faster audit prep with unified cross-system audit trail",
                     "IT team freed up from password management to strategic work",
                   ].map((result, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-white/90">
-                      <CheckCircle2 className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
+                    <li key={idx} className="flex items-start gap-3 text-primary-foreground/90">
+                      <CheckCircle2 className="h-5 w-5 flex-shrink-0 mt-0.5" />
                       <span>{result}</span>
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <h4 className="font-semibold mb-4 flex items-center gap-2 text-white">
+                <h4 className="font-semibold mb-4 flex items-center gap-2">
                   <Shield className="h-5 w-5" />
                   Strategic Benefits
                 </h4>
@@ -255,8 +255,8 @@ const CaseStudy = () => {
                     "Employee behavioral patterns optimize workflows automatically",
                     "One platform replacing multiple access management tools",
                   ].map((result, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-white/90">
-                      <CheckCircle2 className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
+                    <li key={idx} className="flex items-start gap-3 text-primary-foreground/90">
+                      <CheckCircle2 className="h-5 w-5 flex-shrink-0 mt-0.5" />
                       <span>{result}</span>
                     </li>
                   ))}
@@ -265,19 +265,19 @@ const CaseStudy = () => {
             </div>
 
             {/* Quote */}
-            <div className="border-t border-white/20 pt-6">
-              <blockquote className="text-xl italic text-white/95 mb-4">
+            <div className="border-t border-primary-foreground/20 pt-6">
+              <blockquote className="text-xl italic text-primary-foreground/95 mb-4">
                 "We went from password chaos to predictive intelligence. Our employees love having one login 
                 for everything, and we love that every action they take is training our ML models to predict 
                 and prevent problems. It's transformational."
               </blockquote>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white font-bold">
+                <div className="w-12 h-12 rounded-full bg-primary-foreground/20 flex items-center justify-center font-bold">
                   EF
                 </div>
                 <div>
-                  <div className="font-semibold text-white">Evan Fisher</div>
-                  <div className="text-sm text-white/70">CEO, OberaConnect</div>
+                  <div className="font-semibold">Evan Fisher</div>
+                  <div className="text-sm text-primary-foreground/70">CEO, OberaConnect</div>
                 </div>
               </div>
             </div>

@@ -146,7 +146,7 @@ const Integrations = () => {
               <Card key={index} className="border-border text-center">
                 <CardHeader>
                   <div className="w-12 h-12 mx-auto rounded-lg bg-gradient-accent flex items-center justify-center mb-3">
-                    <Icon className="h-6 w-6 text-white" />
+                    <Icon className="h-6 w-6" />
                   </div>
                   <CardTitle className="text-lg">{feature.title}</CardTitle>
                   <CardDescription>{feature.description}</CardDescription>

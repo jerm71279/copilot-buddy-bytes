@@ -157,7 +157,7 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
                       >
                         {/* Completion indicator */}
                         <div
-                          className="absolute left-0 top-0 bottom-0 bg-white/30 rounded-l"
+                          className="absolute left-0 top-0 bottom-0 bg-background/30 rounded-l"
                           style={{ width: `${task.completion_percentage}%` }}
                         />
                       </div>

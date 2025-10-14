@@ -124,7 +124,7 @@ export function RiskMatrix({ risks }: RiskMatrixProps) {
                           {cellRisks.map((risk) => (
                             <div
                               key={risk.id}
-                              className="text-xs p-2 bg-white rounded border shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                              className="text-xs p-2 bg-background rounded border shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                               title={risk.risk_title}
                             >
                               <div className="font-medium truncate">{risk.risk_title}</div>

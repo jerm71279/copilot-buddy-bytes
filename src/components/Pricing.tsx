@@ -99,7 +99,7 @@ const Pricing = () => {
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-gradient-accent text-white border-0 px-4 py-1">
+                  <Badge className="bg-gradient-accent text-accent-foreground border-0 px-4 py-1">
                     Most Popular
                   </Badge>
                 </div>

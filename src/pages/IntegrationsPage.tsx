@@ -218,10 +218,10 @@ const IntegrationsPage = () => {
           />
         </div>
         {/* Hero Section */}
-        <section className="py-16 bg-gradient-primary text-white">
+        <section className="py-16 bg-gradient-primary text-primary-foreground">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
-              <Badge className="mb-4 bg-white/20 text-white border-white/30">
+              <Badge className="mb-4 bg-primary-foreground/20 border-primary-foreground/30">
                 <Zap className="h-3 w-3 mr-1" />
                 Complete MSP Stack Integration
               </Badge>

@@ -142,10 +142,10 @@ const Frameworks = () => {
         </div>
 
         {/* Additional Info */}
-        <Card className="bg-gradient-primary border-0 text-white">
+        <Card className="bg-gradient-primary border-0 text-primary-foreground">
           <CardHeader>
-            <CardTitle className="text-2xl text-white">Universal Schema Architecture</CardTitle>
-            <CardDescription className="text-white/80 text-base">
+            <CardTitle className="text-2xl">Universal Schema Architecture</CardTitle>
+            <CardDescription className="text-primary-foreground/80 text-base">
               Compliance tagging built into every layer of your business operations. Map ERP financial controls to SOC 2, 
               HRIS access logs to ISO 27001, CRM data handling to GDPR, supply chain records to regulatory requirements—all 
               in one unified schema engine that maintains audit readiness across your entire tech stack.
@@ -156,7 +156,7 @@ const Frameworks = () => {
               {["GDPR", "PCI DSS", "FedRAMP", "ISO 9001", "Custom Frameworks", "Operational KPIs", "Process Controls"].map((tag, idx) => (
                 <span
                   key={idx}
-                  className="px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium"
+                  className="px-4 py-2 bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-full text-sm font-medium"
                 >
                   {tag}
                 </span>
