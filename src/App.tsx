@@ -118,6 +118,7 @@ import EmployeeFeedback from "./pages/EmployeeFeedback";
 import InternalOperationsDashboard from "./pages/InternalOperationsDashboard";
 import DeploymentPlanner from "./pages/DeploymentPlanner";
 import NavigationScaffold from "./pages/NavigationScaffold";
+import CMMCReadiness from "./pages/CMMCReadiness";
 
 const queryClient = new QueryClient();
 
@@ -135,6 +136,7 @@ const App = () => (
           <Route path="/architecture-diagram" element={<ArchitectureDiagram />} />
           <Route path="/architecture/canvas" element={<ArchitectureCanvas />} />
           <Route path="/navigation-scaffold" element={<NavigationScaffold />} />
+          <Route path="/cmmc-readiness" element={<CMMCReadiness />} />
           <Route path="/workflow-intelligence" element={<WorkflowIntelligence />} />
           <Route path="/prompt-library" element={
             <ProtectedRoute>
