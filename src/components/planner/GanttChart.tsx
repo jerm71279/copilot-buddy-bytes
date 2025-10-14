@@ -6,8 +6,9 @@ interface Task {
   id: string;
   task_name: string;
   start_date: string;
-  end_date: string;
-  status: string;
+  due_date: string;
+  task_status?: string;
+  status?: string;
   completion_percentage: number;
   is_critical_path: boolean;
 }
@@ -38,9 +39,9 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
     }
 
     const allDates = [
-      ...tasks.map(t => parseISO(t.start_date)),
-      ...tasks.map(t => parseISO(t.end_date)),
-      ...milestones.map(m => parseISO(m.due_date)),
+      ...tasks.filter(t => t.start_date).map(t => parseISO(t.start_date)),
+      ...tasks.filter(t => t.due_date).map(t => parseISO(t.due_date)),
+      ...milestones.filter(m => m.due_date).map(m => parseISO(m.due_date)),
     ];
 
     const start = new Date(Math.min(...allDates.map(d => d.getTime())));
@@ -62,17 +63,18 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
     };
   }, [tasks, milestones, viewMode]);
 
-  const calculateBarPosition = (startDate: string, endDate: string) => {
+  const calculateBarPosition = (startDate: string | undefined, endDate: string | undefined) => {
+    if (!startDate) return { left: "0%", width: "0%" };
     const start = parseISO(startDate);
-    const end = parseISO(endDate);
-    const totalDays = differenceInDays(timelineEnd, timelineStart);
+    const end = endDate ? parseISO(endDate) : start;
+    const totalDays = Math.max(1, differenceInDays(timelineEnd, timelineStart));
     const startOffset = differenceInDays(start, timelineStart);
-    const duration = differenceInDays(end, start);
+    const duration = Math.max(0, differenceInDays(end, start));
 
     const left = (startOffset / totalDays) * 100;
     const width = (duration / totalDays) * 100;
 
-    return { left: `${Math.max(0, left)}%`, width: `${Math.max(1, width)}%` };
+    return { left: `${Math.max(0, left)}%`, width: `${Math.max(0.5, width)}%` };
   };
 
   const getStatusColor = (status: string) => {
@@ -126,7 +128,7 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
           {/* Task Bars */}
           <div className="space-y-1">
             {tasks.map((task) => {
-              const position = calculateBarPosition(task.start_date, task.end_date);
+              const position = calculateBarPosition(task.start_date, task.due_date);
               
               return (
                 <div key={task.id} className="flex items-center hover:bg-muted/50">
@@ -148,7 +150,7 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
                   <div className="flex-1 relative h-12 border-l">
                     <div className="absolute inset-0 flex items-center px-1">
                       <div
-                        className={`h-8 rounded ${getStatusColor(task.status)} ${
+                        className={`h-8 rounded ${getStatusColor(task.status ?? task.task_status ?? 'not_started')} ${
                           task.is_critical_path ? "border-2 border-red-600" : ""
                         } relative`}
                         style={position}
