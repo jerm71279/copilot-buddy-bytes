@@ -101,7 +101,7 @@ const DeploymentPlanner = () => {
       const [tasksRes, depsRes, milestonesRes, risksRes, allocsRes] = await Promise.all([
         supabase.from("project_tasks").select("*").eq("project_id", projectId).order("start_date"),
         supabase.from("task_dependencies").select("*").eq("project_id", projectId),
-        supabase.from("project_milestones").select("*").eq("project_id", projectId).order("target_date"),
+        supabase.from("project_milestones").select("*").eq("project_id", projectId).order("due_date"),
         supabase.from("risk_assessments").select("*").eq("project_id", projectId),
         supabase.from("resource_allocations").select("*").eq("project_id", projectId)
       ]);
