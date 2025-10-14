@@ -201,7 +201,7 @@ export default function ApplicationsAdmin() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <DashboardNavigation 
           title="Applications Manager"
           dashboards={[

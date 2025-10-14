@@ -102,7 +102,7 @@ export default function AssetFinancials() {
       <Navigation />
       <DashboardNavigation />
       
-      <main className="container mx-auto p-6 space-y-6">
+      <main className="container mx-auto p-6 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Asset Financials</h1>
