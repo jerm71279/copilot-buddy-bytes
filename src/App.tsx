@@ -23,6 +23,10 @@ import FinanceDashboard from "./pages/FinanceDashboard";
 import SalesDashboard from "./pages/SalesDashboard";
 import ExecutiveDashboard from "./pages/ExecutiveDashboard";
 import SOCDashboard from "./pages/SOCDashboard";
+import SecurityAlerts from "./pages/SecurityAlerts";
+import SecurityIncidents from "./pages/SecurityIncidents";
+import ThreatIntelligence from "./pages/ThreatIntelligence";
+import ResponsePlaybooks from "./pages/ResponsePlaybooks";
 import RiskAssessmentPortal from "./pages/RiskAssessmentPortal";
 import SharePointSync from "./pages/SharePointSync";
 import IntelligentAssistant from "./pages/IntelligentAssistant";
@@ -235,6 +239,26 @@ const App = () => (
           <Route path="/dashboard/soc" element={
             <ProtectedRoute requireAdmin>
               <SOCDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/security/alerts" element={
+            <ProtectedRoute requireAdmin>
+              <SecurityAlerts />
+            </ProtectedRoute>
+          } />
+          <Route path="/security/incidents" element={
+            <ProtectedRoute requireAdmin>
+              <SecurityIncidents />
+            </ProtectedRoute>
+          } />
+          <Route path="/security/threat-intel" element={
+            <ProtectedRoute requireAdmin>
+              <ThreatIntelligence />
+            </ProtectedRoute>
+          } />
+          <Route path="/security/playbooks" element={
+            <ProtectedRoute requireAdmin>
+              <ResponsePlaybooks />
             </ProtectedRoute>
           } />
           <Route path="/risk-assessment" element={

@@ -824,6 +824,22 @@ const SOCDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 md:grid-cols-4">
+              <Button variant="outline" className="justify-start" onClick={() => navigate('/security/alerts')}>
+                <AlertTriangle className="h-4 w-4 mr-2" />
+                Security Alerts
+              </Button>
+              <Button variant="outline" className="justify-start" onClick={() => navigate('/security/incidents')}>
+                <FileWarning className="h-4 w-4 mr-2" />
+                Incidents
+              </Button>
+              <Button variant="outline" className="justify-start" onClick={() => navigate('/security/threat-intel')}>
+                <Database className="h-4 w-4 mr-2" />
+                Threat Intel
+              </Button>
+              <Button variant="outline" className="justify-start" onClick={() => navigate('/security/playbooks')}>
+                <FileText className="h-4 w-4 mr-2" />
+                Playbooks
+              </Button>
               <Button variant="outline" className="justify-start" onClick={() => navigate('/risk-assessment')}>
                 <Shield className="h-4 w-4 mr-2" />
                 Risk Assessment
@@ -837,7 +853,7 @@ const SOCDashboard = () => {
                 Review Access Logs
               </Button>
               <Button variant="outline" className="justify-start">
-                <FileWarning className="h-4 w-4 mr-2" />
+                <FileText className="h-4 w-4 mr-2" />
                 Generate Report
               </Button>
             </div>
