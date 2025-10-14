@@ -61,6 +61,11 @@ const ExternalSystemsBar = () => {
       url: "https://app.revio.com", 
       description: "Billing and subscription management" 
     },
+    { 
+      name: "HubSpot", 
+      url: "https://app.hubspot.com", 
+      description: "CRM and sales automation" 
+    },
   ];
 
   return (
