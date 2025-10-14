@@ -183,8 +183,8 @@ const DeploymentPlanner = () => {
   const selectedProject = projects.find(p => p.id === selectedProjectId);
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto p-6 max-w-[1800px]" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      <main className="container mx-auto p-6 max-w-[1800px] overflow-x-hidden" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-4xl font-bold mb-2">Deployment Planner</h1>
