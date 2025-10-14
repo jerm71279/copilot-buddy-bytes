@@ -169,7 +169,7 @@ const Navigation = () => {
                 to="/developers"
                 className="text-sm font-medium hover:text-accent transition-colors"
               >
-                Developers
+                GitHub
               </Link>
               
               {/* Portals Dropdown - Always visible */}
@@ -425,7 +425,7 @@ const Navigation = () => {
                 className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Developers
+                GitHub
               </Link>
               {isLoggedIn && (
                 <>
