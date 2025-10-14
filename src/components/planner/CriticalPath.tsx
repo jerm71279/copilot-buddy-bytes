@@ -7,8 +7,9 @@ interface Task {
   id: string;
   task_name: string;
   start_date: string;
-  end_date: string;
-  status: string;
+  due_date: string;
+  task_status?: string;
+  status?: string;
   completion_percentage: number;
   estimated_hours: number | null;
   actual_hours: number | null;
@@ -30,7 +31,8 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
   );
 
   const getTaskDuration = (task: Task) => {
-    return differenceInDays(parseISO(task.end_date), parseISO(task.start_date)) + 1;
+    if (!task.start_date || !task.due_date) return 0;
+    return differenceInDays(parseISO(task.due_date), parseISO(task.start_date)) + 1;
   };
 
   const getTotalDuration = () => {
@@ -40,7 +42,7 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
 
   const getTotalSlack = () => {
     // Calculate total slack as percentage of tasks completed
-    const completed = tasks.filter(t => t.status === "completed").length;
+    const completed = tasks.filter(t => (t.status ?? t.task_status) === "completed").length;
     return tasks.length > 0 ? Math.round((completed / tasks.length) * 100) : 0;
   };
 
@@ -81,7 +83,7 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
         </Card>
         <Card className="p-4">
           <div className="text-2xl font-bold text-red-600">
-            {tasks.filter(t => t.status === "blocked").length}
+            {tasks.filter(t => (t.status ?? t.task_status) === "blocked").length}
           </div>
           <div className="text-sm text-muted-foreground">Blocked Tasks</div>
         </Card>
@@ -92,14 +94,14 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
       </div>
 
       {/* Warning for Blocked Tasks */}
-      {tasks.some(t => t.status === "blocked") && (
+      {tasks.some(t => (t.status ?? t.task_status) === "blocked") && (
         <Card className="p-4 bg-red-50 border-red-200">
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
             <div>
               <div className="font-semibold text-red-900">Critical Path Blocked</div>
               <div className="text-sm text-red-700 mt-1">
-                {tasks.filter(t => t.status === "blocked").length} critical task(s) are blocked. 
+                {tasks.filter(t => (t.status ?? t.task_status) === "blocked").length} critical task(s) are blocked. 
                 This will delay the entire project timeline.
               </div>
             </div>
@@ -119,7 +121,7 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
 
             return (
               <div key={task.id}>
-                <div className={`p-4 rounded-lg border-2 ${getStatusColor(task.status)}`}>
+                <div className={`p-4 rounded-lg border-2 ${getStatusColor(task.status ?? task.task_status ?? 'not_started')}`}>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -144,7 +146,7 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
                         <div>
                           <div className="text-muted-foreground">End Date</div>
                           <div className="font-medium">
-                            {format(parseISO(task.end_date), "MMM d, yyyy")}
+                            {task.due_date ? format(parseISO(task.due_date), "MMM d, yyyy") : "—"}
                           </div>
                         </div>
                         <div>
@@ -157,7 +159,7 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
                       <div className="text-2xl font-bold">
                         {task.completion_percentage}%
                       </div>
-                      <Badge className="mt-2">{task.status}</Badge>
+                      <Badge className="mt-2">{task.status ?? task.task_status ?? 'not_started'}</Badge>
                     </div>
                   </div>
 
@@ -211,8 +213,8 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
           <div className="flex justify-between items-center p-3 bg-muted/50 rounded">
             <span>Earliest Project Completion</span>
             <span className="font-semibold">
-              {tasks.length > 0 
-                ? format(parseISO(sortedTasks[sortedTasks.length - 1].end_date), "MMM d, yyyy")
+              {tasks.length > 0 && sortedTasks[sortedTasks.length - 1].due_date
+                ? format(parseISO(sortedTasks[sortedTasks.length - 1].due_date), "MMM d, yyyy")
                 : "N/A"}
             </span>
           </div>
@@ -223,7 +225,10 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
           <div className="flex justify-between items-center p-3 bg-muted/50 rounded">
             <span>Tasks at Risk</span>
             <span className="font-semibold text-red-600">
-              {tasks.filter(t => t.status === "blocked" || t.status === "in_progress").length}
+              {tasks.filter(t => {
+                const status = t.status ?? t.task_status;
+                return status === "blocked" || status === "in_progress";
+              }).length}
             </span>
           </div>
         </div>
