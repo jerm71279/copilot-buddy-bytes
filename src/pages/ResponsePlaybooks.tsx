@@ -5,8 +5,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { BookOpen, Play, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { BookOpen, Play, CheckCircle, Clock, AlertCircle, Shield, AlertTriangle, FileWarning, Database, FileText, Activity } from "lucide-react";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 interface Playbook {
   id: string;
@@ -37,6 +38,7 @@ interface PlaybookExecution {
 }
 
 export default function ResponsePlaybooks() {
+  const navigate = useNavigate();
   const [selectedPlaybook, setSelectedPlaybook] = useState<Playbook | null>(null);
 
   const { data: playbooks = [], isLoading: playbooksLoading } = useQuery<Playbook[]>({
@@ -121,6 +123,34 @@ export default function ResponsePlaybooks() {
 
   return (
     <div className="p-8 space-y-6">
+      {/* SOC Navigation */}
+      <div className="flex gap-2 mb-4">
+        <Button variant="outline" size="sm" onClick={() => navigate('/dashboard/soc')}>
+          <Shield className="h-4 w-4 mr-2" />
+          SOC Dashboard
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/alerts')}>
+          <AlertTriangle className="h-4 w-4 mr-2" />
+          Alerts
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/incidents')}>
+          <FileWarning className="h-4 w-4 mr-2" />
+          Incidents
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/threat-intel')}>
+          <Database className="h-4 w-4 mr-2" />
+          Threat Intel
+        </Button>
+        <Button variant="ghost" size="sm" onClick={() => navigate('/security/playbooks')}>
+          <FileText className="h-4 w-4 mr-2" />
+          Playbooks
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/siem')}>
+          <Activity className="h-4 w-4 mr-2" />
+          SIEM
+        </Button>
+      </div>
+
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Response Playbooks</h1>

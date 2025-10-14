@@ -7,8 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Shield, Activity, AlertTriangle, Search, Filter, Download } from 'lucide-react';
+import { Shield, Activity, AlertTriangle, Search, Filter, Download, FileWarning, Database, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface SecurityEvent {
   id: string;
@@ -24,6 +25,7 @@ interface SecurityEvent {
 
 const SIEMDashboard = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [severityFilter, setSeverityFilter] = useState('all');
   const [eventTypeFilter, setEventTypeFilter] = useState('all');
@@ -162,6 +164,34 @@ const SIEMDashboard = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
+      {/* SOC Navigation */}
+      <div className="flex gap-2 mb-4">
+        <Button variant="outline" size="sm" onClick={() => navigate('/dashboard/soc')}>
+          <Shield className="h-4 w-4 mr-2" />
+          SOC Dashboard
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/alerts')}>
+          <AlertTriangle className="h-4 w-4 mr-2" />
+          Alerts
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/incidents')}>
+          <FileWarning className="h-4 w-4 mr-2" />
+          Incidents
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/threat-intel')}>
+          <Database className="h-4 w-4 mr-2" />
+          Threat Intel
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/playbooks')}>
+          <FileText className="h-4 w-4 mr-2" />
+          Playbooks
+        </Button>
+        <Button variant="ghost" size="sm" onClick={() => navigate('/siem')}>
+          <Activity className="h-4 w-4 mr-2" />
+          SIEM
+        </Button>
+      </div>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
