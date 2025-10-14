@@ -34,7 +34,8 @@ export function RiskMatrix({ risks }: RiskMatrixProps) {
     return "bg-green-100 border-green-500";
   };
 
-  const formatLabel = (level: string) => {
+  const formatLabel = (level: string | undefined) => {
+    if (!level) return "—";
     return level.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   };
 
