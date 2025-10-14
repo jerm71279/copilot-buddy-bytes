@@ -234,6 +234,38 @@ Navigate to each file in Dev Mode and download:
 
 ---
 
+#### **MODULE_MANAGEMENT_GUIDE.md** ⭐ NEW (Oct 14, 2025)
+**Purpose**: Comprehensive guide for portal and module enablement controls  
+**Audience**: System administrators, customer success teams  
+**Contents**:
+- Portal access control (7 portals)
+- Dashboard module visibility (8 modules)
+- Accessibility features (WCAG 2.1 AA)
+- Usage and best practices
+- Technical implementation details
+- Troubleshooting guide
+- API integration examples
+- Security considerations and audit trail
+
+**Why Read This**: Master organization-wide feature control and customization
+
+---
+
+#### **PRE_PRODUCTION_AUDIT_OCT14.md** ⭐ NEW (Oct 14, 2025)
+**Purpose**: Pre-production security and design system audit results  
+**Audience**: Security team, QA engineers, developers  
+**Contents**:
+- Design system compliance verification (62 fixes)
+- Security configuration hardening
+- SEO optimization validation
+- WCAG 2.1 accessibility standards
+- Database security linter results
+- Production readiness checklist
+
+**Why Read This**: Understanding platform security posture and quality standards
+
+---
+
 ### 4. Feature-Specific Documentation
 
 #### **CIPP_INTEGRATION_GUIDE.md** ⭐

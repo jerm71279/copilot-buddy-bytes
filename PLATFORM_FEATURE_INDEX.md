@@ -74,6 +74,7 @@
 | `/admin/applications` | ApplicationsAdmin | Manage employee portal apps | ✅ Active |
 | `/admin/customers` | CustomerAdmin | Customer management & settings | ✅ Active |
 | `/admin/products` | ProductsAdmin | Product catalog & pricing management | ✅ New (Oct 9) |
+| `/admin/modules` | ModuleManagement | Portal & module enablement controls | ✅ Active |
 | `/mcp-server` | MCPServerDashboard | MCP server management & monitoring | ✅ Active |
 
 ### Internal Operations (NEW - Oct 13)

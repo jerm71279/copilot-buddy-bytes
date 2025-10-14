@@ -150,101 +150,132 @@ const ModuleManagement = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center" role="status" aria-live="polite">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
+        <span className="sr-only">Loading module settings...</span>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-5xl">
-      <div className="mb-6">
+    <main className="container mx-auto p-6 max-w-5xl">
+      <header className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Module Management</h1>
         <p className="text-muted-foreground">
           Enable or disable portals and modules for your organization
         </p>
-      </div>
+      </header>
 
-      <Alert className="mb-6">
+      <Alert className="mb-6" role="alert">
         <AlertDescription>
           Changes will take effect after saving and refreshing the page. Disabled modules will be hidden from all users in your organization.
         </AlertDescription>
       </Alert>
 
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Portal Access</CardTitle>
-          <CardDescription>
-            Control which main portals are accessible to your users
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {portals.map((portal) => {
-            const Icon = portal.icon;
-            return (
-              <div key={portal.slug} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Icon className="h-5 w-5 text-muted-foreground" />
-                  <Label htmlFor={`portal-${portal.slug}`} className="cursor-pointer">
-                    {portal.label}
-                  </Label>
+      <section aria-labelledby="portal-access-title" className="mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle id="portal-access-title">Portal Access</CardTitle>
+            <CardDescription>
+              Control which main portals are accessible to your users
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {portals.map((portal) => {
+              const Icon = portal.icon;
+              return (
+                <div 
+                  key={portal.slug} 
+                  className="flex items-center justify-between"
+                  role="group"
+                  aria-labelledby={`portal-label-${portal.slug}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+                    <Label 
+                      id={`portal-label-${portal.slug}`}
+                      htmlFor={`portal-${portal.slug}`} 
+                      className="cursor-pointer"
+                    >
+                      {portal.label}
+                    </Label>
+                  </div>
+                  <Switch
+                    id={`portal-${portal.slug}`}
+                    checked={settings.enabled_portals.includes(portal.slug)}
+                    onCheckedChange={() => togglePortal(portal.slug)}
+                    aria-label={`Toggle ${portal.label}`}
+                    aria-describedby={`portal-label-${portal.slug}`}
+                  />
                 </div>
-                <Switch
-                  id={`portal-${portal.slug}`}
-                  checked={settings.enabled_portals.includes(portal.slug)}
-                  onCheckedChange={() => togglePortal(portal.slug)}
-                />
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card>
+              );
+            })}
+          </CardContent>
+        </Card>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Dashboard Modules</CardTitle>
-          <CardDescription>
-            Control which dashboard categories are visible in the navigation
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {modules.map((module) => {
-            const Icon = module.icon;
-            return (
-              <div key={module.slug} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Icon className="h-5 w-5 text-muted-foreground" />
-                  <Label htmlFor={`module-${module.slug}`} className="cursor-pointer">
-                    {module.label}
-                  </Label>
+      <section aria-labelledby="dashboard-modules-title">
+        <Card>
+          <CardHeader>
+            <CardTitle id="dashboard-modules-title">Dashboard Modules</CardTitle>
+            <CardDescription>
+              Control which dashboard categories are visible in the navigation
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {modules.map((module) => {
+              const Icon = module.icon;
+              return (
+                <div 
+                  key={module.slug} 
+                  className="flex items-center justify-between"
+                  role="group"
+                  aria-labelledby={`module-label-${module.slug}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+                    <Label 
+                      id={`module-label-${module.slug}`}
+                      htmlFor={`module-${module.slug}`} 
+                      className="cursor-pointer"
+                    >
+                      {module.label}
+                    </Label>
+                  </div>
+                  <Switch
+                    id={`module-${module.slug}`}
+                    checked={settings.enabled_modules[module.slug] ?? true}
+                    onCheckedChange={() => toggleModule(module.slug)}
+                    aria-label={`Toggle ${module.label}`}
+                    aria-describedby={`module-label-${module.slug}`}
+                  />
                 </div>
-                <Switch
-                  id={`module-${module.slug}`}
-                  checked={settings.enabled_modules[module.slug] ?? true}
-                  onCheckedChange={() => toggleModule(module.slug)}
-                />
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card>
+              );
+            })}
+          </CardContent>
+        </Card>
+      </section>
 
-      <div className="mt-6 flex justify-end">
-        <Button onClick={saveSettings} disabled={saving}>
+      <footer className="mt-6 flex justify-end">
+        <Button 
+          onClick={saveSettings} 
+          disabled={saving}
+          aria-label={saving ? "Saving settings..." : "Save module settings"}
+        >
           {saving ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
               Saving...
             </>
           ) : (
             <>
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="mr-2 h-4 w-4" aria-hidden="true" />
               Save Settings
             </>
           )}
         </Button>
-      </div>
-    </div>
+      </footer>
+    </main>
   );
 };
 

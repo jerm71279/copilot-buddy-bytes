@@ -13,6 +13,7 @@
 - **[API Reference](./API_REFERENCE.md)** - Complete API documentation
 - **[Recent Updates](./RECENT_FEATURES_DOCUMENTATION.md)** - Latest features (Oct 14, 2025)
 - **[Pre-Production Audit](./PRE_PRODUCTION_AUDIT_OCT14.md)** - Security & design audit (Oct 14, 2025)
+- **[Module Management Guide](./MODULE_MANAGEMENT_GUIDE.md)** - Portal & module control documentation (NEW)
 
 ### How to Export All Documentation
 See [DOCUMENTATION_INDEX.md](./DOCUMENTATION_INDEX.md) for complete export instructions via GitHub, Dev Mode, or manual download.
