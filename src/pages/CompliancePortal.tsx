@@ -11,6 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, FileCheck, AlertTriangle, TrendingUp, Plus } from "lucide-react";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 interface Framework {
   id: string;
@@ -112,9 +115,12 @@ export default function CompliancePortal() {
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
         
-        <div className="mb-6">
-          <h1 className="text-4xl font-bold mb-2">Compliance Management</h1>
-          <p className="text-muted-foreground">Track compliance frameworks and evidence collection</p>
+        <div className="mb-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Compliance Management</h1>
+            <p className="text-muted-foreground">Track compliance frameworks and evidence collection</p>
+          </div>
+          <DashboardSettingsMenu dashboardName="Compliance Portal" />
         </div>
 
         <div className="flex flex-wrap items-center gap-3 mb-6 overflow-x-auto">
@@ -295,6 +301,11 @@ export default function CompliancePortal() {
               <div className="text-2xl font-bold">{stats.reports}</div>
             </CardContent>
           </Card>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 mt-6">
+          <DepartmentAIAssistant department="compliance" departmentLabel="Compliance" />
+          <MCPServerStatus filterByServerType="compliance" />
         </div>
       </main>
     </div>

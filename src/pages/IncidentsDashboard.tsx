@@ -15,6 +15,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { AlertCircle, CheckCircle, Clock, Play } from "lucide-react";
 import IncidentEvidenceUpload from "@/components/IncidentEvidenceUpload";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 export default function IncidentsDashboard() {
   const queryClient = useQueryClient();
@@ -138,6 +141,7 @@ export default function IncidentsDashboard() {
             <h1 className="text-3xl font-bold">Incidents Dashboard</h1>
             <p className="text-muted-foreground">Monitor and manage system incidents</p>
           </div>
+          <DashboardSettingsMenu dashboardName="Incidents" />
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
             <Button>Create Incident</Button>
@@ -301,6 +305,11 @@ export default function IncidentsDashboard() {
           </Table>
         </CardContent>
       </Card>
+
+      <div className="grid gap-6 md:grid-cols-2 mt-6">
+        <DepartmentAIAssistant department="incidents" departmentLabel="Incident Management" />
+        <MCPServerStatus filterByServerType="incidents" />
+      </div>
       </div>
     </div>
   );

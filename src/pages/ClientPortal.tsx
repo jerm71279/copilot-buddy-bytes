@@ -17,6 +17,9 @@ import { toast } from "sonner";
 import { Ticket, ShoppingCart, MessageSquare } from "lucide-react";
 import { clientTicketSchema, sanitizeText } from "@/lib/validation";
 import { z } from "zod";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 export default function ClientPortal() {
   const queryClient = useQueryClient();
@@ -149,6 +152,7 @@ export default function ClientPortal() {
             <h1 className="text-3xl font-bold">Client Portal</h1>
             <p className="text-muted-foreground">Manage support tickets and service requests</p>
           </div>
+          <DashboardSettingsMenu dashboardName="Client Portal" />
         <Dialog open={isTicketOpen} onOpenChange={setIsTicketOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -361,6 +365,11 @@ export default function ClientPortal() {
           </div>
         </TabsContent>
       </Tabs>
+
+      <div className="grid gap-6 md:grid-cols-2 mt-6">
+        <DepartmentAIAssistant department="client_portal" departmentLabel="Client Portal" />
+        <MCPServerStatus filterByServerType="client_portal" />
+      </div>
       </main>
     </div>
   );

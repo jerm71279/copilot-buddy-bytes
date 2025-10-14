@@ -12,6 +12,9 @@ import RoleHierarchy from "@/components/rbac/RoleHierarchy";
 import TemporaryPrivileges from "@/components/rbac/TemporaryPrivileges";
 import PermissionAuditLog from "@/components/rbac/PermissionAuditLog";
 import RoleTemplates from "@/components/rbac/RoleTemplates";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 export default function RBACPortal() {
   const [activeTab, setActiveTab] = useState("roles");
@@ -62,14 +65,17 @@ export default function RBACPortal() {
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Shield className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold">Enhanced RBAC Portal</h1>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <Shield className="h-8 w-8 text-primary" />
+              <h1 className="text-4xl font-bold">Enhanced RBAC Portal</h1>
+            </div>
+            <p className="text-muted-foreground">
+              Comprehensive role-based access control management with advanced features
+            </p>
           </div>
-          <p className="text-muted-foreground">
-            Comprehensive role-based access control management with advanced features
-          </p>
+          <DashboardSettingsMenu dashboardName="RBAC Portal" />
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -126,6 +132,11 @@ export default function RBACPortal() {
             <RoleTemplates />
           </TabsContent>
         </Tabs>
+
+        <div className="grid gap-6 md:grid-cols-2 mt-6">
+          <DepartmentAIAssistant department="rbac" departmentLabel="RBAC Management" />
+          <MCPServerStatus filterByServerType="rbac" />
+        </div>
       </main>
     </div>
   );

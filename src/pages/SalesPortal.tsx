@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 import { toast } from "sonner";
 
@@ -84,6 +86,7 @@ const SalesPortal = () => {
             </p>
           </div>
           <div className="flex items-center gap-4">
+            <DashboardSettingsMenu dashboardName="Sales Portal" />
             <span className="text-sm text-muted-foreground">{userProfile?.full_name}</span>
             {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
             <Button onClick={handleSignOut} variant="outline" size="sm">
@@ -383,6 +386,10 @@ const SalesPortal = () => {
             />
           </TabsContent>
         </Tabs>
+
+        <div className="mt-6">
+          <MCPServerStatus filterByServerType="sales" />
+        </div>
       </main>
     </div>
   );

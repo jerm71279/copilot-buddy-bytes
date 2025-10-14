@@ -8,6 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Users, Clock, CheckCircle, AlertCircle, Settings } from "lucide-react";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 interface EmployeeOnboarding {
   id: string;
@@ -120,9 +123,12 @@ export default function EmployeeOnboardingDashboard() {
           </Button>
         </div>
 
-        <div className="mb-6">
-          <h1 className="text-4xl font-bold mb-2">Employee Onboarding</h1>
-          <p className="text-muted-foreground">Manage new employee onboarding processes</p>
+        <div className="mb-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Employee Onboarding</h1>
+            <p className="text-muted-foreground">Manage new employee onboarding processes</p>
+          </div>
+          <DashboardSettingsMenu dashboardName="Employee Onboarding" />
         </div>
 
         {/* Stats Cards */}
@@ -220,6 +226,11 @@ export default function EmployeeOnboardingDashboard() {
             ))}
           </div>
         )}
+
+        <div className="grid gap-6 md:grid-cols-2 mt-6">
+          <DepartmentAIAssistant department="hr" departmentLabel="HR - Employee Onboarding" />
+          <MCPServerStatus filterByServerType="hr" />
+        </div>
       </main>
     </div>
   );

@@ -23,6 +23,9 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
+import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import MCPServerStatus from "@/components/MCPServerStatus";
 
 interface ValidationResult {
   category: string;
@@ -338,10 +341,11 @@ export default function SystemValidationDashboard() {
           ]}
         />
         
-        <div className="mb-8">
+        <div className="mb-8 flex justify-between items-center">
           <p className="text-muted-foreground">
             Comprehensive validation and testing of all system components
           </p>
+          <DashboardSettingsMenu dashboardName="System Validation" />
         </div>
 
         <Card className="mb-6">

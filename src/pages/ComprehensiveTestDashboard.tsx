@@ -29,6 +29,9 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { DashboardSettingsMenu } from '@/components/DashboardSettingsMenu';
+import { DepartmentAIAssistant } from '@/components/DepartmentAIAssistant';
+import MCPServerStatus from '@/components/MCPServerStatus';
 
 interface TestCase {
   id: string;
@@ -249,10 +252,11 @@ export default function ComprehensiveTestDashboard() {
           ]}
         />
         
-        <div className="mb-8">
+        <div className="mb-8 flex justify-between items-center">
           <p className="text-muted-foreground">
             Generate test data, run fuzz tests, and validate system security
           </p>
+          <DashboardSettingsMenu dashboardName="Comprehensive Testing" />
         </div>
 
         <Tabs defaultValue="overview" className="w-full">
