@@ -27,6 +27,7 @@ import SecurityAlerts from "./pages/SecurityAlerts";
 import SecurityIncidents from "./pages/SecurityIncidents";
 import ThreatIntelligence from "./pages/ThreatIntelligence";
 import ResponsePlaybooks from "./pages/ResponsePlaybooks";
+import SIEMDashboard from "./pages/SIEMDashboard";
 import RiskAssessmentPortal from "./pages/RiskAssessmentPortal";
 import SharePointSync from "./pages/SharePointSync";
 import IntelligentAssistant from "./pages/IntelligentAssistant";
@@ -259,6 +260,11 @@ const App = () => (
           <Route path="/security/playbooks" element={
             <ProtectedRoute requireAdmin>
               <ResponsePlaybooks />
+            </ProtectedRoute>
+          } />
+          <Route path="/siem" element={
+            <ProtectedRoute requireAdmin>
+              <SIEMDashboard />
             </ProtectedRoute>
           } />
           <Route path="/risk-assessment" element={

@@ -840,6 +840,10 @@ const SOCDashboard = () => {
                 <FileText className="h-4 w-4 mr-2" />
                 Playbooks
               </Button>
+              <Button variant="outline" className="justify-start" onClick={() => navigate('/siem')}>
+                <Activity className="h-4 w-4 mr-2" />
+                SIEM Dashboard
+              </Button>
               <Button variant="outline" className="justify-start" onClick={() => navigate('/risk-assessment')}>
                 <Shield className="h-4 w-4 mr-2" />
                 Risk Assessment
