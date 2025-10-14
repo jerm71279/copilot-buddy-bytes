@@ -8,7 +8,8 @@ import {
   BarChart3,
   ArrowLeft,
   ChevronDown,
-  Search
+  Search,
+  Github
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -589,6 +590,16 @@ export default function DashboardPortalLanes() {
                   </div>
                 );
               })}
+              <Link to="/developers">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 px-4 py-2 text-sm font-medium"
+                >
+                  <Github className="h-4 w-4" />
+                  GitHub
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 size="sm"
