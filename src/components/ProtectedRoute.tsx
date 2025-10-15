@@ -80,6 +80,11 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
     );
   }
 
+  // Bypass all checks if development toggle is enabled
+  if (BYPASS_AUTH) {
+    return <>{children}</>;
+  }
+
   if (!isAuthenticated) {
     return <Navigate to="/auth" replace />;
   }
