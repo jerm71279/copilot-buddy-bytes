@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AzureEventGridStatus } from "@/components/AzureEventGridStatus";
+import { ChangeRequestLinkingInfo } from "@/components/ChangeRequestLinkingInfo";
 
 /**
  * Change Management Dashboard Data Flow
@@ -75,6 +76,7 @@ interface ChangeRequest {
   requested_by: string;
   scheduled_start_time?: string;
   created_at: string;
+  compliance_tags?: string[];
 }
 
 const ChangeManagement = () => {
@@ -235,6 +237,9 @@ const ChangeManagement = () => {
 
         {/* Main Content */}
         <div className="grid gap-6 mb-8">
+          {/* Info Card */}
+          <ChangeRequestLinkingInfo />
+          
           {/* Azure Event Grid Integration Card */}
           <AzureEventGridStatus />
 
@@ -290,6 +295,11 @@ const ChangeManagement = () => {
                             <div className="flex items-center gap-3 mb-2">
                               <Badge variant="outline">{change.change_number}</Badge>
                               <h4 className="font-semibold">{change.title}</h4>
+                              {change.compliance_tags?.includes('automated') && (
+                                <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                                  AUTO-LOGGED
+                                </Badge>
+                              )}
                             </div>
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               <span className="capitalize">{change.change_type.replace("_", " ")}</span>

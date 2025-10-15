@@ -1252,6 +1252,7 @@ export type Database = {
           ninjaone_ticket_url: string | null
           primary_ci_id: string | null
           priority: Database["public"]["Enums"]["change_priority"]
+          related_change_id: string | null
           requested_by: string
           requested_end_time: string | null
           requested_start_time: string | null
@@ -1309,6 +1310,7 @@ export type Database = {
           ninjaone_ticket_url?: string | null
           primary_ci_id?: string | null
           priority?: Database["public"]["Enums"]["change_priority"]
+          related_change_id?: string | null
           requested_by: string
           requested_end_time?: string | null
           requested_start_time?: string | null
@@ -1366,6 +1368,7 @@ export type Database = {
           ninjaone_ticket_url?: string | null
           primary_ci_id?: string | null
           priority?: Database["public"]["Enums"]["change_priority"]
+          related_change_id?: string | null
           requested_by?: string
           requested_end_time?: string | null
           requested_start_time?: string | null
@@ -1400,6 +1403,20 @@ export type Database = {
             columns: ["primary_ci_id"]
             isOneToOne: false
             referencedRelation: "configuration_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_related_change_id_fkey"
+            columns: ["related_change_id"]
+            isOneToOne: false
+            referencedRelation: "change_request_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_related_change_id_fkey"
+            columns: ["related_change_id"]
+            isOneToOne: false
+            referencedRelation: "change_requests"
             referencedColumns: ["id"]
           },
           {

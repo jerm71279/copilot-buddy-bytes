@@ -87,6 +87,15 @@ serve(async (req) => {
 
         if (!template) continue;
 
+        // Search for matching planned change request
+        const relatedChangeId = await findRelatedPlannedChange(
+          supabaseClient,
+          template.customer_id,
+          resourceName,
+          resourceType,
+          templateId
+        );
+
         // Create automatic change request
         const changeRequest = {
           customer_id: template.customer_id,
@@ -106,6 +115,7 @@ serve(async (req) => {
           selected_scenario_id: scenarioId,
           completed_at: timestamp,
           compliance_tags: ['azure', 'automated', resourceType.toLowerCase()],
+          related_change_id: relatedChangeId,
         };
 
         const { data: createdChange, error: createError } = await supabaseClient
@@ -121,6 +131,21 @@ serve(async (req) => {
 
         createdChanges.push(createdChange);
         console.log('Created automatic change request:', createdChange.change_number);
+
+        // If linked to planned change, update the planned change status
+        if (relatedChangeId) {
+          await supabaseClient
+            .from('change_requests')
+            .update({
+              change_status: 'completed',
+              actual_start_time: timestamp,
+              actual_end_time: timestamp,
+              completion_notes: `Automatically completed. Actual Azure change logged as ${createdChange.change_number}`
+            })
+            .eq('id', relatedChangeId);
+          
+          console.log('Linked and completed planned change:', relatedChangeId);
+        }
 
       } catch (error) {
         console.error('Error processing event:', error);
@@ -232,4 +257,62 @@ async function findMatchingTemplate(
     scenarioId: null,
     category: 'azure_infrastructure'
   };
+}
+
+async function findRelatedPlannedChange(
+  supabase: any,
+  customerId: string,
+  resourceName: string,
+  resourceType: string,
+  templateId: string
+): Promise<string | null> {
+  try {
+    // Search for open/approved change requests that might match this resource
+    // Look for changes in last 30 days that mention this resource
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const { data: changes } = await supabase
+      .from('change_requests')
+      .select('id, title, description, change_status, scheduled_start_time')
+      .eq('customer_id', customerId)
+      .eq('template_id', templateId)
+      .in('change_status', ['approved', 'scheduled', 'in_progress'])
+      .gte('created_at', thirtyDaysAgo.toISOString())
+      .order('created_at', { ascending: false });
+
+    if (!changes || changes.length === 0) return null;
+
+    // Try to match based on resource name or type in title/description
+    const matchingChange = changes.find((change: any) => {
+      const searchText = `${change.title} ${change.description}`.toLowerCase();
+      return searchText.includes(resourceName.toLowerCase()) || 
+             searchText.includes(resourceType.toLowerCase());
+    });
+
+    if (matchingChange) {
+      console.log('Found matching planned change:', matchingChange.id);
+      return matchingChange.id;
+    }
+
+    // If no specific match, link to most recent approved change for same template
+    // This handles bulk operations where resource name might not match exactly
+    const recentChange = changes[0];
+    if (recentChange && recentChange.scheduled_start_time) {
+      const scheduledDate = new Date(recentChange.scheduled_start_time);
+      const now = new Date();
+      
+      // If scheduled within last 24 hours, likely related
+      const hoursDiff = (now.getTime() - scheduledDate.getTime()) / (1000 * 60 * 60);
+      if (Math.abs(hoursDiff) <= 24) {
+        console.log('Linked to recent scheduled change:', recentChange.id);
+        return recentChange.id;
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error finding related change:', error);
+    return null;
+  }
 }

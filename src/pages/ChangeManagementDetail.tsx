@@ -28,6 +28,8 @@ const ChangeManagementDetail = () => {
   const [loading, setLoading] = useState(true);
   const [change, setChange] = useState<any>(null);
   const [impactAnalysis, setImpactAnalysis] = useState<any>(null);
+  const [relatedChange, setRelatedChange] = useState<any>(null);
+  const [linkedToThis, setLinkedToThis] = useState<any[]>([]);
   const [creatingTicket, setCreatingTicket] = useState(false);
   const [syncingTicket, setSyncingTicket] = useState(false);
 
@@ -59,6 +61,30 @@ const ChangeManagementDetail = () => {
         .maybeSingle();
 
       setImpactAnalysis(analysisData);
+      
+      // Fetch related change if this was auto-logged
+      if (changeData.related_change_id) {
+        const { data: relatedData } = await supabase
+          .from("change_requests")
+          .select("id, change_number, title, change_status")
+          .eq("id", changeData.related_change_id)
+          .single();
+        
+        if (relatedData) {
+          setRelatedChange(relatedData);
+        }
+      }
+      
+      // Fetch changes linked TO this change (if this is a planned change)
+      const { data: linkedData } = await supabase
+        .from("change_requests")
+        .select("id, change_number, title, change_status, completed_at")
+        .eq("related_change_id", id)
+        .order("completed_at", { ascending: false });
+      
+      if (linkedData) {
+        setLinkedToThis(linkedData);
+      }
     } catch (error) {
       console.error("Error loading change data:", error);
       toast.error("Failed to load change request");
@@ -256,6 +282,18 @@ const ChangeManagementDetail = () => {
                       NinjaOne #{change.ninjaone_ticket_number}
                     </Badge>
                   )}
+                  {relatedChange && (
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      <ExternalLink className="h-3 w-3" />
+                      Linked to planned CR: {relatedChange.change_number}
+                    </Badge>
+                  )}
+                  {linkedToThis.length > 0 && (
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3" />
+                      {linkedToThis.length} automated execution{linkedToThis.length > 1 ? 's' : ''}
+                    </Badge>
+                  )}
                 </div>
                 <CardDescription className="mt-2">{change.description}</CardDescription>
                 {change.ninjaone_ticket_status && (
@@ -264,11 +302,73 @@ const ChangeManagementDetail = () => {
                     {change.ninjaone_ticket_synced_at && (
                       <span className="ml-2">
                         Last synced: {new Date(change.ninjaone_ticket_synced_at).toLocaleString()}
-                      </span>
-                    )}
-                  </p>
-                )}
-              </div>
+                    </span>
+                  )}
+                </p>
+              )}
+              
+              {/* Related Change Information */}
+              {relatedChange && (
+                <Card className="mt-4 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+                  <CardContent className="pt-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-sm font-semibold mb-1">Planned Change Request</h4>
+                        <p className="text-sm text-muted-foreground">
+                          This automated change was executed as part of:
+                        </p>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => navigate(`/change-management/${relatedChange.id}`)}
+                      >
+                        View Planned CR →
+                      </Button>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <Badge>{relatedChange.change_number}</Badge>
+                      <span className="text-sm">{relatedChange.title}</span>
+                      <Badge variant={relatedChange.change_status === 'completed' ? 'default' : 'secondary'}>
+                        {relatedChange.change_status.replace('_', ' ')}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {/* Linked Automated Changes */}
+              {linkedToThis.length > 0 && (
+                <Card className="mt-4 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
+                  <CardContent className="pt-4">
+                    <h4 className="text-sm font-semibold mb-3">Automated Executions</h4>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      The following Azure changes were automatically logged when this change was implemented:
+                    </p>
+                    <div className="space-y-2">
+                      {linkedToThis.map((linked) => (
+                        <div 
+                          key={linked.id}
+                          className="flex items-center justify-between p-2 bg-background rounded-md border cursor-pointer hover:bg-accent"
+                          onClick={() => navigate(`/change-management/${linked.id}`)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary">{linked.change_number}</Badge>
+                            <span className="text-sm">{linked.title}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(linked.completed_at).toLocaleString()}
+                            </span>
+                            <ExternalLink className="h-4 w-4" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
               <div className="flex gap-2">
                 <Badge variant={
                   change.priority === "critical" ? "destructive" :
