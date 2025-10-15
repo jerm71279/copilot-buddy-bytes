@@ -48,11 +48,11 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed": return "bg-green-100 text-green-800 border-green-300";
-      case "in_progress": return "bg-blue-100 text-blue-800 border-blue-300";
-      case "blocked": return "bg-red-100 text-red-800 border-red-300";
-      case "not_started": return "bg-gray-100 text-gray-800 border-gray-300";
-      default: return "bg-gray-100 text-gray-800 border-gray-300";
+      case "completed": return "bg-success/10 text-success border-success/30";
+      case "in_progress": return "bg-primary/10 text-primary border-primary/30";
+      case "blocked": return "bg-destructive/10 text-destructive border-destructive/30";
+      case "not_started": return "bg-muted/50 text-muted-foreground border-border";
+      default: return "bg-muted/50 text-muted-foreground border-border";
     }
   };
 
@@ -95,12 +95,12 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
 
       {/* Warning for Blocked Tasks */}
       {tasks.some(t => (t.status ?? t.task_status) === "blocked") && (
-        <Card className="p-4 bg-red-50 border-red-200">
+        <Card className="p-4 bg-destructive/10 border-destructive/30">
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-destructive mt-0.5" />
             <div>
-              <div className="font-semibold text-red-900">Critical Path Blocked</div>
-              <div className="text-sm text-red-700 mt-1">
+              <div className="font-semibold text-destructive">Critical Path Blocked</div>
+              <div className="text-sm text-destructive/80 mt-1">
                 {tasks.filter(t => (t.status ?? t.task_status) === "blocked").length} critical task(s) are blocked. 
                 This will delay the entire project timeline.
               </div>
