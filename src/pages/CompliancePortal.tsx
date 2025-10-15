@@ -285,7 +285,7 @@ export default function CompliancePortal() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.complianceScore}%</div>
+              <div className="text-2xl font-bold text-[hsl(var(--success))]">{stats.complianceScore}%</div>
               <Progress value={stats.complianceScore} className="mt-2" />
             </CardContent>
           </Card>

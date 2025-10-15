@@ -582,7 +582,7 @@ const ChangeManagementDetail = () => {
 
                   {change.submitted_at && (
                     <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+                      <CheckCircle className="h-5 w-5 text-[hsl(var(--blue))] mt-0.5" />
                       <div>
                         <p className="font-medium">Submitted for Approval</p>
                         <p className="text-sm text-muted-foreground">
@@ -594,7 +594,7 @@ const ChangeManagementDetail = () => {
 
                   {change.approved_at && (
                     <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                      <CheckCircle className="h-5 w-5 text-[hsl(var(--success))] mt-0.5" />
                       <div>
                         <p className="font-medium">Approved</p>
                         <p className="text-sm text-muted-foreground">
@@ -606,7 +606,7 @@ const ChangeManagementDetail = () => {
 
                   {change.scheduled_start_time && (
                     <div className="flex items-start gap-3">
-                      <Clock className="h-5 w-5 text-purple-600 mt-0.5" />
+                      <Clock className="h-5 w-5 text-[hsl(var(--violet))] mt-0.5" />
                       <div>
                         <p className="font-medium">Scheduled Start</p>
                         <p className="text-sm text-muted-foreground">
@@ -618,7 +618,7 @@ const ChangeManagementDetail = () => {
 
                   {change.completed_at && (
                     <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                      <CheckCircle className="h-5 w-5 text-[hsl(var(--success))] mt-0.5" />
                       <div>
                         <p className="font-medium">Completed</p>
                         <p className="text-sm text-muted-foreground">

@@ -77,10 +77,10 @@ export default function ComprehensiveTestDashboard() {
 
   const getStatusIcon = (status: TestCase['status']) => {
     switch (status) {
-      case 'passed': return <CheckCircle2 className="h-5 w-5 text-green-500" />;
-      case 'failed': return <XCircle className="h-5 w-5 text-red-500" />;
-      case 'blocked': return <AlertCircle className="h-5 w-5 text-yellow-500" />;
-      case 'in-progress': return <Clock className="h-5 w-5 text-blue-500" />;
+      case 'passed': return <CheckCircle2 className="h-5 w-5 text-[hsl(var(--success))]" />;
+      case 'failed': return <XCircle className="h-5 w-5 text-destructive" />;
+      case 'blocked': return <AlertCircle className="h-5 w-5 text-[hsl(var(--warning))]" />;
+      case 'in-progress': return <Clock className="h-5 w-5 text-[hsl(var(--blue))]" />;
       default: return <div className="h-5 w-5 rounded-full border-2 border-muted" />;
     }
   };
@@ -280,7 +280,7 @@ export default function ComprehensiveTestDashboard() {
               <CardContent className="space-y-4">
                 {testUser ? (
                   <Alert>
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))]" />
                     <AlertTitle>Test User Active</AlertTitle>
                     <AlertDescription className="space-y-3">
                       <div className="flex items-center gap-4 mt-2">
@@ -345,19 +345,19 @@ export default function ComprehensiveTestDashboard() {
               </CardContent>
             </Card>
 
-            <Alert className="border-green-200 bg-green-50">
-              <Shield className="h-4 w-4 text-green-600" />
-              <AlertTitle className="text-green-900">Input Validation System Active</AlertTitle>
-              <AlertDescription className="text-green-800">
+            <Alert className="border-[hsl(var(--success))]/20 bg-[hsl(var(--success))]/10">
+              <Shield className="h-4 w-4 text-[hsl(var(--success))]" />
+              <AlertTitle className="text-foreground">Input Validation System Active</AlertTitle>
+              <AlertDescription>
                 <div className="space-y-2 mt-2">
                   <p>Multi-layer protection against SQL injection, XSS, path traversal, and other attacks:</p>
                   <div className="grid grid-cols-2 gap-2 mt-3">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))]" />
                       <span className="text-sm">Client-side validation</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))]" />
                       <span className="text-sm">Edge function validation</span>
                     </div>
                     <div className="flex items-center gap-2">

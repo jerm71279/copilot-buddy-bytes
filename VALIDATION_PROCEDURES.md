@@ -185,30 +185,27 @@ After validation and fixes, update:
 ### Medium Priority (Design System)
 
 **Hardcoded Colors (Last Updated: 2025-10-15)**
-- **FIXED**: All component files (8 files, 28 text + 9 bg + 5 border violations)
-- **IN PROGRESS**: Page files (~170 violations in 40+ files remaining)
+- **BATCH 1 COMPLETE**: 42 violations fixed in 14 files
+- **BATCH 2 COMPLETE**: 25 violations fixed in 7 files
+- **Total Fixed**: 67 violations across 21 files
+- **IN PROGRESS**: ~145 violations in ~35 files remaining
 
-Critical files completed:
-- ✅ `src/components/ui/badge.tsx` - Added success/warning/info variants
-- ✅ `src/components/AIMCPGenerator.tsx`
-- ✅ `src/components/AutomationSuggestions.tsx`
-- ✅ `src/components/CIHealthScore.tsx`
-- ✅ `src/components/CIAuditLog.tsx`
-- ✅ `src/components/CIRelationshipMap.tsx`
-- ✅ `src/components/ChangeRequestLinkingInfo.tsx`
-- ✅ `src/components/Integrations.tsx`
-- ✅ `src/components/Microsoft365Integration.tsx`
-- ✅ `src/components/Navigation.tsx`
-- ✅ `src/components/WorkflowExecutionHistory.tsx`
+**Completed Files:**
+- ✅ All 11 component files (Batch 1)
+- ✅ 10 page files (Batches 1-2)
 
-Pages completed:
-- ✅ `src/pages/CIPPDashboard.tsx`
-- ✅ `src/pages/CMMCReadiness.tsx`
-- ✅ `src/pages/ChangeManagement.tsx`
+**Batch 2 Pages:**
+- ✅ `src/pages/CMDBDashboard.tsx`
+- ✅ `src/pages/CMDBReconciliation.tsx`
+- ✅ `src/pages/ChangeManagementDetail.tsx`
+- ✅ `src/pages/ComplianceReportDetail.tsx`
+- ✅ `src/pages/ComprehensiveTestDashboard.tsx`
+- ✅ `src/pages/ComplianceFrameworkDetail.tsx`
+- ✅ `src/pages/CompliancePortal.tsx`
 
-Remaining pages to fix: ~40 files with ~170 violations
+**Remaining Files**: ~35 pages with ~145 violations
 
-**Progress: 42 violations fixed / ~212 total (20%)**
+**Progress: 67/212 violations fixed (32%)**
 
 ## Validation Templates
 

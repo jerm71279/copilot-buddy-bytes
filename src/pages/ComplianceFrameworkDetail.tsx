@@ -202,7 +202,7 @@ export default function ComplianceFrameworkDetail() {
               <CardTitle className="text-sm font-medium">Compliance Score</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-[hsl(var(--success))]">
                 {controls.length > 0 ? Math.round((evidenceFiles.length / controls.length) * 100) : 0}%
               </div>
             </CardContent>

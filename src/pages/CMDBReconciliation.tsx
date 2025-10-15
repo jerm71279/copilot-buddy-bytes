@@ -273,14 +273,14 @@ const CMDBReconciliation = () => {
           <CardContent>
             <div className="grid grid-cols-3 gap-4">
               <div className="flex items-center gap-3 p-4 bg-accent/10 rounded-lg">
-                <AlertTriangle className="h-8 w-8 text-yellow-600" />
+                <AlertTriangle className="h-8 w-8 text-[hsl(var(--warning))]" />
                 <div>
                   <p className="text-2xl font-bold">{duplicates.length}</p>
                   <p className="text-sm text-muted-foreground">Duplicate Groups</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 bg-accent/10 rounded-lg">
-                <GitMerge className="h-8 w-8 text-blue-600" />
+                <GitMerge className="h-8 w-8 text-[hsl(var(--blue))]" />
                 <div>
                   <p className="text-2xl font-bold">
                     {duplicates.reduce((sum, g) => sum + g.cis.length, 0)}
@@ -289,7 +289,7 @@ const CMDBReconciliation = () => {
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 bg-accent/10 rounded-lg">
-                <CheckCircle className="h-8 w-8 text-green-600" />
+                <CheckCircle className="h-8 w-8 text-[hsl(var(--success))]" />
                 <div>
                   <p className="text-2xl font-bold">
                     {duplicates.filter(g => g.confidence >= 90).length}
@@ -305,7 +305,7 @@ const CMDBReconciliation = () => {
           <Card>
             <CardContent className="py-12">
               <div className="text-center">
-                <CheckCircle className="h-16 w-16 mx-auto text-green-600 mb-4" />
+                <CheckCircle className="h-16 w-16 mx-auto text-[hsl(var(--success))] mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No Duplicates Found</h3>
                 <p className="text-muted-foreground">
                   Your CMDB is clean and well-maintained!
@@ -320,7 +320,7 @@ const CMDBReconciliation = () => {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                      <AlertTriangle className="h-5 w-5 text-[hsl(var(--warning))]" />
                       <div>
                         <CardTitle className="text-lg">{group.matchType}</CardTitle>
                         <CardDescription>{group.cis.length} potential duplicates</CardDescription>
