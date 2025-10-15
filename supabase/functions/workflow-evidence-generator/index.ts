@@ -23,7 +23,28 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { workflow_id, workflow_name, customer_id, triggered_by, execution_id }: WorkflowExecutionData = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const workflow_id = String(requestData.workflow_id || '').slice(0, 100);
+    const workflow_name = String(requestData.workflow_name || '').slice(0, 200);
+    const customer_id = String(requestData.customer_id || '').slice(0, 100);
+    const triggered_by = String(requestData.triggered_by || '').slice(0, 100);
+    const execution_id = String(requestData.execution_id || '').slice(0, 100);
+    
+    if (!workflow_id || !workflow_name || !customer_id || !triggered_by || !execution_id) {
+      return new Response(
+        JSON.stringify({ error: 'workflow_id, workflow_name, customer_id, triggered_by, and execution_id are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     console.log('Generating evidence for workflow:', workflow_name);
 
@@ -126,9 +147,9 @@ Deno.serve(async (req) => {
             compliance_tags: ['automated', mapping.category, control_id.toLowerCase()]
           })
           .select()
-          .single();
+          .maybeSingle();
 
-        if (evidenceError) {
+        if (evidenceError || !evidence) {
           console.error('Error creating evidence:', evidenceError);
         } else {
           evidenceRecords.push(evidence);

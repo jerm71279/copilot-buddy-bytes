@@ -17,14 +17,38 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { feedId } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const feedId = String(requestData.feedId || '').slice(0, 100);
+    
+    if (!feedId) {
+      return new Response(
+        JSON.stringify({ error: 'feedId is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Get feed configuration
     const { data: feed, error: feedError } = await supabase
       .from('threat_intel_feeds')
       .select('*')
       .eq('id', feedId)
-      .single();
+      .maybeSingle();
+    
+    if (!feed) {
+      return new Response(
+        JSON.stringify({ error: 'Threat intel feed not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (feedError) throw feedError;
 

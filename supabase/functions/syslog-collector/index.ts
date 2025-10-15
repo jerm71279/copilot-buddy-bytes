@@ -43,7 +43,48 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const syslogData: SyslogMessage = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const sourceIp = String(requestData.sourceIp || '').slice(0, 100);
+    const hostname = requestData.hostname ? String(requestData.hostname).slice(0, 100) : undefined;
+    const inputFacility = requestData.facility ? Math.min(Math.max(Number(requestData.facility) || 16, 0), 23) : undefined;
+    const inputSeverity = requestData.severity ? Math.min(Math.max(Number(requestData.severity) || 6, 0), 7) : undefined;
+    const timestamp = requestData.timestamp ? String(requestData.timestamp).slice(0, 50) : undefined;
+    const appName = requestData.appName ? String(requestData.appName).slice(0, 100) : undefined;
+    const procId = requestData.procId ? String(requestData.procId).slice(0, 50) : undefined;
+    const msgId = requestData.msgId ? String(requestData.msgId).slice(0, 50) : undefined;
+    const message = String(requestData.message || '').slice(0, 2000);
+    const structuredData = requestData.structuredData;
+    const providedCustomerId = requestData.customerId ? String(requestData.customerId).slice(0, 100) : undefined;
+    
+    if (!sourceIp || !message) {
+      return new Response(
+        JSON.stringify({ error: 'sourceIp and message are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const syslogData: SyslogMessage = {
+      sourceIp,
+      hostname,
+      facility: inputFacility,
+      severity: inputSeverity,
+      timestamp,
+      appName,
+      procId,
+      msgId,
+      message,
+      structuredData,
+      customerId: providedCustomerId
+    };
     
     console.log('Received syslog message:', syslogData.sourceIp, syslogData.message.substring(0, 100));
 
@@ -93,7 +134,11 @@ Deno.serve(async (req) => {
         is_security_event: isSecurityEvent,
       })
       .select()
-      .single();
+      .maybeSingle();
+    
+    if (!syslogMsg) {
+      throw new Error('Failed to store syslog message');
+    }
 
     if (syslogError) throw syslogError;
 

@@ -103,10 +103,10 @@ serve(async (req) => {
       .eq('id', webhookId)
       .eq('trigger_type', 'webhook')     // Must be webhook type
       .eq('is_enabled', true)            // Must be enabled
-      .single();
+      .maybeSingle();
 
     // Validation: trigger must exist and be enabled
-    if (triggerError || !trigger) {
+    if (!trigger) {
       console.error('Trigger not found or disabled:', triggerError);
       return new Response(
         JSON.stringify({ error: 'Webhook not found or disabled' }),

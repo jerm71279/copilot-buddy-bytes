@@ -31,14 +31,32 @@ serve(async (req) => {
       });
     }
 
-    const { analysisType, timeframe = '24h' } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    const analysisType = requestData.analysisType ? String(requestData.analysisType).slice(0, 50) : undefined;
+    const timeframe = requestData.timeframe ? String(requestData.timeframe).slice(0, 10) : '24h';
+    
+    if (!['1h', '24h', '7d', '30d'].includes(timeframe)) {
+      return new Response(JSON.stringify({ error: 'Invalid timeframe. Must be 1h, 24h, 7d, or 30d' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Get customer_id from user profile
     const { data: profile } = await supabaseClient
       .from('user_profiles')
       .select('customer_id')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile?.customer_id) {
       return new Response(JSON.stringify({ error: 'No customer profile found' }), {
