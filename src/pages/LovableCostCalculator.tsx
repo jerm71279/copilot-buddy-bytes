@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 const LovableCostCalculator = () => {
   // User inputs
   const [lovableSeats, setLovableSeats] = useState(5);
-  const [lovableTier, setLovableTier] = useState<'free' | 'pro' | 'team'>('team');
+  const [lovableTier, setLovableTier] = useState<'free' | 'pro' | 'team' | 'enterprise'>('team');
   
   // App profile selection
   const [appType, setAppType] = useState<'personal' | 'small-business' | 'team-project' | 'ecommerce' | 'custom'>('team-project');
@@ -26,7 +26,8 @@ const LovableCostCalculator = () => {
   const LOVABLE_PRICING = {
     free: 0,
     pro: 20,
-    team: 40
+    team: 40,
+    enterprise: 0 // Custom pricing - contact sales
   };
 
   const CLOUD_FREE_TIER = 25;
@@ -77,7 +78,9 @@ const LovableCostCalculator = () => {
   };
 
   // Calculate costs
-  const lovableSubscriptionCost = lovableSeats * LOVABLE_PRICING[lovableTier];
+  const lovableSubscriptionCost = lovableTier === 'enterprise' 
+    ? 0 
+    : lovableSeats * LOVABLE_PRICING[lovableTier];
   
   const selectedProfile = APP_PROFILES[appType];
   const rawCloudCost = appType === 'custom' ? cloudEstimate : selectedProfile.cloudCost;
@@ -99,7 +102,7 @@ const LovableCostCalculator = () => {
         </div>
         <Badge variant="outline" className="text-lg px-4 py-2">
           <DollarSign className="h-4 w-4 mr-2" />
-          ${totalMonthlyCost.toFixed(2)}/month
+          {lovableTier === 'enterprise' ? 'Custom Pricing' : `$${totalMonthlyCost.toFixed(2)}/month`}
         </Badge>
       </div>
 
@@ -134,9 +137,14 @@ const LovableCostCalculator = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${lovableSubscriptionCost.toFixed(2)}</div>
+            <div className="text-2xl font-bold">
+              {lovableTier === 'enterprise' ? 'Custom' : `$${lovableSubscriptionCost.toFixed(2)}`}
+            </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {lovableSeats} {lovableTier} seat{lovableSeats > 1 ? 's' : ''}
+              {lovableTier === 'enterprise' 
+                ? 'Contact sales for pricing' 
+                : `${lovableSeats} ${lovableTier} seat${lovableSeats > 1 ? 's' : ''}`
+              }
             </p>
           </CardContent>
         </Card>
@@ -180,16 +188,29 @@ const LovableCostCalculator = () => {
             <CardDescription>Your team's Lovable plan</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label>Lovable Team Seats: {lovableSeats}</Label>
-              <Slider
-                value={[lovableSeats]}
-                onValueChange={(v) => setLovableSeats(v[0])}
-                min={1}
-                max={10}
-                step={1}
-              />
-            </div>
+            {lovableTier !== 'enterprise' && (
+              <div className="space-y-2">
+                <Label>Lovable Team Seats: {lovableSeats}</Label>
+                <Slider
+                  value={[lovableSeats]}
+                  onValueChange={(v) => setLovableSeats(v[0])}
+                  min={1}
+                  max={10}
+                  step={1}
+                />
+              </div>
+            )}
+
+            {lovableTier === 'enterprise' && (
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Enterprise Plan:</strong> Custom pricing based on your needs. Contact{' '}
+                  <a href="mailto:sales@lovable.dev" className="underline">sales@lovable.dev</a> for a quote.
+                  This calculator shows Cloud and AI costs only.
+                </AlertDescription>
+              </Alert>
+            )}
 
             <div className="space-y-2">
               <Label>Lovable Subscription Tier</Label>
@@ -201,6 +222,7 @@ const LovableCostCalculator = () => {
                   <SelectItem value="free">Free (Limited features)</SelectItem>
                   <SelectItem value="pro">Pro ($20/seat/month)</SelectItem>
                   <SelectItem value="team">Team ($40/seat/month)</SelectItem>
+                  <SelectItem value="enterprise">Enterprise (Custom pricing)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -327,8 +349,15 @@ const LovableCostCalculator = () => {
         <CardContent>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm">Lovable Subscription ({lovableSeats} {lovableTier} seat{lovableSeats > 1 ? 's' : ''})</span>
-              <span className="font-medium">${lovableSubscriptionCost.toFixed(2)}</span>
+              <span className="text-sm">
+                Lovable Subscription {lovableTier === 'enterprise' 
+                  ? '(Enterprise - Custom Pricing)' 
+                  : `(${lovableSeats} ${lovableTier} seat${lovableSeats > 1 ? 's' : ''})`
+                }
+              </span>
+              <span className="font-medium">
+                {lovableTier === 'enterprise' ? 'Contact Sales' : `$${lovableSubscriptionCost.toFixed(2)}`}
+              </span>
             </div>
             <Separator />
             
@@ -361,14 +390,21 @@ const LovableCostCalculator = () => {
             <Separator />
             
             <div className="flex justify-between items-center text-lg font-bold">
-              <span>Total Monthly Cost</span>
-              <span className="text-primary">${totalMonthlyCost.toFixed(2)}</span>
+              <span>Total Monthly Cost {lovableTier === 'enterprise' && '(Cloud + AI only)'}</span>
+              <span className="text-primary">
+                {lovableTier === 'enterprise' 
+                  ? `$${(effectiveCloudCost + effectiveAICost).toFixed(2)} + Enterprise Fee` 
+                  : `$${totalMonthlyCost.toFixed(2)}`
+                }
+              </span>
             </div>
             
-            <div className="flex justify-between items-center text-sm text-muted-foreground">
-              <span>Annual Cost (if paid yearly)</span>
-              <span>${(totalMonthlyCost * 12).toFixed(2)}</span>
-            </div>
+            {lovableTier !== 'enterprise' && (
+              <div className="flex justify-between items-center text-sm text-muted-foreground">
+                <span>Annual Cost (if paid yearly)</span>
+                <span>${(totalMonthlyCost * 12).toFixed(2)}</span>
+              </div>
+            )}
           </div>
 
           <Alert className="mt-6">
