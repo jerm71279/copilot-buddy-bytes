@@ -86,13 +86,13 @@ export const AppLauncher = ({ userDepartment }: AppLauncherProps) => {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      communication: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
-      productivity: 'bg-green-500/10 text-green-700 dark:text-green-400',
-      security: 'bg-red-500/10 text-red-700 dark:text-red-400',
-      analytics: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
-      finance: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
+      communication: 'bg-secondary/10 text-secondary dark:text-secondary',
+      productivity: 'bg-primary/10 text-primary dark:text-primary',
+      security: 'bg-destructive/10 text-destructive dark:text-destructive',
+      analytics: 'bg-accent/10 text-accent dark:text-accent',
+      finance: 'bg-warning/10 text-warning dark:text-warning',
     };
-    return colors[category] || 'bg-gray-500/10 text-gray-700 dark:text-gray-400';
+    return colors[category] || 'bg-muted/10 text-muted-foreground dark:text-muted-foreground';
   };
 
   if (loading) {

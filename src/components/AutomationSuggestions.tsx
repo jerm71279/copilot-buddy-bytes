@@ -106,10 +106,10 @@ export default function AutomationSuggestions() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'bg-green-500';
-      case 'medium': return 'bg-yellow-500';
-      case 'hard': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case 'easy': return 'bg-primary';
+      case 'medium': return 'bg-warning';
+      case 'hard': return 'bg-destructive';
+      default: return 'bg-muted';
     }
   };
 

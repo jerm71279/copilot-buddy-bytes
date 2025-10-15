@@ -135,9 +135,9 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      active: { variant: "default" as const, icon: CheckCircle2, color: "text-green-500" },
-      inactive: { variant: "secondary" as const, icon: XCircle, color: "text-gray-500" },
-      error: { variant: "destructive" as const, icon: XCircle, color: "text-red-500" },
+      active: { variant: "default" as const, icon: CheckCircle2, color: "text-primary" },
+      inactive: { variant: "secondary" as const, icon: XCircle, color: "text-muted-foreground" },
+      error: { variant: "destructive" as const, icon: XCircle, color: "text-destructive" },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.inactive;

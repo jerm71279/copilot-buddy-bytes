@@ -100,10 +100,10 @@ const CIHealthScore = ({ ciId, customerId }: CIHealthScoreProps) => {
   };
 
   const getHealthStatus = (score: number) => {
-    if (score >= 80) return { label: "Excellent", color: "text-green-600", variant: "default" as const };
-    if (score >= 60) return { label: "Good", color: "text-blue-600", variant: "secondary" as const };
-    if (score >= 40) return { label: "Fair", color: "text-yellow-600", variant: "outline" as const };
-    return { label: "Poor", color: "text-red-600", variant: "destructive" as const };
+    if (score >= 80) return { label: "Excellent", color: "text-primary", variant: "default" as const };
+    if (score >= 60) return { label: "Good", color: "text-secondary", variant: "secondary" as const };
+    if (score >= 40) return { label: "Fair", color: "text-warning", variant: "outline" as const };
+    return { label: "Poor", color: "text-destructive", variant: "destructive" as const };
   };
 
   if (loading) {

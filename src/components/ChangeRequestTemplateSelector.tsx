@@ -113,21 +113,21 @@ export const ChangeRequestTemplateSelector = ({
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'azure_infrastructure': return 'bg-blue-500';
-      case 'manual_support': return 'bg-green-500';
-      case 'external_tools': return 'bg-purple-500';
-      case 'retroactive': return 'bg-orange-500';
-      default: return 'bg-gray-500';
+      case 'azure_infrastructure': return 'bg-secondary';
+      case 'manual_support': return 'bg-primary';
+      case 'external_tools': return 'bg-accent';
+      case 'retroactive': return 'bg-warning';
+      default: return 'bg-muted';
     }
   };
 
   const getImpactColor = (impact: string) => {
     switch (impact) {
-      case 'low': return 'text-green-600';
-      case 'medium': return 'text-yellow-600';
-      case 'high': return 'text-orange-600';
-      case 'critical': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'low': return 'text-primary';
+      case 'medium': return 'text-warning';
+      case 'high': return 'text-warning';
+      case 'critical': return 'text-destructive';
+      default: return 'text-muted-foreground';
     }
   };
 

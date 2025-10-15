@@ -111,13 +111,13 @@ export const AccessHistoryDialog = ({ open, onOpenChange }: AccessHistoryDialogP
 
   const getActionColor = (actionType: string) => {
     const colors: Record<string, string> = {
-      'login': 'bg-green-500/10 text-green-500 border-green-500/20',
-      'logout': 'bg-gray-500/10 text-gray-500 border-gray-500/20',
-      'create': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-      'update': 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
-      'delete': 'bg-red-500/10 text-red-500 border-red-500/20',
-      'view': 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-      'credential_access': 'bg-orange-500/10 text-orange-500 border-orange-500/20',
+      'login': 'bg-primary/10 text-primary border-primary/20',
+      'logout': 'bg-muted/10 text-muted-foreground border-muted/20',
+      'create': 'bg-secondary/10 text-secondary border-secondary/20',
+      'update': 'bg-warning/10 text-warning border-warning/20',
+      'delete': 'bg-destructive/10 text-destructive border-destructive/20',
+      'view': 'bg-accent/10 text-accent border-accent/20',
+      'credential_access': 'bg-warning/10 text-warning border-warning/20',
     };
     return colors[actionType.toLowerCase()] || 'bg-muted text-muted-foreground';
   };
