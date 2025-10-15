@@ -114,3 +114,4 @@ See individual files for detailed documentation and status information:
 - Module Management: See MODULE_MANAGEMENT_GUIDE.md (Oct 14, 2025)
 - Validation Procedures: See VALIDATION_PROCEDURES.md (NEW - Oct 15, 2025)
 - Recent Fixes: See RECENT_FIXES_2025_10_15.md (NEW - Oct 15, 2025)
+- AI Work Procedures: See AI_WORK_PROCEDURES_CHECKLIST.md (NEW - Oct 15, 2025)
