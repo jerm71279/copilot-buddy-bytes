@@ -308,7 +308,7 @@ export default function NetworkMonitoring() {
                     <CardContent className="py-4">
                       <div className="flex justify-between items-start">
                         <div className="flex items-start gap-3 flex-1">
-                          <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
+                          <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <p className="font-medium">{alert.title}</p>

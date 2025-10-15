@@ -451,7 +451,7 @@ const SalesDashboard = () => {
                   </div>
 
                   <div className="flex items-start gap-3 p-3 border rounded-lg">
-                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                    <CheckCircle className="h-5 w-5 text-success mt-0.5" />
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <p className="font-medium text-sm">Modern Office Co - Subscription Upgrade</p>

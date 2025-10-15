@@ -387,7 +387,7 @@ export default function NinjaOneIntegration() {
                     <CardContent className="py-4">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
-                          <AlertCircle className="h-5 w-5 text-orange-600" />
+                          <AlertCircle className="h-5 w-5 text-warning" />
                           <div>
                             <p className="font-medium">{alert.message}</p>
                             <p className="text-sm text-muted-foreground">

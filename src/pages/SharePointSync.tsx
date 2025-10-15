@@ -458,11 +458,11 @@ const SharePointSync = () => {
                   >
                     <div className="flex items-center gap-3">
                       {log.status === "completed" ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        <CheckCircle2 className="h-5 w-5 text-success" />
                       ) : log.status === "failed" ? (
-                        <XCircle className="h-5 w-5 text-red-600" />
+                        <XCircle className="h-5 w-5 text-destructive" />
                       ) : (
-                        <RefreshCw className="h-5 w-5 animate-spin text-blue-600" />
+                        <RefreshCw className="h-5 w-5 animate-spin text-primary" />
                       )}
                       <div>
                         <p className="font-medium">
@@ -473,7 +473,7 @@ const SharePointSync = () => {
                           {new Date(log.sync_started_at).toLocaleString()}
                         </p>
                         {log.error_message && (
-                          <p className="text-sm text-red-600 mt-1">
+                          <p className="text-sm text-destructive mt-1">
                             {log.error_message}
                           </p>
                         )}

@@ -99,11 +99,11 @@ export default function TestWorkflowEvidence() {
                   </div>
                   <div>
                     <p className="text-muted-foreground">Evidence Generated</p>
-                    <p className="text-2xl font-bold text-green-600">{result.evidence_generated}</p>
+                    <p className="text-2xl font-bold text-success">{result.evidence_generated}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Errors</p>
-                    <p className="text-2xl font-bold text-yellow-600">{result.errors}</p>
+                    <p className="text-2xl font-bold text-warning">{result.errors}</p>
                   </div>
                 </div>
               </div>

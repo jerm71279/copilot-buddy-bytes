@@ -147,7 +147,7 @@ export default function EmployeeOnboardingDashboard() {
               <CardTitle className="text-sm font-medium">In Progress</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{stats.inProgress}</div>
+              <div className="text-2xl font-bold text-primary">{stats.inProgress}</div>
             </CardContent>
           </Card>
           
@@ -156,7 +156,7 @@ export default function EmployeeOnboardingDashboard() {
               <CardTitle className="text-sm font-medium">Completed</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
+              <div className="text-2xl font-bold text-success">{stats.completed}</div>
             </CardContent>
           </Card>
           
@@ -165,7 +165,7 @@ export default function EmployeeOnboardingDashboard() {
               <CardTitle className="text-sm font-medium">Overdue</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
+              <div className="text-2xl font-bold text-destructive">{stats.overdue}</div>
             </CardContent>
           </Card>
         </div>

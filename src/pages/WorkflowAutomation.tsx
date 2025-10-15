@@ -181,8 +181,8 @@ export default function WorkflowAutomation() {
   };
 
   const getExecutionIcon = (status: string) => {
-    if (status === 'completed') return <CheckCircle2 className="h-4 w-4 text-green-600" />;
-    if (status === 'running') return <Clock className="h-4 w-4 text-blue-600" />;
+    if (status === 'completed') return <CheckCircle2 className="h-4 w-4 text-success" />;
+    if (status === 'running') return <Clock className="h-4 w-4 text-primary" />;
     return <Clock className="h-4 w-4 text-muted-foreground" />;
   };
 
@@ -241,7 +241,7 @@ export default function WorkflowAutomation() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+              <div className="text-2xl font-bold text-success">{stats.active}</div>
             </CardContent>
           </Card>
           
@@ -265,7 +265,7 @@ export default function WorkflowAutomation() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.successRate}%</div>
+              <div className="text-2xl font-bold text-success">{stats.successRate}%</div>
             </CardContent>
           </Card>
         </div>

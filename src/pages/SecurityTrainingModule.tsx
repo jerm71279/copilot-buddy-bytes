@@ -222,7 +222,7 @@ const SecurityTrainingModule = () => {
             {passed && (
               <Alert className="bg-success/5 border-success/20">
                 <Award className="h-4 w-4 text-success" />
-                <AlertDescription className="text-green-800">
+                <AlertDescription className="text-success">
                   A certificate has been issued for completing this training module.
                   You can view it in your training history.
                 </AlertDescription>

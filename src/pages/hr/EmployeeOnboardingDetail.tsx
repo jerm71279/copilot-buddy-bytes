@@ -193,9 +193,9 @@ export default function EmployeeOnboardingDetail() {
   const getTaskIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle2 className="h-5 w-5 text-green-600" />;
+        return <CheckCircle2 className="h-5 w-5 text-success" />;
       case 'in_progress':
-        return <Clock className="h-5 w-5 text-blue-600" />;
+        return <Clock className="h-5 w-5 text-primary" />;
       default:
         return <Circle className="h-5 w-5 text-muted-foreground" />;
     }

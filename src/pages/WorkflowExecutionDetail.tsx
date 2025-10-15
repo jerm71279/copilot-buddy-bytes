@@ -230,9 +230,9 @@ export default function WorkflowExecutionDetail() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           {log.result?.success !== false ? (
-                            <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                            <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
                           ) : (
-                            <XCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                            <XCircle className="h-5 w-5 text-destructive flex-shrink-0" />
                           )}
                           <div>
                             <h4 className="font-semibold text-lg">{log.step_name}</h4>

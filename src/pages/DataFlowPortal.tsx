@@ -174,7 +174,7 @@ const DataFlowPortal = () => {
                       />
                     </div>
                     <div className="space-y-3">
-                      <h3 className="text-lg font-semibold text-purple-600 dark:text-purple-400">Flow Steps</h3>
+                      <h3 className="text-lg font-semibold text-secondary">Flow Steps</h3>
                       <FlowStep color="purple" title="Authentication" description="Verify user session → Load customer context" />
                       <FlowStep color="purple" title="Data Query" description="Query configuration_items table → Apply filters and search criteria → Display asset inventory" />
                       <FlowStep color="purple" title="CRUD Operations" description="Add/Edit/Delete assets → Update configuration_items table → Refresh asset list" />

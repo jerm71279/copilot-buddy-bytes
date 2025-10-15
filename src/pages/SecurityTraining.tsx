@@ -238,7 +238,7 @@ const SecurityTraining = () => {
                         <BookOpen className="w-5 h-5" />
                         {module.module_name}
                         {isCompleted && (
-                          <Badge className="bg-green-500">
+                          <Badge variant="outline" className="bg-success/10 border-success">
                             <CheckCircle className="w-3 h-3 mr-1" />
                             Completed
                           </Badge>

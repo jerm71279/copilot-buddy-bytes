@@ -14,7 +14,7 @@ const DemoSelector = () => {
       description: "Manage customers, MCP servers, and system configuration",
       icon: Settings,
       route: "/admin",
-      color: "text-purple-600"
+      color: "text-secondary"
     },
     {
       id: "compliance",
