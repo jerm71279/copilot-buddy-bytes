@@ -6,28 +6,21 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, TrendingUp, Users, Database, Cpu, Cloud, Brain } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { DollarSign, TrendingUp, Users, Cloud, Brain, Info, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const LovableCostCalculator = () => {
-  // User inputs - Enterprise defaults
-  const [userCount, setUserCount] = useState(250);
-  const [customerCount, setCustomerCount] = useState(10);
+  // User inputs
   const [lovableSeats, setLovableSeats] = useState(5);
   const [lovableTier, setLovableTier] = useState<'free' | 'pro' | 'team'>('team');
   
-  // Cloud usage - Enterprise scale
-  const [dbReadsPerMonth, setDbReadsPerMonth] = useState(500000);
-  const [dbWritesPerMonth, setDbWritesPerMonth] = useState(250000);
-  const [edgeFunctionCalls, setEdgeFunctionCalls] = useState(1000000);
-  const [storageGB, setStorageGB] = useState(50);
-  const [bandwidthGB, setBandwidthGB] = useState(200);
+  // App profile selection
+  const [appType, setAppType] = useState<'personal' | 'small-business' | 'team-project' | 'ecommerce' | 'custom'>('team-project');
   
-  // AI usage - Enterprise scale (from FILE_COLLABORATION_AI_INTEGRATION.md estimates)
-  const [filesIndexedPerMonth, setFilesIndexedPerMonth] = useState(25000);
-  const [semanticSearches, setSemanticSearches] = useState(100000);
-  const [documentQA, setDocumentQA] = useState(50000);
-  const [recommendations, setRecommendations] = useState(250000);
-  const [complianceScans, setComplianceScans] = useState(25000);
+  // Custom usage estimates (only shown for 'custom')
+  const [cloudEstimate, setCloudEstimate] = useState(15);
+  const [aiEstimate, setAiEstimate] = useState(5);
 
   // Pricing constants
   const LOVABLE_PRICING = {
@@ -36,57 +29,64 @@ const LovableCostCalculator = () => {
     team: 40
   };
 
-  const CLOUD_PRICING = {
-    dbReads: 0.00001, // $0.01 per 1000 reads
-    dbWrites: 0.0001, // $0.10 per 1000 writes
-    edgeFunctions: 0.000002, // $2 per 1M invocations
-    storage: 0.021, // $0.021 per GB/month
-    bandwidth: 0.09 // $0.09 per GB
-  };
+  const CLOUD_FREE_TIER = 25;
+  const AI_FREE_TIER = 1;
 
-  const AI_PRICING = {
-    fileIndexing: 0.02,
-    semanticSearch: 0.001,
-    documentQA: 0.005,
-    recommendations: 0.0001,
-    complianceScans: 0.01
+  // App profile examples from Lovable docs (updated Dec 2024)
+  const APP_PROFILES = {
+    'personal': {
+      name: 'Personal Blog/Portfolio',
+      description: '500 visits/month, posts/comments, some images',
+      cloudCost: 1,
+      aiCost: 1,
+      details: 'AI: 2,500 calls/month for summaries or catchy titles',
+      visits: '500'
+    },
+    'small-business': {
+      name: 'Small Business Website',
+      description: '5,000 visits/month, product listings, forms, images',
+      cloudCost: 5,
+      aiCost: 2,
+      details: 'AI: 6,500 calls/month for simple chat assistant',
+      visits: '5,000'
+    },
+    'team-project': {
+      name: 'Team Project Manager',
+      description: '20 active users, 10,000 visits, tasks, file uploads',
+      cloudCost: 15,
+      aiCost: 5,
+      details: 'AI: 6,000 calls/month for task suggestions & summaries',
+      visits: '10,000'
+    },
+    'ecommerce': {
+      name: 'E-commerce Store',
+      description: '10,000 visitors, 500 purchases/month, many images',
+      cloudCost: 65,
+      aiCost: 10,
+      details: 'AI: 20,000 calls/month for product descriptions & shopping assistant',
+      visits: '10,000'
+    },
+    'custom': {
+      name: 'Custom Configuration',
+      description: 'Set your own usage estimates',
+      cloudCost: 15,
+      aiCost: 5,
+      details: 'Based on your actual usage in Settings → Usage',
+      visits: 'Variable'
+    }
   };
 
   // Calculate costs
   const lovableSubscriptionCost = lovableSeats * LOVABLE_PRICING[lovableTier];
   
-  const cloudCosts = {
-    dbReads: (dbReadsPerMonth / 1000) * CLOUD_PRICING.dbReads,
-    dbWrites: (dbWritesPerMonth / 1000) * CLOUD_PRICING.dbWrites,
-    edgeFunctions: edgeFunctionCalls * CLOUD_PRICING.edgeFunctions,
-    storage: storageGB * CLOUD_PRICING.storage,
-    bandwidth: bandwidthGB * CLOUD_PRICING.bandwidth,
-    total: 0
-  };
-  cloudCosts.total = Object.values(cloudCosts).reduce((sum, val) => sum + val, 0) - cloudCosts.total;
+  const selectedProfile = APP_PROFILES[appType];
+  const rawCloudCost = appType === 'custom' ? cloudEstimate : selectedProfile.cloudCost;
+  const rawAICost = appType === 'custom' ? aiEstimate : selectedProfile.aiCost;
   
-  const aiCosts = {
-    fileIndexing: filesIndexedPerMonth * AI_PRICING.fileIndexing,
-    semanticSearch: semanticSearches * AI_PRICING.semanticSearch,
-    documentQA: documentQA * AI_PRICING.documentQA,
-    recommendations: recommendations * AI_PRICING.recommendations,
-    complianceScans: complianceScans * AI_PRICING.complianceScans,
-    total: 0
-  };
-  aiCosts.total = Object.values(aiCosts).reduce((sum, val) => sum + val, 0) - aiCosts.total;
-
-  const CLOUD_FREE_TIER = 25;
-  const AI_FREE_TIER = 50;
-  
-  const effectiveCloudCost = Math.max(0, cloudCosts.total - CLOUD_FREE_TIER);
-  const effectiveAICost = Math.max(0, aiCosts.total - AI_FREE_TIER);
+  const effectiveCloudCost = Math.max(0, rawCloudCost - CLOUD_FREE_TIER);
+  const effectiveAICost = Math.max(0, rawAICost - AI_FREE_TIER);
   
   const totalMonthlyCost = lovableSubscriptionCost + effectiveCloudCost + effectiveAICost;
-
-  // Revenue calculations - Enterprise pricing
-  const avgRevenuePerCustomer = 2500; // Enterprise average (custom pricing, typically $2000-3000+)
-  const monthlyRevenue = customerCount * avgRevenuePerCustomer;
-  const profitMargin = ((monthlyRevenue - totalMonthlyCost) / monthlyRevenue) * 100;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -94,7 +94,7 @@ const LovableCostCalculator = () => {
         <div>
           <h1 className="text-3xl font-bold mb-2">Lovable Cost Calculator</h1>
           <p className="text-muted-foreground">
-            Calculate your total Lovable infrastructure costs based on actual usage
+            Estimate your monthly Lovable costs based on app profile and usage
           </p>
         </div>
         <Badge variant="outline" className="text-lg px-4 py-2">
@@ -102,6 +102,27 @@ const LovableCostCalculator = () => {
           ${totalMonthlyCost.toFixed(2)}/month
         </Badge>
       </div>
+
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          <strong>Note:</strong> Lovable uses usage-based pricing for Cloud and AI. These are estimates based on example app profiles from official documentation. 
+          For accurate costs, check your actual usage in Settings → Workspace → Usage.
+          <div className="mt-2 flex gap-2">
+            <Button variant="link" className="h-auto p-0 text-sm" asChild>
+              <a href="https://docs.lovable.dev/features/cloud#usage-based-cloud-and-ai-pricing" target="_blank" rel="noopener noreferrer">
+                Cloud Pricing Docs <ExternalLink className="h-3 w-3 ml-1" />
+              </a>
+            </Button>
+            <span className="text-muted-foreground">•</span>
+            <Button variant="link" className="h-auto p-0 text-sm" asChild>
+              <a href="https://docs.lovable.dev/features/ai#usage-and-pricing" target="_blank" rel="noopener noreferrer">
+                AI Pricing Docs <ExternalLink className="h-3 w-3 ml-1" />
+              </a>
+            </Button>
+          </div>
+        </AlertDescription>
+      </Alert>
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Cost Summary Cards */}
@@ -130,7 +151,7 @@ const LovableCostCalculator = () => {
           <CardContent>
             <div className="text-2xl font-bold">${effectiveCloudCost.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              ${cloudCosts.total.toFixed(2)} - ${CLOUD_FREE_TIER} free tier
+              ${rawCloudCost.toFixed(2)} - ${Math.min(CLOUD_FREE_TIER, rawCloudCost).toFixed(2)} free tier
             </p>
           </CardContent>
         </Card>
@@ -145,73 +166,20 @@ const LovableCostCalculator = () => {
           <CardContent>
             <div className="text-2xl font-bold">${effectiveAICost.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              ${aiCosts.total.toFixed(2)} - ${AI_FREE_TIER} free tier
+              ${rawAICost.toFixed(2)} - ${Math.min(AI_FREE_TIER, rawAICost).toFixed(2)} free tier
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Profit Analysis */}
-      <Card className="border-accent/50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Revenue & Profit Analysis
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid md:grid-cols-3 gap-4">
-            <div>
-              <Label className="text-sm text-muted-foreground">Monthly Revenue</Label>
-              <p className="text-2xl font-bold text-primary">${monthlyRevenue.toFixed(2)}</p>
-              <p className="text-xs text-muted-foreground">{customerCount} customers</p>
-            </div>
-            <div>
-              <Label className="text-sm text-muted-foreground">Total Costs</Label>
-              <p className="text-2xl font-bold">${totalMonthlyCost.toFixed(2)}</p>
-              <p className="text-xs text-muted-foreground">All infrastructure</p>
-            </div>
-            <div>
-              <Label className="text-sm text-muted-foreground">Profit Margin</Label>
-              <p className="text-2xl font-bold text-primary">{profitMargin.toFixed(1)}%</p>
-              <p className="text-xs text-muted-foreground">
-                ${(monthlyRevenue - totalMonthlyCost).toFixed(2)} profit
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Business Parameters */}
+        {/* Lovable Subscription */}
         <Card>
           <CardHeader>
-            <CardTitle>Business Parameters</CardTitle>
-            <CardDescription>Your customer base and team size</CardDescription>
+            <CardTitle>Lovable Subscription</CardTitle>
+            <CardDescription>Your team's Lovable plan</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label>End Users: {userCount}</Label>
-              <Slider
-                value={[userCount]}
-                onValueChange={(v) => setUserCount(v[0])}
-                min={10}
-                max={1000}
-                step={10}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Paying Customers: {customerCount}</Label>
-              <Slider
-                value={[customerCount]}
-                onValueChange={(v) => setCustomerCount(v[0])}
-                min={1}
-                max={50}
-                step={1}
-              />
-            </div>
-
             <div className="space-y-2">
               <Label>Lovable Team Seats: {lovableSeats}</Label>
               <Slider
@@ -230,7 +198,7 @@ const LovableCostCalculator = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="free">Free (Limited)</SelectItem>
+                  <SelectItem value="free">Free (Limited features)</SelectItem>
                   <SelectItem value="pro">Pro ($20/seat/month)</SelectItem>
                   <SelectItem value="team">Team ($40/seat/month)</SelectItem>
                 </SelectContent>
@@ -239,181 +207,113 @@ const LovableCostCalculator = () => {
           </CardContent>
         </Card>
 
-        {/* Cloud Usage */}
+        {/* App Profile Selection */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Database className="h-5 w-5" />
-              Lovable Cloud Usage
-            </CardTitle>
-            <CardDescription>Database, storage, and edge functions</CardDescription>
+            <CardTitle>App Profile & Usage</CardTitle>
+            <CardDescription>Select the profile that best matches your app</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>DB Reads/Month: {dbReadsPerMonth.toLocaleString()}</Label>
-              <Input
-                type="number"
-                value={dbReadsPerMonth}
-                onChange={(e) => setDbReadsPerMonth(Number(e.target.value))}
-                min={0}
-                step={10000}
-              />
-              <p className="text-xs text-muted-foreground">
-                ${cloudCosts.dbReads.toFixed(2)}/month
-              </p>
+              <Label>App Type</Label>
+              <Select value={appType} onValueChange={(v: any) => setAppType(v)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(APP_PROFILES).map(([key, profile]) => (
+                    <SelectItem key={key} value={key}>
+                      {profile.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label>DB Writes/Month: {dbWritesPerMonth.toLocaleString()}</Label>
-              <Input
-                type="number"
-                value={dbWritesPerMonth}
-                onChange={(e) => setDbWritesPerMonth(Number(e.target.value))}
-                min={0}
-                step={5000}
-              />
-              <p className="text-xs text-muted-foreground">
-                ${cloudCosts.dbWrites.toFixed(2)}/month
-              </p>
+            <div className="bg-muted/50 p-4 rounded-lg space-y-2">
+              <p className="text-sm font-medium">{selectedProfile.name}</p>
+              <p className="text-xs text-muted-foreground">{selectedProfile.description}</p>
+              <p className="text-xs text-muted-foreground">{selectedProfile.details}</p>
+              <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t">
+                <div>
+                  <p className="text-xs text-muted-foreground">Monthly Visits</p>
+                  <p className="text-sm font-medium">{selectedProfile.visits}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Est. Cloud Cost</p>
+                  <p className="text-sm font-medium">${selectedProfile.cloudCost}/mo</p>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Edge Function Calls/Month: {edgeFunctionCalls.toLocaleString()}</Label>
-              <Input
-                type="number"
-                value={edgeFunctionCalls}
-                onChange={(e) => setEdgeFunctionCalls(Number(e.target.value))}
-                min={0}
-                step={10000}
-              />
-              <p className="text-xs text-muted-foreground">
-                ${cloudCosts.edgeFunctions.toFixed(2)}/month
-              </p>
-            </div>
+            {appType === 'custom' && (
+              <>
+                <div className="space-y-2">
+                  <Label>Estimated Cloud Cost ($/month)</Label>
+                  <Input
+                    type="number"
+                    value={cloudEstimate}
+                    onChange={(e) => setCloudEstimate(Number(e.target.value))}
+                    min={0}
+                    step={5}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Check Settings → Usage for your actual Cloud costs
+                  </p>
+                </div>
 
-            <div className="space-y-2">
-              <Label>Storage (GB): {storageGB}</Label>
-              <Slider
-                value={[storageGB]}
-                onValueChange={(v) => setStorageGB(v[0])}
-                min={0}
-                max={100}
-                step={5}
-              />
-              <p className="text-xs text-muted-foreground">
-                ${cloudCosts.storage.toFixed(2)}/month
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Bandwidth (GB): {bandwidthGB}</Label>
-              <Slider
-                value={[bandwidthGB]}
-                onValueChange={(v) => setBandwidthGB(v[0])}
-                min={0}
-                max={500}
-                step={10}
-              />
-              <p className="text-xs text-muted-foreground">
-                ${cloudCosts.bandwidth.toFixed(2)}/month
-              </p>
-            </div>
-
-            <Separator />
-            <div className="flex justify-between items-center">
-              <Label>Cloud Subtotal:</Label>
-              <span className="font-bold">${cloudCosts.total.toFixed(2)}</span>
-            </div>
+                <div className="space-y-2">
+                  <Label>Estimated AI Cost ($/month)</Label>
+                  <Input
+                    type="number"
+                    value={aiEstimate}
+                    onChange={(e) => setAiEstimate(Number(e.target.value))}
+                    min={0}
+                    step={1}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Check Settings → Usage for your actual AI costs
+                  </p>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      {/* AI Usage */}
-      <Card>
+      {/* Free Tier Information */}
+      <Card className="border-primary/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Cpu className="h-5 w-5" />
-            Lovable AI Usage (File Collaboration)
+            <TrendingUp className="h-5 w-5" />
+            Free Monthly Usage (All Plans)
           </CardTitle>
-          <CardDescription>AI-powered file indexing, search, and analysis</CardDescription>
+          <CardDescription>
+            Every workspace gets free monthly usage (resets 1st of each month)
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <Label>Files Indexed/Month: {filesIndexedPerMonth.toLocaleString()}</Label>
-              <Input
-                type="number"
-                value={filesIndexedPerMonth}
-                onChange={(e) => setFilesIndexedPerMonth(Number(e.target.value))}
-                min={0}
-                step={500}
-              />
-              <p className="text-xs text-muted-foreground">
-                ${aiCosts.fileIndexing.toFixed(2)}/month ($0.02 per file)
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Cloud className="h-4 w-4 text-primary" />
+                <Label className="text-sm font-medium">Cloud Balance</Label>
+              </div>
+              <p className="text-2xl font-bold text-primary">${CLOUD_FREE_TIER}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                For app hosting (temporary offering until end of 2025)
               </p>
             </div>
-
-            <div className="space-y-2">
-              <Label>Semantic Searches: {semanticSearches.toLocaleString()}</Label>
-              <Input
-                type="number"
-                value={semanticSearches}
-                onChange={(e) => setSemanticSearches(Number(e.target.value))}
-                min={0}
-                step={1000}
-              />
-              <p className="text-xs text-muted-foreground">
-                ${aiCosts.semanticSearch.toFixed(2)}/month ($0.001 per search)
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Brain className="h-4 w-4 text-primary" />
+                <Label className="text-sm font-medium">AI Balance</Label>
+              </div>
+              <p className="text-2xl font-bold text-primary">${AI_FREE_TIER}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                For AI features (temporary offering until end of 2025)
               </p>
             </div>
-
-            <div className="space-y-2">
-              <Label>Document Q&A: {documentQA.toLocaleString()}</Label>
-              <Input
-                type="number"
-                value={documentQA}
-                onChange={(e) => setDocumentQA(Number(e.target.value))}
-                min={0}
-                step={1000}
-              />
-              <p className="text-xs text-muted-foreground">
-                ${aiCosts.documentQA.toFixed(2)}/month ($0.005 per question)
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Recommendations: {recommendations.toLocaleString()}</Label>
-              <Input
-                type="number"
-                value={recommendations}
-                onChange={(e) => setRecommendations(Number(e.target.value))}
-                min={0}
-                step={5000}
-              />
-              <p className="text-xs text-muted-foreground">
-                ${aiCosts.recommendations.toFixed(2)}/month ($0.0001 per request)
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Compliance Scans: {complianceScans.toLocaleString()}</Label>
-              <Input
-                type="number"
-                value={complianceScans}
-                onChange={(e) => setComplianceScans(Number(e.target.value))}
-                min={0}
-                step={500}
-              />
-              <p className="text-xs text-muted-foreground">
-                ${aiCosts.complianceScans.toFixed(2)}/month ($0.01 per scan)
-              </p>
-            </div>
-          </div>
-
-          <Separator className="my-6" />
-          <div className="flex justify-between items-center">
-            <Label>AI Subtotal:</Label>
-            <span className="font-bold">${aiCosts.total.toFixed(2)}</span>
           </div>
         </CardContent>
       </Card>
@@ -427,18 +327,18 @@ const LovableCostCalculator = () => {
         <CardContent>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm">Lovable Subscription ({lovableSeats} {lovableTier} seats)</span>
+              <span className="text-sm">Lovable Subscription ({lovableSeats} {lovableTier} seat{lovableSeats > 1 ? 's' : ''})</span>
               <span className="font-medium">${lovableSubscriptionCost.toFixed(2)}</span>
             </div>
             <Separator />
             
             <div className="flex justify-between items-center text-sm text-muted-foreground">
               <span>Cloud Usage (before free tier)</span>
-              <span>${cloudCosts.total.toFixed(2)}</span>
+              <span>${rawCloudCost.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center text-sm text-primary">
               <span>Cloud Free Tier Discount</span>
-              <span>-${Math.min(CLOUD_FREE_TIER, cloudCosts.total).toFixed(2)}</span>
+              <span>-${Math.min(CLOUD_FREE_TIER, rawCloudCost).toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">Cloud (after free tier)</span>
@@ -448,11 +348,11 @@ const LovableCostCalculator = () => {
             
             <div className="flex justify-between items-center text-sm text-muted-foreground">
               <span>AI Usage (before free tier)</span>
-              <span>${aiCosts.total.toFixed(2)}</span>
+              <span>${rawAICost.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center text-sm text-primary">
               <span>AI Free Tier Discount</span>
-              <span>-${Math.min(AI_FREE_TIER, aiCosts.total).toFixed(2)}</span>
+              <span>-${Math.min(AI_FREE_TIER, rawAICost).toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">AI (after free tier)</span>
@@ -469,6 +369,43 @@ const LovableCostCalculator = () => {
               <span>Annual Cost (if paid yearly)</span>
               <span>${(totalMonthlyCost * 12).toFixed(2)}</span>
             </div>
+          </div>
+
+          <Alert className="mt-6">
+            <Info className="h-4 w-4" />
+            <AlertDescription className="text-xs">
+              <strong>Important:</strong> Cloud and AI costs are usage-based and billed separately from your subscription. 
+              Free plan users must upgrade to add funds beyond the free tier. Unused free funds reset monthly and don't roll over.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
+
+      {/* Example Costs Reference */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Example Monthly Costs (From Lovable Docs)</CardTitle>
+          <CardDescription>Real-world examples to help you estimate</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {Object.entries(APP_PROFILES).filter(([key]) => key !== 'custom').map(([key, profile]) => (
+              <div key={key} className="border-b pb-4 last:border-0">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex-1">
+                    <p className="font-medium">{profile.name}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{profile.description}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{profile.details}</p>
+                  </div>
+                  <div className="text-right ml-4">
+                    <p className="text-sm font-medium">
+                      ${Math.max(0, profile.cloudCost - CLOUD_FREE_TIER) + Math.max(0, profile.aiCost - AI_FREE_TIER)}/mo
+                    </p>
+                    <p className="text-xs text-muted-foreground">after free tier</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
