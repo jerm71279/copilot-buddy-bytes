@@ -101,10 +101,10 @@ export default function KnowledgeBase() {
 
   const getArticleTypeColor = (type: string) => {
     switch (type) {
-      case "policy": return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
-      case "best_practice": return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
-      case "innovation": return "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300";
-      case "lesson_learned": return "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300";
+      case "policy": return "bg-primary/10 text-primary";
+      case "best_practice": return "bg-success/10 text-success";
+      case "innovation": return "bg-secondary/10 text-secondary";
+      case "lesson_learned": return "bg-warning/10 text-warning";
       case "sop": return "bg-primary/10 text-primary";
       case "guide": return "bg-secondary/10 text-secondary";
       case "faq": return "bg-accent/10 text-accent";

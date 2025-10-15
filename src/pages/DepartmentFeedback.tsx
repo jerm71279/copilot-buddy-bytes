@@ -280,12 +280,12 @@ const DepartmentFeedback = () => {
                       {item.priority}
                     </Badge>
                     {item.acknowledged && (
-                      <Badge variant="outline" className="bg-blue-50">
+                      <Badge variant="outline" className="bg-primary/5">
                         Acknowledged
                       </Badge>
                     )}
                     {item.applied && (
-                      <Badge variant="outline" className="bg-green-50">
+                      <Badge variant="outline" className="bg-success/5">
                         Applied
                       </Badge>
                     )}
@@ -317,7 +317,7 @@ const DepartmentFeedback = () => {
                 )}
 
                 {item.application_notes && (
-                  <div className="bg-green-50 p-3 rounded text-sm">
+                  <div className="bg-success/5 p-3 rounded text-sm">
                     <p className="font-medium mb-1">Application Notes:</p>
                     <p>{item.application_notes}</p>
                   </div>

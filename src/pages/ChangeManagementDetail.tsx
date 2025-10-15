@@ -309,7 +309,7 @@ const ChangeManagementDetail = () => {
               
               {/* Related Change Information */}
               {relatedChange && (
-                <Card className="mt-4 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+                <Card className="mt-4 bg-primary/5 border-primary/20">
                   <CardContent className="pt-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -339,7 +339,7 @@ const ChangeManagementDetail = () => {
               
               {/* Linked Automated Changes */}
               {linkedToThis.length > 0 && (
-                <Card className="mt-4 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
+                <Card className="mt-4 bg-success/5 border-success/20">
                   <CardContent className="pt-4">
                     <h4 className="text-sm font-semibold mb-3">Automated Executions</h4>
                     <p className="text-sm text-muted-foreground mb-3">

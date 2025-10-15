@@ -446,7 +446,7 @@ const DataFlowPortal = () => {
                     <CardDescription>Automated workflow orchestration and execution</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="bg-background/80 p-4 rounded-lg border border-yellow-500/20">
+                    <div className="bg-background/80 p-4 rounded-lg border border-warning/20">
                       <h3 className="text-lg font-semibold mb-3 text-[hsl(var(--warning))]">Visual Flow Diagram</h3>
                       <FlowDiagram
                         title="Workflow Automation Diagram"

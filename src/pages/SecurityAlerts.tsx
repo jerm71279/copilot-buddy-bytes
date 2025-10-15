@@ -267,7 +267,7 @@ export default function SecurityAlerts() {
               <p className="text-sm text-muted-foreground">Open Alerts</p>
               <p className="text-2xl font-bold">{metrics?.open_alerts || 0}</p>
             </div>
-            <Clock className="h-8 w-8 text-orange-500" />
+            <Clock className="h-8 w-8 text-warning" />
           </div>
         </Card>
         <Card className="p-4">

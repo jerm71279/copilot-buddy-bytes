@@ -213,7 +213,7 @@ export default function SecurityIncidents() {
               <p className="text-sm text-muted-foreground">Total Incidents</p>
               <p className="text-2xl font-bold">{incidents.length}</p>
             </div>
-            <FileText className="h-8 w-8 text-blue-500" />
+            <FileText className="h-8 w-8 text-primary" />
           </div>
         </Card>
         <Card className="p-4">
@@ -224,7 +224,7 @@ export default function SecurityIncidents() {
                 {incidents.filter(i => !['closed', 'eradicated'].includes(i.status)).length}
               </p>
             </div>
-            <Clock className="h-8 w-8 text-orange-500" />
+            <Clock className="h-8 w-8 text-warning" />
           </div>
         </Card>
         <Card className="p-4">
@@ -235,7 +235,7 @@ export default function SecurityIncidents() {
                 {incidents.filter(i => i.severity === 'critical').length}
               </p>
             </div>
-            <AlertTriangle className="h-8 w-8 text-red-500" />
+            <AlertTriangle className="h-8 w-8 text-destructive" />
           </div>
         </Card>
         <Card className="p-4">
@@ -246,7 +246,7 @@ export default function SecurityIncidents() {
                 {incidents.filter(i => i.status === 'closed').length}
               </p>
             </div>
-            <CheckCircle className="h-8 w-8 text-green-500" />
+            <CheckCircle className="h-8 w-8 text-success" />
           </div>
         </Card>
       </div>

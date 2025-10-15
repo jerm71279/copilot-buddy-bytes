@@ -305,13 +305,28 @@ After validation and fixes, update:
 1. **DependencyGraph.tsx**: 7 violations - `getStatusColor()` function (completed/in_progress/blocked/not_started) + critical path ring
 2. **RiskMatrix.tsx**: 6 violations - `getCellColor()` function (critical/high/medium/low risk levels)
 
-### Total Progress
-**Completed**: 327 violations across 84 files
-- Components: 30/~40 (All core & planner components complete) ✅
-- Pages: 54/54 ✅
+**Batch 15 - Final Cleanup - Security, Testing & Feedback Pages
+**Fixed**: 42 violations in 10 files
 
-**Status**: ALL MAJOR VIOLATIONS RESOLVED ✅
-**Remaining**: ~23 violations in minor/utility components
+**Pages Fixed:**
+1. **SOCDashboard.tsx**: 17 violations - `getStatusColor()` function + anomaly severity colors + threat indicator cards (4 cards with borders/icons)
+2. **PhishingSimulations.tsx**: 4 violations - `getDifficultyColor()` function (easy/medium/hard/advanced)
+3. **KnowledgeBase.tsx**: 4 violations - `getArticleTypeColor()` function (policy/best_practice/innovation/lesson_learned)
+4. **DepartmentFeedback.tsx**: 3 violations - Badge backgrounds (acknowledged/applied) + application notes
+5. **SecurityIncidents.tsx**: 4 violations - Stat card icons (total/active/critical/closed)
+6. **ChangeManagementDetail.tsx**: 2 violations - Related change card + linked changes card backgrounds
+7. **ComprehensiveTestDashboard.tsx**: 5 violations - Validation guide button + test result backgrounds
+8. **DataFlowPortal.tsx**: 1 violation - Workflow automation border
+9. **SIEMDashboard.tsx**: 1 violation - Anomalies icon
+10. **SecurityAlerts.tsx**: 1 violation - Open alerts icon
+
+### Total Progress
+**Completed**: 369 violations across 94 files
+- Components: 30/~40 (All core & planner components complete) ✅
+- Pages: 64/~70 ✅
+
+**Status**: 95%+ COMPLETE - Final minor violations remaining
+**Remaining**: ~10-15 violations in utility/minor components
 
 ## Validation Templates
 

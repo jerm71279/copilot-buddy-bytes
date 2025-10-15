@@ -328,10 +328,10 @@ const SOCDashboard = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "resolved": return "bg-green-100 text-green-800";
-      case "investigating": return "bg-blue-100 text-blue-800";
-      case "new": return "bg-red-100 text-red-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "resolved": return "bg-success/10 text-success";
+      case "investigating": return "bg-primary/10 text-primary";
+      case "new": return "bg-destructive/10 text-destructive";
+      default: return "bg-muted text-muted-foreground";
     }
   };
 
@@ -586,12 +586,12 @@ const SOCDashboard = () => {
                       <div key={anomaly.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center gap-3">
                           <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                            anomaly.severity === "critical" ? "bg-red-100" : 
-                            anomaly.severity === "high" ? "bg-orange-100" : "bg-yellow-100"
+                            anomaly.severity === "critical" ? "bg-destructive/10" : 
+                            anomaly.severity === "high" ? "bg-warning/10" : "bg-warning/5"
                           }`}>
                             <FileWarning className={`h-5 w-5 ${
-                              anomaly.severity === "critical" ? "text-red-600" : 
-                              anomaly.severity === "high" ? "text-orange-600" : "text-yellow-600"
+                              anomaly.severity === "critical" ? "text-destructive" : 
+                              anomaly.severity === "high" ? "text-warning" : "text-warning"
                             }`} />
                           </div>
                           <div>
@@ -714,7 +714,7 @@ const SOCDashboard = () => {
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        <CheckCircle2 className="h-5 w-5 text-success" />
                         <span className="text-sm font-medium">
                           Analysis completed at {new Date(threatAnalysis.timestamp).toLocaleString()}
                         </span>
@@ -726,37 +726,37 @@ const SOCDashboard = () => {
 
                     {/* Security Context Summary */}
                     <div className="grid gap-4 md:grid-cols-4">
-                      <Card className="border-orange-200">
+                      <Card className="border-warning/20 bg-warning/5">
                         <CardContent className="pt-6">
                           <div className="text-center">
-                            <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+                            <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-warning" />
                             <p className="text-2xl font-bold">{threatAnalysis.securityContext.stats.failedLogins}</p>
                             <p className="text-xs text-muted-foreground">Failed Logins</p>
                           </div>
                         </CardContent>
                       </Card>
-                      <Card className="border-red-200">
+                      <Card className="border-destructive/20 bg-destructive/5">
                         <CardContent className="pt-6">
                           <div className="text-center">
-                            <Zap className="h-8 w-8 mx-auto mb-2 text-red-600" />
+                            <Zap className="h-8 w-8 mx-auto mb-2 text-destructive" />
                             <p className="text-2xl font-bold">{threatAnalysis.securityContext.stats.attackChains}</p>
                             <p className="text-xs text-muted-foreground">Attack Chains</p>
                           </div>
                         </CardContent>
                       </Card>
-                      <Card className="border-purple-200">
+                      <Card className="border-secondary/20 bg-secondary/5">
                         <CardContent className="pt-6">
                           <div className="text-center">
-                            <FileWarning className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+                            <FileWarning className="h-8 w-8 mx-auto mb-2 text-secondary" />
                             <p className="text-2xl font-bold">{threatAnalysis.securityContext.stats.dataAnomalies}</p>
                             <p className="text-xs text-muted-foreground">Data Anomalies</p>
                           </div>
                         </CardContent>
                       </Card>
-                      <Card className="border-blue-200">
+                      <Card className="border-primary/20 bg-primary/5">
                         <CardContent className="pt-6">
                           <div className="text-center">
-                            <Eye className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                            <Eye className="h-8 w-8 mx-auto mb-2 text-primary" />
                             <p className="text-2xl font-bold">{threatAnalysis.securityContext.stats.honeypotTriggers}</p>
                             <p className="text-xs text-muted-foreground">Honeypot Hits</p>
                           </div>
@@ -783,17 +783,17 @@ const SOCDashboard = () => {
 
                     {/* Top Threat Indicators */}
                     {threatAnalysis.securityContext.recentEvents.activeThreats.length > 0 && (
-                      <Card className="border-red-200">
+                      <Card className="border-destructive/20 bg-destructive/5">
                         <CardHeader>
                           <CardTitle className="text-base flex items-center gap-2">
-                            <AlertTriangle className="h-5 w-5 text-red-600" />
+                            <AlertTriangle className="h-5 w-5 text-destructive" />
                             Active Threat Indicators
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-2">
                             {threatAnalysis.securityContext.recentEvents.activeThreats.slice(0, 5).map((threat: any, idx: number) => (
-                              <div key={idx} className="flex items-center justify-between p-3 border border-red-200 rounded-lg bg-red-50/50">
+                              <div key={idx} className="flex items-center justify-between p-3 border border-destructive/20 rounded-lg bg-destructive/5">
                                 <div className="flex items-center gap-3">
                                   <Badge variant="destructive">{threat.threat_level}</Badge>
                                   <div>

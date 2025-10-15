@@ -82,11 +82,11 @@ const PhishingSimulations = () => {
 
   const getDifficultyColor = (level: string) => {
     switch (level) {
-      case 'easy': return 'bg-green-100 text-green-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'hard': return 'bg-orange-100 text-orange-800';
-      case 'advanced': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'easy': return 'bg-success/10 text-success';
+      case 'medium': return 'bg-warning/5 text-warning';
+      case 'hard': return 'bg-warning/10 text-warning';
+      case 'advanced': return 'bg-destructive/10 text-destructive';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 

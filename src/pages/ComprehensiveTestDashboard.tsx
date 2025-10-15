@@ -369,11 +369,11 @@ export default function ComprehensiveTestDashboard() {
                       <span className="text-sm">Real-time sanitization</span>
                     </div>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-green-200">
+                  <div className="mt-3 pt-3 border-t border-success/20">
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      className="text-green-700 border-green-300"
+                      className="border-success/30"
                       onClick={() => window.open('/INPUT_VALIDATION_GUIDE.md', '_blank')}
                     >
                       <FileText className="h-3 w-3 mr-2" />
@@ -590,9 +590,9 @@ export default function ComprehensiveTestDashboard() {
                           <div 
                             key={idx} 
                             className={`flex items-center justify-between p-3 border rounded-lg ${
-                              test.actual_result === 'rejected' ? 'bg-green-50 dark:bg-green-950/20' : 
-                              test.actual_result === 'accepted' ? 'bg-red-50 dark:bg-red-950/20' : 
-                              'bg-yellow-50 dark:bg-yellow-950/20'
+                              test.actual_result === 'rejected' ? 'bg-success/5' : 
+                              test.actual_result === 'accepted' ? 'bg-destructive/5' : 
+                              'bg-warning/5'
                             }`}
                           >
                             <div className="flex items-center gap-3 flex-1">
