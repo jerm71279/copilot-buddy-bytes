@@ -7155,6 +7155,113 @@ export type Database = {
           },
         ]
       }
+      phishing_simulation_attempts: {
+        Row: {
+          clicked_at: string | null
+          clicked_link: boolean
+          completed_training: boolean
+          created_at: string
+          customer_id: string
+          id: string
+          opened_at: string | null
+          reported_at: string | null
+          reported_phishing: boolean
+          result: string
+          sent_at: string
+          simulation_id: string
+          time_to_action_seconds: number | null
+          training_completed_at: string | null
+          user_id: string
+        }
+        Insert: {
+          clicked_at?: string | null
+          clicked_link?: boolean
+          completed_training?: boolean
+          created_at?: string
+          customer_id: string
+          id?: string
+          opened_at?: string | null
+          reported_at?: string | null
+          reported_phishing?: boolean
+          result?: string
+          sent_at?: string
+          simulation_id: string
+          time_to_action_seconds?: number | null
+          training_completed_at?: string | null
+          user_id: string
+        }
+        Update: {
+          clicked_at?: string | null
+          clicked_link?: boolean
+          completed_training?: boolean
+          created_at?: string
+          customer_id?: string
+          id?: string
+          opened_at?: string | null
+          reported_at?: string | null
+          reported_phishing?: boolean
+          result?: string
+          sent_at?: string
+          simulation_id?: string
+          time_to_action_seconds?: number | null
+          training_completed_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phishing_simulation_attempts_simulation_id_fkey"
+            columns: ["simulation_id"]
+            isOneToOne: false
+            referencedRelation: "phishing_simulations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      phishing_simulations: {
+        Row: {
+          campaign_name: string
+          created_at: string
+          customer_id: string
+          description: string | null
+          difficulty_level: string
+          educational_content: string | null
+          id: string
+          is_active: boolean
+          simulation_type: string
+          target_indicators: Json | null
+          template_content: Json
+          updated_at: string
+        }
+        Insert: {
+          campaign_name: string
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          difficulty_level: string
+          educational_content?: string | null
+          id?: string
+          is_active?: boolean
+          simulation_type: string
+          target_indicators?: Json | null
+          template_content: Json
+          updated_at?: string
+        }
+        Update: {
+          campaign_name?: string
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          difficulty_level?: string
+          educational_content?: string | null
+          id?: string
+          is_active?: boolean
+          simulation_type?: string
+          target_indicators?: Json | null
+          template_content?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       prediction_history: {
         Row: {
           actual_value: Json | null
@@ -9112,6 +9219,111 @@ export type Database = {
         }
         Relationships: []
       }
+      security_training_answers: {
+        Row: {
+          answered_at: string
+          completion_id: string
+          id: string
+          is_correct: boolean
+          points_earned: number
+          question_id: string
+          user_answer: Json
+        }
+        Insert: {
+          answered_at?: string
+          completion_id: string
+          id?: string
+          is_correct: boolean
+          points_earned?: number
+          question_id: string
+          user_answer: Json
+        }
+        Update: {
+          answered_at?: string
+          completion_id?: string
+          id?: string
+          is_correct?: boolean
+          points_earned?: number
+          question_id?: string
+          user_answer?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_training_answers_completion_id_fkey"
+            columns: ["completion_id"]
+            isOneToOne: false
+            referencedRelation: "security_training_completions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "security_training_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "security_training_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      security_training_certificates: {
+        Row: {
+          certificate_data: Json | null
+          certificate_number: string
+          completion_id: string
+          created_at: string
+          customer_id: string
+          expires_at: string | null
+          id: string
+          issued_at: string
+          module_id: string
+          pdf_url: string | null
+          user_id: string
+          verification_code: string | null
+        }
+        Insert: {
+          certificate_data?: Json | null
+          certificate_number: string
+          completion_id: string
+          created_at?: string
+          customer_id: string
+          expires_at?: string | null
+          id?: string
+          issued_at?: string
+          module_id: string
+          pdf_url?: string | null
+          user_id: string
+          verification_code?: string | null
+        }
+        Update: {
+          certificate_data?: Json | null
+          certificate_number?: string
+          completion_id?: string
+          created_at?: string
+          customer_id?: string
+          expires_at?: string | null
+          id?: string
+          issued_at?: string
+          module_id?: string
+          pdf_url?: string | null
+          user_id?: string
+          verification_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_training_certificates_completion_id_fkey"
+            columns: ["completion_id"]
+            isOneToOne: false
+            referencedRelation: "security_training_completions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "security_training_certificates_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "security_training_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_training_completions: {
         Row: {
           certificate_issued: boolean
@@ -9215,6 +9427,97 @@ export type Database = {
           version?: number
         }
         Relationships: []
+      }
+      security_training_questions: {
+        Row: {
+          correct_answers: Json
+          created_at: string
+          explanation: string | null
+          id: string
+          module_id: string
+          options: Json
+          points: number
+          question_text: string
+          question_type: string
+          sequence_order: number
+        }
+        Insert: {
+          correct_answers: Json
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          module_id: string
+          options: Json
+          points?: number
+          question_text: string
+          question_type: string
+          sequence_order?: number
+        }
+        Update: {
+          correct_answers?: Json
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          module_id?: string
+          options?: Json
+          points?: number
+          question_text?: string
+          question_type?: string
+          sequence_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_training_questions_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "security_training_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      security_training_reminders: {
+        Row: {
+          acknowledged_at: string | null
+          created_at: string
+          customer_id: string
+          due_date: string | null
+          id: string
+          module_id: string | null
+          reminder_type: string
+          sent_at: string | null
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          created_at?: string
+          customer_id: string
+          due_date?: string | null
+          id?: string
+          module_id?: string | null
+          reminder_type: string
+          sent_at?: string | null
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          created_at?: string
+          customer_id?: string
+          due_date?: string | null
+          id?: string
+          module_id?: string | null
+          reminder_type?: string
+          sent_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_training_reminders_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "security_training_modules"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       service_catalog: {
         Row: {
@@ -11353,6 +11656,10 @@ export type Database = {
         Returns: boolean
       }
       generate_account_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_certificate_number: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

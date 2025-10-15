@@ -119,6 +119,8 @@ import EmployeeOnboardingDetail from "./pages/hr/EmployeeOnboardingDetail";
 import EmployeeOnboardingEdit from "./pages/hr/EmployeeOnboardingEdit";
 import ModuleManagement from "./pages/ModuleManagement";
 import SecurityTraining from "./pages/SecurityTraining";
+import SecurityTrainingModule from "./pages/SecurityTrainingModule";
+import PhishingSimulations from "./pages/PhishingSimulations";
 import EmployeeFeedback from "./pages/EmployeeFeedback";
 import InternalOperationsDashboard from "./pages/InternalOperationsDashboard";
 import DeploymentPlanner from "./pages/DeploymentPlanner";
@@ -308,6 +310,16 @@ const App = () => (
           <Route path="/security-training" element={
             <ProtectedRoute>
               <SecurityTraining />
+            </ProtectedRoute>
+          } />
+          <Route path="/security-training/:moduleId" element={
+            <ProtectedRoute>
+              <SecurityTrainingModule />
+            </ProtectedRoute>
+          } />
+          <Route path="/phishing-simulations" element={
+            <ProtectedRoute>
+              <PhishingSimulations />
             </ProtectedRoute>
           } />
           <Route path="/employee-feedback" element={
