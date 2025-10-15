@@ -25,8 +25,9 @@ serve(async (req) => {
       const events = await req.json();
       const validationCode = events[0]?.data?.validationCode;
       
-      if (validationCode) {
-        console.log('Event Grid subscription validation:', validationCode);
+      // Validate validation code
+      if (validationCode && typeof validationCode === 'string' && validationCode.length < 200) {
+        console.log('Event Grid subscription validation');
         return new Response(
           JSON.stringify({ validationResponse: validationCode }),
           { 
@@ -39,6 +40,23 @@ serve(async (req) => {
 
     // Handle actual Azure Activity Log events
     const events = await req.json();
+    
+    // Validate input is an array
+    if (!Array.isArray(events) || events.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request: expected array of events' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Limit batch size
+    if (events.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Too many events: maximum 100 per request' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     console.log('Received Azure events:', events.length);
 
     const createdChanges = [];
@@ -47,11 +65,29 @@ serve(async (req) => {
       try {
         // Parse Azure Activity Log event
         const data = event.data;
-        const operationName = data.operationName;
+        
+        // Validate required fields
+        if (!data || typeof data !== 'object') {
+          console.error('Invalid event data structure');
+          continue;
+        }
+        
+        const operationName = String(data.operationName || '').slice(0, 200);
+        if (!operationName) {
+          console.error('Missing operationName');
+          continue;
+        }
+        
         const resourceType = extractResourceType(operationName);
-        const resourceName = data.resourceId?.split('/').pop() || 'Unknown Resource';
-        const caller = data.caller || data.claims?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn'] || 'System';
-        const status = data.status?.value || data.status || 'Unknown';
+        const rawResourceName = data.resourceId?.split('/').pop() || 'Unknown Resource';
+        const resourceName = String(rawResourceName).slice(0, 100);
+        
+        const rawCaller = data.caller || data.claims?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn'] || 'System';
+        const caller = String(rawCaller).slice(0, 200);
+        
+        const rawStatus = data.status?.value || data.status || 'Unknown';
+        const status = String(rawStatus).slice(0, 50);
+        
         const timestamp = event.eventTime || new Date().toISOString();
 
         // Only log successful write operations
@@ -77,15 +113,17 @@ serve(async (req) => {
           continue;
         }
 
-        // Get customer_id from Azure subscription mapping (you'd set this up)
-        // For now, we'll use the first customer that has the template
+        // Get customer_id from Azure subscription mapping
         const { data: template } = await supabaseClient
           .from('change_request_templates')
           .select('customer_id')
           .eq('id', templateId)
-          .single();
+          .maybeSingle();
 
-        if (!template) continue;
+        if (!template) {
+          console.log('Template not found for id:', templateId);
+          continue;
+        }
 
         // Search for matching planned change request
         const relatedChangeId = await findRelatedPlannedChange(
@@ -217,7 +255,7 @@ async function findMatchingTemplate(
     .eq('category', 'azure_infrastructure')
     .eq('is_active', true)
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (!template) {
     return { templateId: null, scenarioId: null, category: '' };
@@ -241,7 +279,7 @@ async function findMatchingTemplate(
       .select('id')
       .eq('template_id', template.id)
       .eq('scenario_name', scenarioName)
-      .single();
+      .maybeSingle();
     
     if (scenario) {
       return {

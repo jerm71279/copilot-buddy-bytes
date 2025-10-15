@@ -56,8 +56,8 @@ export const AzureEventGridStatus = () => {
               Automatically log Azure infrastructure changes in real-time
             </CardDescription>
           </div>
-          <Badge variant="outline" className="text-green-600 border-green-600">
-            {recentChanges} changes logged (24h)
+          <Badge variant="outline" className="border-primary/60">
+            <span className="text-primary">{recentChanges} changes logged (24h)</span>
           </Badge>
         </div>
       </CardHeader>
