@@ -26,7 +26,23 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { action } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const action = String(requestData.action || '').slice(0, 100);
+    if (!action) {
+      return new Response(
+        JSON.stringify({ error: 'Action is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     console.log('Database flow logger - Action:', action);
 
@@ -40,7 +56,7 @@ Deno.serve(async (req) => {
         .select('id, workflow_id, customer_id, created_at')
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (execution) {
         flowLogs.push({
@@ -130,7 +146,7 @@ Deno.serve(async (req) => {
         .select('id, framework_id, control_id, customer_id, uploaded_at')
         .order('uploaded_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (evidence) {
         flowLogs.push({
@@ -147,7 +163,7 @@ Deno.serve(async (req) => {
             .from('compliance_frameworks')
             .select('id, framework_name')
             .eq('id', evidence.framework_id)
-            .single();
+            .maybeSingle();
 
           if (framework) {
             flowLogs.push({
@@ -167,7 +183,7 @@ Deno.serve(async (req) => {
             .select('id, control_name')
             .eq('control_id', evidence.control_id)
             .eq('framework_id', evidence.framework_id)
-            .single();
+            .maybeSingle();
 
           if (control) {
             flowLogs.push({
@@ -224,7 +240,7 @@ Deno.serve(async (req) => {
         .select('id, customer_id, category_id, created_by, created_at')
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (article) {
         flowLogs.push({
@@ -242,7 +258,7 @@ Deno.serve(async (req) => {
             .from('knowledge_categories')
             .select('id, name')
             .eq('id', article.category_id)
-            .single();
+            .maybeSingle();
 
           if (category) {
             flowLogs.push({

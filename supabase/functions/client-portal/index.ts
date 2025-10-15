@@ -17,17 +17,46 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { action } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const action = String(requestData.action || '').slice(0, 100);
+    if (!action) {
+      return new Response(
+        JSON.stringify({ error: 'Action is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     switch (action) {
       case 'create_service_request': {
-        const { customerId, serviceId, requestedBy, title, description, priority, formData } = await req.json();
+        const customerId = requestData.customerId;
+        const serviceId = requestData.serviceId;
+        const requestedBy = requestData.requestedBy;
+        const title = String(requestData.title || '').slice(0, 200);
+        const description = String(requestData.description || '').slice(0, 2000);
+        const priority = String(requestData.priority || '').slice(0, 50);
+        const formData = requestData.formData;
+        
+        if (!customerId || !serviceId || !title) {
+          return new Response(
+            JSON.stringify({ error: 'Required fields missing' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         const { data: service } = await supabase
           .from('service_catalog')
           .select('*')
           .eq('id', serviceId)
-          .single();
+          .maybeSingle();
 
         if (!service) throw new Error('Service not found');
 
@@ -52,9 +81,12 @@ serve(async (req) => {
             due_date: dueDate
           })
           .select()
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
+        if (!request) {
+          throw new Error('Failed to create service request');
+        }
 
         return new Response(
           JSON.stringify({ success: true, request }),
@@ -63,7 +95,19 @@ serve(async (req) => {
       }
 
       case 'create_ticket': {
-        const { customerId, submittedBy, subject, description, priority, category } = await req.json();
+        const customerId = requestData.customerId;
+        const submittedBy = requestData.submittedBy;
+        const subject = String(requestData.subject || '').slice(0, 200);
+        const description = String(requestData.description || '').slice(0, 2000);
+        const priority = String(requestData.priority || '').slice(0, 50);
+        const category = String(requestData.category || '').slice(0, 100);
+        
+        if (!customerId || !subject) {
+          return new Response(
+            JSON.stringify({ error: 'Required fields missing' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         const { data: ticket, error } = await supabase
           .from('client_tickets')
@@ -77,7 +121,7 @@ serve(async (req) => {
             status: 'open'
           })
           .select()
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
 
@@ -88,7 +132,18 @@ serve(async (req) => {
       }
 
       case 'add_ticket_comment': {
-        const { ticketId, authorId, authorType, comment, isInternal } = await req.json();
+        const ticketId = requestData.ticketId;
+        const authorId = requestData.authorId;
+        const authorType = String(requestData.authorType || '').slice(0, 50);
+        const comment = String(requestData.comment || '').slice(0, 2000);
+        const isInternal = requestData.isInternal;
+        
+        if (!ticketId || !comment) {
+          return new Response(
+            JSON.stringify({ error: 'Required fields missing' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         const { data, error } = await supabase
           .from('ticket_comments')
@@ -100,7 +155,7 @@ serve(async (req) => {
             is_internal: isInternal || false
           })
           .select()
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
 
@@ -109,7 +164,7 @@ serve(async (req) => {
           .from('client_tickets')
           .select('first_response_at')
           .eq('id', ticketId)
-          .single();
+          .maybeSingle();
 
         if (ticket && !ticket.first_response_at && authorType === 'staff') {
           await supabase
@@ -128,7 +183,16 @@ serve(async (req) => {
       }
 
       case 'update_ticket_status': {
-        const { ticketId, status, resolution } = await req.json();
+        const ticketId = requestData.ticketId;
+        const status = String(requestData.status || '').slice(0, 50);
+        const resolution = String(requestData.resolution || '').slice(0, 2000);
+        
+        if (!ticketId || !status) {
+          return new Response(
+            JSON.stringify({ error: 'Required fields missing' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         const updates: any = { status };
         
@@ -151,7 +215,14 @@ serve(async (req) => {
       }
 
       case 'get_portal_stats': {
-        const { customerId } = await req.json();
+        const customerId = requestData.customerId;
+        
+        if (!customerId) {
+          return new Response(
+            JSON.stringify({ error: 'Customer ID is required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         // Get statistics for the customer portal
         const [

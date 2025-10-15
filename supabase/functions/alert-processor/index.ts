@@ -17,13 +17,28 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { 
-      customerId, 
-      alertData, 
-      sourceSystem, 
-      enrichment = true,
-      autoResponse = true 
-    } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const customerId = requestData.customerId;
+    const alertData = requestData.alertData;
+    const sourceSystem = String(requestData.sourceSystem || '').slice(0, 100);
+    const enrichment = requestData.enrichment !== false;
+    const autoResponse = requestData.autoResponse !== false;
+    
+    if (!customerId || !alertData || !sourceSystem) {
+      return new Response(
+        JSON.stringify({ error: 'Customer ID, alert data, and source system are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     console.log(`Processing alert from ${sourceSystem} for customer ${customerId}`);
 
@@ -63,9 +78,12 @@ serve(async (req) => {
         compliance_tags: enrichedAlert.compliance_tags || []
       })
       .select()
-      .single();
+      .maybeSingle();
 
     if (insertError) throw insertError;
+    if (!alert) {
+      throw new Error('Failed to create alert');
+    }
 
     console.log(`Alert created: ${alert.id}`);
 
@@ -87,7 +105,7 @@ serve(async (req) => {
           .from('threat_intel_indicators')
           .select('matched_count')
           .eq('id', indicator.id)
-          .single();
+          .maybeSingle();
         
         await supabase
           .from('threat_intel_indicators')
@@ -281,7 +299,7 @@ async function createIncidentFromAlert(supabase: any, alert: any, analysis: any)
       reported_by: alert.acknowledged_by
     })
     .select()
-    .single();
+    .maybeSingle();
 
   if (incident) {
     // Link alert to incident

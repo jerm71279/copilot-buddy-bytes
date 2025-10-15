@@ -17,11 +17,43 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { action, incidentId, ruleId, customerId } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const action = String(requestData.action || '').slice(0, 100);
+    const incidentId = requestData.incidentId;
+    const ruleId = requestData.ruleId;
+    const customerId = requestData.customerId;
+    
+    if (!action) {
+      return new Response(
+        JSON.stringify({ error: 'Action is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     switch (action) {
       case 'detect_incident': {
-        const { title, description, severity, incidentType, affectedCiIds, detectionMethod } = await req.json();
+        const title = String(requestData.title || '').slice(0, 200);
+        const description = String(requestData.description || '').slice(0, 2000);
+        const severity = String(requestData.severity || '').slice(0, 50);
+        const incidentType = String(requestData.incidentType || '').slice(0, 100);
+        const affectedCiIds = requestData.affectedCiIds;
+        const detectionMethod = String(requestData.detectionMethod || '').slice(0, 100);
+        
+        if (!customerId || !title || !severity || !incidentType) {
+          return new Response(
+            JSON.stringify({ error: 'Required fields missing' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         // Create incident
         const { data: incident, error: incidentError } = await supabase
@@ -37,7 +69,7 @@ serve(async (req) => {
             created_by: customerId
           })
           .select()
-          .single();
+          .maybeSingle();
 
         if (incidentError) throw incidentError;
 
@@ -127,19 +159,26 @@ serve(async (req) => {
       }
 
       case 'execute_remediation': {
-        const { executionType = 'manual' } = await req.json();
+        const executionType = String(requestData.executionType || 'manual').slice(0, 50);
+        
+        if (!incidentId || !ruleId) {
+          return new Response(
+            JSON.stringify({ error: 'Incident ID and rule ID are required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         const { data: incident } = await supabase
           .from('incidents')
           .select('*')
           .eq('id', incidentId)
-          .single();
+          .maybeSingle();
 
         const { data: rule } = await supabase
           .from('remediation_rules')
           .select('*')
           .eq('id', ruleId)
-          .single();
+          .maybeSingle();
 
         if (!incident || !rule) {
           throw new Error('Incident or rule not found');

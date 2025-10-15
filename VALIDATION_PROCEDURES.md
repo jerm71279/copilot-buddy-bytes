@@ -58,18 +58,19 @@ After validation and fixes, update:
 
 ### High Priority (Security)
 
-**Edge Function Input Validation (Last Updated: 2025-10-15)**
-- 39 edge functions need input validation for `req.json()` calls
-- 33 edge functions need `.maybeSingle()` instead of `.single()`
+**✅ COMPLETED (Oct 15, 2025):**
+- Fixed 5 critical edge functions with highest `.single()` usage
+- Added comprehensive input validation to 5 edge functions
+- Total: 20 `.single()` → `.maybeSingle()` conversions
+- Total: 5 functions now have full input validation with type checking, length limits, and error handling
 
+**⏳ REMAINING:**
 Files requiring immediate attention:
-- `supabase/functions/ai-mcp-generator/index.ts` (2 .single() calls)
-- `supabase/functions/alert-processor/index.ts` (3 .single() calls)
-- `supabase/functions/auto-remediation/index.ts` (3 .single() calls)
-- `supabase/functions/cipp-sync/index.ts` (3 .single() calls)
-- `supabase/functions/client-portal/index.ts` (5 .single() calls)
-- `supabase/functions/database-flow-logger/index.ts` (6 .single() calls)
-- All other edge functions listed in search results
+- 28 edge functions still need `.maybeSingle()` instead of `.single()` (39 total instances)
+- 34 edge functions still need input validation for `req.json()` calls
+- All require batch size limits, type checking, and string length limits
+
+**Progress: 20/59 `.single()` calls fixed (34%)**
 
 ### Medium Priority (Design System)
 

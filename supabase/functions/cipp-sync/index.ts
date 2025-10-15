@@ -31,7 +31,26 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { action, tenantId, customerId } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const action = String(requestData.action || '').slice(0, 100);
+    const tenantId = requestData.tenantId;
+    const customerId = requestData.customerId;
+    
+    if (!action) {
+      return new Response(
+        JSON.stringify({ error: 'Action is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Get CIPP credentials from secrets
     const cippUrl = Deno.env.get('CIPP_URL');
@@ -68,7 +87,7 @@ serve(async (req) => {
           .from('user_profiles')
           .select('customer_id')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (!profile?.customer_id) {
           throw new Error('Customer ID not found for user');
@@ -136,7 +155,7 @@ serve(async (req) => {
           .select('id')
           .eq('tenant_id', tenantId)
           .eq('customer_id', customerId)
-          .single();
+          .maybeSingle();
 
         if (tenant) {
           await supabaseClient
@@ -158,7 +177,22 @@ serve(async (req) => {
       }
 
       case 'apply_baseline': {
-        const { baselineId, targetTenantIds } = await req.json();
+        const baselineId = requestData.baselineId;
+        const targetTenantIds = requestData.targetTenantIds;
+        
+        if (!baselineId || !Array.isArray(targetTenantIds) || targetTenantIds.length === 0) {
+          return new Response(
+            JSON.stringify({ error: 'Baseline ID and target tenant IDs are required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        if (targetTenantIds.length > 100) {
+          return new Response(
+            JSON.stringify({ error: 'Too many target tenants: maximum 100' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         console.log(`Applying baseline ${baselineId} to ${targetTenantIds.length} tenants`);
 
@@ -167,7 +201,7 @@ serve(async (req) => {
           .from('cipp_security_baselines')
           .select('*')
           .eq('id', baselineId)
-          .single();
+          .maybeSingle();
 
         if (!baseline) {
           throw new Error('Baseline not found');

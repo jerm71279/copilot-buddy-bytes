@@ -42,22 +42,47 @@
 
 ## Remaining Technical Debt
 
-### High Priority - Security
+### High Priority - Security (UPDATED)
 
-**33 Edge Functions Need `.maybeSingle()` Updates:**
+**✅ COMPLETED: 5 Critical Edge Functions Fixed**
+- database-flow-logger (6 `.single()` → `.maybeSingle()`, input validation added)
+- client-portal (5 `.single()` → `.maybeSingle()`, comprehensive input validation)
+- cipp-sync (3 `.single()` → `.maybeSingle()`, input validation added)
+- alert-processor (3 `.single()` → `.maybeSingle()`, input validation added)
+- auto-remediation (3 `.single()` → `.maybeSingle()`, input validation added)
+
+**Total Fixed: 20 `.single()` calls + comprehensive input validation across 5 functions**
+
+**⏳ REMAINING: 28 Edge Functions Still Need Fixes**
+Additional files requiring `.maybeSingle()` updates:
 - ai-mcp-generator (2 instances)
-- alert-processor (3 instances)
-- auto-remediation (3 instances)
-- cipp-sync (3 instances)
-- client-portal (5 instances)
-- database-flow-logger (6 instances)
-- And 27 others (see VALIDATION_PROCEDURES.md)
+- analytics-processor (1 instance)
+- change-impact-analyzer (1 instance)
+- custom-report-engine (1 instance)
+- customer-management (3 instances)
+- department-assistant (1 instance)
+- device-poller (1 instance)
+- hubspot-sync (1 instance)
+- intelligent-assistant (1 instance)
+- knowledge-processor (1 instance)
+- mcp-server (2 instances)
+- ninjaone-sync (2 instances)
+- ninjaone-ticket (1 instance)
+- repetitive-task-detector (1 instance)
+- seed-change-templates (1 instance)
+- sharepoint-sync (3 instances)
+- snmp-collector (1 instance)
+- soc-threat-analysis (1 instance)
+- syslog-collector (1 instance)
+- threat-intel-sync (1 instance)
+- workflow-evidence-generator (1 instance)
+- workflow-executor (2 instances)
+- workflow-intelligence (1 instance)
+- workflow-orchestrator (4 instances)
+- workflow-webhook (1 instance)
 
-**39 Edge Functions Need Input Validation:**
-- All functions using `await req.json()` without validation
-- Need batch size limits
-- Need type checking
-- Need string length limits
+**34 Additional Edge Functions Need Input Validation:**
+All remaining functions using `await req.json()` without validation
 
 ### Medium Priority - Design System
 
