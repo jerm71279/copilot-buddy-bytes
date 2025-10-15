@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button';
 const LovableCostCalculator = () => {
   // User inputs
   const [lovableSeats, setLovableSeats] = useState(5);
-  const [lovableTier, setLovableTier] = useState<'free' | 'pro' | 'team' | 'enterprise'>('team');
   
   // App profile selection
   const [appType, setAppType] = useState<'personal' | 'small-business' | 'team-project' | 'ecommerce' | 'custom'>('team-project');
@@ -77,11 +76,7 @@ const LovableCostCalculator = () => {
     }
   };
 
-  // Calculate costs
-  const lovableSubscriptionCost = lovableTier === 'enterprise' 
-    ? 0 
-    : lovableSeats * LOVABLE_PRICING[lovableTier];
-  
+  // Calculate costs for a given tier
   const selectedProfile = APP_PROFILES[appType];
   const rawCloudCost = appType === 'custom' ? cloudEstimate : selectedProfile.cloudCost;
   const rawAICost = appType === 'custom' ? aiEstimate : selectedProfile.aiCost;
@@ -89,21 +84,23 @@ const LovableCostCalculator = () => {
   const effectiveCloudCost = Math.max(0, rawCloudCost - CLOUD_FREE_TIER);
   const effectiveAICost = Math.max(0, rawAICost - AI_FREE_TIER);
   
-  const totalMonthlyCost = lovableSubscriptionCost + effectiveCloudCost + effectiveAICost;
+  const calculateTierCost = (tier: 'free' | 'pro' | 'team' | 'enterprise') => {
+    const subscriptionCost = tier === 'enterprise' ? 0 : lovableSeats * LOVABLE_PRICING[tier];
+    return {
+      subscription: subscriptionCost,
+      cloud: effectiveCloudCost,
+      ai: effectiveAICost,
+      total: subscriptionCost + effectiveCloudCost + effectiveAICost
+    };
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Lovable Cost Calculator</h1>
-          <p className="text-muted-foreground">
-            Estimate your monthly Lovable costs based on app profile and usage
-          </p>
-        </div>
-        <Badge variant="outline" className="text-lg px-4 py-2">
-          <DollarSign className="h-4 w-4 mr-2" />
-          {lovableTier === 'enterprise' ? 'Custom Pricing' : `$${totalMonthlyCost.toFixed(2)}/month`}
-        </Badge>
+      <div>
+        <h1 className="text-3xl font-bold mb-2">Lovable Cost Calculator</h1>
+        <p className="text-muted-foreground">
+          Compare subscription models and estimate your monthly Lovable costs
+        </p>
       </div>
 
       <Alert>
@@ -127,105 +124,23 @@ const LovableCostCalculator = () => {
         </AlertDescription>
       </Alert>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Cost Summary Cards */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Lovable Subscription
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {lovableTier === 'enterprise' ? 'Custom' : `$${lovableSubscriptionCost.toFixed(2)}`}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {lovableTier === 'enterprise' 
-                ? 'Contact sales for pricing' 
-                : `${lovableSeats} ${lovableTier} seat${lovableSeats > 1 ? 's' : ''}`
-              }
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Cloud className="h-4 w-4" />
-              Lovable Cloud
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${effectiveCloudCost.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              ${rawCloudCost.toFixed(2)} - ${Math.min(CLOUD_FREE_TIER, rawCloudCost).toFixed(2)} free tier
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Brain className="h-4 w-4" />
-              Lovable AI
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${effectiveAICost.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              ${rawAICost.toFixed(2)} - ${Math.min(AI_FREE_TIER, rawAICost).toFixed(2)} free tier
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
+      {/* Configuration Section */}
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Lovable Subscription */}
+        {/* Team Size */}
         <Card>
           <CardHeader>
-            <CardTitle>Lovable Subscription</CardTitle>
-            <CardDescription>Your team's Lovable plan</CardDescription>
+            <CardTitle>Team Size</CardTitle>
+            <CardDescription>Number of Lovable seats needed</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {lovableTier !== 'enterprise' && (
-              <div className="space-y-2">
-                <Label>Lovable Team Seats: {lovableSeats}</Label>
-                <Slider
-                  value={[lovableSeats]}
-                  onValueChange={(v) => setLovableSeats(v[0])}
-                  min={1}
-                  max={10}
-                  step={1}
-                />
-              </div>
-            )}
-
-            {lovableTier === 'enterprise' && (
-              <Alert>
-                <Info className="h-4 w-4" />
-                <AlertDescription>
-                  <strong>Enterprise Plan:</strong> Custom pricing based on your needs. Contact{' '}
-                  <a href="mailto:sales@lovable.dev" className="underline">sales@lovable.dev</a> for a quote.
-                  This calculator shows Cloud and AI costs only.
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <div className="space-y-2">
-              <Label>Lovable Subscription Tier</Label>
-              <Select value={lovableTier} onValueChange={(v: any) => setLovableTier(v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="free">Free (Limited features)</SelectItem>
-                  <SelectItem value="pro">Pro ($20/seat/month)</SelectItem>
-                  <SelectItem value="team">Team ($40/seat/month)</SelectItem>
-                  <SelectItem value="enterprise">Enterprise (Custom pricing)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <CardContent className="space-y-2">
+            <Label>Lovable Team Seats: {lovableSeats}</Label>
+            <Slider
+              value={[lovableSeats]}
+              onValueChange={(v) => setLovableSeats(v[0])}
+              min={1}
+              max={10}
+              step={1}
+            />
           </CardContent>
         </Card>
 
@@ -303,6 +218,241 @@ const LovableCostCalculator = () => {
         </Card>
       </div>
 
+      {/* Subscription Model Comparison */}
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Subscription Models Comparison</h2>
+        <p className="text-muted-foreground mb-6">
+          Monthly cost breakdown for each subscription tier (based on {lovableSeats} seat{lovableSeats > 1 ? 's' : ''})
+        </p>
+        
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Free Plan */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Free Plan</span>
+                <Badge variant="outline">$0/month</Badge>
+              </CardTitle>
+              <CardDescription>Limited features, great for testing</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Subscription ({lovableSeats} seat{lovableSeats > 1 ? 's' : ''})</span>
+                  <span className="font-medium">$0.00</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>Cloud (before free tier)</span>
+                  <span>${rawCloudCost.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-primary">
+                  <span>Free tier discount</span>
+                  <span>-${Math.min(CLOUD_FREE_TIER, rawCloudCost).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Cloud (after free tier)</span>
+                  <span className="font-medium">${effectiveCloudCost.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>AI (before free tier)</span>
+                  <span>${rawAICost.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-primary">
+                  <span>Free tier discount</span>
+                  <span>-${Math.min(AI_FREE_TIER, rawAICost).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">AI (after free tier)</span>
+                  <span className="font-medium">${effectiveAICost.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-lg font-bold">
+                  <span>Total Monthly</span>
+                  <span className="text-primary">${calculateTierCost('free').total.toFixed(2)}</span>
+                </div>
+              </div>
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                  Must upgrade to add funds beyond free tier
+                </AlertDescription>
+              </Alert>
+            </CardContent>
+          </Card>
+
+          {/* Pro Plan */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Pro Plan</span>
+                <Badge variant="outline">${calculateTierCost('pro').total.toFixed(2)}/month</Badge>
+              </CardTitle>
+              <CardDescription>$20/seat - Enhanced features for professionals</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Subscription ({lovableSeats} seat{lovableSeats > 1 ? 's' : ''})</span>
+                  <span className="font-medium">${calculateTierCost('pro').subscription.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>Cloud (before free tier)</span>
+                  <span>${rawCloudCost.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-primary">
+                  <span>Free tier discount</span>
+                  <span>-${Math.min(CLOUD_FREE_TIER, rawCloudCost).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Cloud (after free tier)</span>
+                  <span className="font-medium">${effectiveCloudCost.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>AI (before free tier)</span>
+                  <span>${rawAICost.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-primary">
+                  <span>Free tier discount</span>
+                  <span>-${Math.min(AI_FREE_TIER, rawAICost).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">AI (after free tier)</span>
+                  <span className="font-medium">${effectiveAICost.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-lg font-bold">
+                  <span>Total Monthly</span>
+                  <span className="text-primary">${calculateTierCost('pro').total.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>Annual (if paid yearly)</span>
+                  <span>${(calculateTierCost('pro').total * 12).toFixed(2)}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Team Plan */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Team Plan</span>
+                <Badge variant="outline">${calculateTierCost('team').total.toFixed(2)}/month</Badge>
+              </CardTitle>
+              <CardDescription>$40/seat - Advanced collaboration features</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Subscription ({lovableSeats} seat{lovableSeats > 1 ? 's' : ''})</span>
+                  <span className="font-medium">${calculateTierCost('team').subscription.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>Cloud (before free tier)</span>
+                  <span>${rawCloudCost.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-primary">
+                  <span>Free tier discount</span>
+                  <span>-${Math.min(CLOUD_FREE_TIER, rawCloudCost).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Cloud (after free tier)</span>
+                  <span className="font-medium">${effectiveCloudCost.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>AI (before free tier)</span>
+                  <span>${rawAICost.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-primary">
+                  <span>Free tier discount</span>
+                  <span>-${Math.min(AI_FREE_TIER, rawAICost).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">AI (after free tier)</span>
+                  <span className="font-medium">${effectiveAICost.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-lg font-bold">
+                  <span>Total Monthly</span>
+                  <span className="text-primary">${calculateTierCost('team').total.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>Annual (if paid yearly)</span>
+                  <span>${(calculateTierCost('team').total * 12).toFixed(2)}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Enterprise Plan */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Enterprise Plan</span>
+                <Badge variant="outline">Custom</Badge>
+              </CardTitle>
+              <CardDescription>Custom pricing - Contact sales</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Custom Pricing:</strong> Contact{' '}
+                  <a href="mailto:sales@lovable.dev" className="underline">sales@lovable.dev</a> for enterprise quote.
+                  Below shows Cloud + AI costs only.
+                </AlertDescription>
+              </Alert>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Subscription</span>
+                  <span className="font-medium">Contact Sales</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>Cloud (before free tier)</span>
+                  <span>${rawCloudCost.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-primary">
+                  <span>Free tier discount</span>
+                  <span>-${Math.min(CLOUD_FREE_TIER, rawCloudCost).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Cloud (after free tier)</span>
+                  <span className="font-medium">${effectiveCloudCost.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>AI (before free tier)</span>
+                  <span>${rawAICost.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-primary">
+                  <span>Free tier discount</span>
+                  <span>-${Math.min(AI_FREE_TIER, rawAICost).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">AI (after free tier)</span>
+                  <span className="font-medium">${effectiveAICost.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-lg font-bold">
+                  <span>Cloud + AI Monthly</span>
+                  <span className="text-primary">${(effectiveCloudCost + effectiveAICost).toFixed(2)}</span>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  + Enterprise subscription fee
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       {/* Free Tier Information */}
       <Card className="border-primary/20">
         <CardHeader>
@@ -337,83 +487,6 @@ const LovableCostCalculator = () => {
               </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Cost Breakdown */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Detailed Cost Breakdown</CardTitle>
-          <CardDescription>Monthly costs with free tier deductions</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm">
-                Lovable Subscription {lovableTier === 'enterprise' 
-                  ? '(Enterprise - Custom Pricing)' 
-                  : `(${lovableSeats} ${lovableTier} seat${lovableSeats > 1 ? 's' : ''})`
-                }
-              </span>
-              <span className="font-medium">
-                {lovableTier === 'enterprise' ? 'Contact Sales' : `$${lovableSubscriptionCost.toFixed(2)}`}
-              </span>
-            </div>
-            <Separator />
-            
-            <div className="flex justify-between items-center text-sm text-muted-foreground">
-              <span>Cloud Usage (before free tier)</span>
-              <span>${rawCloudCost.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center text-sm text-primary">
-              <span>Cloud Free Tier Discount</span>
-              <span>-${Math.min(CLOUD_FREE_TIER, rawCloudCost).toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Cloud (after free tier)</span>
-              <span className="font-medium">${effectiveCloudCost.toFixed(2)}</span>
-            </div>
-            <Separator />
-            
-            <div className="flex justify-between items-center text-sm text-muted-foreground">
-              <span>AI Usage (before free tier)</span>
-              <span>${rawAICost.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center text-sm text-primary">
-              <span>AI Free Tier Discount</span>
-              <span>-${Math.min(AI_FREE_TIER, rawAICost).toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">AI (after free tier)</span>
-              <span className="font-medium">${effectiveAICost.toFixed(2)}</span>
-            </div>
-            <Separator />
-            
-            <div className="flex justify-between items-center text-lg font-bold">
-              <span>Total Monthly Cost {lovableTier === 'enterprise' && '(Cloud + AI only)'}</span>
-              <span className="text-primary">
-                {lovableTier === 'enterprise' 
-                  ? `$${(effectiveCloudCost + effectiveAICost).toFixed(2)} + Enterprise Fee` 
-                  : `$${totalMonthlyCost.toFixed(2)}`
-                }
-              </span>
-            </div>
-            
-            {lovableTier !== 'enterprise' && (
-              <div className="flex justify-between items-center text-sm text-muted-foreground">
-                <span>Annual Cost (if paid yearly)</span>
-                <span>${(totalMonthlyCost * 12).toFixed(2)}</span>
-              </div>
-            )}
-          </div>
-
-          <Alert className="mt-6">
-            <Info className="h-4 w-4" />
-            <AlertDescription className="text-xs">
-              <strong>Important:</strong> Cloud and AI costs are usage-based and billed separately from your subscription. 
-              Free plan users must upgrade to add funds beyond the free tier. Unused free funds reset monthly and don't roll over.
-            </AlertDescription>
-          </Alert>
         </CardContent>
       </Card>
 
