@@ -128,6 +128,7 @@ import NavigationScaffold from "./pages/NavigationScaffold";
 import CMMCReadiness from "./pages/CMMCReadiness";
 import LovableCostCalculator from "./pages/LovableCostCalculator";
 import DevSettings from "./pages/DevSettings";
+import FileCollaboration from "./pages/FileCollaboration";
 
 const queryClient = new QueryClient();
 
@@ -154,6 +155,13 @@ const App = () => (
           } />
           <Route path="/auth" element={<Auth />} />
           <Route path="/demo" element={<DemoSelector />} />
+          
+          {/* File Collaboration - Protected */}
+          <Route path="/files" element={
+            <ProtectedRoute>
+              <FileCollaboration />
+            </ProtectedRoute>
+          } />
           
           {/* Portal - Protected but no admin required */}
           <Route path="/portal" element={
