@@ -26,6 +26,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// Development bypass - set to true to skip authentication
+const BYPASS_AUTH = localStorage.getItem('bypassAuth') === 'true';
+
 /**
  * Admin Dashboard Data Flow
  * 
@@ -94,6 +97,12 @@ const AdminDashboard = () => {
   }, []);
 
   const checkAdminAccess = async () => {
+    if (BYPASS_AUTH) {
+      setIsAdmin(true);
+      setUserCustomerId("00000000-0000-0000-0000-000000000000");
+      fetchCustomers();
+      return;
+    }
     if (isPreviewMode) {
       setIsAdmin(true);
       // In preview mode, try to get a real customer ID from the database
