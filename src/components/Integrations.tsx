@@ -157,16 +157,16 @@ const Integrations = () => {
         </div>
 
         {/* CTA Card */}
-        <Card className="bg-gradient-hero border-0 text-white text-center">
+        <Card className="bg-gradient-hero border-0 text-primary-foreground text-center">
           <CardHeader>
-            <CardTitle className="text-2xl text-white mb-2">
+            <CardTitle className="text-2xl mb-2">
               Ready to Connect Your Systems?
             </CardTitle>
-            <CardDescription className="text-white/80 text-base mb-4">
+            <CardDescription className="text-primary-foreground/80 text-base mb-4">
               See detailed integration guides, security information, and setup requirements for all MSP platforms.
             </CardDescription>
             <Link to="/integrations">
-              <Button size="lg" variant="hero" className="bg-white text-primary hover:bg-white/90">
+              <Button size="lg" variant="secondary">
                 View All Integrations
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -174,11 +174,11 @@ const Integrations = () => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Badge variant="outline" className="bg-white/10 border-white/30 text-white text-sm py-2 px-4">
+              <Badge variant="outline" className="bg-primary-foreground/10 border-primary-foreground/30 text-sm py-2 px-4">
                 <FileText className="h-4 w-4 mr-2" />
                 API Documentation
               </Badge>
-              <Badge variant="outline" className="bg-white/10 border-white/30 text-white text-sm py-2 px-4">
+              <Badge variant="outline" className="bg-primary-foreground/10 border-primary-foreground/30 text-sm py-2 px-4">
                 <CalendarCheck className="h-4 w-4 mr-2" />
                 Schedule Integration Call
               </Badge>

@@ -3,12 +3,12 @@ import { Info, Link2, GitBranch } from "lucide-react";
 
 export const ChangeRequestLinkingInfo = () => {
   return (
-    <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
-      <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-      <AlertTitle className="text-blue-900 dark:text-blue-100">
+    <Alert className="border-[hsl(var(--blue))]/20 bg-[hsl(var(--blue))]/10">
+      <Info className="h-4 w-4 text-[hsl(var(--blue))]" />
+      <AlertTitle className="text-foreground">
         Change Request Linking
       </AlertTitle>
-      <AlertDescription className="text-blue-800 dark:text-blue-200 space-y-2">
+      <AlertDescription className="space-y-2">
         <div className="flex items-start gap-2">
           <Link2 className="h-4 w-4 mt-0.5 flex-shrink-0" />
           <div>

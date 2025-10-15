@@ -124,19 +124,19 @@ export default function AutomationSuggestions() {
   return (
     <div className="space-y-4 mb-6">
       <div className="flex items-center gap-2">
-        <Zap className="h-5 w-5 text-yellow-500" />
+        <Zap className="h-5 w-5 text-[hsl(var(--warning))]" />
         <h3 className="text-lg font-semibold">Automation Suggestions</h3>
         <Badge variant="secondary">{suggestions.length}</Badge>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {suggestions.map((suggestion) => (
-          <Card key={suggestion.id} className="border-yellow-500/50">
+          <Card key={suggestion.id} className="border-[hsl(var(--warning))]/50">
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-yellow-500" />
+                    <Zap className="h-4 w-4 text-[hsl(var(--warning))]" />
                     {suggestion.suggested_workflow.workflowName}
                   </CardTitle>
                   <CardDescription className="mt-1">
@@ -155,11 +155,11 @@ export default function AutomationSuggestions() {
             <CardContent className="space-y-3">
               <div className="flex items-center gap-4 text-sm">
                 <div className="flex items-center gap-1">
-                  <TrendingUp className="h-4 w-4 text-blue-500" />
+                  <TrendingUp className="h-4 w-4 text-[hsl(var(--blue))]" />
                   <span className="text-muted-foreground">Repeated {suggestion.repetition_count}x</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4 text-green-500" />
+                  <Clock className="h-4 w-4 text-[hsl(var(--success))]" />
                   <span className="text-muted-foreground">Save ~{suggestion.suggested_workflow.estimatedTimeSavingsMinutes} min</span>
                 </div>
               </div>
@@ -184,7 +184,7 @@ export default function AutomationSuggestions() {
                 <ol className="text-xs space-y-1 text-muted-foreground">
                   {suggestion.suggested_workflow.steps.slice(0, 3).map((step, idx) => (
                     <li key={idx} className="flex items-start gap-2">
-                      <CheckCircle2 className="h-3 w-3 mt-0.5 flex-shrink-0 text-green-500" />
+                      <CheckCircle2 className="h-3 w-3 mt-0.5 flex-shrink-0 text-[hsl(var(--success))]" />
                       <span>{step.action}</span>
                     </li>
                   ))}

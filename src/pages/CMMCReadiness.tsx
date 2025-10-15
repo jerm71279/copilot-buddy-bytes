@@ -185,7 +185,7 @@ const CMMCReadiness = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-3">
-              <Shield className="h-8 w-8 text-red-500" />
+              <Shield className="h-8 w-8 text-destructive" />
               CMMC Level 2 Readiness
             </h1>
             <p className="text-muted-foreground mt-1">DoD Cybersecurity Maturity Model Certification</p>
@@ -195,10 +195,10 @@ const CMMCReadiness = () => {
 
         {/* Readiness Score Overview */}
         <div className="grid gap-4 md:grid-cols-4">
-          <Card className="border-red-500">
+          <Card className="border-destructive">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Overall Readiness</CardTitle>
-              <Shield className="h-4 w-4 text-red-500" />
+              <Shield className="h-4 w-4 text-destructive" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{readinessScore}%</div>
@@ -286,11 +286,11 @@ const CMMCReadiness = () => {
             </div>
             
             {readinessScore >= 95 && (
-              <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 mt-4">
+              <div className="bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/20 rounded-lg p-4 mt-4">
                 <div className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-[hsl(var(--success))] mt-0.5" />
                   <div>
-                    <h4 className="font-semibold text-green-500">Ready for C3PAO Audit</h4>
+                    <h4 className="font-semibold text-[hsl(var(--success))]">Ready for C3PAO Audit</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       Your organization has achieved 95%+ compliance. You can now schedule a C3PAO assessment
                       and submit your certification application to CMMC-AB.
@@ -408,11 +408,11 @@ const CMMCReadiness = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {notStartedCount > 0 && (
-                  <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                  <div className="bg-destructive/10 border-destructive/20 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5" />
+                      <AlertTriangle className="h-5 w-5 text-destructive mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-red-500">Critical: {notStartedCount} Controls Not Started</h4>
+                        <h4 className="font-semibold text-destructive">Critical: {notStartedCount} Controls Not Started</h4>
                         <p className="text-sm text-muted-foreground mt-1">
                           These controls require immediate attention for certification readiness.
                         </p>
@@ -431,11 +431,11 @@ const CMMCReadiness = () => {
                 )}
 
                 {partialCount > 0 && (
-                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+                  <div className="bg-[hsl(var(--warning))]/10 border-[hsl(var(--warning))]/20 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <Clock className="h-5 w-5 text-yellow-500 mt-0.5" />
+                      <Clock className="h-5 w-5 text-[hsl(var(--warning))] mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-yellow-500">Warning: {partialCount} Partially Implemented</h4>
+                        <h4 className="font-semibold text-[hsl(var(--warning))]">Warning: {partialCount} Partially Implemented</h4>
                         <p className="text-sm text-muted-foreground mt-1">
                           Complete implementation and gather additional evidence for these controls.
                         </p>
@@ -445,11 +445,11 @@ const CMMCReadiness = () => {
                 )}
 
                 {evidenceCount < 43 && (
-                  <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                  <div className="bg-[hsl(var(--blue))]/10 border-[hsl(var(--blue))]/20 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <FileText className="h-5 w-5 text-blue-500 mt-0.5" />
+                      <FileText className="h-5 w-5 text-[hsl(var(--blue))] mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-blue-500">Evidence Gap: {43 - evidenceCount} Controls Missing Documentation</h4>
+                        <h4 className="font-semibold text-[hsl(var(--blue))]">Evidence Gap: {43 - evidenceCount} Controls Missing Documentation</h4>
                         <p className="text-sm text-muted-foreground mt-1">
                           Each control requires at least one evidence file for C3PAO audit.
                         </p>
@@ -468,11 +468,11 @@ const CMMCReadiness = () => {
                 )}
 
                 {readinessScore >= 95 && evidenceCount >= 43 && (
-                  <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                  <div className="bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/20 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-[hsl(var(--success))] mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-green-500">Excellent: Ready for Certification</h4>
+                        <h4 className="font-semibold text-[hsl(var(--success))]">Excellent: Ready for Certification</h4>
                         <p className="text-sm text-muted-foreground mt-1">
                           All critical gaps addressed. Proceed with C3PAO scheduling.
                         </p>

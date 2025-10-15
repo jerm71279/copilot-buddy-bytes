@@ -243,8 +243,8 @@ export const Microsoft365Integration = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-950">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
+          <div className="rounded-lg border-[hsl(var(--warning))]/20 bg-[hsl(var(--warning))]/10 p-4">
+            <p className="text-sm text-foreground">
               {error}
             </p>
           </div>

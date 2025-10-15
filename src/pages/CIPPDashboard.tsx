@@ -248,8 +248,8 @@ const CIPPDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <span className="text-3xl font-bold text-green-500">{stats.healthyTenants}</span>
-                  <CheckCircle className="h-8 w-8 text-green-500" />
+                  <span className="text-3xl font-bold text-[hsl(var(--success))]">{stats.healthyTenants}</span>
+                  <CheckCircle className="h-8 w-8 text-[hsl(var(--success))]" />
                 </div>
               </CardContent>
             </Card>
@@ -260,8 +260,8 @@ const CIPPDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <span className="text-3xl font-bold text-yellow-500">{stats.warningTenants}</span>
-                  <Activity className="h-8 w-8 text-yellow-500" />
+                  <span className="text-3xl font-bold text-[hsl(var(--warning))]">{stats.warningTenants}</span>
+                  <Activity className="h-8 w-8 text-[hsl(var(--warning))]" />
                 </div>
               </CardContent>
             </Card>
@@ -272,8 +272,8 @@ const CIPPDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <span className="text-3xl font-bold text-red-500">{stats.criticalTenants}</span>
-                  <AlertCircle className="h-8 w-8 text-red-500" />
+                  <span className="text-3xl font-bold text-destructive">{stats.criticalTenants}</span>
+                  <AlertCircle className="h-8 w-8 text-destructive" />
                 </div>
               </CardContent>
             </Card>

@@ -257,9 +257,9 @@ export const WorkflowExecutionHistory = ({ customerId }: { customerId: string })
                             <div className="flex items-center gap-2">
                               {/* Success/failure icon for each step */}
                               {log.result?.success ? (
-                                <CheckCircle className="h-3 w-3 text-green-500" />
+                                <CheckCircle className="h-3 w-3 text-[hsl(var(--success))]" />
                               ) : (
-                                <XCircle className="h-3 w-3 text-red-500" />
+                                <XCircle className="h-3 w-3 text-destructive" />
                               )}
                               {/* Step name and type */}
                               <span className="font-mono text-xs">{log.step_name}</span>

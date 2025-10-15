@@ -286,18 +286,18 @@ const CIRelationshipMap = ({ ciId, ciName }: CIRelationshipMapProps) => {
               />
             </div>
 
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
               <div className="flex items-center gap-4">
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 rounded-full bg-blue-600"></span>
+                  <span className="w-3 h-3 rounded-full bg-[hsl(var(--blue))]"></span>
                   Current CI
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 rounded-full bg-red-600"></span>
+                  <span className="w-3 h-3 rounded-full bg-destructive"></span>
                   Critical
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 rounded-full bg-gray-400"></span>
+                  <span className="w-3 h-3 rounded-full bg-muted"></span>
                   Normal
                 </span>
               </div>

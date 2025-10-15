@@ -185,17 +185,30 @@ After validation and fixes, update:
 ### Medium Priority (Design System)
 
 **Hardcoded Colors (Last Updated: 2025-10-15)**
-- 368 instances of hardcoded text colors
-- 76 instances of hardcoded border colors
-- Across 63+ component files
+- **FIXED**: All component files (8 files, 28 text + 9 bg + 5 border violations)
+- **IN PROGRESS**: Page files (~170 violations in 40+ files remaining)
 
-Critical files for refactor:
-- `src/components/AccessHistoryDialog.tsx`
-- `src/components/AppLauncher.tsx`
-- `src/components/CIHealthScore.tsx`
-- `src/pages/DataFlowPortal.tsx`
-- `src/pages/CMMCReadiness.tsx`
-- All files listed in search results
+Critical files completed:
+- ✅ `src/components/ui/badge.tsx` - Added success/warning/info variants
+- ✅ `src/components/AIMCPGenerator.tsx`
+- ✅ `src/components/AutomationSuggestions.tsx`
+- ✅ `src/components/CIHealthScore.tsx`
+- ✅ `src/components/CIAuditLog.tsx`
+- ✅ `src/components/CIRelationshipMap.tsx`
+- ✅ `src/components/ChangeRequestLinkingInfo.tsx`
+- ✅ `src/components/Integrations.tsx`
+- ✅ `src/components/Microsoft365Integration.tsx`
+- ✅ `src/components/Navigation.tsx`
+- ✅ `src/components/WorkflowExecutionHistory.tsx`
+
+Pages completed:
+- ✅ `src/pages/CIPPDashboard.tsx`
+- ✅ `src/pages/CMMCReadiness.tsx`
+- ✅ `src/pages/ChangeManagement.tsx`
+
+Remaining pages to fix: ~40 files with ~170 violations
+
+**Progress: 42 violations fixed / ~212 total (20%)**
 
 ## Validation Templates
 

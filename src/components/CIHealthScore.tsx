@@ -160,7 +160,7 @@ const CIHealthScore = ({ ciId, customerId }: CIHealthScoreProps) => {
               {health.uptime_percentage !== null && health.uptime_percentage !== undefined && (
                 <div className="flex items-center justify-between p-3 bg-accent/10 rounded-lg">
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-green-600" />
+                    <TrendingUp className="h-4 w-4 text-[hsl(var(--success))]" />
                     <span className="text-sm font-medium">Uptime</span>
                   </div>
                   <span className="font-bold">{health.uptime_percentage}%</span>
@@ -170,7 +170,7 @@ const CIHealthScore = ({ ciId, customerId }: CIHealthScoreProps) => {
               {health.alert_count !== null && health.alert_count !== undefined && (
                 <div className="flex items-center justify-between p-3 bg-accent/10 rounded-lg">
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 text-yellow-600" />
+                    <AlertCircle className="h-4 w-4 text-[hsl(var(--warning))]" />
                     <span className="text-sm font-medium">Alerts</span>
                   </div>
                   <span className="font-bold">{health.alert_count}</span>
@@ -180,17 +180,17 @@ const CIHealthScore = ({ ciId, customerId }: CIHealthScoreProps) => {
               {health.critical_alerts !== null && health.critical_alerts !== undefined && (
                 <div className="flex items-center justify-between p-3 bg-accent/10 rounded-lg">
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 text-red-600" />
+                    <AlertCircle className="h-4 w-4 text-destructive" />
                     <span className="text-sm font-medium">Critical</span>
                   </div>
-                  <span className="font-bold text-red-600">{health.critical_alerts}</span>
+                  <span className="font-bold text-destructive">{health.critical_alerts}</span>
                 </div>
               )}
 
               {health.compliance_score !== null && health.compliance_score !== undefined && (
                 <div className="flex items-center justify-between p-3 bg-accent/10 rounded-lg">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-blue-600" />
+                    <CheckCircle className="h-4 w-4 text-[hsl(var(--blue))]" />
                     <span className="text-sm font-medium">Compliance</span>
                   </div>
                   <span className="font-bold">{health.compliance_score}%</span>

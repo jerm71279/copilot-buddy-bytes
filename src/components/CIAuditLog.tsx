@@ -130,7 +130,7 @@ const CIAuditLog = ({ ciId }: CIAuditLogProps) => {
                     {(log.old_value || log.new_value) && (
                       <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
                         {log.old_value && (
-                          <div className="bg-red-50 dark:bg-red-950/20 p-2 rounded">
+                          <div className="bg-destructive/10 p-2 rounded">
                             <p className="text-xs text-muted-foreground mb-1">Old Value</p>
                             <pre className="text-xs overflow-x-auto">
                               {formatValue(log.old_value)}
@@ -138,7 +138,7 @@ const CIAuditLog = ({ ciId }: CIAuditLogProps) => {
                           </div>
                         )}
                         {log.new_value && (
-                          <div className="bg-green-50 dark:bg-green-950/20 p-2 rounded">
+                          <div className="bg-[hsl(var(--success))]/10 p-2 rounded">
                             <p className="text-xs text-muted-foreground mb-1">New Value</p>
                             <pre className="text-xs overflow-x-auto">
                               {formatValue(log.new_value)}
