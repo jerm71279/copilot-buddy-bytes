@@ -154,9 +154,17 @@ const Pricing = () => {
           <p className="text-muted-foreground mb-4">
             All plans include free SSL, daily backups, and 99.9% uptime guarantee.
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mb-4">
             Need a custom plan? <a href="#contact" className="text-accent hover:underline font-medium">Contact our sales team</a> for volume discounts and custom frameworks.
           </p>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/admin/cost-calculator')}
+            className="gap-2"
+          >
+            <ArrowRight className="h-4 w-4" />
+            Calculate Your Infrastructure Costs
+          </Button>
         </div>
       </div>
     </section>
