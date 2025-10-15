@@ -188,23 +188,28 @@ After validation and fixes, update:
 - **BATCH 1 COMPLETE**: 42 violations fixed in 14 files
 - **BATCH 2 COMPLETE**: 25 violations fixed in 7 files
 - **BATCH 3 COMPLETE**: 30 violations fixed in 5 files
-- **Total Fixed**: 97 violations across 26 files
-- **IN PROGRESS**: ~115 violations in ~30 files remaining
+- **BATCH 4 COMPLETE**: 20 violations fixed in 8 files
+- **Total Fixed**: 117 violations across 34 files
+- **IN PROGRESS**: ~95 violations in ~22 files remaining
 
 **Completed Files:**
 - ✅ All 11 component files (Batch 1)
-- ✅ 15 page files (Batches 1-3)
+- ✅ 23 page files (Batches 1-4)
 
-**Batch 3 Pages:**
-- ✅ `src/pages/DataFlowPortal.tsx` - 8 violations (flow diagram titles, colors)
-- ✅ `src/pages/DepartmentFeedback.tsx` - 6 violations (type icons, stats cards)
-- ✅ `src/pages/DepartmentInsights.tsx` - 5 violations (insight type config)
-- ✅ `src/pages/DevOpsPortal.tsx` - 3 violations (demo card colors)
-- ✅ `src/pages/DemoSelector.tsx` - 8 violations (department card colors)
+**Batch 4 Pages:**
+- ✅ `src/pages/BudgetTracking.tsx` - 2 violations (utilization color function)
+- ✅ `src/pages/ExecutiveDashboard.tsx` - 1 violation (growth indicator)
+- ✅ `src/pages/FinanceDashboard.tsx` - 2 violations (MRR growth colors)
+- ✅ `src/pages/ITDashboard.tsx` - 1 violation (system health)
+- ✅ `src/pages/IntelligentAssistant.tsx` - 4 violations (metrics cards)
+- ✅ `src/pages/InventoryManagement.tsx` - 5 violations (stock level function + stats)
+- ✅ `src/pages/AnalyticsPortal.tsx` - 2 violations (alert severity colors)
+- ✅ `src/pages/DataFlowPortal.tsx` - 2 violations (Change Management flow)
+- ✅ `src/pages/DevOpsPortal.tsx` - 1 violation (network monitoring card)
 
-**Remaining Files**: ~30 pages with ~115 violations
+**Remaining Files**: ~22 pages with ~95 violations
 
-**Progress: 97/212 violations fixed (46%)**
+**Progress: 117/212 violations fixed (55%)**
 
 ## Validation Templates
 

@@ -41,7 +41,7 @@ const DevOpsPortal = () => {
       description: "Monitor network devices, SNMP metrics, syslog events, and device health status",
       icon: Network,
       path: "/network-monitoring",
-      color: "text-orange-500"
+      color: "text-[hsl(var(--orange))]"
     },
     {
       title: "Workflow Evidence Testing",

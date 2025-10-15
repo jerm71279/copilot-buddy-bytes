@@ -149,8 +149,8 @@ export default function BudgetTracking() {
 
   const getUtilizationColor = (percentage: number) => {
     if (percentage >= 90) return "text-destructive";
-    if (percentage >= 75) return "text-yellow-600";
-    return "text-green-600";
+    if (percentage >= 75) return "text-[hsl(var(--warning))]";
+    return "text-[hsl(var(--success))]";
   };
 
   const filteredBudgets = budgets.filter((budget) => {

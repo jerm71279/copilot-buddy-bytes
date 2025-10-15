@@ -331,7 +331,7 @@ Churn rate represents the percentage of customers who have cancelled or become i
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.mrrFormatted}</div>
-                <p className={`text-xs mt-1 ${stats.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-xs mt-1 ${stats.growth >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
                   {stats.growthFormatted} from last month
                 </p>
               </CardContent>
@@ -375,7 +375,7 @@ Churn rate represents the percentage of customers who have cancelled or become i
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className={`text-2xl font-bold ${stats.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <div className={`text-2xl font-bold ${stats.growth >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
                   {stats.growthFormatted}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">Month over month</p>

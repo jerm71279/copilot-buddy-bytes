@@ -150,9 +150,9 @@ export default function InventoryManagement() {
   };
 
   const getStockLevel = (item: InventoryItem) => {
-    if (item.current_quantity <= 0) return { color: "text-red-600", label: "Out of Stock" };
-    if (item.current_quantity <= item.reorder_point) return { color: "text-yellow-600", label: "Low Stock" };
-    return { color: "text-green-600", label: "In Stock" };
+    if (item.current_quantity <= 0) return { color: "text-destructive", label: "Out of Stock" };
+    if (item.current_quantity <= item.reorder_point) return { color: "text-[hsl(var(--warning))]", label: "Low Stock" };
+    return { color: "text-[hsl(var(--success))]", label: "In Stock" };
   };
 
   const filteredItems = inventoryItems.filter((item) => {
@@ -304,7 +304,7 @@ export default function InventoryManagement() {
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{stats.lowStock}</div>
+              <div className="text-2xl font-bold text-[hsl(var(--warning))]">{stats.lowStock}</div>
             </CardContent>
           </Card>
           <Card>
@@ -313,7 +313,7 @@ export default function InventoryManagement() {
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">{stats.outOfStock}</div>
+              <div className="text-2xl font-bold text-destructive">{stats.outOfStock}</div>
             </CardContent>
           </Card>
           <Card>

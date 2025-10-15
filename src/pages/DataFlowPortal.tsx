@@ -186,17 +186,17 @@ const DataFlowPortal = () => {
 
               {/* Change Management */}
               <TabsContent value="change" className="mt-6">
-                <Card className="border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-transparent">
+                <Card className="border-[hsl(var(--orange))]/20 bg-gradient-to-br from-[hsl(var(--orange))]/5 to-transparent">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-orange-600 dark:text-orange-400">
+                    <CardTitle className="flex items-center gap-2 text-[hsl(var(--orange))]">
                       <GitBranch className="h-5 w-5" />
                       Change Management Data Flow
                     </CardTitle>
                     <CardDescription>Track and manage organizational changes</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="bg-background/80 p-4 rounded-lg border border-orange-500/20">
-                      <h3 className="text-lg font-semibold mb-3 text-orange-600 dark:text-orange-400">Visual Flow Diagram</h3>
+                    <div className="bg-background/80 p-4 rounded-lg border-[hsl(var(--orange))]/20">
+                      <h3 className="text-lg font-semibold mb-3 text-[hsl(var(--orange))]">Visual Flow Diagram</h3>
                       <FlowDiagram
                         title="Change Management Diagram"
                         accent="orange"
@@ -221,7 +221,7 @@ const DataFlowPortal = () => {
                       />
                     </div>
                     <div className="space-y-3">
-                      <h3 className="text-lg font-semibold text-orange-600 dark:text-orange-400">Flow Steps</h3>
+                      <h3 className="text-lg font-semibold text-[hsl(var(--orange))]">Flow Steps</h3>
                       <FlowStep color="orange" title="Load Changes" description="Query change_requests table → Apply status filters → Display change list" />
                       <FlowStep color="orange" title="Create/Update" description="New change request → Update database → Log to audit_logs → Trigger notifications" />
                       <FlowStep color="orange" title="Impact Analysis" description="Call change-impact-analyzer function → Assess risk → Update change record" />

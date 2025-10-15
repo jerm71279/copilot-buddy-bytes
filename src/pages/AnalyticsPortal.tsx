@@ -373,8 +373,8 @@ export default function AnalyticsPortal() {
                             <div className="flex items-start gap-4">
                               <AlertCircle className={`h-5 w-5 mt-1 ${
                                 alert.alert_severity === 'critical' ? 'text-destructive' :
-                                alert.alert_severity === 'high' ? 'text-orange-500' :
-                                'text-yellow-500'
+                                alert.alert_severity === 'high' ? 'text-[hsl(var(--orange))]' :
+                                'text-[hsl(var(--warning))]'
                               }`} />
                               <div>
                                 <div className="flex items-center gap-2 mb-2">

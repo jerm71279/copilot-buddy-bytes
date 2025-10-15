@@ -203,7 +203,7 @@ const ITDashboard = () => {
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">98.5%</div>
+              <div className="text-2xl font-bold text-[hsl(var(--success))]">98.5%</div>
               <p className="text-xs text-muted-foreground mt-1">Uptime</p>
             </CardContent>
           </Card>

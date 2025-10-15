@@ -180,7 +180,7 @@ const ExecutiveDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.customers}</div>
-              <p className="text-xs text-green-600 mt-1">+12% this month</p>
+              <p className="text-xs text-[hsl(var(--success))] mt-1">+12% this month</p>
             </CardContent>
           </Card>
 

@@ -223,11 +223,11 @@ const IntelligentAssistant = () => {
                     <p className="text-sm font-medium text-muted-foreground">
                       Insights Generated
                     </p>
-                    <p className="text-2xl font-bold text-yellow-600">
+                    <p className="text-2xl font-bold text-[hsl(var(--warning))]">
                       {metrics.insights_generated}
                     </p>
                   </div>
-                  <Lightbulb className="h-8 w-8 text-yellow-600 opacity-50" />
+                  <Lightbulb className="h-8 w-8 text-[hsl(var(--warning))] opacity-50" />
                 </div>
               </CardContent>
             </Card>
@@ -239,11 +239,11 @@ const IntelligentAssistant = () => {
                     <p className="text-sm font-medium text-muted-foreground">
                       Articles Created
                     </p>
-                    <p className="text-2xl font-bold text-green-600">
+                    <p className="text-2xl font-bold text-[hsl(var(--success))]">
                       {metrics.articles_created}
                     </p>
                   </div>
-                  <FileText className="h-8 w-8 text-green-600 opacity-50" />
+                  <FileText className="h-8 w-8 text-[hsl(var(--success))] opacity-50" />
                 </div>
               </CardContent>
             </Card>
