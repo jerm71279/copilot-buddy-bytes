@@ -146,10 +146,10 @@ const DepartmentFeedback = () => {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'warning': return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
-      case 'recommendation': return <Lightbulb className="h-5 w-5 text-blue-500" />;
-      case 'best_practice': return <CheckCircle2 className="h-5 w-5 text-green-500" />;
-      default: return <Info className="h-5 w-5 text-gray-500" />;
+      case 'warning': return <AlertTriangle className="h-5 w-5 text-[hsl(var(--warning))]" />;
+      case 'recommendation': return <Lightbulb className="h-5 w-5 text-[hsl(var(--blue))]" />;
+      case 'best_practice': return <CheckCircle2 className="h-5 w-5 text-[hsl(var(--success))]" />;
+      default: return <Info className="h-5 w-5 text-muted-foreground" />;
     }
   };
 
@@ -211,7 +211,7 @@ const DepartmentFeedback = () => {
             <CardTitle className="text-sm font-medium">Pending</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-500">{stats.pending}</div>
+            <div className="text-2xl font-bold text-[hsl(var(--orange))]">{stats.pending}</div>
           </CardContent>
         </Card>
         <Card>
@@ -219,7 +219,7 @@ const DepartmentFeedback = () => {
             <CardTitle className="text-sm font-medium">Acknowledged</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-500">{stats.acknowledged}</div>
+            <div className="text-2xl font-bold text-[hsl(var(--blue))]">{stats.acknowledged}</div>
           </CardContent>
         </Card>
         <Card>
@@ -227,7 +227,7 @@ const DepartmentFeedback = () => {
             <CardTitle className="text-sm font-medium">Applied</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-500">{stats.applied}</div>
+            <div className="text-2xl font-bold text-[hsl(var(--success))]">{stats.applied}</div>
           </CardContent>
         </Card>
       </div>

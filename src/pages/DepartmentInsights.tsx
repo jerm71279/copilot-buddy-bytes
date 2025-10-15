@@ -25,11 +25,11 @@ interface DepartmentInsight {
 }
 
 const insightTypeConfig = {
-  knowledge_gap: { icon: Lightbulb, color: "text-blue-500", bgColor: "bg-blue-50", label: "Knowledge Gap" },
-  pattern: { icon: TrendingUp, color: "text-green-500", bgColor: "bg-green-50", label: "Pattern" },
-  bottleneck: { icon: AlertTriangle, color: "text-orange-500", bgColor: "bg-orange-50", label: "Bottleneck" },
-  opportunity: { icon: Target, color: "text-purple-500", bgColor: "bg-purple-50", label: "Opportunity" },
-  risk: { icon: AlertTriangle, color: "text-red-500", bgColor: "bg-red-50", label: "Risk" },
+  knowledge_gap: { icon: Lightbulb, color: "text-[hsl(var(--blue))]", bgColor: "bg-[hsl(var(--blue))]/10", label: "Knowledge Gap" },
+  pattern: { icon: TrendingUp, color: "text-[hsl(var(--success))]", bgColor: "bg-[hsl(var(--success))]/10", label: "Pattern" },
+  bottleneck: { icon: AlertTriangle, color: "text-[hsl(var(--orange))]", bgColor: "bg-[hsl(var(--orange))]/10", label: "Bottleneck" },
+  opportunity: { icon: Target, color: "text-[hsl(var(--violet))]", bgColor: "bg-[hsl(var(--violet))]/10", label: "Opportunity" },
+  risk: { icon: AlertTriangle, color: "text-destructive", bgColor: "bg-destructive/10", label: "Risk" },
 };
 
 export default function DepartmentInsights() {

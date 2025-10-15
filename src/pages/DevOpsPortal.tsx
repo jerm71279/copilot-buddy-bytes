@@ -13,21 +13,21 @@ const DevOpsPortal = () => {
       description: "Comprehensive testing tool to validate all routes, buttons, and links across the entire application",
       icon: Bug,
       path: "/test/link-validation",
-      color: "text-red-500"
+      color: "text-destructive"
     },
     {
       title: "Input Validation Testing",
       description: "Test input validation and sanitization for security vulnerabilities including SQL injection, XSS, and path traversal",
       icon: Shield,
       path: "/test/input-validation",
-      color: "text-blue-500"
+      color: "text-[hsl(var(--blue))]"
     },
     {
       title: "System Validation Dashboard",
       description: "Comprehensive system validation including database schema, RLS policies, edge functions, and UI components",
       icon: Database,
       path: "/test/validation",
-      color: "text-green-500"
+      color: "text-[hsl(var(--success))]"
     },
     {
       title: "Comprehensive Test Dashboard",

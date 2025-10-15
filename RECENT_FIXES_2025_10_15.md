@@ -1,40 +1,42 @@
 # Recent Fixes - October 15, 2025
 
-## Design System Compliance - Batch 1 (Latest)
+## Design System Compliance - Batches 1-3 (Latest)
 
 **Implementation Date**: 2025-10-15
 
 ### Batch 1 - Components & Initial Pages
 **Fixed**: 42 violations in 14 files
 - Badge component: Added success/warning/info variants
-- 11 component files: All hardcoded colors → semantic tokens
-- 3 page files: CIPPDashboard, CMMCReadiness, ChangeManagement
+- 11 component files + 3 page files
 
-### Batch 2 - Page Files (Latest)
+### Batch 2 - Page Files
 **Fixed**: 25 violations in 7 files
+- CMDB, Change Management, Compliance pages
+
+### Batch 3 - Data Flow & Feedback Pages (Latest)
+**Fixed**: 30 violations in 5 files
 
 **Pages Fixed:**
-1. **CMDBDashboard.tsx**: 1 violation - Active icon color
-2. **CMDBReconciliation.tsx**: 5 violations - Duplicate detection colors, legend icons
-3. **ChangeManagementDetail.tsx**: 4 violations - Timeline status icons (submitted, approved, scheduled, completed)
-4. **ComplianceReportDetail.tsx**: 2 violations - Risk level icons
-5. **ComprehensiveTestDashboard.tsx**: 11 violations - Test status icons, alerts, stats cards
-6. **ComplianceFrameworkDetail.tsx**: 1 violation - Compliance score color
-7. **CompliancePortal.tsx**: 1 violation - Compliance score color
+1. **DataFlowPortal.tsx**: 8 violations - Flow diagram titles (CIPP, Compliance, Admin, Workflow) all use semantic tokens
+2. **DepartmentFeedback.tsx**: 6 violations - Type icons (warning, recommendation, best_practice) + stats cards (pending, acknowledged, applied)
+3. **DepartmentInsights.tsx**: 5 violations - Insight type config object (knowledge_gap, pattern, bottleneck, opportunity, risk)
+4. **DevOpsPortal.tsx**: 3 violations - Demo card colors for testing portals
+5. **DemoSelector.tsx**: 8 violations - Department dashboard colors (compliance, IT, HR, operations, finance, sales, executive)
 
 ### Total Progress
-**Completed**: 67 violations across 21 files (32%)
+**Completed**: 97 violations across 26 files (46%)
 - Components: 11/11 ✅
-- Pages: 10/~45
+- Pages: 15/~45
 
-**Remaining**: ~145 violations in ~35 page files
+**Remaining**: ~115 violations in ~30 page files
 
 **Next Priority Files:**
-- DataFlowPortal.tsx (~22 violations)
-- DepartmentFeedback.tsx
-- DepartmentInsights.tsx  
-- DevOpsPortal.tsx
-- And 31 more files
+- AnalyticsPortal.tsx
+- BudgetTracking.tsx
+- ExecutiveDashboard.tsx
+- FinanceDashboard.tsx
+- ITDashboard.tsx
+- And 25 more files
 
 ---
 

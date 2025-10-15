@@ -187,25 +187,24 @@ After validation and fixes, update:
 **Hardcoded Colors (Last Updated: 2025-10-15)**
 - **BATCH 1 COMPLETE**: 42 violations fixed in 14 files
 - **BATCH 2 COMPLETE**: 25 violations fixed in 7 files
-- **Total Fixed**: 67 violations across 21 files
-- **IN PROGRESS**: ~145 violations in ~35 files remaining
+- **BATCH 3 COMPLETE**: 30 violations fixed in 5 files
+- **Total Fixed**: 97 violations across 26 files
+- **IN PROGRESS**: ~115 violations in ~30 files remaining
 
 **Completed Files:**
 - ✅ All 11 component files (Batch 1)
-- ✅ 10 page files (Batches 1-2)
+- ✅ 15 page files (Batches 1-3)
 
-**Batch 2 Pages:**
-- ✅ `src/pages/CMDBDashboard.tsx`
-- ✅ `src/pages/CMDBReconciliation.tsx`
-- ✅ `src/pages/ChangeManagementDetail.tsx`
-- ✅ `src/pages/ComplianceReportDetail.tsx`
-- ✅ `src/pages/ComprehensiveTestDashboard.tsx`
-- ✅ `src/pages/ComplianceFrameworkDetail.tsx`
-- ✅ `src/pages/CompliancePortal.tsx`
+**Batch 3 Pages:**
+- ✅ `src/pages/DataFlowPortal.tsx` - 8 violations (flow diagram titles, colors)
+- ✅ `src/pages/DepartmentFeedback.tsx` - 6 violations (type icons, stats cards)
+- ✅ `src/pages/DepartmentInsights.tsx` - 5 violations (insight type config)
+- ✅ `src/pages/DevOpsPortal.tsx` - 3 violations (demo card colors)
+- ✅ `src/pages/DemoSelector.tsx` - 8 violations (department card colors)
 
-**Remaining Files**: ~35 pages with ~145 violations
+**Remaining Files**: ~30 pages with ~115 violations
 
-**Progress: 67/212 violations fixed (32%)**
+**Progress: 97/212 violations fixed (46%)**
 
 ## Validation Templates
 

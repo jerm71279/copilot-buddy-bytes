@@ -94,17 +94,17 @@ const DataFlowPortal = () => {
 
               {/* CIPP Dashboard */}
               <TabsContent value="cipp" className="mt-6">
-                <Card className="border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-transparent">
+                <Card className="border-[hsl(var(--blue))]/20 bg-gradient-to-br from-[hsl(var(--blue))]/5 to-transparent">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                    <CardTitle className="flex items-center gap-2 text-[hsl(var(--blue))]">
                       <Shield className="h-5 w-5" />
                       CIPP Dashboard Data Flow
                     </CardTitle>
                     <CardDescription>Microsoft 365 tenant management and health monitoring</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="bg-background/80 p-4 rounded-lg border border-blue-500/20">
-                      <h3 className="text-lg font-semibold mb-3 text-blue-600 dark:text-blue-400">Visual Flow Diagram</h3>
+                    <div className="bg-background/80 p-4 rounded-lg border-[hsl(var(--blue))]/20">
+                      <h3 className="text-lg font-semibold mb-3 text-[hsl(var(--blue))]">Visual Flow Diagram</h3>
                       <FlowDiagram
                         title="CIPP Dashboard Diagram"
                         accent="blue"
@@ -126,7 +126,7 @@ const DataFlowPortal = () => {
                       />
                     </div>
                     <div className="space-y-3">
-                      <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400">Flow Steps</h3>
+                      <h3 className="text-lg font-semibold text-[hsl(var(--blue))]">Flow Steps</h3>
                       <FlowStep color="blue" title="Authentication" description="User authentication check → Redirect to login if needed → Load user profile and customer ID" />
                       <FlowStep color="blue" title="Data Loading" description="Query cipp_tenants & cipp_tenant_health tables → Display tenant list with health metrics" />
                       <FlowStep color="blue" title="Sync Action" description="Call cipp-sync edge function → Update database → Reload dashboard data" />
@@ -233,17 +233,17 @@ const DataFlowPortal = () => {
 
               {/* Compliance Dashboard */}
               <TabsContent value="compliance" className="mt-6">
-                <Card className="border-green-500/20 bg-gradient-to-br from-green-500/5 to-transparent">
+                <Card className="border-[hsl(var(--success))]/20 bg-gradient-to-br from-[hsl(var(--success))]/5 to-transparent">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                    <CardTitle className="flex items-center gap-2 text-[hsl(var(--success))]">
                       <Shield className="h-5 w-5" />
                       Compliance Dashboard Data Flow
                     </CardTitle>
                     <CardDescription>Framework compliance and evidence management</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="bg-background/80 p-4 rounded-lg border border-green-500/20">
-                      <h3 className="text-lg font-semibold mb-3 text-green-600 dark:text-green-400">Visual Flow Diagram</h3>
+                    <div className="bg-background/80 p-4 rounded-lg border-[hsl(var(--success))]/20">
+                      <h3 className="text-lg font-semibold mb-3 text-[hsl(var(--success))]">Visual Flow Diagram</h3>
                       <FlowDiagram
                         title="Compliance Dashboard Diagram"
                         accent="green"
@@ -273,7 +273,7 @@ const DataFlowPortal = () => {
                       />
                     </div>
                     <div className="space-y-3">
-                      <h3 className="text-lg font-semibold text-green-600 dark:text-green-400">Flow Steps</h3>
+                      <h3 className="text-lg font-semibold text-[hsl(var(--success))]">Flow Steps</h3>
                       <FlowStep color="green" title="Load Frameworks" description="Query compliance_frameworks & compliance_controls → Calculate compliance scores" />
                       <FlowStep color="green" title="Audit Logs" description="Query audit_logs table → Display compliance activities and events" />
                       <FlowStep color="green" title="Evidence Upload" description="Upload files to storage bucket → Create compliance_evidence record → Update control status" />
@@ -285,9 +285,9 @@ const DataFlowPortal = () => {
 
               {/* Admin Dashboard */}
               <TabsContent value="admin" className="mt-6">
-                <Card className="border-red-500/20 bg-gradient-to-br from-red-500/5 to-transparent">
+                <Card className="border-destructive/20 bg-gradient-to-br from-destructive/5 to-transparent">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                    <CardTitle className="flex items-center gap-2 text-destructive">
                       <Lock className="h-5 w-5" />
                       Admin Dashboard Data Flow
                     </CardTitle>
@@ -437,9 +437,9 @@ const DataFlowPortal = () => {
 
               {/* Workflow Automation Dashboard */}
               <TabsContent value="workflow" className="mt-6">
-                <Card className="border-yellow-500/20 bg-gradient-to-br from-yellow-500/5 to-transparent">
+                <Card className="border-[hsl(var(--warning))]/20 bg-gradient-to-br from-[hsl(var(--warning))]/5 to-transparent">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
+                    <CardTitle className="flex items-center gap-2 text-[hsl(var(--warning))]">
                       <Zap className="h-5 w-5" />
                       Workflow Automation Data Flow
                     </CardTitle>
@@ -447,7 +447,7 @@ const DataFlowPortal = () => {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="bg-background/80 p-4 rounded-lg border border-yellow-500/20">
-                      <h3 className="text-lg font-semibold mb-3 text-yellow-600 dark:text-yellow-400">Visual Flow Diagram</h3>
+                      <h3 className="text-lg font-semibold mb-3 text-[hsl(var(--warning))]">Visual Flow Diagram</h3>
                       <FlowDiagram
                         title="Workflow Automation Diagram"
                         accent="yellow"
@@ -467,7 +467,7 @@ const DataFlowPortal = () => {
                       />
                     </div>
                     <div className="space-y-3">
-                      <h3 className="text-lg font-semibold text-yellow-600 dark:text-yellow-400">Flow Steps</h3>
+                      <h3 className="text-lg font-semibold text-[hsl(var(--warning))]">Flow Steps</h3>
                       <FlowStep color="yellow" title="Load Workflows" description="Query workflows & workflow_steps tables → Display workflow list" />
                       <FlowStep color="yellow" title="Execution" description="Trigger workflow → Call workflow-executor function → Execute steps sequentially" />
                       <FlowStep color="yellow" title="Monitoring" description="Query workflow_executions → Display execution history and status" />

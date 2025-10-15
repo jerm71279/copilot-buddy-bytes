@@ -22,7 +22,7 @@ const DemoSelector = () => {
       description: "Framework coverage, controls monitoring, evidence management",
       icon: Shield,
       route: "/dashboard/compliance",
-      color: "text-blue-600"
+      color: "text-[hsl(var(--blue))]"
     },
     {
       id: "it",
@@ -30,7 +30,7 @@ const DemoSelector = () => {
       description: "System integrations, MCP servers, anomaly detection",
       icon: Server,
       route: "/dashboard/it",
-      color: "text-green-600"
+      color: "text-[hsl(var(--success))]"
     },
     {
       id: "hr",
@@ -38,7 +38,7 @@ const DemoSelector = () => {
       description: "Employee management, onboarding workflows, policy compliance",
       icon: Users,
       route: "/dashboard/hr",
-      color: "text-orange-600"
+      color: "text-[hsl(var(--orange))]"
     },
     {
       id: "operations",
@@ -46,7 +46,7 @@ const DemoSelector = () => {
       description: "Process automation, workflow efficiency, bottleneck detection",
       icon: Briefcase,
       route: "/dashboard/operations",
-      color: "text-indigo-600"
+      color: "text-[hsl(var(--indigo))]"
     },
     {
       id: "finance",
@@ -54,7 +54,7 @@ const DemoSelector = () => {
       description: "Financial controls, audit trails, expense tracking",
       icon: DollarSign,
       route: "/dashboard/finance",
-      color: "text-emerald-600"
+      color: "text-[hsl(var(--emerald))]"
     },
     {
       id: "sales",
@@ -62,7 +62,7 @@ const DemoSelector = () => {
       description: "Customer pipeline, revenue tracking, opportunity management",
       icon: TrendingUp,
       route: "/dashboard/sales",
-      color: "text-pink-600"
+      color: "text-[hsl(var(--pink))]"
     },
     {
       id: "executive",
@@ -70,7 +70,7 @@ const DemoSelector = () => {
       description: "High-level metrics, strategic insights, cross-department analytics",
       icon: TrendingUp,
       route: "/dashboard/executive",
-      color: "text-red-600"
+      color: "text-destructive"
     }
   ];
 
