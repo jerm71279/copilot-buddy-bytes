@@ -10998,6 +10998,7 @@ export type Database = {
           pending_approvals: number | null
           primary_ci_id: string | null
           priority: Database["public"]["Enums"]["change_priority"] | null
+          related_change_id: string | null
           requested_by: string | null
           requested_by_name: string | null
           requested_end_time: string | null
@@ -11033,6 +11034,20 @@ export type Database = {
             columns: ["primary_ci_id"]
             isOneToOne: false
             referencedRelation: "configuration_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_related_change_id_fkey"
+            columns: ["related_change_id"]
+            isOneToOne: false
+            referencedRelation: "change_request_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_related_change_id_fkey"
+            columns: ["related_change_id"]
+            isOneToOne: false
+            referencedRelation: "change_requests"
             referencedColumns: ["id"]
           },
         ]
