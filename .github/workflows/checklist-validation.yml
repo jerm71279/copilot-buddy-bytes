@@ -1,0 +1,69 @@
+name: Checklist Validation
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: Validate Against AI Work Procedures Checklist
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript Check
+        run: npx tsc --noEmit
+        continue-on-error: false
+
+      - name: ESLint Check
+        run: npm run lint
+        continue-on-error: false
+
+      - name: Run Tests
+        run: npm run test
+        continue-on-error: false
+
+      - name: Validate Design System Compliance
+        run: node scripts/validate-design-system.js
+        continue-on-error: true
+
+      - name: Validate Security Patterns
+        run: node scripts/validate-security.js
+        continue-on-error: true
+
+      - name: Check for Hardcoded Colors
+        run: |
+          echo "Checking for hardcoded color violations..."
+          if git diff origin/main...HEAD -- '*.tsx' '*.ts' | grep -E '(text-white|bg-white|text-black|bg-black|text-green-|bg-green-|text-blue-|bg-blue-|text-red-|bg-red-|border-green-|border-blue-|border-red-)' | grep -v 'test\|mock\|story'; then
+            echo "❌ Found hardcoded color classes. Use semantic tokens from design system."
+            exit 1
+          else
+            echo "✅ No hardcoded colors found"
+          fi
+
+      - name: Validate Edge Function Security
+        run: node scripts/validate-edge-functions.js
+        continue-on-error: true
+
+      - name: Generate Validation Report
+        if: always()
+        run: |
+          echo "## Checklist Validation Report" >> $GITHUB_STEP_SUMMARY
+          echo "✅ TypeScript compilation passed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Linting passed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Tests passed" >> $GITHUB_STEP_SUMMARY

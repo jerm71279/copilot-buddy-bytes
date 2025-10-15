@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit validation..."
+
+# Run lint-staged for staged files
+npx lint-staged
+
+# Run TypeScript check
+echo "📝 Checking TypeScript..."
+npx tsc --noEmit
+
+# Run design system validation
+echo "🎨 Validating design system compliance..."
+node scripts/validate-design-system.js
+
+# Run security validation
+echo "🔒 Validating security patterns..."
+node scripts/validate-security.js
+
+echo "✅ Pre-commit validation passed!"

@@ -3,7 +3,37 @@
 ## Overview
 This document defines the validation procedures to be executed after **every** feature implementation or code change.
 
-## Procedure Checklist
+## Automated Validation (NEW)
+
+### Three-Layer Enforcement System
+
+The platform now has automated validation through:
+
+1. **Project Knowledge Integration**
+   - AI_WORK_PROCEDURES_CHECKLIST.md in project knowledge
+   - Always available in AI context
+   - Ensures consistent procedure adherence
+
+2. **GitHub Actions CI/CD**
+   - Runs on every push and pull request
+   - Validates: TypeScript, ESLint, tests, design system, security
+   - Blocks merge on critical violations
+   - See `.github/workflows/checklist-validation.yml`
+
+3. **Pre-commit Hooks**
+   - Local validation before commit
+   - Instant feedback during development
+   - Setup: `npm install && npx husky install`
+   - See `.husky/pre-commit`
+
+**Validation Scripts:**
+- `scripts/validate-design-system.js` - Hardcoded color detection
+- `scripts/validate-security.js` - Security pattern enforcement
+- `scripts/validate-edge-functions.js` - Input validation checks
+
+See `CHECKLIST_AUTOMATION.md` for complete documentation.
+
+## Manual Validation Checklist
 
 After any code changes, the following validations MUST be performed:
 
