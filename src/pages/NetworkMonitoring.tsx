@@ -195,7 +195,7 @@ export default function NetworkMonitoring() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.activeDevices}</div>
+              <div className="text-2xl font-bold text-primary">{stats.activeDevices}</div>
             </CardContent>
           </Card>
           
@@ -219,7 +219,7 @@ export default function NetworkMonitoring() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">{stats.criticalAlerts}</div>
+              <div className="text-2xl font-bold text-destructive">{stats.criticalAlerts}</div>
             </CardContent>
           </Card>
         </div>
@@ -296,7 +296,7 @@ export default function NetworkMonitoring() {
             {alerts.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
-                  <CheckCircle2 className="mx-auto h-12 w-12 text-green-600 mb-4" />
+                  <CheckCircle2 className="mx-auto h-12 w-12 text-primary mb-4" />
                   <h3 className="text-lg font-semibold mb-2">No active alerts</h3>
                   <p className="text-muted-foreground">All systems operating normally</p>
                 </CardContent>

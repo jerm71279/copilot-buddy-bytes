@@ -298,7 +298,7 @@ export default function NinjaOneIntegration() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-primary">
                 {devices.filter(d => d.status === 'online').length}
               </div>
             </CardContent>
@@ -324,7 +324,7 @@ export default function NinjaOneIntegration() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">
+              <div className="text-2xl font-bold text-destructive">
                 {devices.filter(d => d.status === 'offline').length}
               </div>
             </CardContent>
@@ -375,7 +375,7 @@ export default function NinjaOneIntegration() {
             {alerts.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
-                  <CheckCircle2 className="mx-auto h-12 w-12 text-green-600 mb-4" />
+                  <CheckCircle2 className="mx-auto h-12 w-12 text-primary mb-4" />
                   <h3 className="text-lg font-semibold mb-2">No active alerts</h3>
                   <p className="text-muted-foreground">All systems operating normally</p>
                 </CardContent>

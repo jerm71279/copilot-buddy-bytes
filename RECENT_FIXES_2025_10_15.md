@@ -31,21 +31,30 @@
 8. **DataFlowPortal.tsx**: 2 additional violations - Change Management flow colors
 9. **DevOpsPortal.tsx**: 1 additional violation - Network Monitoring card color
 
-### Total Progress
-**Completed**: 117 violations across 34 files (55%)
-- Components: 11/11 ✅
-- Pages: 23/~45
+### Batch 5 - Monitoring & Onboarding Pages
+**Fixed**: 18 violations in 6 files
 
-**Remaining**: ~95 violations in ~22 page files
+**Pages Fixed:**
+1. **LinkValidationTool.tsx**: 4 violations - Success/Failed stats + CheckCircle/XCircle icons
+2. **NetworkMonitoring.tsx**: 3 violations - Active devices, Critical alerts stats + empty state icon
+3. **NinjaOneIntegration.tsx**: 3 violations - Online/Offline stats + empty state icon
+4. **NotFound.tsx**: 1 violation - Link text and hover colors
+5. **OnboardingDashboard.tsx**: 3 violations - In Progress, Completed, Overdue stats
+6. **PhishingSimulations.tsx**: 4 violations - Badge variant + Success rate, Reported, Failed stats
+
+### Total Progress
+**Completed**: 135 violations across 40 files (64%)
+- Components: 11/11 ✅
+- Pages: 29/~45
+
+**Remaining**: ~77 violations in ~16 page files
 
 **Next Priority Files:**
 - ComprehensiveTestDashboard.tsx (remaining violations)
-- NetworkMonitoring.tsx
-- NinjaOneIntegration.tsx
-- OnboardingDashboard.tsx
-- LinkValidationTool.tsx
 - KnowledgeBase.tsx
-- And 16 more files
+- RiskAssessmentPortal.tsx
+- ResponsePlaybooks.tsx
+- And 12 more files
 
 ---
 

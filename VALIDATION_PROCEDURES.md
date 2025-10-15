@@ -207,9 +207,17 @@ After validation and fixes, update:
 - ✅ `src/pages/DataFlowPortal.tsx` - 2 violations (Change Management flow)
 - ✅ `src/pages/DevOpsPortal.tsx` - 1 violation (network monitoring card)
 
-**Remaining Files**: ~22 pages with ~95 violations
+**Batch 5 Pages:**
+- ✅ `src/pages/LinkValidationTool.tsx` - 4 violations (success/failed stats, icons)
+- ✅ `src/pages/NetworkMonitoring.tsx` - 3 violations (stats cards, empty state)
+- ✅ `src/pages/NinjaOneIntegration.tsx` - 3 violations (stats cards, empty state)
+- ✅ `src/pages/NotFound.tsx` - 1 violation (link styling)
+- ✅ `src/pages/OnboardingDashboard.tsx` - 3 violations (stats cards)
+- ✅ `src/pages/PhishingSimulations.tsx` - 4 violations (badge variant, stats cards)
 
-**Progress: 117/212 violations fixed (55%)**
+**Remaining Files**: ~16 pages with ~77 violations
+
+**Progress: 135/212 violations fixed (64%)**
 
 ## Validation Templates
 

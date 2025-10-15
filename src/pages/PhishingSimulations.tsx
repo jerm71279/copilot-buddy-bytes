@@ -94,7 +94,7 @@ const PhishingSimulations = () => {
     switch (result) {
       case 'passed':
       case 'reported':
-        return <Badge className="bg-green-500"><CheckCircle className="w-3 h-3 mr-1" />Passed</Badge>;
+        return <Badge variant="success"><CheckCircle className="w-3 h-3 mr-1" />Passed</Badge>;
       case 'failed':
         return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Failed</Badge>;
       default:
@@ -139,7 +139,7 @@ const PhishingSimulations = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-500">{stats.successRate}%</div>
+            <div className="text-2xl font-bold text-primary">{stats.successRate}%</div>
           </CardContent>
         </Card>
 
@@ -151,7 +151,7 @@ const PhishingSimulations = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-500">{stats.reported}</div>
+            <div className="text-2xl font-bold text-primary">{stats.reported}</div>
             <p className="text-xs text-muted-foreground">Correctly identified</p>
           </CardContent>
         </Card>
@@ -164,7 +164,7 @@ const PhishingSimulations = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-500">{stats.failed}</div>
+            <div className="text-2xl font-bold text-destructive">{stats.failed}</div>
             <p className="text-xs text-muted-foreground">Clicked phishing links</p>
           </CardContent>
         </Card>

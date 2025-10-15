@@ -265,7 +265,7 @@ export default function LinkValidationTool() {
               <CardTitle className="text-sm font-medium text-muted-foreground">Passed</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.success}</div>
+              <div className="text-2xl font-bold text-primary">{stats.success}</div>
             </CardContent>
           </Card>
           <Card>
@@ -273,7 +273,7 @@ export default function LinkValidationTool() {
               <CardTitle className="text-sm font-medium text-muted-foreground">Failed</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">{stats.failed}</div>
+              <div className="text-2xl font-bold text-destructive">{stats.failed}</div>
             </CardContent>
           </Card>
         </div>
@@ -359,10 +359,10 @@ export default function LinkValidationTool() {
                         <div className="h-5 w-5 rounded-full border-2 border-muted" />
                       )}
                       {route.status === 'success' && (
-                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        <CheckCircle2 className="h-5 w-5 text-primary" />
                       )}
                       {route.status === 'failed' && (
-                        <XCircle className="h-5 w-5 text-red-500" />
+                        <XCircle className="h-5 w-5 text-destructive" />
                       )}
                       
                       <div className="flex-1">
