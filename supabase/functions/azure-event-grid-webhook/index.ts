@@ -39,12 +39,29 @@ serve(async (req) => {
     }
 
     // Handle actual Azure Activity Log events
-    const events = await req.json();
+    const requestData = await req.json();
     
-    // Validate input is an array
-    if (!Array.isArray(events) || events.length === 0) {
+    // Enhanced validation for request body
+    if (!requestData) {
       return new Response(
-        JSON.stringify({ error: 'Invalid request: expected array of events' }),
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const events = Array.isArray(requestData) ? requestData : [requestData];
+    
+    // Validate batch size
+    if (events.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'No events provided' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (events.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Batch size exceeds maximum of 100 events' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

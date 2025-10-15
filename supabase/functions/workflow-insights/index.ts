@@ -12,7 +12,27 @@ serve(async (req) => {
   }
 
   try {
-    const { workflowType, metricName, department } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const workflowType = String(requestData.workflowType || '').slice(0, 100);
+    const metricName = String(requestData.metricName || '').slice(0, 200);
+    const department = String(requestData.department || '').slice(0, 100);
+    
+    if (!workflowType || !metricName || !department) {
+      return new Response(
+        JSON.stringify({ error: 'workflowType, metricName, and department are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");

@@ -12,7 +12,24 @@ serve(async (req) => {
   }
 
   try {
-    const { dataType } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const dataType = String(requestData.dataType || '').slice(0, 100);
+    
+    if (!dataType) {
+      return new Response(
+        JSON.stringify({ error: 'dataType is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     
     console.log('Revio data request:', { dataType });
 

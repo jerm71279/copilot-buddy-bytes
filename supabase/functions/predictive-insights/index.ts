@@ -17,7 +17,35 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { analysisType, resourceId, customerId } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const analysisType = String(requestData.analysisType || '').slice(0, 100);
+    const resourceId = requestData.resourceId ? String(requestData.resourceId).slice(0, 100) : null;
+    const customerId = String(requestData.customerId || '').slice(0, 100);
+    
+    const validAnalysisTypes = ['change_risk', 'cmdb_health', 'anomaly_detection', 'compliance_risk'];
+    if (!analysisType || !validAnalysisTypes.includes(analysisType)) {
+      return new Response(
+        JSON.stringify({ error: 'Valid analysisType is required (change_risk, cmdb_health, anomaly_detection, compliance_risk)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (!customerId) {
+      return new Response(
+        JSON.stringify({ error: 'customerId is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     console.log('Generating insights for:', { analysisType, resourceId, customerId });
 
     let analysisData: any = {};

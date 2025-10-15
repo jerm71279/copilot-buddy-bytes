@@ -12,7 +12,18 @@ serve(async (req) => {
   }
 
   try {
-    const { query, customerId } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const query = String(requestData.query || '').slice(0, 500);
+    const customerId = requestData.customerId ? String(requestData.customerId).slice(0, 100) : null;
 
     if (!query || query.trim().length === 0) {
       return new Response(JSON.stringify({ results: [] }), {
