@@ -1105,6 +1105,116 @@ export type Database = {
           },
         ]
       }
+      change_request_template_scenarios: {
+        Row: {
+          compliance_tags: string[] | null
+          created_at: string | null
+          display_order: number | null
+          id: string
+          impact_level: string | null
+          is_active: boolean | null
+          recommended_rollback: string | null
+          recommended_testing: string | null
+          requires_emergency_approval: boolean | null
+          scenario_description: string | null
+          scenario_name: string
+          template_id: string
+          typical_duration_minutes: number | null
+        }
+        Insert: {
+          compliance_tags?: string[] | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          impact_level?: string | null
+          is_active?: boolean | null
+          recommended_rollback?: string | null
+          recommended_testing?: string | null
+          requires_emergency_approval?: boolean | null
+          scenario_description?: string | null
+          scenario_name: string
+          template_id: string
+          typical_duration_minutes?: number | null
+        }
+        Update: {
+          compliance_tags?: string[] | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          impact_level?: string | null
+          is_active?: boolean | null
+          recommended_rollback?: string | null
+          recommended_testing?: string | null
+          requires_emergency_approval?: boolean | null
+          scenario_description?: string | null
+          scenario_name?: string
+          template_id?: string
+          typical_duration_minutes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_request_template_scenarios_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "change_request_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      change_request_templates: {
+        Row: {
+          category: string
+          created_at: string | null
+          created_by: string | null
+          customer_id: string
+          default_priority:
+            | Database["public"]["Enums"]["change_priority"]
+            | null
+          default_risk_level: Database["public"]["Enums"]["change_risk"] | null
+          description: string | null
+          estimated_duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          requires_approval: boolean | null
+          template_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          created_by?: string | null
+          customer_id: string
+          default_priority?:
+            | Database["public"]["Enums"]["change_priority"]
+            | null
+          default_risk_level?: Database["public"]["Enums"]["change_risk"] | null
+          description?: string | null
+          estimated_duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          requires_approval?: boolean | null
+          template_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          customer_id?: string
+          default_priority?:
+            | Database["public"]["Enums"]["change_priority"]
+            | null
+          default_risk_level?: Database["public"]["Enums"]["change_risk"] | null
+          description?: string | null
+          estimated_duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          requires_approval?: boolean | null
+          template_name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       change_requests: {
         Row: {
           actual_end_time: string | null
@@ -1152,10 +1262,12 @@ export type Database = {
           rollback_plan: string
           scheduled_end_time: string | null
           scheduled_start_time: string | null
+          selected_scenario_id: string | null
           similar_changes_success_rate: number | null
           submitted_at: string | null
           success_criteria: string | null
           technical_impact: string | null
+          template_id: string | null
           testing_plan: string | null
           title: string
           updated_at: string
@@ -1207,10 +1319,12 @@ export type Database = {
           rollback_plan: string
           scheduled_end_time?: string | null
           scheduled_start_time?: string | null
+          selected_scenario_id?: string | null
           similar_changes_success_rate?: number | null
           submitted_at?: string | null
           success_criteria?: string | null
           technical_impact?: string | null
+          template_id?: string | null
           testing_plan?: string | null
           title: string
           updated_at?: string
@@ -1262,10 +1376,12 @@ export type Database = {
           rollback_plan?: string
           scheduled_end_time?: string | null
           scheduled_start_time?: string | null
+          selected_scenario_id?: string | null
           similar_changes_success_rate?: number | null
           submitted_at?: string | null
           success_criteria?: string | null
           technical_impact?: string | null
+          template_id?: string | null
           testing_plan?: string | null
           title?: string
           updated_at?: string
@@ -1284,6 +1400,20 @@ export type Database = {
             columns: ["primary_ci_id"]
             isOneToOne: false
             referencedRelation: "configuration_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_selected_scenario_id_fkey"
+            columns: ["selected_scenario_id"]
+            isOneToOne: false
+            referencedRelation: "change_request_template_scenarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "change_request_templates"
             referencedColumns: ["id"]
           },
         ]
