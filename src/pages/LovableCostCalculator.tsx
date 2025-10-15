@@ -9,25 +9,25 @@ import { Badge } from '@/components/ui/badge';
 import { DollarSign, TrendingUp, Users, Database, Cpu, Cloud, Brain } from 'lucide-react';
 
 const LovableCostCalculator = () => {
-  // User inputs
-  const [userCount, setUserCount] = useState(50);
-  const [customerCount, setCustomerCount] = useState(2);
-  const [lovableSeats, setLovableSeats] = useState(2);
-  const [lovableTier, setLovableTier] = useState<'free' | 'pro' | 'team'>('pro');
+  // User inputs - Enterprise defaults
+  const [userCount, setUserCount] = useState(250);
+  const [customerCount, setCustomerCount] = useState(10);
+  const [lovableSeats, setLovableSeats] = useState(5);
+  const [lovableTier, setLovableTier] = useState<'free' | 'pro' | 'team'>('team');
   
-  // Cloud usage
-  const [dbReadsPerMonth, setDbReadsPerMonth] = useState(100000);
-  const [dbWritesPerMonth, setDbWritesPerMonth] = useState(50000);
-  const [edgeFunctionCalls, setEdgeFunctionCalls] = useState(200000);
-  const [storageGB, setStorageGB] = useState(10);
-  const [bandwidthGB, setBandwidthGB] = useState(50);
+  // Cloud usage - Enterprise scale
+  const [dbReadsPerMonth, setDbReadsPerMonth] = useState(500000);
+  const [dbWritesPerMonth, setDbWritesPerMonth] = useState(250000);
+  const [edgeFunctionCalls, setEdgeFunctionCalls] = useState(1000000);
+  const [storageGB, setStorageGB] = useState(50);
+  const [bandwidthGB, setBandwidthGB] = useState(200);
   
-  // AI usage (from FILE_COLLABORATION_AI_INTEGRATION.md estimates)
-  const [filesIndexedPerMonth, setFilesIndexedPerMonth] = useState(5000);
-  const [semanticSearches, setSemanticSearches] = useState(20000);
-  const [documentQA, setDocumentQA] = useState(10000);
-  const [recommendations, setRecommendations] = useState(50000);
-  const [complianceScans, setComplianceScans] = useState(5000);
+  // AI usage - Enterprise scale (from FILE_COLLABORATION_AI_INTEGRATION.md estimates)
+  const [filesIndexedPerMonth, setFilesIndexedPerMonth] = useState(25000);
+  const [semanticSearches, setSemanticSearches] = useState(100000);
+  const [documentQA, setDocumentQA] = useState(50000);
+  const [recommendations, setRecommendations] = useState(250000);
+  const [complianceScans, setComplianceScans] = useState(25000);
 
   // Pricing constants
   const LOVABLE_PRICING = {
@@ -83,8 +83,8 @@ const LovableCostCalculator = () => {
   
   const totalMonthlyCost = lovableSubscriptionCost + effectiveCloudCost + effectiveAICost;
 
-  // Revenue calculations
-  const avgRevenuePerCustomer = 1000; // Average between Starter ($499) and Pro ($1499)
+  // Revenue calculations - Enterprise pricing
+  const avgRevenuePerCustomer = 2500; // Enterprise average (custom pricing, typically $2000-3000+)
   const monthlyRevenue = customerCount * avgRevenuePerCustomer;
   const profitMargin = ((monthlyRevenue - totalMonthlyCost) / monthlyRevenue) * 100;
 
