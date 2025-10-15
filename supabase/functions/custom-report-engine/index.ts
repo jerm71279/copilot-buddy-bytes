@@ -17,20 +17,51 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { action, reportId, customerId } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const action = String(requestData.action || '').slice(0, 100);
+    const reportId = requestData.reportId ? String(requestData.reportId).slice(0, 100) : undefined;
+    const customerId = String(requestData.customerId || '').slice(0, 100);
+    
+    if (!action || !customerId) {
+      return new Response(
+        JSON.stringify({ error: 'action and customerId are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     switch (action) {
       case 'execute_report': {
         const startTime = Date.now();
+        
+        if (!reportId) {
+          return new Response(
+            JSON.stringify({ error: 'reportId is required for execute_report action' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         // Get report definition
         const { data: report, error: reportError } = await supabase
           .from('custom_reports')
           .select('*')
           .eq('id', reportId)
-          .single();
+          .maybeSingle();
 
-        if (reportError) throw reportError;
+        if (reportError || !report) {
+          return new Response(
+            JSON.stringify({ error: 'Report not found' }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
 
         try {
           let resultData: any[] = [];

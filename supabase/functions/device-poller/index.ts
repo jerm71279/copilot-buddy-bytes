@@ -33,14 +33,31 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { device_id } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const device_id = String(requestData.device_id || '').slice(0, 100);
+    
+    if (!device_id) {
+      return new Response(
+        JSON.stringify({ error: 'device_id is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Get device details
     const { data: device, error: deviceError } = await supabase
       .from('network_devices')
       .select('*')
       .eq('id', device_id)
-      .single();
+      .maybeSingle();
 
     if (deviceError || !device) {
       return new Response(

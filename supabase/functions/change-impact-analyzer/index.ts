@@ -25,7 +25,27 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { changeRequestId, affectedCiIds, changeDescription, changeType }: ImpactAnalysisRequest = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const changeRequestId = String(requestData.changeRequestId || '').slice(0, 100);
+    const affectedCiIds = Array.isArray(requestData.affectedCiIds) ? requestData.affectedCiIds.slice(0, 100) : [];
+    const changeDescription = String(requestData.changeDescription || '').slice(0, 5000);
+    const changeType = String(requestData.changeType || '').slice(0, 100);
+    
+    if (!changeRequestId || affectedCiIds.length === 0 || !changeDescription || !changeType) {
+      return new Response(
+        JSON.stringify({ error: 'changeRequestId, affectedCiIds, changeDescription, and changeType are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     console.log("Analyzing change impact:", { changeRequestId, affectedCiIds: affectedCiIds.length });
 
@@ -165,9 +185,11 @@ Provide:
         ai_confidence_score: lovableApiKey ? 85 : 50,
       })
       .select()
-      .single();
+      .maybeSingle();
 
-    if (insertError) throw insertError;
+    if (insertError || !analysis) {
+      throw new Error('Failed to create impact analysis');
+    }
 
     // 9. Update change request with risk level
     let riskLevel = "low";

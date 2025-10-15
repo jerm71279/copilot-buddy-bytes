@@ -34,7 +34,7 @@ serve(async (req) => {
       .from('user_profiles')
       .select('customer_id')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile?.customer_id) {
       throw new Error('No customer associated with user');
@@ -48,7 +48,25 @@ serve(async (req) => {
       );
     }
 
-    const { action, data } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const action = String(requestData.action || '').slice(0, 100);
+    const data = requestData.data;
+    
+    if (!action) {
+      return new Response(
+        JSON.stringify({ error: 'action is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     let result;
     switch (action) {

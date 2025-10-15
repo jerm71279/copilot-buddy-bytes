@@ -65,14 +65,16 @@
 - intelligent-assistant (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
 - knowledge-processor (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
 
-**Total Fixed: 40 `.single()` calls + comprehensive input validation across 15 functions (68% complete)**
+**✅ COMPLETED Batch 4:**
+- change-impact-analyzer (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
+- custom-report-engine (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
+- department-assistant (1 `.single()` → `.maybeSingle()`, already had zod validation)
+- device-poller (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
+- hubspot-sync (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
 
-**⏳ REMAINING: 18 Edge Functions Still Need Fixes (19 instances)**
-- change-impact-analyzer (1 instance)
-- custom-report-engine (1 instance)
-- department-assistant (1 instance)
-- device-poller (1 instance)
-- hubspot-sync (1 instance)
+**Total Fixed: 45 `.single()` calls + comprehensive input validation across 20 functions (76% complete)**
+
+**⏳ REMAINING: 13 Edge Functions Still Need Fixes (14 instances)**
 - ninjaone-sync (2 instances)
 - ninjaone-ticket (1 instance)
 - repetitive-task-detector (1 instance)
@@ -84,7 +86,7 @@
 - workflow-evidence-generator (1 instance)
 - workflow-webhook (1 instance)
 
-**24 Additional Edge Functions Need Input Validation**
+**19 Additional Edge Functions Need Input Validation**
 
 ### Medium Priority - Design System
 
