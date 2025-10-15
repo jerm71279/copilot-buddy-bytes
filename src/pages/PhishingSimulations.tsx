@@ -249,13 +249,13 @@ const PhishingSimulations = () => {
                       </div>
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Clicked Link:</span>
-                        <span className={attempt.clicked_link ? 'text-red-500' : ''}>
+                        <span className={attempt.clicked_link ? 'text-destructive' : ''}>
                           {attempt.clicked_link ? '✓ Yes (Failed)' : '✗ No'}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Reported as Phishing:</span>
-                        <span className={attempt.reported_phishing ? 'text-green-500' : ''}>
+                        <span className={attempt.reported_phishing ? 'text-primary' : ''}>
                           {attempt.reported_phishing ? '✓ Yes (Great!)' : '✗ No'}
                         </span>
                       </div>

@@ -312,7 +312,7 @@ export default function NinjaOneIntegration() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{alerts.length}</div>
+              <div className="text-2xl font-bold text-warning">{alerts.length}</div>
             </CardContent>
           </Card>
           

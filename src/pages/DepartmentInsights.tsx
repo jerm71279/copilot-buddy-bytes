@@ -99,7 +99,7 @@ export default function DepartmentInsights() {
 
   const getImpactBadge = (score: number) => {
     if (score >= 8) return <Badge variant="destructive">High Impact</Badge>;
-    if (score >= 5) return <Badge className="bg-orange-500">Medium Impact</Badge>;
+    if (score >= 5) return <Badge className="bg-warning">Medium Impact</Badge>;
     return <Badge variant="outline">Low Impact</Badge>;
   };
 

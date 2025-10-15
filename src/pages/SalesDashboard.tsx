@@ -351,7 +351,7 @@ const SalesDashboard = () => {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Q1 Target: $1.5M</span>
-                  <span className="font-medium text-green-600">$1.6M (107%)</span>
+                  <span className="font-medium text-primary">$1.6M (107%)</span>
                 </div>
                 <Progress value={107} className="h-2" />
               </div>
@@ -386,7 +386,7 @@ const SalesDashboard = () => {
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="p-4 border rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <CheckCircle className="h-5 w-5 text-primary" />
                     <span className="text-sm font-medium">Active Subscriptions</span>
                   </div>
                   <div className="text-2xl font-bold">142</div>
@@ -394,7 +394,7 @@ const SalesDashboard = () => {
                 </div>
                 <div className="p-4 border rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <Clock className="h-5 w-5 text-yellow-600" />
+                    <Clock className="h-5 w-5 text-warning" />
                     <span className="text-sm font-medium">Open Tickets</span>
                   </div>
                   <div className="text-2xl font-bold">8</div>
@@ -402,7 +402,7 @@ const SalesDashboard = () => {
                 </div>
                 <div className="p-4 border rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <AlertCircle className="h-5 w-5 text-red-600" />
+                    <AlertCircle className="h-5 w-5 text-destructive" />
                     <span className="text-sm font-medium">Payment Issues</span>
                   </div>
                   <div className="text-2xl font-bold">3</div>
@@ -415,7 +415,7 @@ const SalesDashboard = () => {
                 <h4 className="text-sm font-semibold mb-3">Recent Customer Interactions</h4>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3 p-3 border rounded-lg">
-                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                    <CheckCircle className="h-5 w-5 text-primary mt-0.5" />
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <p className="font-medium text-sm">Enterprise Corp - Payment Received</p>
@@ -427,7 +427,7 @@ const SalesDashboard = () => {
                   </div>
 
                   <div className="flex items-start gap-3 p-3 border rounded-lg">
-                    <Clock className="h-5 w-5 text-yellow-600 mt-0.5" />
+                    <Clock className="h-5 w-5 text-warning mt-0.5" />
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <p className="font-medium text-sm">Tech Solutions Inc - Support Ticket</p>
@@ -439,7 +439,7 @@ const SalesDashboard = () => {
                   </div>
 
                   <div className="flex items-start gap-3 p-3 border rounded-lg">
-                    <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                    <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <p className="font-medium text-sm">Global Services Ltd - Payment Failed</p>

@@ -386,7 +386,7 @@ const SOCDashboard = () => {
               <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{metrics.activeThreats}</div>
+              <div className="text-2xl font-bold text-warning">{metrics.activeThreats}</div>
               <p className="text-xs text-muted-foreground mt-1">Requires attention</p>
             </CardContent>
           </Card>
@@ -461,19 +461,19 @@ const SOCDashboard = () => {
 
         {/* Advanced Security Metrics */}
         <div className="grid gap-4 md:grid-cols-4">
-          <Card className="border-orange-200 bg-orange-50/50">
+          <Card className="border-warning/20 bg-warning/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Failed Logins (24h)</p>
-                  <p className="text-2xl font-bold mt-1 text-orange-600">{metrics.failedLogins24h}</p>
+                  <p className="text-2xl font-bold mt-1 text-warning">{metrics.failedLogins24h}</p>
                 </div>
-                <AlertTriangle className="h-8 w-8 text-orange-600 opacity-50" />
+                <AlertTriangle className="h-8 w-8 text-warning opacity-50" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-red-200 bg-red-50/50">
+          <Card className="border-destructive/20 bg-destructive/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -485,19 +485,19 @@ const SOCDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-purple-200 bg-purple-50/50">
+          <Card className="border-accent/20 bg-accent/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Exfiltration Attempts</p>
-                  <p className="text-2xl font-bold mt-1 text-purple-600">{metrics.exfiltrationAttempts24h}</p>
+                  <p className="text-2xl font-bold mt-1 text-accent">{metrics.exfiltrationAttempts24h}</p>
                 </div>
-                <FileWarning className="h-8 w-8 text-purple-600 opacity-50" />
+                <FileWarning className="h-8 w-8 text-accent opacity-50" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-blue-200 bg-blue-50/50">
+          <Card className="border-secondary/20 bg-secondary/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>

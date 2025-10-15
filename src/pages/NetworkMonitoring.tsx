@@ -207,7 +207,7 @@ export default function NetworkMonitoring() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{stats.openAlerts}</div>
+              <div className="text-2xl font-bold text-warning">{stats.openAlerts}</div>
             </CardContent>
           </Card>
           
