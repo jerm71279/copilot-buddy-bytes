@@ -682,6 +682,11 @@ const App = () => (
               <NetworkDeviceNew />
             </ProtectedRoute>
           } />
+          <Route path="/network-monitoring/new" element={
+            <ProtectedRoute>
+              <NetworkDeviceNew />
+            </ProtectedRoute>
+          } />
           
           {/* Products Admin - Admin Only */}
           <Route path="/admin/products" element={
