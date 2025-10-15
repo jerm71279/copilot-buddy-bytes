@@ -215,17 +215,35 @@ After validation and fixes, update:
 - ✅ `src/pages/OnboardingDashboard.tsx` - 3 violations (stats cards)
 - ✅ `src/pages/PhishingSimulations.tsx` - 4 violations (badge variant, stats cards)
 
-**Batch 6 Pages:**
-- ✅ `src/pages/CIPPDashboard.tsx` - 3 violations (health score colors)
-- ✅ `src/pages/CMDBDashboard.tsx` - 2 violations (integration badges)
-- ✅ `src/pages/CMDBItemDetail.tsx` - 2 violations (integration badges)
-- ✅ `src/pages/CMMCReadiness.tsx` - 3 violations (automation level colors)
-- ✅ `src/pages/ComprehensiveTestDashboard.tsx` - 10 violations (test result colors, stats)
-- ✅ `src/pages/DepartmentFeedback.tsx` - 3 violations (priority colors)
+**Batch 6 - CIPP, CMDB, Testing Pages
+**Fixed**: 23 violations in 6 files
 
-**Remaining Files**: ~10 pages with ~54 violations
+**Pages Fixed:**
+1. **CIPPDashboard.tsx**: 3 violations - `getHealthColor()` function (health score thresholds)
+2. **CMDBDashboard.tsx**: 2 violations - NinjaOne/Azure integration badges
+3. **CMDBItemDetail.tsx**: 2 violations - NinjaOne/Azure integration badges
+4. **CMMCReadiness.tsx**: 3 violations - `getAutomationColor()` function (full/partial/manual automation)
+5. **ComprehensiveTestDashboard.tsx**: 10 violations - Test result colors, stats metrics, validation icons
+6. **DepartmentFeedback.tsx**: 3 violations - `getPriorityColor()` function (critical/high/medium priority)
 
-**Progress: 158/212 violations fixed (75%)**
+**Batch 7 - Insights, Feedback, Operations Pages
+**Fixed**: 16 violations in 7 files
+
+**Pages Fixed:**
+1. **DepartmentInsights.tsx**: 2 violations - `getConfidenceBadge()` function (high/medium confidence)
+2. **EmployeeFeedback.tsx**: 5 violations - `getStatusColor()` function (resolved/in_progress/acknowledged/new/default status)
+3. **ExecutiveDashboard.tsx**: 1 violation - MRR growth badge
+4. **IntegrationsPage.tsx**: 3 violations - Complexity badge conditional colors (low/medium/high)
+5. **IntelligentAssistant.tsx**: 2 violations - Insight border + Lightbulb icon
+6. **InternalOperationsDashboard.tsx**: 2 violations - Readiness badge + Champion Award icon
+7. **KnowledgeBase.tsx**: 1 violation - Lightbulb icon
+
+### Total Progress
+**Completed**: 174 violations across 52 files (82%)
+- Components: 11/11 ✅
+- Pages: 41/~45
+
+**Remaining**: ~38 violations in ~4 page files
 
 ## Validation Templates
 

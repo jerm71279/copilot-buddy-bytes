@@ -297,9 +297,9 @@ const IntegrationsPage = () => {
                               <Badge 
                                 variant="outline" 
                                 className={`ml-auto ${
-                                  system.complexity === 'Low' ? 'bg-green-500/10 text-green-700 border-green-500/20' :
-                                  system.complexity === 'Medium' ? 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20' :
-                                  'bg-red-500/10 text-red-700 border-red-500/20'
+                                  system.complexity === 'Low' ? 'bg-primary/10 text-primary border-primary/20' :
+                                  system.complexity === 'Medium' ? 'bg-warning/10 text-warning border-warning/20' :
+                                  'bg-destructive/10 text-destructive border-destructive/20'
                                 }`}
                               >
                                 {system.complexity} Complexity

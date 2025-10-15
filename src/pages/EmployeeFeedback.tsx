@@ -121,11 +121,11 @@ const EmployeeFeedback = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "resolved": return "bg-green-500";
-      case "in_progress": return "bg-blue-500";
-      case "acknowledged": return "bg-yellow-500";
-      case "new": return "bg-purple-500";
-      default: return "bg-gray-500";
+      case "resolved": return "bg-primary";
+      case "in_progress": return "bg-secondary";
+      case "acknowledged": return "bg-warning";
+      case "new": return "bg-accent";
+      default: return "bg-muted";
     }
   };
 

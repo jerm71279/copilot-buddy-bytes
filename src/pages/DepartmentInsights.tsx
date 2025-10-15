@@ -92,8 +92,8 @@ export default function DepartmentInsights() {
   };
 
   const getConfidenceBadge = (score: number) => {
-    if (score >= 0.8) return <Badge className="bg-green-500">High Confidence</Badge>;
-    if (score >= 0.6) return <Badge className="bg-yellow-500">Medium Confidence</Badge>;
+    if (score >= 0.8) return <Badge className="bg-primary">High Confidence</Badge>;
+    if (score >= 0.6) return <Badge className="bg-warning">Medium Confidence</Badge>;
     return <Badge variant="secondary">Low Confidence</Badge>;
   };
 

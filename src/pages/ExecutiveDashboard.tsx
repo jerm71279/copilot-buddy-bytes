@@ -283,7 +283,7 @@ const ExecutiveDashboard = () => {
                   <p className="font-medium">Monthly Recurring Revenue</p>
                   <p className="text-2xl font-bold">$45,200</p>
                 </div>
-                <Badge className="bg-green-500">+12.3%</Badge>
+                <Badge variant="success">+12.3%</Badge>
               </div>
               <div className="flex items-center justify-between">
                 <div>

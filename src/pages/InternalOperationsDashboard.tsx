@@ -125,7 +125,7 @@ const InternalOperationsDashboard = () => {
           <CardContent>
             <div className="text-2xl font-bold">{latestMetrics?.readiness_score || 0}/100</div>
             {latestMetrics && latestMetrics.readiness_score >= 80 ? (
-              <Badge className="mt-2 bg-green-500">Ready for Pilot</Badge>
+              <Badge className="mt-2" variant="success">Ready for Pilot</Badge>
             ) : (
               <Badge className="mt-2" variant="secondary">In Progress</Badge>
             )}
@@ -213,7 +213,7 @@ const InternalOperationsDashboard = () => {
               <Card key={champion.id}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Award className="w-5 h-5 text-yellow-500" />
+                    <Award className="w-5 h-5 text-warning" />
                     Champion {champion.user_id}
                   </CardTitle>
                   <CardDescription>

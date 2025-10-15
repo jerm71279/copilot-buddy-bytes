@@ -292,7 +292,7 @@ export default function KnowledgeBase() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Lightbulb className="h-5 w-5 text-yellow-500" />
+                      <Lightbulb className="h-5 w-5 text-warning" />
                       <CardTitle>{insight.title}</CardTitle>
                     </div>
                     <Badge variant="outline">{insight.insight_type}</Badge>

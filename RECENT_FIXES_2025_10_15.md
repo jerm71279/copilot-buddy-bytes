@@ -53,12 +53,24 @@
 5. **ComprehensiveTestDashboard.tsx**: 10 violations - Test result colors, stats metrics, validation icons
 6. **DepartmentFeedback.tsx**: 3 violations - `getPriorityColor()` function (critical/high/medium priority)
 
-### Total Progress
-**Completed**: 158 violations across 46 files (75%)
-- Components: 11/11 ✅
-- Pages: 35/~45
+### Batch 7 - Insights, Feedback, Operations Pages
+**Fixed**: 16 violations in 7 files
 
-**Remaining**: ~54 violations in ~10 page files
+**Pages Fixed:**
+1. **DepartmentInsights.tsx**: 2 violations - `getConfidenceBadge()` function (high/medium confidence)
+2. **EmployeeFeedback.tsx**: 5 violations - `getStatusColor()` function (resolved/in_progress/acknowledged/new/default status)
+3. **ExecutiveDashboard.tsx**: 1 violation - MRR growth badge
+4. **IntegrationsPage.tsx**: 3 violations - Complexity badge conditional colors (low/medium/high)
+5. **IntelligentAssistant.tsx**: 2 violations - Insight border + Lightbulb icon
+6. **InternalOperationsDashboard.tsx**: 2 violations - Readiness badge + Champion Award icon
+7. **KnowledgeBase.tsx**: 1 violation - Lightbulb icon
+
+### Total Progress
+**Completed**: 174 violations across 52 files (82%)
+- Components: 11/11 ✅
+- Pages: 41/~45
+
+**Remaining**: ~38 violations in ~4 page files
 
 **Next Priority Files:**
 - ComprehensiveTestDashboard.tsx (remaining violations)

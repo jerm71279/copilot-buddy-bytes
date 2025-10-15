@@ -333,9 +333,9 @@ const IntelligentAssistant = () => {
                           )}
 
                           {message.insight && (
-                            <div className="mt-3 pt-3 border-t border-yellow-500/40">
+                            <div className="mt-3 pt-3 border-t border-warning/40">
                               <div className="flex items-center gap-2 mb-1">
-                                <Lightbulb className="h-4 w-4 text-yellow-500" />
+                                <Lightbulb className="h-4 w-4 text-warning" />
                                 <p className="text-xs font-medium">
                                   New Insight Generated
                                 </p>
