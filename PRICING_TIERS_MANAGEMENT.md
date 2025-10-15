@@ -112,14 +112,14 @@ Lovable offers a comprehensive AI-powered development platform with flexible pri
   - Team analytics
   - Enhanced security features
 
-### Cost Breakdown (Example: 5 Seats)
+### Cost Breakdown (Example: 3 Seats)
 
 | Component | Calculation | Monthly Cost |
 |-----------|-------------|--------------|
-| Subscription | 5 seats × $40 | $200.00 |
+| Subscription | 3 seats × $40 | $120.00 |
 | Cloud Usage | After $25 free tier | Variable |
 | AI Usage | After $1 free tier | Variable |
-| **Total** | Base + Usage | **$200+** |
+| **Total** | Base + Usage | **$120+** |
 
 ### Example Use Case
 
@@ -131,10 +131,10 @@ Lovable offers a comprehensive AI-powered development platform with flexible pri
 - **Cloud Cost:** $65/month
 - **AI Cost:** $10/month
 - **Usage Cost:** $49/month (after free tiers: $40 cloud + $9 AI)
-- **Total Monthly:** $249/month (1 seat) or $449/month (5 seats)
+- **Total Monthly:** $169/month (1 seat) or $169/month (3 seats)
 
 ### Annual Savings
-If paid annually: **12 months × $249 = $2,988/year** (for 1 seat + e-commerce usage)
+If paid annually: **12 months × $169 = $2,028/year** (for 3 seats + e-commerce usage)
 
 ---
 
@@ -148,20 +148,20 @@ If paid annually: **12 months × $249 = $2,988/year** (for 1 seat + e-commerce u
 
 **Base:** Team Plan ($40/seat)
 
-**Enterprise Add-ons (per 5 seats example):**
+**Enterprise Add-ons (per 3 seats example):**
 
-| Add-on Feature | Rate | Cost (5 seats) |
+| Add-on Feature | Rate | Cost (3 seats) |
 |----------------|------|----------------|
-| Team Plan Base | $40/seat | $200.00 |
-| 24/7 Priority Support | $50/seat | $250.00 |
-| Advanced Security | $30/seat | $150.00 |
+| Team Plan Base | $40/seat | $120.00 |
+| 24/7 Priority Support | $50/seat | $150.00 |
+| Advanced Security | $30/seat | $90.00 |
 | 99.9% SLA Guarantee | Flat rate | $100.00 |
 | Dedicated Success Manager | Flat rate | $200.00 |
 | Custom Integrations | Flat rate | $150.00 |
-| **Subscription Subtotal** | | **$1,050.00** |
+| **Subscription Subtotal** | | **$810.00** |
 | Cloud Usage (after free tier) | Variable | $40.00 |
 | AI Usage (after free tier) | Variable | $9.00 |
-| **Total Monthly** | | **$1,099.00** |
+| **Total Monthly** | | **$859.00** |
 
 ### Enterprise Features
 - **Everything in Team Plan PLUS:**
@@ -175,7 +175,7 @@ If paid annually: **12 months × $249 = $2,988/year** (for 1 seat + e-commerce u
   - Priority feature requests
 
 ### Best For
-- Organizations with 10+ developers
+- Organizations with 3+ developers
 - Companies requiring SLA guarantees
 - Enterprises with compliance requirements
 - Teams needing custom integrations
@@ -296,17 +296,17 @@ If paid annually: **12 months × $249 = $2,988/year** (for 1 seat + e-commerce u
 
 ### For Management Consideration:
 
-1. **Start with Pro Plan** ($20/seat) for initial team of 3-5 developers
+1. **Start with Pro Plan** ($20/seat) for initial team of 3 developers
    - Total estimated cost: $50-100/month
    - Scale up as usage grows
 
-2. **Move to Team Plan** ($40/seat) when team reaches 5+ members or requires:
+2. **Move to Team Plan** ($40/seat) when requiring:
    - Advanced collaboration features
    - Team workspaces and permissions
    - Enhanced analytics
 
 3. **Consider Enterprise** for organizations with:
-   - 10+ developers
+   - 3+ developers needing enterprise features
    - SLA requirements
    - Custom integration needs
    - Dedicated support requirements
