@@ -21,4 +21,12 @@ export type { DataFetchingState, FetchOptions } from "./useDataFetching";
 export { useForm } from "./useForm";
 export type { FormOptions, FormState, FormHandlers } from "./useForm";
 
+export { useRetry } from "./useRetry";
+
 export { useToast } from "./use-toast";
+
+// Re-export performance utilities
+export { useDebounce, useThrottle, useIntersectionObserver, lazyWithRetry } from "../lib/performance";
+
+// Re-export accessibility utilities  
+export { trapFocus, announceToScreenReader, handleKeyboardNavigation, meetsWCAGAA } from "../lib/a11y";
