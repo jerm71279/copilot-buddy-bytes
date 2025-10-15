@@ -2,15 +2,26 @@
 
 **Last Updated:** October 15, 2025  
 **API Version:** 2.1  
-**Total Edge Functions:** 18
+**Total Edge Functions:** 19
 
 ## 🆕 Recent Updates (October 15, 2025)
 
-### New Edge Function
+### New Edge Functions
+- **`seed-security-training`**: Comprehensive security training content seeding with 10 modules, 5 phishing campaigns, and 50+ quiz questions
 - **`azure-event-grid-webhook`**: Automatic Azure infrastructure change logging via Event Grid webhooks
 
-### New Components
-- **`AzureEventGridStatus`**: Display Azure Event Grid integration status and recent automated changes
+### New Database Tables
+- **`security_training_questions`**: Quiz questions for training modules
+- **`security_training_answers`**: User quiz submissions with scoring
+- **`phishing_simulations`**: Phishing awareness campaigns
+- **`phishing_simulation_attempts`**: User phishing test responses
+- **`security_training_certificates`**: Auto-generated completion certificates
+- **`security_training_reminders`**: Automated training reminders
+
+### New Pages
+- **`SecurityTrainingModule`**: Interactive quiz and assessment system
+- **`PhishingSimulations`**: Phishing awareness training interface
+- **`AzureEventGridStatus`**: Azure Event Grid integration status display
 
 ---
 
