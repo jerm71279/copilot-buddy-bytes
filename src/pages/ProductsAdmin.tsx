@@ -92,21 +92,21 @@ export default function ProductsAdmin() {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      infrastructure: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
-      compliance: 'bg-green-500/10 text-green-700 dark:text-green-400',
-      security: 'bg-red-500/10 text-red-700 dark:text-red-400',
-      automation: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
+      infrastructure: 'bg-secondary/10 text-secondary dark:text-secondary',
+      compliance: 'bg-primary/10 text-primary dark:text-primary',
+      security: 'bg-destructive/10 text-destructive dark:text-destructive',
+      automation: 'bg-accent/10 text-accent dark:text-accent',
     };
-    return colors[category] || 'bg-gray-500/10 text-gray-700 dark:text-gray-400';
+    return colors[category] || 'bg-muted/10 text-muted-foreground dark:text-muted-foreground';
   };
 
   const getTierColor = (tier: string) => {
     const colors: Record<string, string> = {
-      basic: 'bg-slate-500/10 text-slate-700 dark:text-slate-400',
-      professional: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
-      enterprise: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
+      basic: 'bg-muted/10 text-muted-foreground dark:text-muted-foreground',
+      professional: 'bg-secondary/10 text-secondary dark:text-secondary',
+      enterprise: 'bg-accent/10 text-accent dark:text-accent',
     };
-    return colors[tier] || 'bg-gray-500/10 text-gray-700 dark:text-gray-400';
+    return colors[tier] || 'bg-muted/10 text-muted-foreground dark:text-muted-foreground';
   };
 
   return (

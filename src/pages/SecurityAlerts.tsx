@@ -185,10 +185,10 @@ export default function SecurityAlerts() {
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
-      case 'critical': return <AlertTriangle className="h-4 w-4 text-red-500" />;
-      case 'high': return <AlertTriangle className="h-4 w-4 text-orange-500" />;
-      case 'medium': return <Shield className="h-4 w-4 text-yellow-500" />;
-      default: return <Shield className="h-4 w-4 text-blue-500" />;
+      case 'critical': return <AlertTriangle className="h-4 w-4 text-destructive" />;
+      case 'high': return <AlertTriangle className="h-4 w-4 text-warning" />;
+      case 'medium': return <Shield className="h-4 w-4 text-warning" />;
+      default: return <Shield className="h-4 w-4 text-secondary" />;
     }
   };
 
@@ -258,7 +258,7 @@ export default function SecurityAlerts() {
               <p className="text-sm text-muted-foreground">Alerts (24h)</p>
               <p className="text-2xl font-bold">{metrics?.alerts_24h || 0}</p>
             </div>
-            <TrendingUp className="h-8 w-8 text-blue-500" />
+            <TrendingUp className="h-8 w-8 text-secondary" />
           </div>
         </Card>
         <Card className="p-4">
@@ -276,7 +276,7 @@ export default function SecurityAlerts() {
               <p className="text-sm text-muted-foreground">Critical Open</p>
               <p className="text-2xl font-bold">{metrics?.critical_open || 0}</p>
             </div>
-            <AlertTriangle className="h-8 w-8 text-red-500" />
+            <AlertTriangle className="h-8 w-8 text-destructive" />
           </div>
         </Card>
         <Card className="p-4">
@@ -287,7 +287,7 @@ export default function SecurityAlerts() {
                 {Math.round(metrics?.avg_resolution_time_minutes || 0)}m
               </p>
             </div>
-            <CheckCircle className="h-8 w-8 text-green-500" />
+            <CheckCircle className="h-8 w-8 text-primary" />
           </div>
         </Card>
       </div>

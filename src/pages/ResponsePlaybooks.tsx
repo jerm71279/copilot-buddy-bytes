@@ -166,7 +166,7 @@ export default function ResponsePlaybooks() {
               <p className="text-sm text-muted-foreground">Active Playbooks</p>
               <p className="text-2xl font-bold">{activePlaybooks}</p>
             </div>
-            <BookOpen className="h-8 w-8 text-blue-500" />
+            <BookOpen className="h-8 w-8 text-secondary" />
           </div>
         </Card>
         <Card className="p-4">
@@ -175,7 +175,7 @@ export default function ResponsePlaybooks() {
               <p className="text-sm text-muted-foreground">Automated</p>
               <p className="text-2xl font-bold">{automatedPlaybooks}</p>
             </div>
-            <Play className="h-8 w-8 text-green-500" />
+            <Play className="h-8 w-8 text-primary" />
           </div>
         </Card>
         <Card className="p-4">
@@ -195,7 +195,7 @@ export default function ResponsePlaybooks() {
                 {totalExecutions > 0 ? Math.round((successfulExecutions / totalExecutions) * 100) : 0}%
               </p>
             </div>
-            <CheckCircle className="h-8 w-8 text-green-500" />
+            <CheckCircle className="h-8 w-8 text-primary" />
           </div>
         </Card>
       </div>

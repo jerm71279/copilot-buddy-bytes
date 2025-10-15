@@ -169,8 +169,8 @@ const SalesDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">${(stats.totalRevenue / 1000000).toFixed(2)}M</div>
               <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <ArrowUpRight className="h-3 w-3 text-green-600" />
-                <span className="text-green-600">+{stats.monthlyGrowth}% from last month</span>
+                <ArrowUpRight className="h-3 w-3 text-primary" />
+                <span className="text-primary">+{stats.monthlyGrowth}% from last month</span>
               </p>
             </CardContent>
           </Card>

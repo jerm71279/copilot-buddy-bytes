@@ -243,7 +243,7 @@ const RiskAssessmentPortal = () => {
                           <span>Likelihood: {risk.inherent_likelihood}</span>
                           <span>Impact: {risk.inherent_impact}</span>
                           {risk.residual_score && (
-                            <span className="text-green-600">
+                            <span className="text-primary">
                               Residual: {risk.residual_score} (↓{risk.inherent_score - risk.residual_score})
                             </span>
                           )}
@@ -375,7 +375,7 @@ const RiskAssessmentPortal = () => {
                             <span>Est. Cost: ${treatment.estimated_cost.toLocaleString()}</span>
                           )}
                           {treatment.completed_date && (
-                            <span className="text-green-600">
+                            <span className="text-primary">
                               Completed: {new Date(treatment.completed_date).toLocaleDateString()}
                             </span>
                           )}

@@ -318,11 +318,11 @@ const SOCDashboard = () => {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case "critical": return "text-red-600 bg-red-50 border-red-200";
-      case "high": return "text-orange-600 bg-orange-50 border-orange-200";
-      case "medium": return "text-yellow-600 bg-yellow-50 border-yellow-200";
-      case "low": return "text-blue-600 bg-blue-50 border-blue-200";
-      default: return "text-gray-600 bg-gray-50 border-gray-200";
+      case "critical": return "text-destructive bg-destructive/10 border-destructive/20";
+      case "high": return "text-warning bg-warning/10 border-warning/20";
+      case "medium": return "text-warning bg-warning/10 border-warning/20";
+      case "low": return "text-secondary bg-secondary/10 border-secondary/20";
+      default: return "text-muted-foreground bg-muted border-border";
     }
   };
 
@@ -400,7 +400,7 @@ const SOCDashboard = () => {
               <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{metrics.complianceScore}%</div>
+              <div className="text-2xl font-bold text-primary">{metrics.complianceScore}%</div>
               <Progress value={metrics.complianceScore} className="mt-2" />
             </CardContent>
           </Card>
@@ -439,9 +439,9 @@ const SOCDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Threats Prevented</p>
-                  <p className="text-2xl font-bold mt-1 text-green-600">{metrics.threatsPrevented}</p>
+                  <p className="text-2xl font-bold mt-1 text-primary">{metrics.threatsPrevented}</p>
                 </div>
-                <Lock className="h-8 w-8 text-green-600 opacity-50" />
+                <Lock className="h-8 w-8 text-primary opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -478,9 +478,9 @@ const SOCDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Lateral Movement</p>
-                  <p className="text-2xl font-bold mt-1 text-red-600">{metrics.lateralMovement24h}</p>
+                  <p className="text-2xl font-bold mt-1 text-destructive">{metrics.lateralMovement24h}</p>
                 </div>
-                <Users className="h-8 w-8 text-red-600 opacity-50" />
+                <Users className="h-8 w-8 text-destructive opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -502,9 +502,9 @@ const SOCDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Attack Chains</p>
-                  <p className="text-2xl font-bold mt-1 text-blue-600">{metrics.activeAttackChains}</p>
+                  <p className="text-2xl font-bold mt-1 text-secondary">{metrics.activeAttackChains}</p>
                 </div>
-                <Zap className="h-8 w-8 text-blue-600 opacity-50" />
+                <Zap className="h-8 w-8 text-secondary opacity-50" />
               </div>
             </CardContent>
           </Card>

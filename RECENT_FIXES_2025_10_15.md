@@ -65,12 +65,24 @@
 6. **InternalOperationsDashboard.tsx**: 2 violations - Readiness badge + Champion Award icon
 7. **KnowledgeBase.tsx**: 1 violation - Lightbulb icon
 
-### Total Progress
-**Completed**: 174 violations across 52 files (82%)
-- Components: 11/11 ✅
-- Pages: 41/~45
+### Batch 8 - Security & Sales Pages
+**Fixed**: 22 violations in 6 files
 
-**Remaining**: ~38 violations in ~4 page files
+**Pages Fixed:**
+1. **ProductsAdmin.tsx**: 8 violations - `getCategoryColor()` + `getTierColor()` functions (category/tier badges)
+2. **ResponsePlaybooks.tsx**: 3 violations - BookOpen, Play, CheckCircle icons
+3. **RiskAssessmentPortal.tsx**: 2 violations - Residual score + Completed date text
+4. **SOCDashboard.tsx**: 7 violations - `getSeverityColor()` function + compliance/threats/lateral/chains metrics
+5. **SecurityAlerts.tsx**: 6 violations - `getSeverityIcon()` function + stat card icons
+6. **SecurityIncidents.tsx**: 4 violations - `getSeverityColor()` function
+7. **SalesDashboard.tsx**: 3 violations - Growth indicator icon and text
+
+### Total Progress
+**Completed**: 196 violations across 58 files (92%)
+- Components: 11/11 ✅
+- Pages: 47/~45
+
+**Remaining**: ~16 violations in ~2 page files
 
 **Next Priority Files:**
 - ComprehensiveTestDashboard.tsx (remaining violations)
