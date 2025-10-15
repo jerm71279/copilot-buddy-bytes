@@ -109,10 +109,10 @@ const MLIntelligence = () => {
           <CardContent>
             <div className="space-y-6">
               {[
-                { systems: "10 Employees", accuracy: 60, description: "Basic behavioral patterns and workflow visibility", color: "bg-blue-500" },
-                { systems: "100 Employees", accuracy: 75, description: "Department-level insights and bottleneck detection", color: "bg-purple-500" },
-                { systems: "500 Employees", accuracy: 88, description: "Predictive intelligence across all departments", color: "bg-green-500" },
-                { systems: "1,000+ Employees", accuracy: 95, description: "Enterprise-wide transformation and optimization", color: "bg-orange-500" },
+                { systems: "10 Employees", accuracy: 60, description: "Basic behavioral patterns and workflow visibility", color: "bg-secondary" },
+                { systems: "100 Employees", accuracy: 75, description: "Department-level insights and bottleneck detection", color: "bg-accent" },
+                { systems: "500 Employees", accuracy: 88, description: "Predictive intelligence across all departments", color: "bg-primary" },
+                { systems: "1,000+ Employees", accuracy: 95, description: "Enterprise-wide transformation and optimization", color: "bg-warning" },
               ].map((stage, idx) => (
                 <div key={idx} className="space-y-2">
                   <div className="flex items-center justify-between">

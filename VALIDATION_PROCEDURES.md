@@ -262,22 +262,33 @@ After validation and fixes, update:
 6. **DepartmentInsights.tsx**: 1 violation - Medium impact badge
 
 **Batch 10 - Component Files
-**Fixed**: 25 violations in 6 files
+**Fixed**: 31 violations in 6 files
 
 **Components Fixed:**
 1. **AccessHistoryDialog.tsx**: 7 violations - `getActionColor()` function (login/logout/create/update/delete/view/credential_access)
 2. **AppLauncher.tsx**: 5 violations - `getCategoryColor()` function (communication/productivity/security/analytics/finance)
-3. **AutomationSuggestions.tsx**: 3 violations - `getDifficultyColor()` function (easy/medium/hard)
+3. **AutomationSuggestions.tsx**: 4 violations - `getDifficultyColor()` function (easy/medium/hard/default)
 4. **CIHealthScore.tsx**: 4 violations - `getHealthStatus()` function (excellent/good/fair/poor)
-5. **ChangeRequestTemplateSelector.tsx**: 9 violations - `getCategoryColor()` + `getImpactColor()` functions
+5. **ChangeRequestTemplateSelector.tsx**: 8 violations - `getCategoryColor()` + `getImpactColor()` functions
 6. **MCPServerStatus.tsx**: 3 violations - `getStatusBadge()` function (active/inactive/error)
 
+**Batch 11 - More Component Files
+**Fixed**: 24 violations in 6 files
+
+**Components Fixed:**
+1. **DashboardPreview.tsx**: 4 violations - Workflow color array (HR/Finance/Sales/IT workflows)
+2. **Frameworks.tsx**: 5 violations - Framework color array (ISO27001/SOC2/HIPAA/NIST/CMMC)
+3. **MLIntelligence.tsx**: 4 violations - Stage color array (employee tiers)
+4. **WorkflowExecutionHistory.tsx**: 3 violations - `getStatusIcon()` function (completed/failed/running)
+5. **GanttChart.tsx**: 5 violations - `getStatusColor()` function (completed/in_progress/blocked/not_started)
+6. **ResourceTimeline.tsx**: 3 violations - `getUtilizationColor()` function (overallocated/high/optimal/underutilized)
+
 ### Total Progress
-**Completed**: 237 violations across 71 files
-- Components: 17/~40
+**Completed**: 267 violations across 77 files
+- Components: 23/~40
 - Pages: 54/54 ✅
 
-**Remaining**: ~120+ violations in components and other files
+**Remaining**: ~90+ violations in remaining components
 
 ## Validation Templates
 

@@ -99,12 +99,23 @@
 5. **ChangeRequestTemplateSelector.tsx**: 8 violations - `getCategoryColor()` + `getImpactColor()` functions
 6. **MCPServerStatus.tsx**: 3 violations - `getStatusBadge()` function (active/inactive/error)
 
+### Batch 11 - More Component Files
+**Fixed**: 24 violations in 6 files
+
+**Components Fixed:**
+1. **DashboardPreview.tsx**: 4 violations - Workflow color array (HR/Finance/Sales/IT workflows)
+2. **Frameworks.tsx**: 5 violations - Framework color array (ISO27001/SOC2/HIPAA/NIST/CMMC)
+3. **MLIntelligence.tsx**: 4 violations - Stage color array (employee tiers)
+4. **WorkflowExecutionHistory.tsx**: 3 violations - `getStatusIcon()` function (completed/failed/running)
+5. **GanttChart.tsx**: 5 violations - `getStatusColor()` function (completed/in_progress/blocked/not_started)
+6. **ResourceTimeline.tsx**: 3 violations - `getUtilizationColor()` function (overallocated/high/optimal/underutilized)
+
 ### Total Progress
-**Completed**: 243 violations across 71 files
-- Components: 17/~40
+**Completed**: 267 violations across 77 files
+- Components: 23/~40
 - Pages: 54/54 ✅
 
-**Remaining**: ~110+ violations in remaining component files
+**Remaining**: ~90+ violations in remaining components
 
 **Next Priority Files:**
 - ComprehensiveTestDashboard.tsx (remaining violations)

@@ -79,11 +79,11 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed": return "bg-green-500";
-      case "in_progress": return "bg-blue-500";
-      case "blocked": return "bg-red-500";
-      case "not_started": return "bg-gray-400";
-      default: return "bg-gray-300";
+      case "completed": return "bg-primary";
+      case "in_progress": return "bg-secondary";
+      case "blocked": return "bg-destructive";
+      case "not_started": return "bg-muted";
+      default: return "bg-muted";
     }
   };
 

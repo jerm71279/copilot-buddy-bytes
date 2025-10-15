@@ -40,10 +40,10 @@ export function ResourceTimeline({ allocations, tasks }: ResourceTimelineProps) 
   };
 
   const getUtilizationColor = (utilization: number) => {
-    if (utilization > 100) return "text-red-600";
-    if (utilization > 80) return "text-orange-600";
-    if (utilization > 60) return "text-green-600";
-    return "text-blue-600";
+    if (utilization > 100) return "text-destructive";
+    if (utilization > 80) return "text-warning";
+    if (utilization > 60) return "text-primary";
+    return "text-secondary";
   };
 
   const getUtilizationStatus = (utilization: number) => {

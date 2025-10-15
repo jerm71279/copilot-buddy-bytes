@@ -112,12 +112,12 @@ export const WorkflowExecutionHistory = ({ customerId }: { customerId: string })
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "completed":
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-primary" />;
       case "failed":
-        return <XCircle className="h-4 w-4 text-red-500" />;
+        return <XCircle className="h-4 w-4 text-destructive" />;
       case "running":
         // Animated pulse for running state
-        return <Clock className="h-4 w-4 text-blue-500 animate-pulse" />;
+        return <Clock className="h-4 w-4 text-secondary animate-pulse" />;
       default:
         return <Clock className="h-4 w-4" />;
     }

@@ -96,10 +96,10 @@ const DashboardPreview = () => {
           <CardContent>
             <div className="space-y-6">
               {[
-                { name: "HR Onboarding (HRIS → ATS → LMS)", efficiency: 87, avgTime: "2.3 days", color: "bg-blue-500", issue: "None" },
-                { name: "Finance Approval (ERP → Workflow)", efficiency: 94, avgTime: "4.1 hours", color: "bg-green-500", issue: "None" },
-                { name: "Sales Pipeline (CRM → CPQ)", efficiency: 72, avgTime: "8.7 days", color: "bg-orange-500", issue: "Approval delays" },
-                { name: "IT Service Requests (ITSM)", efficiency: 89, avgTime: "1.2 days", color: "bg-purple-500", issue: "None" },
+                { name: "HR Onboarding (HRIS → ATS → LMS)", efficiency: 87, avgTime: "2.3 days", color: "bg-secondary", issue: "None" },
+                { name: "Finance Approval (ERP → Workflow)", efficiency: 94, avgTime: "4.1 hours", color: "bg-primary", issue: "None" },
+                { name: "Sales Pipeline (CRM → CPQ)", efficiency: 72, avgTime: "8.7 days", color: "bg-warning", issue: "Approval delays" },
+                { name: "IT Service Requests (ITSM)", efficiency: 89, avgTime: "1.2 days", color: "bg-accent", issue: "None" },
               ].map((workflow, idx) => (
                 <div key={idx}>
                   <div className="flex items-center justify-between mb-2">
