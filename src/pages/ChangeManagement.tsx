@@ -17,6 +17,7 @@ import {
   Calendar,
   Plus,
   RefreshCw,
+  Database,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -78,6 +79,7 @@ interface ChangeRequest {
 const ChangeManagement = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [seedingTemplates, setSeedingTemplates] = useState(false);
   const [changes, setChanges] = useState<ChangeRequest[]>([]);
   const [stats, setStats] = useState({
     total: 0,
@@ -161,6 +163,43 @@ const ChangeManagement = () => {
     }
   };
 
+  const seedTemplates = async () => {
+    try {
+      setSeedingTemplates(true);
+      toast.info("Initializing change request templates...");
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("You must be logged in");
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("customer_id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!profile?.customer_id) {
+        toast.error("User profile not found");
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke("seed-change-templates", {
+        body: { customer_id: profile.customer_id },
+      });
+
+      if (error) throw error;
+
+      toast.success("Templates initialized successfully");
+    } catch (error) {
+      console.error("Error seeding templates:", error);
+      toast.error("Failed to initialize templates");
+    } finally {
+      setSeedingTemplates(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -201,10 +240,16 @@ const ChangeManagement = () => {
                 <CardTitle className="text-2xl">Change Requests</CardTitle>
                 <CardDescription>IT Infrastructure change tracking with ML-powered risk analysis</CardDescription>
               </div>
-              <Button onClick={() => navigate("/change-management/new")}>
-                <Plus className="h-4 w-4 mr-2" />
-                New Change Request
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={seedTemplates} disabled={seedingTemplates}>
+                  <Database className="h-4 w-4 mr-2" />
+                  {seedingTemplates ? "Initializing..." : "Initialize Templates"}
+                </Button>
+                <Button onClick={() => navigate("/change-management/new")}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Change Request
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent>

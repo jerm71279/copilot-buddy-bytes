@@ -13,6 +13,7 @@ import { Save, Sparkles, Database, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LinkTray } from "@/components/LinkTray";
+import { ChangeRequestTemplateSelector } from "@/components/ChangeRequestTemplateSelector";
 
 const changeRequestSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(200),
@@ -39,6 +40,7 @@ const ChangeManagementNew = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [analyzingImpact, setAnalyzingImpact] = useState(false);
+  const [customerId, setCustomerId] = useState<string | null>(null);
   const [cis, setCis] = useState<ConfigurationItem[]>([]);
   const [formData, setFormData] = useState({
     title: "",
@@ -54,11 +56,29 @@ const ChangeManagementNew = () => {
     estimated_downtime_minutes: "",
     affected_users: "",
     affected_ci_ids: [] as string[],
+    template_id: "",
+    selected_scenario_id: "",
   });
 
   useEffect(() => {
+    loadUserData();
     loadCIs();
   }, []);
+
+  const loadUserData = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("customer_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (profile?.customer_id) {
+      setCustomerId(profile.customer_id);
+    }
+  };
 
   const loadCIs = async () => {
     try {
@@ -153,6 +173,8 @@ const ChangeManagementNew = () => {
         requested_by: user.id,
         affected_ci_ids: formData.affected_ci_ids,
         change_status: "draft",
+        template_id: formData.template_id || null,
+        selected_scenario_id: formData.selected_scenario_id || null,
       };
 
       const { data, error } = await supabase
@@ -179,6 +201,40 @@ const ChangeManagementNew = () => {
 
   const handleChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleTemplateSelect = (template: any, scenario: any) => {
+    if (!template) {
+      // Clear template-related fields
+      setFormData(prev => ({
+        ...prev,
+        template_id: "",
+        selected_scenario_id: "",
+      }));
+      return;
+    }
+
+    // Apply template defaults
+    const updates: any = {
+      template_id: template.id,
+      change_type: template.default_priority === "critical" ? "emergency" : "normal",
+      priority: template.default_priority,
+    };
+
+    if (scenario) {
+      updates.selected_scenario_id = scenario.id;
+      updates.testing_plan = scenario.recommended_testing || "";
+      updates.rollback_plan = scenario.recommended_rollback || "";
+      updates.estimated_downtime_minutes = scenario.typical_duration_minutes.toString();
+
+      // Pre-fill description with scenario details
+      if (!formData.description) {
+        updates.description = scenario.scenario_description;
+      }
+    }
+
+    setFormData(prev => ({ ...prev, ...updates }));
+    toast.success("Template applied to form");
   };
 
   return (
@@ -215,6 +271,12 @@ const ChangeManagementNew = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6">
+            {/* Template Selector */}
+            <ChangeRequestTemplateSelector
+              customerId={customerId}
+              onTemplateSelect={handleTemplateSelect}
+            />
+
             {/* Basic Information */}
             <Card>
               <CardHeader>
