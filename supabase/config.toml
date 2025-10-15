@@ -98,3 +98,6 @@ verify_jwt = true
 
 [functions.seed-change-templates]
 verify_jwt = true
+
+[functions.azure-event-grid-webhook]
+verify_jwt = false

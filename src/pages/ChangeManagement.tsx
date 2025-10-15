@@ -20,6 +20,7 @@ import {
   Database,
 } from "lucide-react";
 import { toast } from "sonner";
+import { AzureEventGridStatus } from "@/components/AzureEventGridStatus";
 
 /**
  * Change Management Dashboard Data Flow
@@ -233,7 +234,12 @@ const ChangeManagement = () => {
         />
 
         {/* Main Content */}
-        <Card>
+        <div className="grid gap-6 mb-8">
+          {/* Azure Event Grid Integration Card */}
+          <AzureEventGridStatus />
+
+          {/* Change Requests Card */}
+          <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
@@ -319,6 +325,7 @@ const ChangeManagement = () => {
             </Tabs>
           </CardContent>
         </Card>
+        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mt-8">

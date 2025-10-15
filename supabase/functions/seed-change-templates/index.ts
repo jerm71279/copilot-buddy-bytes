@@ -28,9 +28,9 @@ serve(async (req) => {
 
     const templates = [
       {
-        template_name: 'Azure Infrastructure Changes',
+        template_name: 'Azure Infrastructure Changes (Planned)',
         category: 'azure_infrastructure',
-        description: 'Changes made in Azure Portal outside CIPP scope (VMs, networking, storage, etc.)',
+        description: 'For PROACTIVE change requests requiring approval BEFORE making Azure changes. Note: Azure Event Grid automatically logs reactive changes after they happen.',
         default_priority: 'medium',
         default_risk_level: 'medium',
         requires_approval: true,
@@ -38,22 +38,22 @@ serve(async (req) => {
         scenarios: [
           {
             scenario_name: 'Virtual Machine Deployment/Modification',
-            scenario_description: 'Creating new VMs, resizing existing VMs, or modifying VM configurations',
+            scenario_description: 'PLANNED: Creating new VMs, resizing existing VMs, or modifying VM configurations. Use this for pre-approved changes. Unplanned VM changes are automatically logged by Event Grid.',
             impact_level: 'medium',
             typical_duration_minutes: 45,
             requires_emergency_approval: false,
-            compliance_tags: ['infrastructure', 'compute'],
+            compliance_tags: ['infrastructure', 'compute', 'planned'],
             recommended_testing: 'Verify VM accessibility, test network connectivity, confirm resource allocation',
             recommended_rollback: 'Snapshot VM before changes, document original configuration, keep previous VM size settings',
             display_order: 1
           },
           {
             scenario_name: 'Network Configuration (VNets, NSGs, Firewalls)',
-            scenario_description: 'Creating or modifying virtual networks, network security groups, or firewall rules',
+            scenario_description: 'PLANNED: Creating or modifying virtual networks, network security groups, or firewall rules requiring approval. Emergency network changes are auto-logged by Event Grid.',
             impact_level: 'high',
             typical_duration_minutes: 30,
             requires_emergency_approval: false,
-            compliance_tags: ['networking', 'security'],
+            compliance_tags: ['networking', 'security', 'planned'],
             recommended_testing: 'Test connectivity from all affected subnets, verify firewall rules with port scans',
             recommended_rollback: 'Export NSG rules before changes, document VNet configuration, keep rule backup',
             display_order: 2
