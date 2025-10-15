@@ -1,21 +1,28 @@
 # Recent Fixes - October 15, 2025
 
-## Design System Compliance - Batch 13 (Latest)
+## Design System Compliance - Batch 14 (Latest)
 
 **Implementation Date**: 2025-10-15
 
-### Final Component Cleanup
-**Fixed**: 7 violations in 1 file
+### Planner Components Final
+**Fixed**: 13 violations in 2 files
 
 **Components Fixed:**
-1. **CriticalPath.tsx**: 7 additional violations - `getStatusColor()` function (completed/in_progress/blocked/not_started) + blocked tasks warning card
+1. **DependencyGraph.tsx**: 7 violations - `getStatusColor()` function (completed/in_progress/blocked/not_started) + critical path ring
+2. **RiskMatrix.tsx**: 6 violations - `getCellColor()` function (critical/high/medium/low risk levels)
 
 ### Total Progress
-**Completed**: 314 violations across 82 files
-- Components: 28/~40 (All core components complete) ✅
+**Completed**: 327 violations across 84 files
+- Components: 30/~40 (All core & planner components complete) ✅
 - Pages: 54/54 ✅
 
 **Status**: ALL MAJOR VIOLATIONS RESOLVED ✅
+
+---
+
+## Design System Compliance - Batch 13 (Completed)
+
+**Fixed**: 7 violations in 1 file - CriticalPath.tsx additional cleanup
 
 ---
 

@@ -39,11 +39,11 @@ export function DependencyGraph({ tasks, dependencies }: DependencyGraphProps) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed": return "bg-green-100 border-green-500";
-      case "in_progress": return "bg-blue-100 border-blue-500";
-      case "blocked": return "bg-red-100 border-red-500";
-      case "not_started": return "bg-gray-100 border-gray-400";
-      default: return "bg-gray-100 border-gray-300";
+      case "completed": return "bg-success/10 border-success";
+      case "in_progress": return "bg-primary/10 border-primary";
+      case "blocked": return "bg-destructive/10 border-destructive";
+      case "not_started": return "bg-muted/50 border-border";
+      default: return "bg-muted/50 border-border";
     }
   };
 
@@ -103,7 +103,7 @@ export function DependencyGraph({ tasks, dependencies }: DependencyGraphProps) {
                 <div className="flex justify-center">
                   <div
                     className={`px-6 py-4 rounded-lg border-2 ${getStatusColor(task.status)} ${
-                      task.is_critical_path ? "shadow-lg ring-2 ring-red-500" : ""
+                      task.is_critical_path ? "shadow-lg ring-2 ring-destructive" : ""
                     }`}
                   >
                     <div className="font-semibold text-center">{task.task_name}</div>

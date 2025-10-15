@@ -28,10 +28,10 @@ export function RiskMatrix({ risks }: RiskMatrixProps) {
     const impactValue = impactLevels.indexOf(impact) + 1;
     const score = probValue * impactValue;
 
-    if (score >= 20) return "bg-red-100 border-red-500";
-    if (score >= 12) return "bg-orange-100 border-orange-500";
-    if (score >= 6) return "bg-yellow-100 border-yellow-500";
-    return "bg-green-100 border-green-500";
+    if (score >= 20) return "bg-destructive/10 border-destructive";
+    if (score >= 12) return "bg-warning/10 border-warning";
+    if (score >= 6) return "bg-warning/5 border-warning/60";
+    return "bg-success/10 border-success";
   };
 
   const formatLabel = (level: string | undefined) => {
