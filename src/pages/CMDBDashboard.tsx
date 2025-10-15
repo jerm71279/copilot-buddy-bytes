@@ -324,12 +324,12 @@ const CMDBDashboard = () => {
                             {ci.ci_status}
                           </Badge>
                           {ci.ninjaone_device_id && (
-                            <Badge variant="outline" className="bg-green-500/10">
+                            <Badge variant="outline" className="bg-primary/10">
                               NinjaOne
                             </Badge>
                           )}
                           {ci.azure_resource_id && (
-                            <Badge variant="outline" className="bg-blue-500/10">
+                            <Badge variant="outline" className="bg-secondary/10">
                               Azure
                             </Badge>
                           )}

@@ -184,9 +184,9 @@ const CIPPDashboard = () => {
 
   const getHealthColor = (score: number | null) => {
     if (!score) return "text-muted-foreground";
-    if (score >= 80) return "text-green-500";
-    if (score >= 60) return "text-yellow-500";
-    return "text-red-500";
+    if (score >= 80) return "text-primary";
+    if (score >= 60) return "text-warning";
+    return "text-destructive";
   };
 
   const stats = {

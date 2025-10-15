@@ -361,11 +361,11 @@ export default function ComprehensiveTestDashboard() {
                       <span className="text-sm">Edge function validation</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="h-4 w-4 text-primary" />
                       <span className="text-sm">Database triggers</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="h-4 w-4 text-primary" />
                       <span className="text-sm">Real-time sanitization</span>
                     </div>
                   </div>
@@ -426,11 +426,11 @@ export default function ComprehensiveTestDashboard() {
                     </div>
                     <div className="p-4 bg-muted rounded-lg">
                       <p className="text-sm text-muted-foreground">Records</p>
-                      <p className="text-2xl font-bold text-green-600">{testDataResult.summary.total_records_created}</p>
+                      <p className="text-2xl font-bold text-primary">{testDataResult.summary.total_records_created}</p>
                     </div>
                     <div className="p-4 bg-muted rounded-lg">
                       <p className="text-sm text-muted-foreground">Errors</p>
-                      <p className="text-2xl font-bold text-red-600">{testDataResult.summary.total_errors}</p>
+                      <p className="text-2xl font-bold text-destructive">{testDataResult.summary.total_errors}</p>
                     </div>
                     <div className="p-4 bg-muted rounded-lg">
                       <p className="text-sm text-muted-foreground">Duration</p>
@@ -455,15 +455,15 @@ export default function ComprehensiveTestDashboard() {
                       </div>
                       <div className="p-4 bg-muted rounded-lg">
                         <p className="text-sm text-muted-foreground">Passed</p>
-                        <p className="text-2xl font-bold text-green-600">{fuzzResult.summary.passed}</p>
+                        <p className="text-2xl font-bold text-primary">{fuzzResult.summary.passed}</p>
                       </div>
                       <div className="p-4 bg-muted rounded-lg">
                         <p className="text-sm text-muted-foreground">Failed</p>
-                        <p className="text-2xl font-bold text-yellow-600">{fuzzResult.summary.failed}</p>
+                        <p className="text-2xl font-bold text-warning">{fuzzResult.summary.failed}</p>
                       </div>
                       <div className="p-4 bg-muted rounded-lg">
                         <p className="text-sm text-muted-foreground">Vulnerabilities</p>
-                        <p className="text-2xl font-bold text-red-600">{fuzzResult.summary.vulnerabilities_found}</p>
+                        <p className="text-2xl font-bold text-destructive">{fuzzResult.summary.vulnerabilities_found}</p>
                       </div>
                     </div>
                     <Progress value={(fuzzResult.summary.passed / fuzzResult.summary.total_tests) * 100} />
@@ -597,11 +597,11 @@ export default function ComprehensiveTestDashboard() {
                           >
                             <div className="flex items-center gap-3 flex-1">
                               {test.actual_result === 'rejected' ? (
-                                <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+                                <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
                               ) : test.actual_result === 'accepted' ? (
-                                <XCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
+                                <XCircle className="h-4 w-4 text-destructive flex-shrink-0" />
                               ) : (
-                                <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                                <AlertCircle className="h-4 w-4 text-warning flex-shrink-0" />
                               )}
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">

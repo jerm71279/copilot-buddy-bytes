@@ -163,9 +163,9 @@ const CMMCReadiness = () => {
 
   const getAutomationColor = (level: string) => {
     switch (level) {
-      case 'full': return 'text-green-500 bg-green-500/10';
-      case 'partial': return 'text-yellow-500 bg-yellow-500/10';
-      case 'manual': return 'text-blue-500 bg-blue-500/10';
+      case 'full': return 'text-primary bg-primary/10';
+      case 'partial': return 'text-warning bg-warning/10';
+      case 'manual': return 'text-secondary bg-secondary/10';
       default: return 'text-muted-foreground bg-muted';
     }
   };

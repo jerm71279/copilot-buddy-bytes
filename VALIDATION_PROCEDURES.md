@@ -215,9 +215,17 @@ After validation and fixes, update:
 - ✅ `src/pages/OnboardingDashboard.tsx` - 3 violations (stats cards)
 - ✅ `src/pages/PhishingSimulations.tsx` - 4 violations (badge variant, stats cards)
 
-**Remaining Files**: ~16 pages with ~77 violations
+**Batch 6 Pages:**
+- ✅ `src/pages/CIPPDashboard.tsx` - 3 violations (health score colors)
+- ✅ `src/pages/CMDBDashboard.tsx` - 2 violations (integration badges)
+- ✅ `src/pages/CMDBItemDetail.tsx` - 2 violations (integration badges)
+- ✅ `src/pages/CMMCReadiness.tsx` - 3 violations (automation level colors)
+- ✅ `src/pages/ComprehensiveTestDashboard.tsx` - 10 violations (test result colors, stats)
+- ✅ `src/pages/DepartmentFeedback.tsx` - 3 violations (priority colors)
 
-**Progress: 135/212 violations fixed (64%)**
+**Remaining Files**: ~10 pages with ~54 violations
+
+**Progress: 158/212 violations fixed (75%)**
 
 ## Validation Templates
 

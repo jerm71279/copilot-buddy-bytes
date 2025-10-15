@@ -42,12 +42,23 @@
 5. **OnboardingDashboard.tsx**: 3 violations - In Progress, Completed, Overdue stats
 6. **PhishingSimulations.tsx**: 4 violations - Badge variant + Success rate, Reported, Failed stats
 
-### Total Progress
-**Completed**: 135 violations across 40 files (64%)
-- Components: 11/11 ✅
-- Pages: 29/~45
+### Batch 6 - CIPP, CMDB, Testing Pages
+**Fixed**: 23 violations in 6 files
 
-**Remaining**: ~77 violations in ~16 page files
+**Pages Fixed:**
+1. **CIPPDashboard.tsx**: 3 violations - `getHealthColor()` function (health score thresholds)
+2. **CMDBDashboard.tsx**: 2 violations - NinjaOne/Azure integration badges
+3. **CMDBItemDetail.tsx**: 2 violations - NinjaOne/Azure integration badges
+4. **CMMCReadiness.tsx**: 3 violations - `getAutomationColor()` function (full/partial/manual automation)
+5. **ComprehensiveTestDashboard.tsx**: 10 violations - Test result colors, stats metrics, validation icons
+6. **DepartmentFeedback.tsx**: 3 violations - `getPriorityColor()` function (critical/high/medium priority)
+
+### Total Progress
+**Completed**: 158 violations across 46 files (75%)
+- Components: 11/11 ✅
+- Pages: 35/~45
+
+**Remaining**: ~54 violations in ~10 page files
 
 **Next Priority Files:**
 - ComprehensiveTestDashboard.tsx (remaining violations)
