@@ -8,6 +8,9 @@ interface ProtectedRouteProps {
   requireAdmin?: boolean;
 }
 
+// Development bypass - set to true to skip authentication
+const BYPASS_AUTH = localStorage.getItem('bypassAuth') === 'true';
+
 const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -24,6 +27,14 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
   }, []);
 
   const checkAccess = async () => {
+    // Bypass auth if development toggle is enabled
+    if (BYPASS_AUTH) {
+      setIsAuthenticated(true);
+      setIsAdmin(true);
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
       setIsAuthenticated(!!session);

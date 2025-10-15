@@ -127,6 +127,7 @@ import DeploymentPlanner from "./pages/DeploymentPlanner";
 import NavigationScaffold from "./pages/NavigationScaffold";
 import CMMCReadiness from "./pages/CMMCReadiness";
 import LovableCostCalculator from "./pages/LovableCostCalculator";
+import DevSettings from "./pages/DevSettings";
 
 const queryClient = new QueryClient();
 
@@ -208,6 +209,11 @@ const App = () => (
           <Route path="/admin/cost-calculator" element={
             <ProtectedRoute requireAdmin>
               <LovableCostCalculator />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/dev-settings" element={
+            <ProtectedRoute requireAdmin>
+              <DevSettings />
             </ProtectedRoute>
           } />
           <Route path="/dashboard/compliance" element={
