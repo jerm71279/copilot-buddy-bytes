@@ -245,7 +245,7 @@ export default function DashboardPortalLanes() {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
-  const shouldHide = !isLoggedIn || hideOnRoutes.includes(currentPath);
+  const shouldHide = (!isLoggedIn && localStorage.getItem('bypassAuth') !== 'true') || hideOnRoutes.includes(currentPath);
 
   // Map portal paths to slugs for filtering
   const portalSlugMap: Record<string, string> = {
