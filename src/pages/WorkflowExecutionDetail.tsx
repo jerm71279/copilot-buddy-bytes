@@ -60,11 +60,11 @@ export default function WorkflowExecutionDetail() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "completed":
-        return <CheckCircle className="h-6 w-6 text-green-500" />;
+        return <CheckCircle className="h-6 w-6 text-success" />;
       case "failed":
-        return <XCircle className="h-6 w-6 text-red-500" />;
+        return <XCircle className="h-6 w-6 text-destructive" />;
       case "running":
-        return <Activity className="h-6 w-6 text-blue-500 animate-pulse" />;
+        return <Activity className="h-6 w-6 text-primary animate-pulse" />;
       default:
         return <Clock className="h-6 w-6" />;
     }

@@ -138,17 +138,17 @@ const DataFlowPortal = () => {
 
               {/* CMDB Dashboard */}
               <TabsContent value="cmdb" className="mt-6">
-                <Card className="border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-transparent">
+                <Card className="border-secondary/20 bg-gradient-to-br from-secondary/5 to-transparent">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                    <CardTitle className="flex items-center gap-2 text-secondary">
                       <Database className="h-5 w-5" />
                       CMDB Dashboard Data Flow
                     </CardTitle>
                     <CardDescription>Configuration Management Database for asset tracking</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="bg-background/80 p-4 rounded-lg border border-purple-500/20">
-                      <h3 className="text-lg font-semibold mb-3 text-purple-600 dark:text-purple-400">Visual Flow Diagram</h3>
+                    <div className="bg-background/80 p-4 rounded-lg border border-secondary/20">
+                      <h3 className="text-lg font-semibold mb-3 text-secondary">Visual Flow Diagram</h3>
                       <FlowDiagram
                         title="CMDB Dashboard Diagram"
                         accent="purple"

@@ -155,7 +155,7 @@ const SecurityTraining = () => {
           </CardHeader>
           <CardContent>
             {progress === 100 ? (
-              <Badge className="bg-green-500">
+              <Badge variant="outline" className="bg-success/10 border-success">
                 <CheckCircle className="w-3 h-3 mr-1" />
                 Compliant
               </Badge>
@@ -191,7 +191,7 @@ const SecurityTraining = () => {
                         <BookOpen className="w-5 h-5" />
                         {module.module_name}
                         {isCompleted && (
-                          <Badge className="bg-green-500">
+                          <Badge variant="outline" className="bg-success/10 border-success">
                             <CheckCircle className="w-3 h-3 mr-1" />
                             Completed
                           </Badge>
@@ -282,7 +282,7 @@ const SecurityTraining = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="flex items-center gap-2">
-                        <Award className="w-5 h-5 text-green-500" />
+                        <Award className="w-5 h-5 text-success" />
                         {module.module_name}
                       </CardTitle>
                       <CardDescription>
@@ -297,7 +297,7 @@ const SecurityTraining = () => {
                     <div className="flex gap-2">
                       <Badge variant="outline">{module.module_type}</Badge>
                       {completion.certificate_issued && (
-                        <Badge className="bg-green-500">Certificate Issued</Badge>
+                        <Badge variant="outline" className="bg-success/10 border-success">Certificate Issued</Badge>
                       )}
                     </div>
                     <Button

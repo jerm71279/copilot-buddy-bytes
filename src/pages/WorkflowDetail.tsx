@@ -124,10 +124,10 @@ const WorkflowDetail = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "completed": return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case "failed": return <XCircle className="h-4 w-4 text-red-500" />;
-      case "running": return <Activity className="h-4 w-4 text-blue-500 animate-pulse" />;
-      default: return <Clock className="h-4 w-4 text-gray-500" />;
+      case "completed": return <CheckCircle className="h-4 w-4 text-success" />;
+      case "failed": return <XCircle className="h-4 w-4 text-destructive" />;
+      case "running": return <Activity className="h-4 w-4 text-primary animate-pulse" />;
+      default: return <Clock className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -225,7 +225,7 @@ const WorkflowDetail = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Lightbulb className="h-5 w-5 text-yellow-500" />
+                      <Lightbulb className="h-5 w-5 text-warning" />
                       Predictive Analysis
                     </CardTitle>
                     <CardDescription>AI-powered forecast and trend analysis</CardDescription>
@@ -242,7 +242,7 @@ const WorkflowDetail = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <CheckCircle className="h-5 w-5 text-success" />
                       Recommendations
                     </CardTitle>
                     <CardDescription>Actionable steps to improve workflow performance</CardDescription>
@@ -251,7 +251,7 @@ const WorkflowDetail = () => {
                     <ul className="space-y-3">
                       {aiInsights.recommendations.map((rec, idx) => (
                         <li key={idx} className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-500 mt-1 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-success mt-1 flex-shrink-0" />
                           <span>{rec}</span>
                         </li>
                       ))}
@@ -263,7 +263,7 @@ const WorkflowDetail = () => {
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5 text-orange-500" />
+                        <AlertTriangle className="h-5 w-5 text-warning" />
                         Risk Factors
                       </CardTitle>
                     </CardHeader>
@@ -271,7 +271,7 @@ const WorkflowDetail = () => {
                       <ul className="space-y-2">
                         {aiInsights.risk_factors.map((risk, idx) => (
                           <li key={idx} className="flex items-start gap-2">
-                            <AlertTriangle className="h-4 w-4 text-orange-500 mt-1 flex-shrink-0" />
+                            <AlertTriangle className="h-4 w-4 text-warning mt-1 flex-shrink-0" />
                             <span className="text-sm">{risk}</span>
                           </li>
                         ))}
@@ -282,7 +282,7 @@ const WorkflowDetail = () => {
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5 text-blue-500" />
+                        <TrendingUp className="h-5 w-5 text-primary" />
                         Optimization Opportunities
                       </CardTitle>
                     </CardHeader>
@@ -290,7 +290,7 @@ const WorkflowDetail = () => {
                       <ul className="space-y-2">
                         {aiInsights.optimization_opportunities.map((opp, idx) => (
                           <li key={idx} className="flex items-start gap-2">
-                            <TrendingUp className="h-4 w-4 text-blue-500 mt-1 flex-shrink-0" />
+                            <TrendingUp className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
                             <span className="text-sm">{opp}</span>
                           </li>
                         ))}

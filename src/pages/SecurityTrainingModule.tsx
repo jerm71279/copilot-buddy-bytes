@@ -194,9 +194,9 @@ const SecurityTrainingModule = () => {
           <CardHeader className="text-center">
             <div className="mx-auto mb-4">
               {passed ? (
-                <CheckCircle className="w-20 h-20 text-green-500" />
+                <CheckCircle className="w-20 h-20 text-success" />
               ) : (
-                <XCircle className="w-20 h-20 text-red-500" />
+                <XCircle className="w-20 h-20 text-destructive" />
               )}
             </div>
             <CardTitle className="text-3xl">
@@ -215,13 +215,13 @@ const SecurityTrainingModule = () => {
               <Progress value={score} className="h-3" />
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Passing Score: {(module as any).passing_score || 80}%</span>
-                {passed && <span className="text-green-500">✓ Passed</span>}
+                {passed && <span className="text-success">✓ Passed</span>}
               </div>
             </div>
 
             {passed && (
-              <Alert className="bg-green-50 border-green-200">
-                <Award className="h-4 w-4 text-green-600" />
+              <Alert className="bg-success/5 border-success/20">
+                <Award className="h-4 w-4 text-success" />
                 <AlertDescription className="text-green-800">
                   A certificate has been issued for completing this training module.
                   You can view it in your training history.

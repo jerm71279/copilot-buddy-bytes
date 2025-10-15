@@ -289,11 +289,11 @@ export default function SystemValidationDashboard() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'passed':
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+        return <CheckCircle2 className="h-4 w-4 text-success" />;
       case 'failed':
-        return <XCircle className="h-4 w-4 text-red-500" />;
+        return <XCircle className="h-4 w-4 text-destructive" />;
       case 'warning':
-        return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
+        return <AlertTriangle className="h-4 w-4 text-warning" />;
       default:
         return null;
     }
@@ -443,10 +443,10 @@ export default function SystemValidationDashboard() {
                             key={index}
                             className={`p-4 rounded-lg border ${
                               test.status === 'passed'
-                                ? 'bg-green-50 border-green-200'
+                                ? 'bg-success/5 border-success/20'
                                 : test.status === 'warning'
-                                ? 'bg-yellow-50 border-yellow-200'
-                                : 'bg-red-50 border-red-200'
+                                ? 'bg-warning/5 border-warning/20'
+                                : 'bg-destructive/5 border-destructive/20'
                             }`}
                           >
                             <div className="flex items-start justify-between">

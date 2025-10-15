@@ -34,7 +34,7 @@ const DevOpsPortal = () => {
       description: "Advanced testing with test data generation, security fuzz testing, and database flow tracing",
       icon: TestTube,
       path: "/test/comprehensive",
-      color: "text-purple-500"
+      color: "text-secondary"
     },
     {
       title: "Network Monitoring",

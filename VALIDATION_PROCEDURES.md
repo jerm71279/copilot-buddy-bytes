@@ -320,13 +320,30 @@ After validation and fixes, update:
 9. **SIEMDashboard.tsx**: 1 violation - Anomalies icon
 10. **SecurityAlerts.tsx**: 1 violation - Open alerts icon
 
-### Total Progress
-**Completed**: 369 violations across 94 files
-- Components: 30/~40 (All core & planner components complete) ✅
-- Pages: 64/~70 ✅
+**Batch 16 - Workflow & Training Pages (Final)
+**Fixed**: 37 violations in 12 files
 
-**Status**: 95%+ COMPLETE - Final minor violations remaining
-**Remaining**: ~10-15 violations in utility/minor components
+**Pages Fixed:**
+1. **SystemValidationDashboard.tsx**: 7 violations - `getStatusIcon()` function + test result backgrounds
+2. **WorkflowDetail.tsx**: 9 violations - `getStatusIcon()` + insight card icons (predictive/recommendations/risk/optimization)
+3. **VisualWorkflowBuilder.tsx**: 5 violations - Node components (Action/Condition/Loop/Delay/ApiCall)
+4. **SecurityTraining.tsx**: 5 violations - Compliance badge + completed badges + Award icon + certificate badge
+5. **SecurityTrainingModule.tsx**: 5 violations - Result icons + passed text + alert background
+6. **ThreatIntelligence.tsx**: 4 violations - Stat card icons (feeds/indicators/confidence/matches)
+7. **WorkflowExecutionDetail.tsx**: 3 violations - `getStatusIcon()` function
+8. **WorkflowAutomation.tsx**: 1 violation - Error message styling
+9. **TestWorkflowEvidence.tsx**: 2 violations - Result status icons
+10. **ResponsePlaybooks.tsx**: 1 violation - Executions icon
+11. **DataFlowPortal.tsx**: 2 violations - CMDB card borders + text colors
+12. **DevOpsPortal.tsx**: 1 violation - Test dashboard link color
+
+### Total Progress
+**Completed**: 406/~420 violations (97%+ complete) across 101 files
+- Components: 30/~40 ✅
+- Pages: 71/~75 ✅
+
+**Status**: NEARLY COMPLETE - Only minor violations remaining
+**Remaining**: ~14 violations in utility components (ui/toast.tsx)
 
 ## Validation Templates
 

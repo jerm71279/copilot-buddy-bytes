@@ -376,7 +376,7 @@ export default function WorkflowAutomation() {
                               {execution.completed_at && ` • Completed in ${((new Date(execution.completed_at).getTime() - new Date(execution.started_at).getTime()) / 1000).toFixed(1)}s`}
                             </p>
                             {execution.error_message && (
-                              <p className="text-sm text-red-600 mt-2 p-2 bg-red-50 rounded">{execution.error_message}</p>
+                              <p className="text-sm text-destructive mt-2 p-2 bg-destructive/5 rounded">{execution.error_message}</p>
                             )}
                           </div>
                         </div>

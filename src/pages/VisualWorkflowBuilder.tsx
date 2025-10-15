@@ -45,7 +45,7 @@ const TriggerNode = ({ data }: { data: any }) => (
 );
 
 const ActionNode = ({ data }: { data: any }) => (
-  <div className="px-4 py-2 shadow-md rounded-md bg-blue-500 text-white border-2 border-blue-600">
+  <div className="px-4 py-2 shadow-md rounded-md bg-primary text-primary-foreground border-2 border-primary">
     <div className="flex items-center gap-2">
       <Settings className="h-4 w-4" />
       <div className="font-bold">{data.label}</div>
@@ -54,7 +54,7 @@ const ActionNode = ({ data }: { data: any }) => (
 );
 
 const ConditionNode = ({ data }: { data: any }) => (
-  <div className="px-4 py-2 shadow-md rounded-md bg-yellow-500 text-white border-2 border-yellow-600">
+  <div className="px-4 py-2 shadow-md rounded-md bg-warning text-warning-foreground border-2 border-warning">
     <div className="flex items-center gap-2">
       <GitBranch className="h-4 w-4" />
       <div className="font-bold">{data.label}</div>
@@ -63,7 +63,7 @@ const ConditionNode = ({ data }: { data: any }) => (
 );
 
 const LoopNode = ({ data }: { data: any }) => (
-  <div className="px-4 py-2 shadow-md rounded-md bg-purple-500 text-white border-2 border-purple-600">
+  <div className="px-4 py-2 shadow-md rounded-md bg-secondary text-secondary-foreground border-2 border-secondary">
     <div className="flex items-center gap-2">
       <Repeat className="h-4 w-4" />
       <div className="font-bold">{data.label}</div>
@@ -72,7 +72,7 @@ const LoopNode = ({ data }: { data: any }) => (
 );
 
 const DelayNode = ({ data }: { data: any }) => (
-  <div className="px-4 py-2 shadow-md rounded-md bg-orange-500 text-white border-2 border-orange-600">
+  <div className="px-4 py-2 shadow-md rounded-md bg-accent text-accent-foreground border-2 border-accent">
     <div className="flex items-center gap-2">
       <Clock className="h-4 w-4" />
       <div className="font-bold">{data.label}</div>
@@ -81,7 +81,7 @@ const DelayNode = ({ data }: { data: any }) => (
 );
 
 const ApiCallNode = ({ data }: { data: any }) => (
-  <div className="px-4 py-2 shadow-md rounded-md bg-green-500 text-white border-2 border-green-600">
+  <div className="px-4 py-2 shadow-md rounded-md bg-success text-white border-2 border-success">
     <div className="flex items-center gap-2">
       <Globe className="h-4 w-4" />
       <div className="font-bold">{data.label}</div>

@@ -184,7 +184,7 @@ export default function ResponsePlaybooks() {
               <p className="text-sm text-muted-foreground">Executions (30d)</p>
               <p className="text-2xl font-bold">{totalExecutions}</p>
             </div>
-            <Clock className="h-8 w-8 text-purple-500" />
+            <Clock className="h-8 w-8 text-secondary" />
           </div>
         </Card>
         <Card className="p-4">

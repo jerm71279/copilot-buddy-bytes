@@ -194,7 +194,7 @@ export default function ThreatIntelligence() {
               <p className="text-sm text-muted-foreground">Active Feeds</p>
               <p className="text-2xl font-bold">{activeFeeds}</p>
             </div>
-            <Database className="h-8 w-8 text-blue-500" />
+            <Database className="h-8 w-8 text-primary" />
           </div>
         </Card>
         <Card className="p-4">
@@ -203,7 +203,7 @@ export default function ThreatIntelligence() {
               <p className="text-sm text-muted-foreground">Total Indicators</p>
               <p className="text-2xl font-bold">{totalIndicators}</p>
             </div>
-            <Shield className="h-8 w-8 text-purple-500" />
+            <Shield className="h-8 w-8 text-secondary" />
           </div>
         </Card>
         <Card className="p-4">
@@ -212,7 +212,7 @@ export default function ThreatIntelligence() {
               <p className="text-sm text-muted-foreground">High Confidence</p>
               <p className="text-2xl font-bold">{highConfidenceIndicators}</p>
             </div>
-            <AlertTriangle className="h-8 w-8 text-orange-500" />
+            <AlertTriangle className="h-8 w-8 text-warning" />
           </div>
         </Card>
         <Card className="p-4">
@@ -221,7 +221,7 @@ export default function ThreatIntelligence() {
               <p className="text-sm text-muted-foreground">Matches (30d)</p>
               <p className="text-2xl font-bold">{indicators.filter(i => i.matched_count > 0).length}</p>
             </div>
-            <AlertTriangle className="h-8 w-8 text-red-500" />
+            <AlertTriangle className="h-8 w-8 text-destructive" />
           </div>
         </Card>
       </div>
