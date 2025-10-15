@@ -30,3 +30,12 @@ export { useDebounce, useThrottle, useIntersectionObserver, lazyWithRetry } from
 
 // Re-export accessibility utilities  
 export { trapFocus, announceToScreenReader, handleKeyboardNavigation, meetsWCAGAA } from "../lib/a11y";
+
+// Memoization utilities
+export * from "../lib/memoization";
+
+// Virtual scrolling
+export { useVirtualScroll, useVirtualGrid } from "../lib/virtualScroll";
+
+// Monitoring
+export { initWebVitals, markPerformance, measurePerformance, observeLongTasks, getMemoryUsage } from "../lib/monitoring";
