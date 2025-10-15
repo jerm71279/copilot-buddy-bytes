@@ -171,6 +171,7 @@
 | `/cipp` | CIPPDashboard | CIPP tenant management portal | ✅ Active |
 | `/ninjaone` | NinjaOneIntegration | NinjaOne RMM integration | ✅ Active |
 | `/sharepoint-sync` | SharePointSync | SharePoint document sync | ✅ Active |
+| Webhook | AzureEventGridStatus | Azure Event Grid automatic change logging | ✅ New (Oct 15) |
 
 ### Network & Monitoring
 | Route | Page | Description | Status |
@@ -367,7 +368,7 @@ The platform features an organized 6-category horizontal scrolling navigation wi
 5. **SharePoint** - Document management
 6. **Lovable AI** - AI capabilities (Gemini, GPT)
 
-### Edge Functions (17 Total)
+### Edge Functions (18 Total)
 1. `department-assistant` - Department-specific AI
 2. `intelligent-assistant` - Global AI assistant
 3. `workflow-executor` - Execute workflows
@@ -385,6 +386,7 @@ The platform features an organized 6-category horizontal scrolling navigation wi
 15. `knowledge-processor` - Knowledge processing
 16. `batch-evidence-generator` - Compliance evidence
 17. `change-impact-analyzer` - Change impact analysis
+18. `azure-event-grid-webhook` - Azure automatic change logging **NEW (Oct 15)**
 
 ---
 

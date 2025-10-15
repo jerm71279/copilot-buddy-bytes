@@ -1,8 +1,70 @@
 # Recent Features Documentation
 
-## Date: October 14, 2025
+## Date: October 15, 2025
 
 ### Latest Updates
+
+#### Azure Event Grid Automatic Change Logging
+
+**Status:** ✅ Completed
+
+**Description:**
+Automatic change request logging for Azure infrastructure changes via Event Grid webhook integration, enabling reactive change management with smart linking to planned changes.
+
+**Components Created:**
+- **`supabase/functions/azure-event-grid-webhook/index.ts`** - Webhook handler
+- **`src/components/AzureEventGridStatus.tsx`** - Integration status display
+
+**Features:**
+- Automatic detection of Azure write/delete operations
+- Smart template and scenario matching for resource types
+- Automatic change request creation with "AUTO" prefix
+- Links automated changes to related planned changes (last 30 days)
+- Marks planned changes as completed when actual change detected
+- Supports Virtual Machines, Networks, Storage, App Registrations, etc.
+- Subscription validation handling for Event Grid setup
+- Comprehensive audit trail in change_number field
+
+**Integration Details:**
+- Webhook URL: `{SUPABASE_URL}/functions/v1/azure-event-grid-webhook`
+- No authentication required (Event Grid validation)
+- Processes Azure Activity Log events
+- Maps Azure operations to change request templates
+- Time-based linking (24-hour window for scheduled changes)
+
+**Supported Azure Resource Types:**
+- Virtual Machines
+- Virtual Networks
+- Network Security Groups
+- Storage Accounts
+- App Registrations / Service Principals
+- Load Balancers, Public IPs, Disks, Snapshots
+
+**Change Request Automation:**
+- Status: Auto-set to "completed"
+- Priority: "low" (already executed)
+- Type: "normal"
+- Links to planned change if found
+- Includes full Azure Activity Log in implementation_plan
+- Compliance tags: ['azure', 'automated', resource_type]
+
+**Testing Results:**
+- ✅ Webhook endpoint deployed
+- ✅ Event Grid subscription validation working
+- ✅ Azure events processed correctly
+- ✅ Automatic change creation functional
+- ✅ Change linking logic validated
+- ✅ Status component displays recent changes
+
+**Route:**
+- Webhook: `/functions/v1/azure-event-grid-webhook`
+- Status Display: Embedded in Change Management pages
+
+---
+
+## Date: October 14, 2025
+
+### Previous Updates
 
 #### Pre-Production Security & Design System Audit
 

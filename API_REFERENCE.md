@@ -1,10 +1,20 @@
 # OberaConnect API Reference
 
-**Last Updated:** October 9, 2025  
-**API Version:** 2.0  
-**Total Edge Functions:** 17
+**Last Updated:** October 15, 2025  
+**API Version:** 2.1  
+**Total Edge Functions:** 18
 
-## 🆕 Recent Updates (October 9, 2025)
+## 🆕 Recent Updates (October 15, 2025)
+
+### New Edge Function
+- **`azure-event-grid-webhook`**: Automatic Azure infrastructure change logging via Event Grid webhooks
+
+### New Components
+- **`AzureEventGridStatus`**: Display Azure Event Grid integration status and recent automated changes
+
+---
+
+## Previous Updates (October 9, 2025)
 
 ### New Database Tables
 - **`products`**: Product catalog with pricing, features, and billing cycles
@@ -986,6 +996,213 @@ const { data, error } = await supabase.functions.invoke('device-poller', {
   }
 });
 ```
+
+**Database Integration**:
+```typescript
+// Fetch network devices
+const { data: devices } = await supabase
+  .from('network_devices')
+  .select('*')
+  .eq('customer_id', customerId)
+  .eq('status', 'active');
+
+// Fetch recent SNMP traps
+const { data: traps } = await supabase
+  .from('snmp_traps')
+  .select('*')
+  .eq('customer_id', customerId)
+  .order('timestamp', { ascending: false })
+  .limit(100);
+
+// Fetch syslog messages with filtering
+const { data: syslogs } = await supabase
+  .from('syslog_messages')
+  .select('*')
+  .eq('customer_id', customerId)
+  .gte('severity_level', 3)  // Warning and above
+  .order('timestamp', { ascending: false })
+  .limit(100);
+
+// Fetch active alerts
+const { data: alerts } = await supabase
+  .from('network_alerts')
+  .select('*')
+  .eq('customer_id', customerId)
+  .eq('status', 'active')
+  .order('created_at', { ascending: false });
+
+// Fetch device metrics
+const { data: metrics } = await supabase
+  .from('device_metrics')
+  .select('*')
+  .eq('device_id', deviceId)
+  .order('timestamp', { ascending: false })
+  .limit(100);
+
+// Configure alert rules
+const { data } = await supabase
+  .from('network_alert_rules')
+  .insert({
+    customer_id: customerId,
+    rule_name: 'High CPU Usage',
+    rule_type: 'threshold',
+    severity: 'high',
+    conditions: {
+      metric: 'cpu_usage',
+      operator: '>',
+      threshold: 80
+    },
+    is_enabled: true
+  });
+```
+
+---
+
+### 16. `azure-event-grid-webhook` - Azure Automatic Change Logging **NEW (Oct 15)**
+
+**Endpoint**: POST `/functions/v1/azure-event-grid-webhook`  
+**Auth**: ❌ Public (Event Grid Validation)  
+**Purpose**: Automatically logs Azure infrastructure changes as completed change requests with smart linking to planned changes
+
+**Event Grid Setup**:
+1. In Azure Portal, create Event Grid System Topic for your subscription
+2. Create subscription with Webhook endpoint: `{SUPABASE_URL}/functions/v1/azure-event-grid-webhook`
+3. Filter to Activity Log events with write/delete operations
+4. Webhook validates automatically on first connection
+
+**Supported Azure Resources**:
+- Virtual Machines (`Microsoft.Compute/virtualMachines`)
+- Virtual Networks (`Microsoft.Network/virtualNetworks`)
+- Network Security Groups (`Microsoft.Network/networkSecurityGroups`)
+- Storage Accounts (`Microsoft.Storage/storageAccounts`)
+- App Registrations (`Microsoft.Graph/applications`)
+- Service Principals (`Microsoft.Graph/servicePrincipals`)
+- Load Balancers, Public IPs, Disks, Snapshots
+
+**Request Body** (from Azure Event Grid):
+```typescript
+[
+  {
+    eventType: 'Microsoft.Resources.ResourceWriteSuccess',
+    eventTime: '2025-10-15T12:00:00Z',
+    data: {
+      operationName: 'Microsoft.Compute/virtualMachines/write',
+      resourceId: '/subscriptions/.../resourceGroups/rg/providers/Microsoft.Compute/virtualMachines/vm01',
+      status: 'Succeeded',
+      caller: 'user@domain.com',
+      claims: { ... }
+    }
+  }
+]
+```
+
+**Response**:
+```typescript
+{
+  success: boolean;
+  processed: number;        // Total events processed
+  created: number;          // Change requests created
+  changes: string[];        // Array of change_number values
+}
+```
+
+**Automatic Change Request Creation**:
+- **Title**: `[AUTO] {ResourceType}: {ResourceName}`
+- **Status**: `completed` (already executed)
+- **Priority**: `low`
+- **Change Type**: `normal`
+- **Template**: Matches `azure_infrastructure` category
+- **Scenario**: Auto-matched based on resource type
+- **Compliance Tags**: `['azure', 'automated', resource_type]`
+
+**Smart Change Linking**:
+The function automatically searches for planned changes and links them:
+```typescript
+// Searches last 30 days for:
+// 1. Same template_id (azure_infrastructure)
+// 2. Status: approved, scheduled, or in_progress
+// 3. Resource name or type mentioned in title/description
+// 4. Scheduled within 24 hours of actual change
+
+// When found:
+// - Sets related_change_id on automated change
+// - Updates planned change status to 'completed'
+// - Adds completion notes with automated change number
+```
+
+**Example Azure Event Grid Configuration**:
+```bash
+# Create system topic
+az eventgrid system-topic create \
+  --name azure-activity-logs \
+  --resource-group your-rg \
+  --source /subscriptions/your-sub-id \
+  --topic-type Microsoft.Resources.Subscriptions \
+  --location global
+
+# Create webhook subscription
+az eventgrid system-topic event-subscription create \
+  --name change-logging \
+  --system-topic-name azure-activity-logs \
+  --resource-group your-rg \
+  --endpoint https://your-project.supabase.co/functions/v1/azure-event-grid-webhook \
+  --included-event-types \
+    Microsoft.Resources.ResourceWriteSuccess \
+    Microsoft.Resources.ResourceDeleteSuccess \
+  --advanced-filter \
+    data.status StringEquals Succeeded
+```
+
+**Database Integration**:
+```typescript
+// Fetch recent automated changes
+const { data: autoChanges } = await supabase
+  .from('change_requests')
+  .select('*')
+  .ilike('title', '[AUTO]%')
+  .order('created_at', { ascending: false })
+  .limit(20);
+
+// Fetch changes linked to planned changes
+const { data: linkedChanges } = await supabase
+  .from('change_requests')
+  .select(`
+    *,
+    related_change:change_requests!related_change_id(
+      change_number,
+      title,
+      change_status
+    )
+  `)
+  .not('related_change_id', 'is', null)
+  .order('created_at', { ascending: false });
+
+// Find automated changes for specific resource
+const { data: vmChanges } = await supabase
+  .from('change_requests')
+  .select('*')
+  .contains('compliance_tags', ['azure', 'virtual machine'])
+  .order('completed_at', { ascending: false });
+```
+
+**Component Usage**:
+```typescript
+import { AzureEventGridStatus } from '@/components/AzureEventGridStatus';
+
+// Display integration status and recent changes
+<AzureEventGridStatus />
+```
+
+**Features**:
+- ✅ Automatic subscription validation
+- ✅ Resource type detection and mapping
+- ✅ Template and scenario matching
+- ✅ Smart linking to planned changes
+- ✅ Bulk event processing
+- ✅ Comprehensive audit trail
+- ✅ No authentication required (Event Grid handles this)
+
+---
 
 **Database Integration**:
 ```typescript
