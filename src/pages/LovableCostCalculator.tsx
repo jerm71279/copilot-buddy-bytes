@@ -32,6 +32,15 @@ const LovableCostCalculator = () => {
   const CLOUD_FREE_TIER = 25;
   const AI_FREE_TIER = 1;
 
+  // Enterprise add-on features (on top of Team plan)
+  const ENTERPRISE_ADDONS = {
+    prioritySupport: 50, // per seat/month
+    sla: 100, // flat rate/month
+    dedicatedSuccess: 200, // flat rate/month
+    advancedSecurity: 30, // per seat/month
+    customIntegrations: 150, // flat rate/month
+  };
+
   // App profile examples from Lovable docs (updated Dec 2024)
   const APP_PROFILES = {
     'personal': {
@@ -85,12 +94,38 @@ const LovableCostCalculator = () => {
   const effectiveAICost = Math.max(0, rawAICost - AI_FREE_TIER);
   
   const calculateTierCost = (tier: 'free' | 'pro' | 'team' | 'enterprise') => {
-    const subscriptionCost = tier === 'enterprise' ? 0 : lovableSeats * LOVABLE_PRICING[tier];
+    let subscriptionCost = 0;
+    let enterpriseBreakdown = null;
+
+    if (tier === 'enterprise') {
+      // Enterprise = Team base + add-ons
+      const teamBase = lovableSeats * LOVABLE_PRICING.team;
+      const prioritySupport = lovableSeats * ENTERPRISE_ADDONS.prioritySupport;
+      const advancedSecurity = lovableSeats * ENTERPRISE_ADDONS.advancedSecurity;
+      const sla = ENTERPRISE_ADDONS.sla;
+      const dedicatedSuccess = ENTERPRISE_ADDONS.dedicatedSuccess;
+      const customIntegrations = ENTERPRISE_ADDONS.customIntegrations;
+      
+      subscriptionCost = teamBase + prioritySupport + advancedSecurity + sla + dedicatedSuccess + customIntegrations;
+      
+      enterpriseBreakdown = {
+        teamBase,
+        prioritySupport,
+        advancedSecurity,
+        sla,
+        dedicatedSuccess,
+        customIntegrations,
+      };
+    } else {
+      subscriptionCost = lovableSeats * LOVABLE_PRICING[tier];
+    }
+
     return {
       subscription: subscriptionCost,
       cloud: effectiveCloudCost,
       ai: effectiveAICost,
-      total: subscriptionCost + effectiveCloudCost + effectiveAICost
+      total: subscriptionCost + effectiveCloudCost + effectiveAICost,
+      enterpriseBreakdown,
     };
   };
 
@@ -395,25 +430,79 @@ const LovableCostCalculator = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Enterprise Plan</span>
-                <Badge variant="outline">Custom</Badge>
+                <Badge variant="outline">${calculateTierCost('enterprise').total.toFixed(2)}/month</Badge>
               </CardTitle>
-              <CardDescription>Custom pricing - Contact sales</CardDescription>
+              <CardDescription>Team plan + Enterprise features</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Alert>
-                <Info className="h-4 w-4" />
-                <AlertDescription>
-                  <strong>Custom Pricing:</strong> Contact{' '}
-                  <a href="mailto:sales@lovable.dev" className="underline">sales@lovable.dev</a> for enterprise quote.
-                  Below shows Cloud + AI costs only.
-                </AlertDescription>
-              </Alert>
               <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Subscription</span>
-                  <span className="font-medium">Contact Sales</span>
+                {/* Team Base */}
+                <div className="bg-muted/30 p-3 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium">Team Plan Base</span>
+                    <span className="font-medium">${calculateTierCost('enterprise').enterpriseBreakdown?.teamBase.toFixed(2)}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {lovableSeats} seat{lovableSeats > 1 ? 's' : ''} × ${LOVABLE_PRICING.team}/seat
+                  </p>
                 </div>
+
+                <div className="text-sm font-medium text-muted-foreground">+ Enterprise Add-ons:</div>
+
+                {/* Priority Support */}
+                <div className="flex justify-between items-center pl-4">
+                  <div>
+                    <span className="text-sm">24/7 Priority Support</span>
+                    <p className="text-xs text-muted-foreground">${ENTERPRISE_ADDONS.prioritySupport}/seat</p>
+                  </div>
+                  <span className="font-medium">${calculateTierCost('enterprise').enterpriseBreakdown?.prioritySupport.toFixed(2)}</span>
+                </div>
+
+                {/* Advanced Security */}
+                <div className="flex justify-between items-center pl-4">
+                  <div>
+                    <span className="text-sm">Advanced Security</span>
+                    <p className="text-xs text-muted-foreground">${ENTERPRISE_ADDONS.advancedSecurity}/seat</p>
+                  </div>
+                  <span className="font-medium">${calculateTierCost('enterprise').enterpriseBreakdown?.advancedSecurity.toFixed(2)}</span>
+                </div>
+
+                {/* SLA */}
+                <div className="flex justify-between items-center pl-4">
+                  <div>
+                    <span className="text-sm">99.9% SLA Guarantee</span>
+                    <p className="text-xs text-muted-foreground">Flat rate</p>
+                  </div>
+                  <span className="font-medium">${ENTERPRISE_ADDONS.sla.toFixed(2)}</span>
+                </div>
+
+                {/* Dedicated Success */}
+                <div className="flex justify-between items-center pl-4">
+                  <div>
+                    <span className="text-sm">Dedicated Success Manager</span>
+                    <p className="text-xs text-muted-foreground">Flat rate</p>
+                  </div>
+                  <span className="font-medium">${ENTERPRISE_ADDONS.dedicatedSuccess.toFixed(2)}</span>
+                </div>
+
+                {/* Custom Integrations */}
+                <div className="flex justify-between items-center pl-4">
+                  <div>
+                    <span className="text-sm">Custom Integrations</span>
+                    <p className="text-xs text-muted-foreground">Flat rate</p>
+                  </div>
+                  <span className="font-medium">${ENTERPRISE_ADDONS.customIntegrations.toFixed(2)}</span>
+                </div>
+
                 <Separator />
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Subscription Subtotal</span>
+                  <span className="font-medium">${calculateTierCost('enterprise').subscription.toFixed(2)}</span>
+                </div>
+
+                <Separator />
+                
                 <div className="flex justify-between items-center text-sm text-muted-foreground">
                   <span>Cloud (before free tier)</span>
                   <span>${rawCloudCost.toFixed(2)}</span>
@@ -441,13 +530,22 @@ const LovableCostCalculator = () => {
                 </div>
                 <Separator />
                 <div className="flex justify-between items-center text-lg font-bold">
-                  <span>Cloud + AI Monthly</span>
-                  <span className="text-primary">${(effectiveCloudCost + effectiveAICost).toFixed(2)}</span>
+                  <span>Total Monthly</span>
+                  <span className="text-primary">${calculateTierCost('enterprise').total.toFixed(2)}</span>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  + Enterprise subscription fee
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>Annual (if paid yearly)</span>
+                  <span>${(calculateTierCost('enterprise').total * 12).toFixed(2)}</span>
                 </div>
               </div>
+
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                  <strong>Note:</strong> Enterprise pricing is customizable. Contact{' '}
+                  <a href="mailto:sales@lovable.dev" className="underline">sales@lovable.dev</a> for tailored pricing.
+                </AlertDescription>
+              </Alert>
             </CardContent>
           </Card>
         </div>
