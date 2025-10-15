@@ -239,29 +239,29 @@ If paid annually: **12 months × $249 = $2,988/year** (for 1 seat + e-commerce u
 | **Monthly Total** | **~$54/month** |
 | **Annual Total** | **~$648/year** |
 
-### Scenario 2: Growing Business (5 developers)
+### Scenario 2: Growing Business (3 developers)
 **Recommended Plan:** Team Plan
 
 | Item | Cost |
 |------|------|
-| 5 Team seats | $200/month |
+| 3 Team seats | $120/month |
 | Cloud usage (e-commerce) | ~$65/month |
 | AI usage (heavy) | ~$10/month |
 | Free tier discount | -$25 cloud, -$1 AI |
-| **Monthly Total** | **~$249/month** |
-| **Annual Total** | **~$2,988/year** |
+| **Monthly Total** | **~$169/month** |
+| **Annual Total** | **~$2,028/year** |
 
-### Scenario 3: Enterprise Organization (10+ developers)
+### Scenario 3: Enterprise Organization (3 developers)
 **Recommended Plan:** Enterprise
 
 | Item | Cost |
 |------|------|
-| 10 Enterprise seats (with add-ons) | ~$2,100/month |
+| 3 Enterprise seats (with add-ons) | ~$630/month |
 | Cloud usage (high traffic) | ~$150/month |
 | AI usage (very heavy) | ~$30/month |
 | Free tier discount | -$25 cloud, -$1 AI |
-| **Monthly Total** | **~$2,254/month** |
-| **Annual Total** | **~$27,048/year** |
+| **Monthly Total** | **~$784/month** |
+| **Annual Total** | **~$9,408/year** |
 
 ---
 
