@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { LogOut, Users, ChevronDown, Server, TestTube, Calculator } from "lucide-react";
+import { LogOut, Users, ChevronDown, Server, TestTube, Calculator, Settings } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { MCPServerConfig } from "@/components/MCPServerConfig";
 import { AIMCPGenerator } from "@/components/AIMCPGenerator";
@@ -285,6 +285,16 @@ const AdminDashboard = () => {
                 Cost Calculator
               </CardTitle>
               <CardDescription>Calculate Lovable infrastructure costs</CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/dev-settings')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Dev Settings
+              </CardTitle>
+              <CardDescription>Development and testing configuration</CardDescription>
             </CardHeader>
           </Card>
         </div>
