@@ -98,7 +98,7 @@ serve(async (req) => {
       .from('workflows')
       .select('*')
       .eq('id', workflow_id)
-      .single();
+      .maybeSingle();
 
     if (workflowError || !workflow) {
       return new Response(
@@ -127,9 +127,9 @@ serve(async (req) => {
         status: 'running'
       })
       .select()
-      .single();
+      .maybeSingle();
 
-    if (executionError) {
+    if (executionError || !execution) {
       console.error('Failed to create execution record:', executionError);
       return new Response(
         JSON.stringify({ error: 'Failed to start execution' }),

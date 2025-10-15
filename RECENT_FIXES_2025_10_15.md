@@ -58,17 +58,21 @@
 - ai-mcp-generator (2 `.single()` → `.maybeSingle()`)
 - mcp-server (2 `.single()` → `.maybeSingle()`)
 
-**Total Fixed: 34 `.single()` calls + comprehensive input validation across 10 functions (58% complete)**
+**✅ COMPLETED Batch 3:**
+- analytics-processor (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
+- workflow-executor (2 `.single()` → `.maybeSingle()`, already had zod validation)
+- workflow-intelligence (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
+- intelligent-assistant (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
+- knowledge-processor (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
 
-**⏳ REMAINING: 23 Edge Functions Still Need Fixes (25 instances)**
-- analytics-processor (1 instance)
+**Total Fixed: 40 `.single()` calls + comprehensive input validation across 15 functions (68% complete)**
+
+**⏳ REMAINING: 18 Edge Functions Still Need Fixes (19 instances)**
 - change-impact-analyzer (1 instance)
 - custom-report-engine (1 instance)
 - department-assistant (1 instance)
 - device-poller (1 instance)
 - hubspot-sync (1 instance)
-- intelligent-assistant (1 instance)
-- knowledge-processor (1 instance)
 - ninjaone-sync (2 instances)
 - ninjaone-ticket (1 instance)
 - repetitive-task-detector (1 instance)
@@ -78,11 +82,9 @@
 - syslog-collector (1 instance)
 - threat-intel-sync (1 instance)
 - workflow-evidence-generator (1 instance)
-- workflow-executor (2 instances)
-- workflow-intelligence (1 instance)
 - workflow-webhook (1 instance)
 
-**29 Additional Edge Functions Need Input Validation**
+**24 Additional Edge Functions Need Input Validation**
 
 ### Medium Priority - Design System
 

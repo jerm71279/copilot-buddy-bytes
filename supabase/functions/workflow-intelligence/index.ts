@@ -13,7 +13,26 @@ serve(async (req) => {
   }
 
   try {
-    const { query, type = 'analyze', timeframe = '7d' } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const query = String(requestData.query || '').slice(0, 5000);
+    const type = String(requestData.type || 'analyze').slice(0, 50);
+    const timeframe = String(requestData.timeframe || '7d').slice(0, 10);
+    
+    if (!query) {
+      return new Response(
+        JSON.stringify({ error: 'Query is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -44,7 +63,7 @@ serve(async (req) => {
       .from('user_profiles')
       .select('customer_id')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile?.customer_id) {
       throw new Error('No customer associated with user');

@@ -22,21 +22,54 @@ serve(async (req) => {
       }
     );
 
-    const { action, fileId, workflowData, articleContent } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const action = String(requestData.action || '').slice(0, 100);
+    const fileId = requestData.fileId ? String(requestData.fileId).slice(0, 100) : undefined;
+    const workflowData = requestData.workflowData;
+    const articleContent = requestData.articleContent ? String(requestData.articleContent).slice(0, 50000) : undefined;
+    
+    if (!action) {
+      return new Response(
+        JSON.stringify({ error: 'Action is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
     console.log("📚 Processing knowledge request:", action);
 
     switch (action) {
       case 'process_file': {
+        if (!fileId) {
+          return new Response(
+            JSON.stringify({ error: 'fileId is required for process_file action' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
         // Get file metadata
         const { data: file, error: fileError } = await supabaseClient
           .from('knowledge_files')
           .select('*')
           .eq('id', fileId)
-          .single();
+          .maybeSingle();
 
-        if (fileError) throw fileError;
+        if (fileError || !file) {
+          return new Response(
+            JSON.stringify({ error: 'File not found' }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
 
         // Update status to processing
         await supabaseClient

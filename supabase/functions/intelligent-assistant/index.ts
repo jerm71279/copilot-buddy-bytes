@@ -17,7 +17,27 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { query, conversationId, customerId, userId } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const query = String(requestData.query || '').slice(0, 5000);
+    const conversationId = String(requestData.conversationId || '').slice(0, 100);
+    const customerId = String(requestData.customerId || '').slice(0, 100);
+    const userId = String(requestData.userId || '').slice(0, 100);
+    
+    if (!query || !customerId || !userId) {
+      return new Response(
+        JSON.stringify({ error: 'Query, customerId, and userId are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     console.log("Processing intelligent query:", query);
 
@@ -235,9 +255,9 @@ If no valuable insight is found, return {"has_insight": false}`,
         },
       })
       .select()
-      .single();
+      .maybeSingle();
 
-    if (logError) {
+    if (logError || !interaction) {
       console.error("Failed to log interaction:", logError);
     }
 

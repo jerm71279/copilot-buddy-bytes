@@ -16,12 +16,25 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { action, period = 'daily', customerId } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const action = String(requestData.action || '').slice(0, 100);
+    const period = String(requestData.period || 'daily').slice(0, 50);
+    const customerId = String(requestData.customerId || '').slice(0, 100);
+    
     console.log('Analytics processor:', { action, period, customerId });
 
-    if (!customerId) {
+    if (!customerId || !action) {
       return new Response(
-        JSON.stringify({ error: 'Customer ID is required' }),
+        JSON.stringify({ error: 'Customer ID and action are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -172,7 +185,11 @@ async function generateReport(supabase: any, customerId: string) {
       status: 'completed',
     })
     .select()
-    .single();
+    .maybeSingle();
+
+  if (!report) {
+    throw new Error('Failed to create report');
+  }
 
   return { success: true, report };
 }
