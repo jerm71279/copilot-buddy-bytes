@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNotification } from './useNotification';
 import { toast } from './use-toast';
 
-interface RetryOptions {
+export interface RetryOptions {
   maxAttempts?: number;
   delayMs?: number;
   backoffMultiplier?: number;

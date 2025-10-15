@@ -22,6 +22,7 @@ export { useForm } from "./useForm";
 export type { FormOptions, FormState, FormHandlers } from "./useForm";
 
 export { useRetry } from "./useRetry";
+export type { RetryOptions } from "./useRetry";
 
 export { useToast } from "./use-toast";
 
