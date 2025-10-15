@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { LogOut, Users, ChevronDown, Server, TestTube } from "lucide-react";
+import { LogOut, Users, ChevronDown, Server, TestTube, Calculator } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { MCPServerConfig } from "@/components/MCPServerConfig";
 import { AIMCPGenerator } from "@/components/AIMCPGenerator";
@@ -275,6 +275,16 @@ const AdminDashboard = () => {
                 Module Management
               </CardTitle>
               <CardDescription>Enable/disable portals and modules</CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/cost-calculator')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calculator className="h-5 w-5" />
+                Cost Calculator
+              </CardTitle>
+              <CardDescription>Calculate Lovable infrastructure costs</CardDescription>
             </CardHeader>
           </Card>
         </div>
