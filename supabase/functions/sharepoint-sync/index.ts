@@ -17,7 +17,25 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { syncConfigId, accessToken } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const syncConfigId = requestData.syncConfigId;
+    const accessToken = String(requestData.accessToken || '').slice(0, 1000);
+    
+    if (!syncConfigId || !accessToken) {
+      return new Response(
+        JSON.stringify({ error: 'Sync config ID and access token are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     console.log("Starting SharePoint sync for config:", syncConfigId);
 
@@ -26,7 +44,7 @@ serve(async (req) => {
       .from("sharepoint_sync_config")
       .select("*")
       .eq("id", syncConfigId)
-      .single();
+      .maybeSingle();
 
     if (configError || !syncConfig) {
       throw new Error(`Failed to get sync config: ${configError?.message}`);
@@ -40,10 +58,13 @@ serve(async (req) => {
         status: "running",
       })
       .select()
-      .single();
+      .maybeSingle();
 
     if (logError) {
       throw new Error(`Failed to create sync log: ${logError.message}`);
+    }
+    if (!syncLog) {
+      throw new Error('Failed to create sync log record');
     }
 
     let filesSynced = 0;
@@ -148,10 +169,13 @@ serve(async (req) => {
               processed_status: "pending",
             })
             .select()
-            .single();
+            .maybeSingle();
 
           if (fileError) {
             throw new Error(`Failed to create knowledge file: ${fileError.message}`);
+          }
+          if (!knowledgeFile) {
+            throw new Error('Failed to create knowledge file record');
           }
 
           // Trigger knowledge processor (async)

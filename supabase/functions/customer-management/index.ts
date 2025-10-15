@@ -16,7 +16,27 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { action, customerId, data } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const action = String(requestData.action || '').slice(0, 100);
+    const customerId = requestData.customerId;
+    const data = requestData.data;
+    
+    if (!action || !customerId) {
+      return new Response(
+        JSON.stringify({ error: 'Action and customer ID are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     console.log('Customer management:', { action, customerId });
 
     let result;
@@ -127,7 +147,11 @@ async function calculateCustomerHealth(supabase: any, customerId: string) {
       last_activity_at: activities?.[0]?.created_at || null,
     })
     .select()
-    .single();
+    .maybeSingle();
+
+  if (!health) {
+    throw new Error('Failed to store health score');
+  }
 
   return { success: true, health };
 }
@@ -249,7 +273,11 @@ async function generateInvoice(supabase: any, customerId: string, data: any) {
       due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     })
     .select()
-    .single();
+    .maybeSingle();
+
+  if (!invoice) {
+    throw new Error('Failed to create invoice');
+  }
 
   return { success: true, invoice };
 }
@@ -268,7 +296,11 @@ async function toggleFeature(supabase: any, customerId: string, data: any) {
       created_by,
     }, { onConflict: 'customer_id,feature_name' })
     .select()
-    .single();
+    .maybeSingle();
+
+  if (!feature) {
+    throw new Error('Failed to toggle feature');
+  }
 
   // Log activity
   await supabase

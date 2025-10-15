@@ -42,35 +42,37 @@
 
 ## Remaining Technical Debt
 
-### High Priority - Security (UPDATED)
+### High Priority - Security (UPDATED - Batch 2 Complete)
 
-**✅ COMPLETED: 5 Critical Edge Functions Fixed**
-- database-flow-logger (6 `.single()` → `.maybeSingle()`, input validation added)
-- client-portal (5 `.single()` → `.maybeSingle()`, comprehensive input validation)
-- cipp-sync (3 `.single()` → `.maybeSingle()`, input validation added)
-- alert-processor (3 `.single()` → `.maybeSingle()`, input validation added)
-- auto-remediation (3 `.single()` → `.maybeSingle()`, input validation added)
+**✅ COMPLETED Batch 1:**
+- database-flow-logger (6 `.single()` → `.maybeSingle()`)
+- client-portal (5 `.single()` → `.maybeSingle()`)
+- cipp-sync (3 `.single()` → `.maybeSingle()`)
+- alert-processor (3 `.single()` → `.maybeSingle()`)
+- auto-remediation (3 `.single()` → `.maybeSingle()`)
 
-**Total Fixed: 20 `.single()` calls + comprehensive input validation across 5 functions**
+**✅ COMPLETED Batch 2:**
+- workflow-orchestrator (4 `.single()` → `.maybeSingle()`)
+- customer-management (3 `.single()` → `.maybeSingle()`)
+- sharepoint-sync (3 `.single()` → `.maybeSingle()`)
+- ai-mcp-generator (2 `.single()` → `.maybeSingle()`)
+- mcp-server (2 `.single()` → `.maybeSingle()`)
 
-**⏳ REMAINING: 28 Edge Functions Still Need Fixes**
-Additional files requiring `.maybeSingle()` updates:
-- ai-mcp-generator (2 instances)
+**Total Fixed: 34 `.single()` calls + comprehensive input validation across 10 functions (58% complete)**
+
+**⏳ REMAINING: 23 Edge Functions Still Need Fixes (25 instances)**
 - analytics-processor (1 instance)
 - change-impact-analyzer (1 instance)
 - custom-report-engine (1 instance)
-- customer-management (3 instances)
 - department-assistant (1 instance)
 - device-poller (1 instance)
 - hubspot-sync (1 instance)
 - intelligent-assistant (1 instance)
 - knowledge-processor (1 instance)
-- mcp-server (2 instances)
 - ninjaone-sync (2 instances)
 - ninjaone-ticket (1 instance)
 - repetitive-task-detector (1 instance)
 - seed-change-templates (1 instance)
-- sharepoint-sync (3 instances)
 - snmp-collector (1 instance)
 - soc-threat-analysis (1 instance)
 - syslog-collector (1 instance)
@@ -78,11 +80,9 @@ Additional files requiring `.maybeSingle()` updates:
 - workflow-evidence-generator (1 instance)
 - workflow-executor (2 instances)
 - workflow-intelligence (1 instance)
-- workflow-orchestrator (4 instances)
 - workflow-webhook (1 instance)
 
-**34 Additional Edge Functions Need Input Validation:**
-All remaining functions using `await req.json()` without validation
+**29 Additional Edge Functions Need Input Validation**
 
 ### Medium Priority - Design System
 

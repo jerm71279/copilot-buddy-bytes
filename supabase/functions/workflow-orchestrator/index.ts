@@ -17,7 +17,27 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { workflowId, inputData, customerId } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const workflowId = requestData.workflowId;
+    const inputData = requestData.inputData;
+    const customerId = requestData.customerId;
+    
+    if (!workflowId || !customerId) {
+      return new Response(
+        JSON.stringify({ error: 'Workflow ID and customer ID are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     console.log('Executing workflow:', { workflowId, customerId });
 
     // Fetch workflow template
@@ -25,7 +45,7 @@ serve(async (req) => {
       .from('workflow_templates')
       .select('*')
       .eq('id', workflowId)
-      .single();
+      .maybeSingle();
 
     if (workflowError || !workflow) {
       throw new Error('Workflow not found');
@@ -42,9 +62,12 @@ serve(async (req) => {
         started_at: new Date().toISOString()
       })
       .select()
-      .single();
+      .maybeSingle();
 
     if (executionError) throw executionError;
+    if (!execution) {
+      throw new Error('Failed to create execution record');
+    }
 
     console.log('Created execution:', execution.id);
 
@@ -76,9 +99,12 @@ serve(async (req) => {
             input_data: { ...inputData, previousResults: nodeResults }
           })
           .select()
-          .single();
+          .maybeSingle();
 
         if (stepError) throw stepError;
+        if (!step) {
+          throw new Error('Failed to create step record');
+        }
 
         const startTime = Date.now();
         let output: any = {};
@@ -243,7 +269,7 @@ async function updateWorkflowAnalytics(
     .eq('workflow_id', workflowId)
     .eq('customer_id', customerId)
     .eq('date', today)
-    .single();
+    .maybeSingle();
 
   if (existing) {
     await client

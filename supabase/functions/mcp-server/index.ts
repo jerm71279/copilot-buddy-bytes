@@ -448,7 +448,7 @@ async function predictCompletionTimes(supabase: any, customer_id: string, input:
     .select('*')
     .eq('customer_id', customer_id)
     .eq('workflow_name', workflow_name)
-    .single();
+    .maybeSingle();
 
   if (!workflow) throw new Error('Workflow not found');
 
@@ -478,7 +478,7 @@ async function recommendOptimizations(supabase: any, customer_id: string, input:
     .select('*')
     .eq('customer_id', customer_id)
     .eq('id', workflow_id)
-    .single();
+    .maybeSingle();
 
   if (!workflow) throw new Error('Workflow not found');
 

@@ -56,21 +56,33 @@ After validation and fixes, update:
 
 ## Current Known Issues
 
-### High Priority (Security)
+### High Priority (Security) - UPDATED BATCH 2
 
-**✅ COMPLETED (Oct 15, 2025):**
+**✅ COMPLETED Batch 1 (Oct 15, 2025):**
 - Fixed 5 critical edge functions with highest `.single()` usage
 - Added comprehensive input validation to 5 edge functions
 - Total: 20 `.single()` → `.maybeSingle()` conversions
-- Total: 5 functions now have full input validation with type checking, length limits, and error handling
+- Total: 5 functions now have full input validation
+
+**✅ COMPLETED Batch 2 (Oct 15, 2025):**
+- Fixed 5 additional critical edge functions
+- Added comprehensive input validation to 5 more edge functions
+- Total Batch 2: 14 `.single()` → `.maybeSingle()` conversions
+- Total Batch 2: 5 functions now have full input validation
+
+**✅ TOTAL COMPLETED (Both Batches):**
+- **10 edge functions fixed**
+- **34 `.single()` → `.maybeSingle()` conversions** 
+- **10 functions with comprehensive input validation**
 
 **⏳ REMAINING:**
 Files requiring immediate attention:
-- 28 edge functions still need `.maybeSingle()` instead of `.single()` (39 total instances)
-- 34 edge functions still need input validation for `req.json()` calls
+- 23 edge functions still need `.maybeSingle()` (25 instances total)
+- 29 edge functions still need input validation for `req.json()` calls
 - All require batch size limits, type checking, and string length limits
 
-**Progress: 20/59 `.single()` calls fixed (34%)**
+**Progress: 34/59 `.single()` calls fixed (58%)**
+**Progress: 10/39 functions with input validation (26%)**
 
 ### Medium Priority (Design System)
 

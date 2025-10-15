@@ -38,7 +38,49 @@ serve(async (req) => {
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    const requestData: MCPGenerationRequest = await req.json();
+    const rawRequestData = await req.json();
+    
+    // Validate input
+    if (!rawRequestData || typeof rawRequestData !== 'object') {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid request body',
+          details: 'Request must be a valid JSON object'
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const requestData: MCPGenerationRequest = {
+      customerId: String(rawRequestData.customerId || '').slice(0, 100),
+      department: String(rawRequestData.department || '').slice(0, 100),
+      businessContext: rawRequestData.businessContext,
+      userPerformanceData: rawRequestData.userPerformanceData
+    };
+    
+    // Validate required fields
+    if (!requestData.customerId || !requestData.department || !requestData.businessContext) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Missing required fields',
+          details: 'customerId, department, and businessContext are required'
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Validate businessContext structure
+    if (!Array.isArray(requestData.businessContext.currentProcesses) ||
+        !Array.isArray(requestData.businessContext.painPoints) ||
+        !Array.isArray(requestData.businessContext.goals)) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid businessContext structure',
+          details: 'currentProcesses, painPoints, and goals must be arrays'
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     console.log('AI MCP Generator invoked for customer:', requestData.customerId);
     console.log('Department:', requestData.department);
@@ -147,11 +189,14 @@ Return your response as a JSON array of server configurations.`;
           }
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (serverError) {
         console.error('Error creating server:', serverError);
         throw serverError;
+      }
+      if (!server) {
+        throw new Error('Failed to create server record');
       }
 
       console.log(`Server created with ID: ${server.id}`);
@@ -181,10 +226,12 @@ Return your response as a JSON array of server configurations.`;
               is_enabled: true
             })
             .select()
-            .single();
+            .maybeSingle();
 
           if (toolError) {
             console.error('Error creating tool:', toolError);
+          } else if (!toolData) {
+            console.error('Tool creation returned no data');
           } else {
             console.log(`Tool created: ${tool.name}`);
             createdTools.push(toolData);
