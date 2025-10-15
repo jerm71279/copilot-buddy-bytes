@@ -32,14 +32,46 @@ Deno.serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { change_request_id, action } = await req.json() as TicketCreateRequest;
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const change_request_id = String(requestData.change_request_id || '').slice(0, 100);
+    const action = String(requestData.action || '').slice(0, 20);
+    
+    if (!change_request_id) {
+      return new Response(
+        JSON.stringify({ error: 'change_request_id is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (!['create', 'sync'].includes(action)) {
+      return new Response(
+        JSON.stringify({ error: 'action must be "create" or "sync"' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Get change request details
     const { data: changeRequest, error: crError } = await supabase
       .from('change_requests')
       .select('*')
       .eq('id', change_request_id)
-      .single();
+      .maybeSingle();
+    
+    if (!changeRequest) {
+      return new Response(
+        JSON.stringify({ error: 'Change request not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (crError) throw crError;
 

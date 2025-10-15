@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
       .from('user_profiles')
       .select('customer_id')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile?.customer_id) {
       throw new Error('User profile not found');
@@ -140,7 +140,7 @@ Deno.serve(async (req) => {
           .select('id')
           .eq('ninjaone_device_id', device.id.toString())
           .eq('customer_id', customerId)
-          .single();
+          .maybeSingle();
 
         const ciData = {
           customer_id: customerId,

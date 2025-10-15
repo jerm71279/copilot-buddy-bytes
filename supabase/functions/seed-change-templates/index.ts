@@ -17,7 +17,17 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { customer_id } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const customer_id = String(requestData.customer_id || '').slice(0, 100);
 
     if (!customer_id) {
       return new Response(
@@ -306,7 +316,12 @@ serve(async (req) => {
           customer_id,
         })
         .select()
-        .single();
+        .maybeSingle();
+      
+      if (!templateData) {
+        console.error('Failed to create template:', template.template_name);
+        continue;
+      }
 
       if (templateError) {
         console.error('Error inserting template:', templateError);

@@ -72,21 +72,23 @@
 - device-poller (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
 - hubspot-sync (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
 
-**Total Fixed: 45 `.single()` calls + comprehensive input validation across 20 functions (76% complete)**
+**✅ COMPLETED Batch 5:**
+- ninjaone-sync (2 `.single()` → `.maybeSingle()`)
+- ninjaone-ticket (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
+- repetitive-task-detector (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
+- seed-change-templates (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
+- snmp-collector (1 `.single()` → `.maybeSingle()`, comprehensive input validation)
 
-**⏳ REMAINING: 13 Edge Functions Still Need Fixes (14 instances)**
-- ninjaone-sync (2 instances)
-- ninjaone-ticket (1 instance)
-- repetitive-task-detector (1 instance)
-- seed-change-templates (1 instance)
-- snmp-collector (1 instance)
+**Total Fixed: 51 `.single()` calls + comprehensive input validation across 25 functions (86% complete)**
+
+**⏳ REMAINING: 8 Edge Functions Still Need Fixes (8 instances)**
 - soc-threat-analysis (1 instance)
 - syslog-collector (1 instance)
 - threat-intel-sync (1 instance)
 - workflow-evidence-generator (1 instance)
 - workflow-webhook (1 instance)
 
-**19 Additional Edge Functions Need Input Validation**
+**14 Additional Edge Functions Need Input Validation**
 
 ### Medium Priority - Design System
 

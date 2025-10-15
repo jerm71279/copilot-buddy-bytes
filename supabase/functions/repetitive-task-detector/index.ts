@@ -12,7 +12,28 @@ serve(async (req) => {
   }
 
   try {
-    const { userId, actionType, systemName, context } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const userId = String(requestData.userId || '').slice(0, 100);
+    const actionType = String(requestData.actionType || '').slice(0, 100);
+    const systemName = String(requestData.systemName || '').slice(0, 100);
+    const context = requestData.context;
+    
+    if (!userId || !actionType || !systemName) {
+      return new Response(
+        JSON.stringify({ error: 'userId, actionType, and systemName are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
@@ -27,7 +48,7 @@ serve(async (req) => {
       .from('user_profiles')
       .select('customer_id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (!profile?.customer_id) {
       throw new Error("User profile not found");

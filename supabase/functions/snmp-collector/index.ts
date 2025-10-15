@@ -23,7 +23,36 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const trapData: SnmpTrap = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const sourceIp = String(requestData.sourceIp || '').slice(0, 100);
+    const trapOid = String(requestData.trapOid || '').slice(0, 200);
+    const trapType = requestData.trapType ? String(requestData.trapType).slice(0, 100) : undefined;
+    const varbinds = Array.isArray(requestData.varbinds) ? requestData.varbinds.slice(0, 100) : undefined;
+    const providedCustomerId = requestData.customerId ? String(requestData.customerId).slice(0, 100) : undefined;
+    
+    if (!sourceIp || !trapOid) {
+      return new Response(
+        JSON.stringify({ error: 'sourceIp and trapOid are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const trapData: SnmpTrap = {
+      sourceIp,
+      trapOid,
+      trapType,
+      varbinds,
+      customerId: providedCustomerId
+    };
     
     console.log('Received SNMP trap:', trapData);
 
@@ -65,7 +94,11 @@ Deno.serve(async (req) => {
         raw_data: trapData,
       })
       .select()
-      .single();
+      .maybeSingle();
+    
+    if (!trap) {
+      throw new Error('Failed to store SNMP trap');
+    }
 
     if (trapError) throw trapError;
 
