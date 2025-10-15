@@ -82,13 +82,13 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
           <div className="text-sm text-muted-foreground">Days on Path</div>
         </Card>
         <Card className="p-4">
-          <div className="text-2xl font-bold text-red-600">
+          <div className="text-2xl font-bold text-destructive">
             {tasks.filter(t => (t.status ?? t.task_status) === "blocked").length}
           </div>
           <div className="text-sm text-muted-foreground">Blocked Tasks</div>
         </Card>
         <Card className="p-4">
-          <div className="text-2xl font-bold text-green-600">{getTotalSlack()}%</div>
+          <div className="text-2xl font-bold text-primary">{getTotalSlack()}%</div>
           <div className="text-sm text-muted-foreground">Completion Rate</div>
         </Card>
       </div>
@@ -97,7 +97,7 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
       {tasks.some(t => (t.status ?? t.task_status) === "blocked") && (
         <Card className="p-4 bg-red-50 border-red-200">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 text-destructive mt-0.5" />
             <div>
               <div className="font-semibold text-red-900">Critical Path Blocked</div>
               <div className="text-sm text-red-700 mt-1">
@@ -176,7 +176,7 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
                         {task.actual_hours && (
                           <div>
                             <span className="text-muted-foreground">Actual: </span>
-                            <span className={`font-medium ${isDelayed ? "text-red-600" : ""}`}>
+                            <span className={`font-medium ${isDelayed ? "text-destructive" : ""}`}>
                               {task.actual_hours}h
                             </span>
                           </div>
@@ -184,7 +184,7 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
                         {isDelayed && (
                           <div>
                             <span className="text-muted-foreground">Variance: </span>
-                            <span className="font-medium text-red-600">
+                            <span className="font-medium text-destructive">
                               +{task.actual_hours! - task.estimated_hours!}h
                             </span>
                           </div>
@@ -224,7 +224,7 @@ export function CriticalPath({ tasks, dependencies }: CriticalPathProps) {
           </div>
           <div className="flex justify-between items-center p-3 bg-muted/50 rounded">
             <span>Tasks at Risk</span>
-            <span className="font-semibold text-red-600">
+            <span className="font-semibold text-destructive">
               {tasks.filter(t => {
                 const status = t.status ?? t.task_status;
                 return status === "blocked" || status === "in_progress";

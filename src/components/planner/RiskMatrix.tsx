@@ -41,15 +41,15 @@ export function RiskMatrix({ risks }: RiskMatrixProps) {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      technical: "bg-blue-500",
-      resource: "bg-purple-500",
-      schedule: "bg-orange-500",
-      scope: "bg-cyan-500",
-      external: "bg-pink-500",
-      quality: "bg-green-500",
-      security: "bg-red-500",
+      technical: "bg-secondary",
+      resource: "bg-accent",
+      schedule: "bg-warning",
+      scope: "bg-secondary",
+      external: "bg-accent",
+      quality: "bg-primary",
+      security: "bg-destructive",
     };
-    return colors[category] || "bg-gray-500";
+    return colors[category] || "bg-muted";
   };
 
   if (risks.length === 0) {
@@ -64,26 +64,26 @@ export function RiskMatrix({ risks }: RiskMatrixProps) {
     <div className="space-y-6">
       {/* Risk Summary */}
       <div className="grid grid-cols-4 gap-4">
-        <Card className="p-4 bg-red-50">
-          <div className="text-2xl font-bold text-red-600">
+        <Card className="p-4 bg-destructive/10">
+          <div className="text-2xl font-bold text-destructive">
             {risks.filter(r => r.risk_score >= 20).length}
           </div>
           <div className="text-sm text-muted-foreground">Critical Risks</div>
         </Card>
-        <Card className="p-4 bg-orange-50">
-          <div className="text-2xl font-bold text-orange-600">
+        <Card className="p-4 bg-warning/10">
+          <div className="text-2xl font-bold text-warning">
             {risks.filter(r => r.risk_score >= 12 && r.risk_score < 20).length}
           </div>
           <div className="text-sm text-muted-foreground">High Risks</div>
         </Card>
-        <Card className="p-4 bg-yellow-50">
-          <div className="text-2xl font-bold text-yellow-600">
+        <Card className="p-4 bg-warning/5">
+          <div className="text-2xl font-bold text-warning">
             {risks.filter(r => r.risk_score >= 6 && r.risk_score < 12).length}
           </div>
           <div className="text-sm text-muted-foreground">Medium Risks</div>
         </Card>
-        <Card className="p-4 bg-green-50">
-          <div className="text-2xl font-bold text-green-600">
+        <Card className="p-4 bg-primary/10">
+          <div className="text-2xl font-bold text-primary">
             {risks.filter(r => r.risk_score < 6).length}
           </div>
           <div className="text-sm text-muted-foreground">Low Risks</div>
@@ -180,12 +180,12 @@ export function RiskMatrix({ risks }: RiskMatrixProps) {
                   <div
                     className={`text-2xl font-bold px-4 py-2 rounded ${
                       risk.risk_score >= 20
-                        ? "text-red-600"
+                        ? "text-destructive"
                         : risk.risk_score >= 12
-                        ? "text-orange-600"
+                        ? "text-warning"
                         : risk.risk_score >= 6
-                        ? "text-yellow-600"
-                        : "text-green-600"
+                        ? "text-warning"
+                        : "text-primary"
                     }`}
                   >
                     {risk.risk_score}

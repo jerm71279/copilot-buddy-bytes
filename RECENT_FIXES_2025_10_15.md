@@ -110,12 +110,21 @@
 5. **GanttChart.tsx**: 5 violations - `getStatusColor()` function (completed/in_progress/blocked/not_started)
 6. **ResourceTimeline.tsx**: 3 violations - `getUtilizationColor()` function (overallocated/high/optimal/underutilized)
 
+### Batch 12 - Planner Component Files
+**Fixed**: 40 violations in 4 files
+
+**Components Fixed:**
+1. **CriticalPath.tsx**: 5 violations - Blocked tasks, completion rate, alert icon, variance text, tasks at risk
+2. **GanttChart.tsx**: 9 violations - Critical path border, milestone diamond, legend items (completed/in_progress/blocked/not_started/milestone/critical_path)
+3. **ResourceTimeline.tsx**: 2 violations - Overallocated/underutilized stats
+4. **RiskMatrix.tsx**: 24 violations - `getCategoryColor()` function + risk summary cards + risk score conditionals
+
 ### Total Progress
-**Completed**: 267 violations across 77 files
-- Components: 23/~40
+**Completed**: 307 violations across 81 files
+- Components: 27/~40
 - Pages: 54/54 ✅
 
-**Remaining**: ~90+ violations in remaining components
+**Remaining**: ~50+ violations in remaining components
 
 **Next Priority Files:**
 - ComprehensiveTestDashboard.tsx (remaining violations)

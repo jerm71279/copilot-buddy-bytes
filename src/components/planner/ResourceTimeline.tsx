@@ -74,7 +74,7 @@ export function ResourceTimeline({ allocations, tasks }: ResourceTimelineProps) 
           <div className="text-sm text-muted-foreground">Total Allocations</div>
         </Card>
         <Card className="p-4">
-          <div className="text-2xl font-bold text-red-600">
+          <div className="text-2xl font-bold text-destructive">
             {Object.values(allocationsByUser).filter(
               (userAllocations) => calculateUserUtilization(userAllocations) > 100
             ).length}
@@ -82,7 +82,7 @@ export function ResourceTimeline({ allocations, tasks }: ResourceTimelineProps) 
           <div className="text-sm text-muted-foreground">Overallocated</div>
         </Card>
         <Card className="p-4">
-          <div className="text-2xl font-bold text-blue-600">
+          <div className="text-2xl font-bold text-secondary">
             {Object.values(allocationsByUser).filter(
               (userAllocations) => calculateUserUtilization(userAllocations) < 60
             ).length}

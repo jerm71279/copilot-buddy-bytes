@@ -151,7 +151,7 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
                     <div className="absolute inset-0 flex items-center px-1">
                       <div
                         className={`h-8 rounded ${getStatusColor(task.status ?? task.task_status ?? 'not_started')} ${
-                          task.is_critical_path ? "border-2 border-red-600" : ""
+                          task.is_critical_path ? "border-2 border-destructive" : ""
                         } relative`}
                         style={position}
                       >
@@ -186,7 +186,7 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
                         style={{ left: position.left }}
                         title={milestone.milestone_name}
                       >
-                        <div className="w-4 h-4 bg-yellow-500 rotate-45 border-2 border-yellow-700" />
+                        <div className="w-4 h-4 bg-warning rotate-45 border-2 border-warning" />
                       </div>
                     );
                   })}
@@ -200,27 +200,27 @@ export function GanttChart({ tasks, milestones, viewMode }: GanttChartProps) {
       {/* Legend */}
       <div className="flex gap-6 text-sm">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-green-500 rounded" />
+          <div className="w-4 h-4 bg-primary rounded" />
           <span>Completed</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-blue-500 rounded" />
+          <div className="w-4 h-4 bg-secondary rounded" />
           <span>In Progress</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-red-500 rounded" />
+          <div className="w-4 h-4 bg-destructive rounded" />
           <span>Blocked</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-gray-400 rounded" />
+          <div className="w-4 h-4 bg-muted rounded" />
           <span>Not Started</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-yellow-500 rotate-45 border-2 border-yellow-700" />
+          <div className="w-4 h-4 bg-warning rotate-45 border-2 border-warning" />
           <span>Milestone</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-blue-500 rounded border-2 border-red-600" />
+          <div className="w-4 h-4 bg-secondary rounded border-2 border-destructive" />
           <span>Critical Path</span>
         </div>
       </div>
