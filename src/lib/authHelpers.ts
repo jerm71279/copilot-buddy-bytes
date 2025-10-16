@@ -42,8 +42,7 @@ export async function handleUserSignUp(params: SignUpParams): Promise<SignUpResu
     email: fullEmail,
     password: password,
     options: {
-      emailRedirectTo: redirectUrl,
-      data: { full_name: safeFullName }
+      emailRedirectTo: redirectUrl
     }
   });
 
