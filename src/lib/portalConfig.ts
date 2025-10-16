@@ -35,6 +35,12 @@ export interface Dashboard {
 // Quick Access Tools - Primary navigation
 export const quickAccessTools: PortalTool[] = [
   { 
+    name: "AI Hub", 
+    icon: Brain, 
+    path: "/ai-hub", 
+    description: "3 levels of AI: Knowledge, Workflow, Assistants" 
+  },
+  { 
     name: "Knowledge Base", 
     icon: BookOpen, 
     path: "/knowledge", 
@@ -45,12 +51,6 @@ export const quickAccessTools: PortalTool[] = [
     icon: Workflow, 
     path: "/workflow/automation", 
     description: "Process automation and execution" 
-  },
-  { 
-    name: "AI Assistant", 
-    icon: Brain, 
-    path: "/portal", 
-    description: "Get AI-powered help and insights" 
   },
   { 
     name: "Integrations", 

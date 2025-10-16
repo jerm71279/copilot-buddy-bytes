@@ -370,10 +370,10 @@ const Navigation = () => {
                       </Button>
                     </Link>
                   )}
-                  <Link to="/intelligent-assistant">
+                  <Link to="/ai-hub">
                     <Button variant="ghost" size="sm">
                       <Brain className="h-4 w-4 mr-2" />
-                      AI Assistant
+                      AI Hub
                     </Button>
                   </Link>
                   <Button variant="ghost" size="sm" onClick={handleSignOut}>
