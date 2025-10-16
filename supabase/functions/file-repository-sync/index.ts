@@ -19,6 +19,19 @@ interface SyncResult {
   deleted: number;
 }
 
+// Sanitize external data to prevent path traversal and injection
+function sanitizeFileName(name: string): string {
+  if (!name || typeof name !== 'string') return 'unnamed';
+  // Remove path traversal sequences and limit length
+  return String(name).replace(/\.\.\//g, '').replace(/\\/g, '/').slice(0, 255);
+}
+
+function sanitizePath(path: string): string {
+  if (!path || typeof path !== 'string') return '/';
+  // Remove dangerous patterns and limit length
+  return String(path).replace(/\.\.\//g, '').replace(/\\/g, '/').slice(0, 1000);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -211,9 +224,9 @@ async function syncSharePointSite(
       .upsert({
         customer_id: request.customer_id,
         repository_type: 'sharepoint_site',
-        repository_name: site.displayName || site.name,
-        sharepoint_site_id: site.id,
-        external_url: site.webUrl,
+        repository_name: sanitizeFileName(site.displayName || site.name || 'SharePoint Site'),
+        sharepoint_site_id: String(site.id || '').slice(0, 255),
+        external_url: site.webUrl ? String(site.webUrl).slice(0, 500) : null,
         is_active: true,
         sync_enabled: true,
         last_synced_at: new Date().toISOString()
@@ -288,14 +301,14 @@ async function syncDriveContents(
     const fileData = {
       customer_id: customerId,
       repository_id: repositoryId,
-      file_name: item.name,
-      file_path: (item.parentReference?.path || '') + '/' + item.name,
+      file_name: sanitizeFileName(item.name),
+      file_path: sanitizePath((item.parentReference?.path || '') + '/' + item.name),
       file_type: item.folder ? 'folder' : 'file',
-      mime_type: item.file?.mimeType,
-      file_size: item.size,
+      mime_type: item.file?.mimeType ? String(item.file.mimeType).slice(0, 100) : null,
+      file_size: typeof item.size === 'number' ? item.size : 0,
       parent_folder_id: parentId,
-      sharepoint_item_id: item.id,
-      sharepoint_web_url: item.webUrl,
+      sharepoint_item_id: String(item.id || '').slice(0, 255),
+      sharepoint_web_url: item.webUrl ? String(item.webUrl).slice(0, 500) : null,
       created_by: userId,
       created_at_source: item.createdDateTime,
       modified_at_source: item.lastModifiedDateTime
@@ -361,9 +374,9 @@ async function syncTeamsChannel(
       .upsert({
         customer_id: request.customer_id,
         repository_type: 'teams_channel',
-        repository_name: team.displayName,
-        teams_channel_id: team.id,
-        external_url: team.webUrl,
+        repository_name: sanitizeFileName(team.displayName || 'Teams Channel'),
+        teams_channel_id: String(team.id || '').slice(0, 255),
+        external_url: team.webUrl ? String(team.webUrl).slice(0, 500) : null,
         is_active: true,
         sync_enabled: true,
         last_synced_at: new Date().toISOString()
@@ -429,12 +442,12 @@ async function syncOneDrive(
     const fileData = {
       customer_id: request.customer_id,
       repository_id: repo.id,
-      file_name: item.name,
-      file_path: '/' + item.name,
+      file_name: sanitizeFileName(item.name),
+      file_path: sanitizePath('/' + item.name),
       file_type: item.folder ? 'folder' : 'file',
-      mime_type: item.file?.mimeType,
-      file_size: item.size,
-      onedrive_item_id: item.id,
+      mime_type: item.file?.mimeType ? String(item.file.mimeType).slice(0, 100) : null,
+      file_size: typeof item.size === 'number' ? item.size : 0,
+      onedrive_item_id: String(item.id || '').slice(0, 255),
       created_by: userId,
       created_at_source: item.createdDateTime,
       modified_at_source: item.lastModifiedDateTime
