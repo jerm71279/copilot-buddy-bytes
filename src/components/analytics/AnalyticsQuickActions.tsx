@@ -1,5 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { QuickActionButtonGroup, QuickActionButton } from "@/components/ui/quick-action-button-group";
 import { toast } from "sonner";
 import { quickActions } from "@/lib/analyticsConfig";
 
@@ -16,7 +15,7 @@ export const AnalyticsQuickActions = ({
   generateReportMutation,
   checkBenchmarksMutation
 }: AnalyticsQuickActionsProps) => {
-  const handleAction = (action: string, mutation: any) => {
+  const handleAction = (mutation: any) => {
     if (!customerId) {
       toast.error('Please assign a customer to your profile first');
       return;
@@ -24,34 +23,29 @@ export const AnalyticsQuickActions = ({
     mutation.mutate();
   };
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Quick Actions</CardTitle>
-        <CardDescription>Run analytics operations</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-wrap gap-4">
-        {quickActions.map((action) => {
-          const Icon = action.icon;
-          const mutation = action.action === 'aggregate' 
-            ? aggregateMetricsMutation
-            : action.action === 'generate'
-            ? generateReportMutation
-            : checkBenchmarksMutation;
+  const actionButtons: QuickActionButton[] = quickActions.map((action) => {
+    const mutation = action.action === 'aggregate' 
+      ? aggregateMetricsMutation
+      : action.action === 'generate'
+      ? generateReportMutation
+      : checkBenchmarksMutation;
 
-          return (
-            <Button
-              key={action.action}
-              onClick={() => handleAction(action.action, mutation)}
-              disabled={mutation.isPending}
-              variant={action.variant}
-            >
-              <Icon className="h-4 w-4 mr-2" />
-              {action.label}
-            </Button>
-          );
-        })}
-      </CardContent>
-    </Card>
+    return {
+      id: action.action,
+      label: action.label,
+      icon: action.icon,
+      variant: action.variant,
+      onClick: () => handleAction(mutation),
+      disabled: mutation.isPending,
+      loading: mutation.isPending
+    };
+  });
+
+  return (
+    <QuickActionButtonGroup
+      title="Quick Actions"
+      description="Run analytics operations"
+      actions={actionButtons}
+    />
   );
 };

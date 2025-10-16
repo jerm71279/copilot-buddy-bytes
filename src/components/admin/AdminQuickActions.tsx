@@ -1,8 +1,9 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { QuickActionCard } from "@/lib/adminConfig";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { QuickActionCard as QuickActionCardType } from "@/lib/adminConfig";
 
 interface AdminQuickActionsProps {
-  quickActionCards: QuickActionCard[];
+  quickActionCards: QuickActionCardType[];
 }
 
 export function AdminQuickActions({ quickActionCards }: AdminQuickActionsProps) {
