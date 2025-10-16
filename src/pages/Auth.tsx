@@ -13,6 +13,12 @@ import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
 
 import { userProfileSchema, sanitizeText } from "@/lib/validation";
+import { handleUserSignUp, handleUserSignIn } from "@/lib/authHelpers";
+import { 
+  getOrCreateDefaultCustomer, 
+  linkUserToCustomer, 
+  createEmployeeOnboarding 
+} from "@/lib/onboardingHelpers";
 
 // Development bypass - set to true to skip authentication
 const BYPASS_AUTH = localStorage.getItem('bypassAuth') === 'true';
@@ -254,134 +260,69 @@ const Auth = () => {
         password: signupPassword,
       });
 
-      const redirectUrl = `${window.location.origin}/`;
-      
-      // Construct and sanitize email username and email with hardcoded domain
-      const safeEmailUsername = validatedData.emailUsername
-        .replace(/[\x00-\x1F\x7F]/g, "")
-        .replace(/\s+/g, "")
-        .toLowerCase();
-      const fullEmail = `${safeEmailUsername}@oberaconnect.com`;
-      
-      // Hardcoded company name for internal use
-      const companyName = "OBERACONNECT, LLC";
-      
-      // Sanitize metadata to prevent hidden null/control characters from causing DB errors
-      const safeFullName = validatedData.fullName
-        .replace(/\u0000/g, "")
-        .replace(/[\x00-\x1F\x7F]/g, "")
-        .trim();
-      
-      // Block control characters in password
-      if (/[\x00-\x1F\x7F]/.test(validatedData.password)) {
-        toast.error("Password contains invalid characters. Please remove control characters.");
+      // Use centralized auth helper
+      const signUpResult = await handleUserSignUp({
+        emailUsername: validatedData.emailUsername,
+        password: validatedData.password,
+        fullName: validatedData.fullName
+      });
+
+      if (!signUpResult.success || !signUpResult.userId) {
+        toast.error(signUpResult.error || "Signup failed - please try again");
         setIsLoading(false);
         return;
       }
-      
-      const { data, error } = await supabase.auth.signUp({
-        email: fullEmail,
-        password: validatedData.password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: { full_name: safeFullName }
-        }
+
+      // Use centralized onboarding helpers
+      const { customerId, error: customerError } = await getOrCreateDefaultCustomer();
+
+      if (customerError || !customerId) {
+        console.error("Failed to get/create customer:", customerError);
+        toast.error("Account created but failed to complete setup. Please contact support.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Link user to customer
+      const { error: profileError } = await linkUserToCustomer(signUpResult.userId, customerId);
+
+      if (profileError) {
+        console.error("Failed to link user to customer:", profileError);
+        toast.error("Account created but failed to complete setup. Please contact support.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Create onboarding record
+      const { error: onboardingError } = await createEmployeeOnboarding({
+        userId: signUpResult.userId,
+        customerId,
+        fullName: validatedData.fullName,
+        emailUsername: validatedData.emailUsername
       });
 
-      if (error) {
-        // Log failed signup - no customer_id available yet
-        // Skip audit log to avoid foreign key constraint
-        toast.error(error.message);
-        throw error;
+      if (onboardingError) {
+        console.error("Failed to create onboarding record:", onboardingError);
+        toast.error("Account created but failed to create onboarding. Please contact support.");
+        setIsLoading(false);
+        return;
       }
-      
-      if (data.user) {
-        // Find or create OBERACONNECT customer
-        const { data: existingCustomer } = await supabase
-          .from("customers")
-          .select("id")
-          .eq("company_name", companyName)
-          .maybeSingle();
 
-        let customerId: string;
+      // Log successful signup
+      const fullEmail = `${validatedData.emailUsername.toLowerCase()}@oberaconnect.com`;
+      await supabase.from('audit_logs').insert({
+        user_id: signUpResult.userId,
+        customer_id: customerId,
+        system_name: 'auth',
+        action_type: 'signup_success',
+        action_details: { 
+          email: fullEmail,
+          timestamp: new Date().toISOString()
+        },
+        compliance_tags: ['security', 'authentication']
+      });
 
-        if (existingCustomer) {
-          customerId = existingCustomer.id;
-        } else {
-          // Create customer record for OBERACONNECT
-          const { data: customerData, error: customerError } = await supabase
-            .from("customers")
-            .insert({
-              user_id: data.user.id,
-              contact_name: safeFullName,
-              company_name: companyName,
-              email: fullEmail,
-            })
-            .select()
-            .maybeSingle();
-
-          if (customerError || !customerData) throw customerError || new Error("Failed to create customer");
-          customerId = customerData.id;
-
-          // Create customer customization
-          const { error: customizationError } = await supabase
-            .from("customer_customizations")
-            .insert({
-              customer_id: customerId,
-              enabled_features: ["dashboard", "integrations", "compliance", "ml_insights"],
-              default_dashboard: "executive",
-            });
-
-          if (customizationError) throw customizationError;
-        }
-
-        // Link profile to customer (profile is auto-created by backend trigger)
-        const { error: profileUpdateError } = await supabase
-          .from("user_profiles")
-          .update({ customer_id: customerId })
-          .eq("user_id", data.user.id);
-
-        if (profileUpdateError) throw profileUpdateError;
-
-        // Auto-trigger employee onboarding for OBERACONNECT employees
-        const { data: templateData } = await supabase
-          .from("employee_onboarding_templates")
-          .select("id")
-          .eq("customer_id", customerId)
-          .eq("is_active", true)
-          .maybeSingle();
-
-        if (templateData) {
-          // Create employee onboarding record
-          await supabase
-            .from("employee_onboardings")
-            .insert({
-              customer_id: customerId,
-              template_id: templateData.id,
-              employee_name: safeFullName,
-              employee_email: fullEmail,
-              start_date: new Date().toISOString().split('T')[0],
-              status: "in_progress",
-              created_by: data.user.id,
-            });
-        }
-
-        // Log successful signup
-        await supabase.from('audit_logs').insert({
-          user_id: data.user.id,
-          customer_id: customerId,
-          system_name: 'auth',
-          action_type: 'signup_success',
-          action_details: { 
-            email: fullEmail,
-            company_name: companyName,
-            timestamp: new Date().toISOString()
-          },
-          compliance_tags: ['security', 'authentication']
-        });
-
-        toast.success("Account created successfully! Your onboarding has been initiated.");
-      }
+      toast.success("Account created successfully! Your onboarding has been initiated.");
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);

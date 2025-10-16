@@ -64,7 +64,7 @@ export const AIAgentConfiguration = () => {
         .from('user_profiles')
         .select('customer_id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile) return;
 
@@ -99,7 +99,7 @@ export const AIAgentConfiguration = () => {
         .from('user_profiles')
         .select('customer_id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile) throw new Error('Profile not found');
 
@@ -146,7 +146,7 @@ export const AIAgentConfiguration = () => {
         .from('user_profiles')
         .select('customer_id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile) throw new Error('Profile not found');
 
