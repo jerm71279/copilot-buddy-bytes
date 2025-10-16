@@ -91,6 +91,7 @@ import ArchitectureDiagram from "./pages/ArchitectureDiagram";
 import ArchitectureCanvas from "./pages/ArchitectureCanvas";
 import WorkflowIntelligence from "./pages/WorkflowIntelligence";
 import PromptLibraryPage from "./pages/PromptLibraryPage";
+import AIHub from "./pages/AIHub";
 import SLAManagement from "./pages/SLAManagement";
 import TimeTracking from "./pages/TimeTracking";
 import ProjectManagement from "./pages/ProjectManagement";
@@ -148,6 +149,7 @@ const App = () => (
           <Route path="/navigation-scaffold" element={<NavigationScaffold />} />
           <Route path="/cmmc-readiness" element={<CMMCReadiness />} />
           <Route path="/workflow-intelligence" element={<WorkflowIntelligence />} />
+          <Route path="/ai-hub" element={<AIHub />} />
           <Route path="/prompt-library" element={
             <ProtectedRoute>
               <PromptLibraryPage />
