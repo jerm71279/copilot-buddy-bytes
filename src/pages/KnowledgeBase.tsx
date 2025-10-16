@@ -1,116 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, FileText, BookOpen, Lightbulb, Plus, Upload, Download, Cloud, Brain, Award, BookMarked, Sparkles } from "lucide-react";
-import { toast } from "sonner";
+import { Search, Lightbulb, FileText } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import { useKnowledgeData } from "@/hooks/useKnowledgeData";
+import { 
+  getArticleIcon, 
+  getArticleTypeColor, 
+  formatArticleType,
+  knowledgeActionButtons,
+  knowledgeDashboardLinks 
+} from "@/lib/knowledgeConfig";
 
 export default function KnowledgeBase() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [articles, setArticles] = useState<any[]>([]);
-  const [insights, setInsights] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  
+  const { 
+    articles, 
+    insights, 
+    categories, 
+    isLoading,
+    filterArticles,
+    getArticlesByType 
+  } = useKnowledgeData();
 
-  useEffect(() => {
-    loadKnowledgeBase();
-  }, []);
-
-  const loadKnowledgeBase = async () => {
-    try {
-      // Get user profile to determine department
-      const { data: { session } } = await supabase.auth.getSession();
-      let userDepartment = 'all';
-      
-      if (session) {
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("department")
-          .eq("user_id", session.user.id)
-          .maybeSingle();
-        
-        if (profile?.department) {
-          userDepartment = profile.department;
-        }
-      }
-
-      // Load articles accessible by user's department
-      // Show articles where accessible_departments contains 'all' OR user's department
-      const { data: articlesData, error: articlesError } = await supabase
-        .from("knowledge_articles")
-        .select("*")
-        .eq("status", "published")
-        .or(`accessible_departments.cs.{all},accessible_departments.cs.{${userDepartment}}`)
-        .order("updated_at", { ascending: false });
-
-      if (articlesError) throw articlesError;
-
-      // Load insights
-      const { data: insightsData, error: insightsError } = await supabase
-        .from("knowledge_insights")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(10);
-
-      if (insightsError) throw insightsError;
-
-      // Load categories
-      const { data: categoriesData, error: categoriesError } = await supabase
-        .from("knowledge_categories")
-        .select("*")
-        .order("name");
-
-      if (categoriesError) throw categoriesError;
-
-      setArticles(articlesData || []);
-      setInsights(insightsData || []);
-      setCategories(categoriesData || []);
-    } catch (error) {
-      console.error("Error loading knowledge base:", error);
-      toast.error("Failed to load knowledge base");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const filteredArticles = articles.filter(article =>
-    article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    article.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    article.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-
-  const getArticleIcon = (type: string) => {
-    switch (type) {
-      case "policy": return <Award className="h-4 w-4" />;
-      case "best_practice": return <BookMarked className="h-4 w-4" />;
-      case "innovation": return <Sparkles className="h-4 w-4" />;
-      case "lesson_learned": return <Lightbulb className="h-4 w-4" />;
-      case "sop": return <FileText className="h-4 w-4" />;
-      case "guide": return <BookOpen className="h-4 w-4" />;
-      case "faq": return <Lightbulb className="h-4 w-4" />;
-      default: return <FileText className="h-4 w-4" />;
-    }
-  };
-
-  const getArticleTypeColor = (type: string) => {
-    switch (type) {
-      case "policy": return "bg-primary/10 text-primary";
-      case "best_practice": return "bg-success/10 text-success";
-      case "innovation": return "bg-secondary/10 text-secondary";
-      case "lesson_learned": return "bg-warning/10 text-warning";
-      case "sop": return "bg-primary/10 text-primary";
-      case "guide": return "bg-secondary/10 text-secondary";
-      case "faq": return "bg-accent/10 text-accent";
-      default: return "bg-muted text-muted-foreground";
-    }
-  };
+  const filteredArticles = filterArticles(searchQuery);
 
   return (
     <div className="min-h-screen bg-background">
@@ -119,20 +39,7 @@ export default function KnowledgeBase() {
       <main className="container mx-auto px-4 pt-56 pb-8">
         <DashboardNavigation 
           title="Knowledge Base"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
+          dashboards={knowledgeDashboardLinks}
         />
         
         <div className="mb-8">
@@ -154,36 +61,26 @@ export default function KnowledgeBase() {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2 mb-6">
-          <Link to="/intelligent-assistant">
-            <Button size="lg" className="gap-2">
-              <Brain className="h-5 w-5" />
-              Ask AI Assistant
-            </Button>
-          </Link>
-          <Button onClick={() => navigate("/knowledge/new")}>
-            <Plus className="mr-2 h-4 w-4" />
-            New Article
-          </Button>
-          <Button variant="outline" onClick={() => navigate("/knowledge/upload")}>
-            <Upload className="mr-2 h-4 w-4" />
-            Upload Files
-          </Button>
-          <Link to="/sharepoint-sync">
-            <Button variant="outline">
-              <Cloud className="mr-2 h-4 w-4" />
-              SharePoint Sync
-            </Button>
-          </Link>
-          <Button variant="outline" onClick={() => navigate("/knowledge/generate")}>
-            <Lightbulb className="mr-2 h-4 w-4" />
-            Generate from Workflows
-          </Button>
-          <Link to="/documentation">
-            <Button variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Export Documentation
-            </Button>
-          </Link>
+          {knowledgeActionButtons.map((action) => (
+            action.path.startsWith('/knowledge/') ? (
+              <Button 
+                key={action.path}
+                variant={action.variant}
+                size={action.size}
+                onClick={() => navigate(action.path)}
+              >
+                {action.icon}
+                <span className="ml-2">{action.label}</span>
+              </Button>
+            ) : (
+              <Link key={action.path} to={action.path}>
+                <Button variant={action.variant} size={action.size}>
+                  {action.icon}
+                  <span className="ml-2">{action.label}</span>
+                </Button>
+              </Link>
+            )
+          ))}
         </div>
 
         <Tabs defaultValue="articles" className="space-y-6">
@@ -218,7 +115,7 @@ export default function KnowledgeBase() {
                         <div className="flex items-center gap-2">
                           {getArticleIcon(article.knowledge_type || article.article_type)}
                           <Badge className={getArticleTypeColor(article.knowledge_type || article.article_type)}>
-                            {(article.knowledge_type || article.article_type || 'article').replace('_', ' ').toUpperCase()}
+                            {formatArticleType(article.knowledge_type || article.article_type)}
                           </Badge>
                         </div>
                         <span className="text-xs text-muted-foreground">v{article.version || '1.0'}</span>
@@ -263,9 +160,7 @@ export default function KnowledgeBase() {
 
           <TabsContent value="sops">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {filteredArticles
-                .filter(a => a.article_type === 'sop')
-                .map((article) => (
+              {getArticlesByType('sop').map((article) => (
                   <Card
                     key={article.id}
                     className="cursor-pointer hover:shadow-lg transition-shadow"
