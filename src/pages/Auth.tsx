@@ -256,8 +256,12 @@ const Auth = () => {
 
       const redirectUrl = `${window.location.origin}/`;
       
-      // Construct full email with hardcoded domain
-      const fullEmail = `${validatedData.emailUsername.toLowerCase()}@oberaconnect.com`;
+      // Construct and sanitize email username and email with hardcoded domain
+      const safeEmailUsername = validatedData.emailUsername
+        .replace(/[\x00-\x1F\x7F]/g, "")
+        .replace(/\s+/g, "")
+        .toLowerCase();
+      const fullEmail = `${safeEmailUsername}@oberaconnect.com`;
       
       // Hardcoded company name for internal use
       const companyName = "OBERACONNECT, LLC";
@@ -268,11 +272,19 @@ const Auth = () => {
         .replace(/[\x00-\x1F\x7F]/g, "")
         .trim();
       
+      // Block control characters in password
+      if (/[\x00-\x1F\x7F]/.test(validatedData.password)) {
+        toast.error("Password contains invalid characters. Please remove control characters.");
+        setIsLoading(false);
+        return;
+      }
+      
       const { data, error } = await supabase.auth.signUp({
         email: fullEmail,
         password: validatedData.password,
         options: {
-          emailRedirectTo: redirectUrl
+          emailRedirectTo: redirectUrl,
+          data: { full_name: safeFullName }
         }
       });
 
