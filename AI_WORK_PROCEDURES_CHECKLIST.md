@@ -2,6 +2,8 @@
 
 This document defines the step-by-step procedures to follow for **every** code change or feature request.
 
+**IMPORTANT: In addition to this checklist, you MUST automatically run the validation procedures defined in `AUTOMATIC_VALIDATION_PROCEDURES.md` after every code change. Those checks are MANDATORY and run WITHOUT user prompting.**
+
 ## Pre-Work Phase
 
 ### 1. Understand the Request
@@ -63,25 +65,36 @@ This document defines the step-by-step procedures to follow for **every** code c
 
 ## Post-Implementation Phase
 
-### 8. Build Verification
+### 8. AUTOMATIC VALIDATION (MANDATORY - Run from AUTOMATIC_VALIDATION_PROCEDURES.md)
+**These checks run AUTOMATICALLY after EVERY code change:**
+- [ ] Database Query Validation (`.single()` vs `.maybeSingle()`)
+- [ ] Security Validation (input validation, RLS policies, no hardcoded secrets)
+- [ ] Design System Compliance (no hardcoded colors, HSL format, semantic tokens)
+- [ ] TypeScript Validation (compilation, types, imports)
+- [ ] File-Type Specific Checks (based on what you modified)
+- [ ] Pattern Auto-Detection (`.single()`, hardcoded colors, missing validation)
+
+**See `AUTOMATIC_VALIDATION_PROCEDURES.md` for complete details.**
+
+### 9. Build Verification
 - [ ] Check for TypeScript errors
 - [ ] Fix any compilation errors immediately
 - [ ] Verify no duplicate variable declarations
 - [ ] Ensure all imports are correct
 
-### 9. Pattern Propagation
+### 10. Pattern Propagation
 - [ ] Search codebase for similar patterns that need the same fix
 - [ ] Apply fixes consistently across all occurrences
 - [ ] Document any remaining technical debt
 
-### 10. Documentation Updates
+### 11. Documentation Updates
 - [ ] Update RECENT_FIXES_2025_10_15.md with changes made
 - [ ] Update VALIDATION_PROCEDURES.md with progress
 - [ ] Update consolidated_DOCUMENTATION_STATUS.md
 - [ ] Update any feature-specific documentation
 - [ ] Update API_REFERENCE.md if edge functions changed
 
-### 11. Final Response
+### 12. Final Response
 - [ ] Provide concise summary of changes (1-2 sentences max)
 - [ ] No emojis unless celebrating major milestone
 - [ ] Mention if additional work is recommended
@@ -115,6 +128,12 @@ This document defines the step-by-step procedures to follow for **every** code c
 - [ ] Search codebase for relevant files
 - [ ] If stuck, search web for specific error
 - [ ] Add console.log if needed for investigation
+
+## Relationship Between Documents
+
+- **AI_WORK_PROCEDURES_CHECKLIST.md** (this file) = Overall workflow and process
+- **AUTOMATIC_VALIDATION_PROCEDURES.md** = Specific automatic checks that run after every change
+- **Both are required** = Use this checklist for workflow, run automatic validation for quality
 
 ## Critical Rules (NEVER VIOLATE)
 
@@ -215,8 +234,11 @@ if (!record) {
 
 ## Version History
 - 2025-10-15: Initial checklist created
+- 2025-10-16: Added reference to AUTOMATIC_VALIDATION_PROCEDURES.md
 - Document should be updated as procedures evolve
 
 ---
 
 **Remember: This checklist exists to ensure consistent, high-quality work. Reference it before, during, and after every task.**
+
+**CRITICAL: After completing steps in this checklist, you MUST run the automatic validation procedures from `AUTOMATIC_VALIDATION_PROCEDURES.md`. These are not optional - they ensure code quality, security, and design system compliance.**
