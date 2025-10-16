@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { LogOut, Users, ChevronDown, Server, TestTube, Calculator, Settings } from "lucide-react";
+import { LogOut, Users, ChevronDown, Server, TestTube, Calculator, Settings, Bot } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { MCPServerConfig } from "@/components/MCPServerConfig";
 import { AIMCPGenerator } from "@/components/AIMCPGenerator";
@@ -14,6 +14,7 @@ import MCPExecutionLogs from "@/components/MCPExecutionLogs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
+import { AutonomousAgentMonitor } from "@/components/AutonomousAgentMonitor";
 
 
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
@@ -231,6 +232,7 @@ const AdminDashboard = () => {
                   {activeView === 'mcp-logs' && 'Execution Logs'}
                   {activeView === 'mcp-configure' && 'Configure New Server'}
                   {activeView === 'mcp-ai' && 'AI MCP Generator'}
+                  {activeView === 'ai-agents' && 'Autonomous AI Agents'}
                 </CardTitle>
                 <Button variant="ghost" size="sm" onClick={() => setActiveView(null)}>
                   Close
@@ -251,6 +253,7 @@ const AdminDashboard = () => {
                   }}
                 />
               )}
+              {activeView === 'ai-agents' && <AutonomousAgentMonitor />}
             </CardContent>
           </Card>
         )}
@@ -304,6 +307,16 @@ const AdminDashboard = () => {
                 Dev Settings
               </CardTitle>
               <CardDescription>Development and testing configuration</CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveView('ai-agents')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bot className="h-5 w-5" />
+                AI Agents
+              </CardTitle>
+              <CardDescription>Monitor autonomous department agents</CardDescription>
             </CardHeader>
           </Card>
         </div>
