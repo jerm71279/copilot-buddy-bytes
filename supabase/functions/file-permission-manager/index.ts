@@ -43,18 +43,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    const requestBody = await req.json();
-    
-    if (!requestBody || typeof requestBody !== 'object') {
-      return new Response(
-        JSON.stringify({ error: 'Invalid request body' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const { action, ...requestData } = await req.json();
 
-    const action = String(requestBody.action || '').slice(0, 20);
-
-    if (!['grant', 'revoke', 'list'].includes(action)) {
+    // Validate action
+    if (!action || !['grant', 'revoke', 'list'].includes(action)) {
       return new Response(
         JSON.stringify({ error: 'Invalid action. Must be grant, revoke, or list' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -79,13 +71,13 @@ Deno.serve(async (req) => {
 
     switch (action) {
       case 'grant':
-        result = await grantPermission(requestBody as PermissionRequest, profile.customer_id, user.id, supabase);
+        result = await grantPermission(requestData as PermissionRequest, profile.customer_id, user.id, supabase);
         break;
       case 'revoke':
-        result = await revokePermission(requestBody.permission_id, supabase);
+        result = await revokePermission(requestData.permission_id, supabase);
         break;
       case 'list':
-        result = await listPermissions(requestBody.file_id, supabase);
+        result = await listPermissions(requestData.file_id, supabase);
         break;
     }
 
