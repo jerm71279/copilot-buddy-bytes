@@ -1,8 +1,3 @@
-/**
- * Centralized Hook Exports
- * Single import point for all custom hooks
- */
-
 export { useAuth } from "./useAuth";
 export type { UserProfile, AuthState } from "./useAuth";
 
@@ -25,6 +20,22 @@ export { useRetry } from "./useRetry";
 export type { RetryOptions } from "./useRetry";
 
 export { useToast } from "./use-toast";
+
+// Portal data hooks
+export { usePortalData, useCustomerId } from "./usePortalData";
+
+// Keyboard shortcut hook
+export { useKeyboardShortcut } from "./useKeyboardShortcut";
+
+// Onboarding hooks
+export { calculateProgress, updateOnboardingProgress, syncOnboardingProgress } from "./useOnboardingProgress";
+export type { OnboardingTask, ProgressCalculation } from "./useOnboardingProgress";
+export { useOnboardingTemplateTasks } from "./useOnboardingTemplateTasks";
+export { useOnboardingRoles, useOnboardingUsers, useOnboardingTemplates } from "./useOnboardingData";
+export type { Role, User, Template } from "./useOnboardingData";
+
+// MCP Server hooks
+export { useMCPServers } from "./useMCPServers";
 
 // Re-export performance utilities
 export { useDebounce, useThrottle, useIntersectionObserver, lazyWithRetry } from "../lib/performance";

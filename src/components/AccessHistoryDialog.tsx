@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useCustomerId } from "@/hooks/usePortalData";
 import {
   Dialog,
   DialogContent,
@@ -25,28 +26,9 @@ interface AccessHistoryDialogProps {
 export const AccessHistoryDialog = ({ open, onOpenChange }: AccessHistoryDialogProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
-  const [customerId, setCustomerId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchCustomerId = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('customer_id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        
-        if (profile?.customer_id) {
-          setCustomerId(profile.customer_id);
-        }
-      }
-    };
-    
-    if (open) {
-      fetchCustomerId();
-    }
-  }, [open]);
+  
+  // Use modularized customer ID hook
+  const { customerId } = useCustomerId();
 
   const { data: auditLogs, isLoading } = useQuery({
     queryKey: ['audit-logs', customerId, filterType],

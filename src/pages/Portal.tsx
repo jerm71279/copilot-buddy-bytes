@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Shield, Activity, Clock, FileText, BookOpen, Workflow, BarChart3, Settings, ExternalLink, Brain, Zap, Calendar, MessagesSquare, ArrowLeft, AlertTriangle, Users, Database, Search } from "lucide-react";
+import { Shield, Clock, Search, ChevronDown, Activity, Zap, BookOpen, Workflow } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import EmployeeToolbar from "@/components/EmployeeToolbar";
@@ -10,38 +8,27 @@ import ExternalSystemsBar from "@/components/ExternalSystemsBar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Microsoft365Integration } from "@/components/Microsoft365Integration";
 import { AppLauncher } from "@/components/AppLauncher";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import AutomationSuggestions from "@/components/AutomationSuggestions";
 import { RepetitiveTaskTester } from "@/components/RepetitiveTaskTester";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
 import { GlobalSearch } from "@/components/GlobalSearch";
+import { usePortalData } from "@/hooks/usePortalData";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
+import { quickAccessTools, analyticsDashboards } from "@/lib/portalConfig";
 
 const Portal = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState(true);
-  const [customerData, setCustomerData] = useState<any>(null);
-  const [userDepartment, setUserDepartment] = useState<string | null>(null);
-  const [recentArticles, setRecentArticles] = useState<any[]>([]);
-  const [recentWorkflows, setRecentWorkflows] = useState<any[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
-
-  useEffect(() => {
-    loadCustomerData();
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setSearchOpen(true);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  
+  // Use modularized data fetching hook
+  const { loading, profile, customer, recentArticles, recentWorkflows } = usePortalData();
+  
+  // Use modularized keyboard shortcut hook
+  useKeyboardShortcut(
+    { key: 'k', ctrl: true, meta: true },
+    () => setSearchOpen(true)
+  );
 
   useEffect(() => {
     // Handle scroll to dashboards section
@@ -52,66 +39,6 @@ const Portal = () => {
       }, 100);
     }
   }, [location]);
-
-  const loadCustomerData = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      // Get user profile (may not have customer_id yet)
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-
-      // If profile has customer_id, fetch customer data
-      let customerInfo = null;
-      if (profile?.customer_id) {
-        const { data: customer } = await supabase
-          .from("customers")
-          .select("*")
-          .eq("id", profile.customer_id)
-          .maybeSingle();
-        customerInfo = customer;
-      }
-
-      // Set combined data
-      setCustomerData({
-        ...profile,
-        customers: customerInfo
-      });
-      
-      // Set user department for app launcher
-      setUserDepartment(profile?.department || null);
-
-      // Load recent knowledge articles
-      const { data: articles } = await supabase
-        .from("knowledge_articles")
-        .select("*")
-        .eq("status", "published")
-        .order("updated_at", { ascending: false })
-        .limit(5);
-
-      setRecentArticles(articles || []);
-
-      // Load recent workflow executions (only if customer_id exists)
-      if (profile?.customer_id) {
-        const { data: workflows } = await supabase
-          .from("workflow_executions")
-          .select("*")
-          .eq("customer_id", profile.customer_id)
-          .order("started_at", { ascending: false })
-          .limit(5);
-
-        setRecentWorkflows(workflows || []);
-      }
-    } catch (error) {
-      console.error("Error loading customer data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -129,28 +56,6 @@ const Portal = () => {
     );
   }
 
-  // Quick access tools
-  const quickAccessTools = [
-    { name: "Knowledge Base", icon: BookOpen, path: "/knowledge", description: "SOPs, guides, and documentation" },
-    { name: "Workflows", icon: Workflow, path: "/workflow/automation", description: "Process automation and execution" },
-    { name: "AI Assistant", icon: Brain, path: "/portal", description: "Get AI-powered help and insights" },
-    { name: "Integrations", icon: Zap, path: "/integrations", description: "Connected systems and tools" },
-    { name: "CMDB", icon: Database, path: "/cmdb", description: "Configuration items and assets" },
-    { name: "Incidents & Auto-Remediation", icon: AlertTriangle, path: "/incidents", description: "Monitor and resolve incidents" },
-    { name: "Risk Assessment", icon: Shield, path: "/risk-assessment", description: "CISSP risk analysis and controls" },
-    { name: "Client Portal", icon: Users, path: "/client-portal", description: "Support tickets and services" },
-    { name: "Custom Reports", icon: FileText, path: "/reports/builder", description: "Build and schedule reports" },
-    { name: "Testing Dashboard", icon: Settings, path: "/testing-dashboard", description: "System validation and testing" },
-  ];
-
-  // Analytics/Dashboards - Secondary access
-  const analyticsDashboards = [
-    { name: "Operations", icon: BarChart3, path: "/dashboard/operations", description: "Workflow metrics and insights" },
-    { name: "Compliance", icon: Shield, path: "/dashboard/compliance", description: "Compliance status and reports" },
-    { name: "IT Systems", icon: Activity, path: "/dashboard/it", description: "System health and performance" },
-    { name: "Executive", icon: BarChart3, path: "/dashboard/executive", description: "High-level business metrics" },
-  ];
-
   return (
     <div className="min-h-screen bg-background" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
       {/* Header */}
@@ -164,7 +69,7 @@ const Portal = () => {
                   My Workspace
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  {customerData?.customers?.company_name || 'OberaConnect'}
+                  {customer?.company_name || 'OberaConnect'}
                 </p>
               </div>
             </div>
@@ -265,7 +170,7 @@ const Portal = () => {
             {/* Welcome Section */}
             <div className="mb-8">
               <h2 className="text-3xl font-bold mb-2">
-                Welcome back, {customerData?.full_name || "User"}
+                Welcome back, {profile?.full_name || "User"}
               </h2>
               <p className="text-muted-foreground">
                 Access your tools, knowledge, and insights all in one place
@@ -313,7 +218,7 @@ const Portal = () => {
                     Access your work applications and services
                   </p>
                 </div>
-                <AppLauncher userDepartment={userDepartment} />
+                <AppLauncher userDepartment={profile?.department || null} />
               </div>
             </TabsContent>
 
