@@ -1,21 +1,14 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "🔍 Running pre-commit validation..."
+echo "🔍 Running comprehensive pre-commit validation..."
+echo "📋 Enforcing AUTOMATIC_VALIDATION_PROCEDURES.md + AI_WORK_PROCEDURES_CHECKLIST.md"
+echo ""
 
 # Run lint-staged for staged files
 npx lint-staged
 
-# Run TypeScript check
-echo "📝 Checking TypeScript..."
-npx tsc --noEmit
+# Run comprehensive validation (includes all checks from both .md files)
+node scripts/validate-all.js
 
-# Run design system validation
-echo "🎨 Validating design system compliance..."
-node scripts/validate-design-system.js
-
-# Run security validation
-echo "🔒 Validating security patterns..."
-node scripts/validate-security.js
-
-echo "✅ Pre-commit validation passed!"
+echo "✅ All validation checks passed!"
