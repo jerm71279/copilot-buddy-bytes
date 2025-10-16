@@ -20,9 +20,6 @@ import {
   createEmployeeOnboarding 
 } from "@/lib/onboardingHelpers";
 
-// Development bypass - set to true to skip authentication
-const BYPASS_AUTH = localStorage.getItem('bypassAuth') === 'true';
-
 // Enhanced validation schemas with security requirements
 const loginSchema = z.object({
   email: z.string()
@@ -74,10 +71,6 @@ const Auth = () => {
   const [showResetForm, setShowResetForm] = useState(false);
 
   useEffect(() => {
-    if (BYPASS_AUTH) {
-      navigate('/portal', { replace: true });
-      return;
-    }
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
