@@ -5,15 +5,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Brain, TrendingUp, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useAIStream } from "@/hooks/useAIStream";
+import { toast } from "sonner";
 
 const WorkflowIntelligence = () => {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [queryType, setQueryType] = useState<'analyze' | 'workflows' | 'compliance' | 'anomalies'>('analyze');
   const [timeframe, setTimeframe] = useState('7d');
-  const { toast } = useToast();
+  const { streamResponse, isStreaming } = useAIStream();
 
   const suggestedQueries = {
     analyze: [
@@ -41,97 +41,30 @@ const WorkflowIntelligence = () => {
 
   const handleQuery = async () => {
     if (!query.trim()) {
-      toast({
-        title: "Query Required",
+      toast.error("Query Required", {
         description: "Please enter a query to analyze",
-        variant: "destructive"
       });
       return;
     }
 
-    setIsLoading(true);
     setResponse("");
 
-    try {
-      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-      const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
-      const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/workflow-intelligence`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            query,
-            type: queryType,
-            timeframe
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to get response');
+    await streamResponse(
+      "workflow-intelligence",
+      {
+        query,
+        type: queryType,
+        timeframe,
+      },
+      {
+        onChunk: (content) => setResponse((prev) => prev + content),
+        onComplete: () => {
+          toast.success("Analysis Complete", {
+            description: "Workflow intelligence query processed successfully",
+          });
+        },
       }
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-
-      if (!reader) {
-        throw new Error('No response stream');
-      }
-
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-
-        // Process complete lines
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const jsonStr = line.slice(6).trim();
-            
-            if (jsonStr === '[DONE]') continue;
-
-            try {
-              const data = JSON.parse(jsonStr);
-              const content = data.choices?.[0]?.delta?.content;
-              
-              if (content) {
-                setResponse(prev => prev + content);
-              }
-            } catch (e) {
-              console.error('Error parsing SSE:', e);
-            }
-          }
-        }
-      }
-
-      toast({
-        title: "Analysis Complete",
-        description: "Workflow intelligence query processed successfully",
-      });
-
-    } catch (error) {
-      console.error('Query error:', error);
-      toast({
-        title: "Query Failed",
-        description: error instanceof Error ? error.message : "Unknown error occurred",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    );
   };
 
   return (
@@ -198,7 +131,7 @@ const WorkflowIntelligence = () => {
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder={`e.g., "${suggestedQueries[queryType][0]}"`}
                     className="min-h-[100px]"
-                    disabled={isLoading}
+                    disabled={isStreaming}
                   />
                 </div>
 
@@ -210,7 +143,7 @@ const WorkflowIntelligence = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => setQuery(suggestion)}
-                      disabled={isLoading}
+                      disabled={isStreaming}
                     >
                       {suggestion}
                     </Button>
@@ -219,10 +152,10 @@ const WorkflowIntelligence = () => {
 
                 <Button 
                   onClick={handleQuery} 
-                  disabled={isLoading || !query.trim()}
+                  disabled={isStreaming || !query.trim()}
                   className="w-full"
                 >
-                  {isLoading ? (
+                  {isStreaming ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Analyzing...

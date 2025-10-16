@@ -202,6 +202,18 @@ console.log('═'.repeat(60));
 
 if (errors.length === 0 && warnings.length === 0) {
   console.log('✅ ALL CHECKS PASSED - Ready to commit\n');
+  
+  // Print success summary
+  console.log('✨ Validation Results:');
+  console.log('   • TypeScript: ✅ Compiled successfully');
+  console.log('   • Database Queries: ✅ No .single() violations');
+  console.log('   • Design System: ✅ No hardcoded colors');
+  console.log('   • Security: ✅ All patterns validated');
+  console.log('   • Edge Functions: ✅ All validated');
+  console.log('   • Input Validation: ✅ Coverage complete');
+  console.log('   • ESLint: ✅ No issues');
+  console.log('   • Documentation: ✅ Up to date\n');
+  
   process.exit(0);
 } else {
   if (errors.length > 0) {
@@ -214,6 +226,12 @@ if (errors.length === 0 && warnings.length === 0) {
     warnings.forEach((warn, i) => console.log(`   ${i + 1}. ${warn}`));
   }
   
-  console.log('\n❌ VALIDATION FAILED - Please fix issues before committing\n');
+  console.log('\n❌ VALIDATION FAILED - Please fix issues before committing');
+  console.log('━'.repeat(60));
+  console.log('📋 Summary:');
+  console.log(`   Total Errors: ${errors.length}`);
+  console.log(`   Total Warnings: ${warnings.length}`);
+  console.log('━'.repeat(60) + '\n');
+  
   process.exit(1);
 }
