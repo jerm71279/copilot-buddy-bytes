@@ -39,6 +39,25 @@ export default function EmployeeOnboardingDashboard() {
 
   useEffect(() => {
     checkAuthAndLoad();
+
+    // Reload data when window comes back into focus
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadOnboardings();
+      }
+    };
+
+    const handleFocus = () => {
+      loadOnboardings();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const checkAuthAndLoad = async () => {

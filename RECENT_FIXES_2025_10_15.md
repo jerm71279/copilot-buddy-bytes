@@ -1,5 +1,29 @@
 # Recent Fixes - October 15, 2025
 
+## Employee Onboarding Dashboard Auto-Refresh (Latest)
+
+**Implementation Date**: 2025-10-16
+**Bug Fix**: Dashboard not updating count after completing employee onboarding
+
+### Problem
+When users completed all onboarding tasks and marked the employee onboarding as "completed", the dashboard didn't automatically refresh to show the updated count. Users had to manually reload the page to see the correct statistics.
+
+### Solution
+Added automatic data refresh to `EmployeeOnboardingDashboard.tsx`:
+- Added `visibilitychange` event listener to reload data when tab becomes visible
+- Added `focus` event listener to reload data when window receives focus
+- Both listeners call `loadOnboardings()` to refresh statistics
+
+### Files Modified
+- `src/pages/hr/EmployeeOnboardingDashboard.tsx` - Added event listeners in useEffect
+
+### Impact
+- Dashboard now automatically shows updated counts when navigating back from detail page
+- Improved user experience - no manual refresh needed
+- Works across browser navigation patterns (back button, tab switching, etc.)
+
+---
+
 ## Design System Compliance - Batch 17 (Latest - FINAL)
 
 **Implementation Date**: 2025-10-15
