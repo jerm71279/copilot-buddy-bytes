@@ -1,151 +1,40 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import { Ticket, ShoppingCart, MessageSquare } from "lucide-react";
-import { clientTicketSchema, sanitizeText } from "@/lib/validation";
-import { z } from "zod";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import { useClientPortalData, useCreateTicket, usePortalMetrics } from "@/hooks/useClientPortalData";
+import { ticketCategories, priorityLevels, clientPortalDashboards, defaultTicketValues } from "@/lib/clientPortalConfig";
+import { PriorityBadge, formatStatus, formatCategory } from "@/lib/clientPortalUtils";
 
 export default function ClientPortal() {
-  const queryClient = useQueryClient();
   const [isTicketOpen, setIsTicketOpen] = useState(false);
-  const [newTicket, setNewTicket] = useState({
-    subject: "",
-    description: "",
-    priority: "medium",
-    category: "general"
+  const [newTicket, setNewTicket] = useState(defaultTicketValues);
+
+  const { tickets, serviceRequests, serviceCatalog } = useClientPortalData();
+  const { openTicketsCount, activeRequestsCount, availableServicesCount } = usePortalMetrics();
+  
+  const createTicket = useCreateTicket(() => {
+    setIsTicketOpen(false);
+    setNewTicket(defaultTicketValues);
   });
-
-  const { data: tickets } = useQuery({
-    queryKey: ["client_tickets"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("client_tickets")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const { data: serviceRequests } = useQuery({
-    queryKey: ["service_requests"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("service_requests")
-        .select("*, service_catalog(*)")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const { data: serviceCatalog } = useQuery({
-    queryKey: ["service_catalog"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("service_catalog")
-        .select("*")
-        .eq("is_active", true)
-        .order("category");
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const createTicket = useMutation({
-    mutationFn: async (ticket: typeof newTicket) => {
-      // Validate ticket data
-      const validatedData = clientTicketSchema.parse({
-        subject: ticket.subject,
-        description: ticket.description,
-        category: ticket.category as any,
-        priority: ticket.priority as any,
-      });
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      const { data, error } = await supabase.functions.invoke("client-portal", {
-        body: {
-          action: "create_ticket",
-          customerId: profile?.customer_id,
-          submittedBy: user.id,
-          subject: validatedData.subject,
-          description: sanitizeText(validatedData.description),
-          category: validatedData.category,
-          priority: validatedData.priority,
-        },
-      });
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["client_tickets"] });
-      toast.success("Support ticket created successfully");
-      setIsTicketOpen(false);
-      setNewTicket({ subject: "", description: "", priority: "medium", category: "general" });
-    },
-    onError: (error: any) => {
-      if (error instanceof z.ZodError) {
-        const firstError = error.errors[0];
-        toast.error(`${firstError.path.join(".")}: ${firstError.message}`);
-      } else {
-        toast.error(error.message || "Failed to create ticket");
-      }
-    },
-  });
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "critical": return "destructive";
-      case "high": return "destructive";
-      case "medium": return "default";
-      case "low": return "secondary";
-      default: return "default";
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pb-8 pt-8 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <DashboardNavigation 
           title="Client Portal"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
+          dashboards={clientPortalDashboards}
         />
         <div className="flex justify-between items-center">
           <div>
@@ -193,10 +82,11 @@ export default function ClientPortal() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="general">General Support</SelectItem>
-                      <SelectItem value="technical">Technical Issue</SelectItem>
-                      <SelectItem value="billing">Billing</SelectItem>
-                      <SelectItem value="feature_request">Feature Request</SelectItem>
+                      {ticketCategories.map(cat => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -210,10 +100,11 @@ export default function ClientPortal() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="critical">Critical</SelectItem>
+                      {priorityLevels.map(priority => (
+                        <SelectItem key={priority.value} value={priority.value}>
+                          {priority.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -233,9 +124,7 @@ export default function ClientPortal() {
             <Ticket className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {tickets?.filter(t => ["open", "assigned", "in_progress"].includes(t.status)).length || 0}
-            </div>
+            <div className="text-2xl font-bold">{openTicketsCount}</div>
           </CardContent>
         </Card>
         <Card>
@@ -244,9 +133,7 @@ export default function ClientPortal() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {serviceRequests?.filter(r => ["submitted", "approved", "in_progress"].includes(r.status)).length || 0}
-            </div>
+            <div className="text-2xl font-bold">{activeRequestsCount}</div>
           </CardContent>
         </Card>
         <Card>
@@ -255,7 +142,7 @@ export default function ClientPortal() {
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{serviceCatalog?.length || 0}</div>
+            <div className="text-2xl font-bold">{availableServicesCount}</div>
           </CardContent>
         </Card>
       </div>
@@ -290,13 +177,11 @@ export default function ClientPortal() {
                     <TableRow key={ticket.id}>
                       <TableCell className="font-mono">{ticket.ticket_number}</TableCell>
                       <TableCell>{ticket.subject}</TableCell>
-                      <TableCell className="capitalize">{ticket.category.replace("_", " ")}</TableCell>
+                      <TableCell className="capitalize">{formatCategory(ticket.category)}</TableCell>
                       <TableCell>
-                        <Badge variant={getPriorityColor(ticket.priority)}>
-                          {ticket.priority}
-                        </Badge>
+                        <PriorityBadge priority={ticket.priority} />
                       </TableCell>
-                      <TableCell className="capitalize">{ticket.status.replace("_", " ")}</TableCell>
+                      <TableCell className="capitalize">{formatStatus(ticket.status)}</TableCell>
                       <TableCell>{new Date(ticket.created_at).toLocaleDateString()}</TableCell>
                     </TableRow>
                   ))}
@@ -329,11 +214,9 @@ export default function ClientPortal() {
                       <TableCell className="font-mono">{request.request_number}</TableCell>
                       <TableCell>{request.title}</TableCell>
                       <TableCell>
-                        <Badge variant={getPriorityColor(request.priority)}>
-                          {request.priority}
-                        </Badge>
+                        <PriorityBadge priority={request.priority} />
                       </TableCell>
-                      <TableCell className="capitalize">{request.status.replace("_", " ")}</TableCell>
+                      <TableCell className="capitalize">{formatStatus(request.status)}</TableCell>
                       <TableCell>{new Date(request.created_at).toLocaleDateString()}</TableCell>
                     </TableRow>
                   ))}
