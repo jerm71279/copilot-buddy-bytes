@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -181,10 +180,15 @@ const EmployeeDirectory = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+        <DashboardNavigation 
+          title="Employee Directory"
+          dashboards={[
+            { name: "HR Dashboard", path: "/dashboard/hr" },
+            { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
+            { name: "Departments", path: "/departments" },
+          ]}
+        />
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Employee Directory</h1>
@@ -383,7 +387,7 @@ const EmployeeDirectory = () => {
             )}
           </CardContent>
         </Card>
-      </main>
+        </main>
     </div>
   );
 };

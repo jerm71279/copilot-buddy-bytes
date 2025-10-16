@@ -345,7 +345,13 @@ export default function EmployeeOnboardingTemplates() {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => navigate(`/hr/employee-onboarding/templates/${template.id}`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toast({
+                          title: "Coming Soon",
+                          description: "Template editing will be available in a future update"
+                        });
+                      }}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
