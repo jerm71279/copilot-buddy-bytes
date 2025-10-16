@@ -344,11 +344,22 @@ if (!name) {
 
 ### Run Automatically:
 
-1. **After EVERY code change** → Post-Change Validation
-2. **Before marking task complete** → Completion Checklist
-3. **When pattern detected** → Apply Pattern Detection Rules
-4. **By file type** → Run File-Type Specific Triggers
-5. **After fixing validation issues** → Re-run validation on fixes (max 3 passes)
+1. **After EVERY code edit in Lovable** → Run `npm run validate` manually after changes
+2. **After EVERY code change** → Post-Change Validation
+3. **Before marking task complete** → Completion Checklist
+4. **When pattern detected** → Apply Pattern Detection Rules
+5. **By file type** → Run File-Type Specific Triggers
+6. **After fixing validation issues** → Re-run validation on fixes (max 3 passes)
+
+### Lovable Development Workflow:
+```bash
+# After editing code in Lovable:
+npm run validate
+
+# Fix any issues found
+# Commit when validation passes
+git commit -m "your changes"
+```
 
 ### Validation Loop Logic:
 

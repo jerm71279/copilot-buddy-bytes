@@ -2,6 +2,15 @@
 
 This project enforces all checks from `AUTOMATIC_VALIDATION_PROCEDURES.md` and `AI_WORK_PROCEDURES_CHECKLIST.md` automatically.
 
+## When to Run Validation
+
+### After Every Code Edit (Manual - REQUIRED in Lovable)
+When editing code in Lovable, run validation manually after changes:
+```bash
+npm run validate
+```
+This ensures your changes pass all checks before committing.
+
 ## Automatic Enforcement
 
 ### 1. Pre-Commit Hook (Local)
@@ -19,11 +28,11 @@ Every commit automatically runs comprehensive validation:
 ### 2. GitHub Actions (CI/CD)
 Every push and PR runs the same validation suite on GitHub.
 
-### 3. Manual Validation
-Run anytime to check compliance:
+### 3. Manual Validation (REQUIRED After Code Edits)
+**IMPORTANT**: Run after every code edit in Lovable:
 
 ```bash
-# Quick validation
+# Quick validation (RECOMMENDED)
 npm run validate
 
 # Or directly
@@ -32,6 +41,8 @@ node scripts/validate-all.js
 # Or using shell script
 bash scripts/run-validation.sh
 ```
+
+**Best Practice**: Run `npm run validate` immediately after making code changes in Lovable to catch issues early, before committing.
 
 ## What Gets Checked
 
