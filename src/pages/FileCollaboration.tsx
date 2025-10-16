@@ -34,7 +34,7 @@ export default function FileCollaboration() {
     queryKey: ['file_repositories', userProfile?.customer_id],
     enabled: !!userProfile?.customer_id,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('file_repositories')
         .select('*')
         .eq('customer_id', userProfile!.customer_id)
@@ -49,7 +49,7 @@ export default function FileCollaboration() {
     queryKey: ['sync_history', userProfile?.customer_id],
     enabled: !!userProfile?.customer_id,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('file_sync_history')
         .select('*')
         .eq('customer_id', userProfile!.customer_id)
