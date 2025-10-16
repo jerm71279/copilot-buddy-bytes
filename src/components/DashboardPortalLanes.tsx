@@ -74,13 +74,10 @@ const portals: Portal[] = [
     children: [
       { name: "CMDB", path: "/cmdb" },
       { name: "Add CMDB Item", path: "/cmdb/add" },
-      { name: "Edit CMDB Item", path: "/cmdb/edit" },
-      { name: "CMDB Item Detail", path: "/cmdb/item" },
       { name: "Change Management", path: "/change-management" },
       { name: "New Change", path: "/change-management/new" },
       { name: "Incidents", path: "/incidents" },
       { name: "Network Monitoring", path: "/network-monitoring" },
-      { name: "New Network Device", path: "/network/device/new" },
       { name: "SLA Management", path: "/sla-management" },
       { name: "Client Onboarding", path: "/onboarding" },
       { name: "New Client", path: "/onboarding/new" },
@@ -155,14 +152,14 @@ const portals: Portal[] = [
     children: [
       { name: "Data Flows", path: "/data-flows" },
       { name: "Predictive Insights", path: "/predictive-insights" },
-      { name: "Custom Reports", path: "/custom-reports" },
+      { name: "Custom Reports", path: "/reports/builder" },
     ],
   },
   {
     name: "Automation Portal",
     path: "/workflow-automation",
     children: [
-      { name: "Workflow Builder", path: "/workflows/builder" },
+      { name: "Workflow Automation", path: "/workflows" },
       { name: "Workflow Orchestration", path: "/workflow-orchestration" },
       { name: "Visual Builder", path: "/workflows/visual-builder" },
       { name: "Workflow Intelligence", path: "/workflow-intelligence" },
