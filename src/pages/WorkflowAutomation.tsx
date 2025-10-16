@@ -2,19 +2,14 @@ import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Zap, Play, Pause, Plus, Clock } from "lucide-react";
+import { Zap, Plus, Clock } from "lucide-react";
 import { useAutomationData } from "@/hooks/useAutomationData";
-import { 
-  statCards, 
-  getStatusColor, 
-  getExecutionStatusColor, 
-  getExecutionIcon, 
-  getTriggerLabel,
-  dashboardLinks 
-} from "@/lib/automationConfig";
+import { dashboardLinks } from "@/lib/automationConfig";
+import { WorkflowStatsCards } from "@/components/automation/WorkflowStatsCards";
+import { WorkflowListCard } from "@/components/automation/WorkflowListCard";
+import { ExecutionListCard } from "@/components/automation/ExecutionListCard";
 
 /**
  * Workflow Automation Data Flow
@@ -95,24 +90,7 @@ export default function WorkflowAutomation() {
           </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          {statCards.map(({ icon: Icon, label, key, suffix = '', colorClass = '' }) => (
-            <Card key={key}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className={`text-2xl font-bold ${colorClass}`}>
-                  {stats[key]}{suffix}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <WorkflowStatsCards stats={stats} />
 
         <Tabs defaultValue="workflows" className="space-y-4">
           <TabsList>
@@ -142,47 +120,11 @@ export default function WorkflowAutomation() {
             ) : (
               <div className="grid grid-cols-1 gap-4">
                 {workflows.map((workflow) => (
-                  <Card 
+                  <WorkflowListCard
                     key={workflow.id}
-                    className="cursor-pointer hover:shadow-md transition-shadow"
-                  >
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="flex items-center gap-2">
-                            {workflow.workflow_name}
-                            <Badge variant={getStatusColor(workflow.is_active) as any}>
-                              {workflow.is_active ? 'Active' : 'Inactive'}
-                            </Badge>
-                          </CardTitle>
-                          <CardDescription className="mt-1">
-                            {workflow.description || "No description"}
-                          </CardDescription>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleWorkflowStatus(workflow.id, workflow.is_active);
-                          }}
-                        >
-                          {workflow.is_active ? (
-                            <><Pause className="mr-2 h-4 w-4" /> Pause</>
-                          ) : (
-                            <><Play className="mr-2 h-4 w-4" /> Activate</>
-                          )}
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="capitalize">Type: {workflow.workflow_type.replace('_', ' ')}</span>
-                        <span>•</span>
-                        <span>Created {new Date(workflow.created_at).toLocaleDateString()}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    workflow={workflow}
+                    onToggleStatus={toggleWorkflowStatus}
+                  />
                 ))}
               </div>
             )}
@@ -200,33 +142,11 @@ export default function WorkflowAutomation() {
             ) : (
               <div className="space-y-2">
                 {executions.map((execution) => (
-                  <Card key={execution.id}>
-                    <CardContent className="py-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-3 flex-1">
-                          {getExecutionIcon(execution.status)}
-                          <div className="flex-1">
-                            <p className="font-semibold text-base">
-                              {workflows.find(w => w.id === execution.workflow_id)?.workflow_name || 'Unknown Workflow'}
-                            </p>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {getTriggerLabel(execution.triggered_by)}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Started {new Date(execution.started_at).toLocaleString()}
-                              {execution.completed_at && ` • Completed in ${((new Date(execution.completed_at).getTime() - new Date(execution.started_at).getTime()) / 1000).toFixed(1)}s`}
-                            </p>
-                            {execution.error_message && (
-                              <p className="text-sm text-destructive mt-2 p-2 bg-destructive/5 rounded">{execution.error_message}</p>
-                            )}
-                          </div>
-                        </div>
-                        <Badge variant={getExecutionStatusColor(execution.status) as any}>
-                          {execution.status}
-                        </Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <ExecutionListCard
+                    key={execution.id}
+                    execution={execution}
+                    workflowName={workflows.find(w => w.id === execution.workflow_id)?.workflow_name || 'Unknown Workflow'}
+                  />
                 ))}
               </div>
             )}

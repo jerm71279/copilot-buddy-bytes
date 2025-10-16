@@ -11,15 +11,15 @@ import MCPServerStatus from "@/components/MCPServerStatus";
 import { toast } from "sonner";
 import { useAnalyticsData } from "@/hooks/useAnalyticsData";
 import { 
-  metricCards, 
-  quickActions, 
-  metricTypeLabels,
   getAlertSeverityColor,
   getAlertBadgeVariant,
   getBenchmarkBadgeVariant,
   getReportStatusBadgeVariant,
   metricIcons
 } from "@/lib/analyticsConfig";
+import { AnalyticsMetricCards } from "@/components/analytics/AnalyticsMetricCards";
+import { AnalyticsQuickActions } from "@/components/analytics/AnalyticsQuickActions";
+import { MetricsTabContent } from "@/components/analytics/MetricsTabContent";
 
 export default function AnalyticsPortal() {
   const [period, setPeriod] = useState("daily");
@@ -50,20 +50,12 @@ export default function AnalyticsPortal() {
     reports,
     criticalAlerts,
     unmetBenchmarks,
-    getMetricsByType,
     aggregateMetricsMutation,
     generateReportMutation,
     checkBenchmarksMutation,
     acknowledgeAlertMutation,
+    getMetricsByType,
   } = useAnalyticsData(customerId, period);
-
-  const handleAction = (action: string, mutation: any) => {
-    if (!customerId) {
-      toast.error('Please assign a customer to your profile first');
-      return;
-    }
-    mutation.mutate();
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -90,59 +82,21 @@ export default function AnalyticsPortal() {
           </div>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          {metricCards.map((card) => {
-            const Icon = card.icon;
-            const value = card.getValue({ metrics, alerts, benchmarks, reports });
-            const description = card.getDescription 
-              ? card.getDescription({ criticalAlerts, unmetBenchmarks })
-              : card.description;
+        <AnalyticsMetricCards
+          metrics={metrics}
+          alerts={alerts}
+          benchmarks={benchmarks}
+          reports={reports}
+          criticalAlerts={criticalAlerts}
+          unmetBenchmarks={unmetBenchmarks}
+        />
 
-            return (
-              <Card key={card.title}>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
-                  <Icon className={`h-4 w-4 ${card.iconClassName || 'text-muted-foreground'}`} />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{value}</div>
-                  <p className="text-xs text-muted-foreground">{description}</p>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* Actions */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Run analytics operations</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-4">
-            {quickActions.map((action) => {
-              const Icon = action.icon;
-              const mutation = action.action === 'aggregate' 
-                ? aggregateMetricsMutation
-                : action.action === 'generate'
-                ? generateReportMutation
-                : checkBenchmarksMutation;
-
-              return (
-                <Button
-                  key={action.action}
-                  onClick={() => handleAction(action.action, mutation)}
-                  disabled={mutation.isPending}
-                  variant={action.variant}
-                >
-                  <Icon className="h-4 w-4 mr-2" />
-                  {action.label}
-                </Button>
-              );
-            })}
-          </CardContent>
-        </Card>
+        <AnalyticsQuickActions
+          customerId={customerId}
+          aggregateMetricsMutation={aggregateMetricsMutation}
+          generateReportMutation={generateReportMutation}
+          checkBenchmarksMutation={checkBenchmarksMutation}
+        />
 
         <Tabs defaultValue="metrics" className="space-y-6">
           <TabsList>
@@ -153,46 +107,7 @@ export default function AnalyticsPortal() {
           </TabsList>
 
           <TabsContent value="metrics">
-            <Card>
-              <CardHeader>
-                <CardTitle>System Metrics</CardTitle>
-                <CardDescription>Aggregated performance metrics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {Object.keys(metricTypeLabels).map((type) => {
-                    const typeMetrics = getMetricsByType(type);
-                    if (typeMetrics.length === 0) return null;
-
-                    return (
-                      <div key={type} className="space-y-2">
-                        <h3 className="font-semibold">{metricTypeLabels[type]}</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          {typeMetrics.map((metric: any) => (
-                            <Card key={metric.id}>
-                              <CardContent className="pt-6">
-                                <div className="flex items-center justify-between">
-                                  <div>
-                                    <p className="text-sm text-muted-foreground">
-                                      {metric.metric_name.replace(/_/g, ' ')}
-                                    </p>
-                                    <p className="text-2xl font-bold">
-                                      {metric.metric_value.toFixed(1)}
-                                      {metric.metric_unit && <span className="text-sm ml-1">{metric.metric_unit}</span>}
-                                    </p>
-                                  </div>
-                                  <metricIcons.Activity className="h-8 w-8 text-muted-foreground" />
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+            <MetricsTabContent getMetricsByType={getMetricsByType} />
           </TabsContent>
 
           <TabsContent value="alerts">
