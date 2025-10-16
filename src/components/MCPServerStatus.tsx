@@ -1,87 +1,21 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Activity, Server, Zap, CheckCircle2, XCircle } from "lucide-react";
+import { Activity, Server, Zap } from "lucide-react";
 import { toast } from "sonner";
-
-type MCPServer = {
-  id: string;
-  server_name: string;
-  server_type: string;
-  description: string;
-  status: string;
-  capabilities: any; // JSON from database
-  last_health_check: string | null;
-};
-
-type MCPTool = {
-  id: string;
-  tool_name: string;
-  description: string;
-  execution_count: number;
-  avg_execution_time_ms: number | null;
-};
+import { useMCPServers, useMCPTools, executeMCPTool } from "@/hooks/useMCPServers";
+import { getMCPServerStatusBadge, formatMCPCapabilities } from "@/lib/mcpUtils";
+import { supabase } from "@/integrations/supabase/client";
 
 type MCPServerStatusProps = { 
   customerId?: string;
-  filterByServerType?: string; // e.g., "compliance", "it", "finance", "hr", "operations"
+  filterByServerType?: string;
 };
 
 export default function MCPServerStatus({ customerId, filterByServerType }: MCPServerStatusProps) {
-  const [servers, setServers] = useState<MCPServer[]>([]);
-  const [tools, setTools] = useState<Record<string, MCPTool[]>>({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetchMCPServers();
-  }, [filterByServerType]);
-
-  const fetchMCPServers = async () => {
-    try {
-      let query = supabase
-        .from("mcp_servers")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      // Apply server_type filter if provided
-      if (filterByServerType) {
-        query = query.eq("server_type", filterByServerType);
-      }
-
-      const { data: serversData, error: serversError } = await query;
-
-      if (serversError) throw serversError;
-
-      setServers(serversData || []);
-
-      // Fetch tools for each server
-      if (serversData) {
-        const toolsPromises = serversData.map(async (server) => {
-          const { data: toolsData } = await supabase
-            .from("mcp_tools")
-            .select("*")
-            .eq("server_id", server.id)
-            .eq("is_enabled", true);
-          
-          return { serverId: server.id, tools: toolsData || [] };
-        });
-
-        const toolsResults = await Promise.all(toolsPromises);
-        const toolsMap: Record<string, MCPTool[]> = {};
-        toolsResults.forEach(({ serverId, tools }) => {
-          toolsMap[serverId] = tools;
-        });
-        setTools(toolsMap);
-      }
-    } catch (error) {
-      console.error("Error fetching MCP servers:", error);
-      toast.error("Failed to load MCP servers");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { servers, isLoading } = useMCPServers(filterByServerType);
+  const { tools } = useMCPTools(servers.map(s => s.id));
 
   const testMCPTool = async (serverId: string, toolName: string) => {
     try {
@@ -110,45 +44,17 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
 
       toast.info(`Testing ${toolName}...`);
 
-      const { data, error } = await supabase.functions.invoke("mcp-server", {
-        body: {
-          server_id: serverId,
-          tool_name: toolName,
-          customer_id: resolvedCustomerId,
-          user_id: session.user.id,
-          input_data: {},
-        },
-      });
+      const result = await executeMCPTool(serverId, toolName, resolvedCustomerId, session.user.id);
 
-      if (error) throw error;
-
-      if (data.success) {
-        toast.success(`${toolName} executed successfully in ${data.execution_time_ms}ms`);
+      if (result.success) {
+        toast.success(`${toolName} executed successfully in ${result.execution_time_ms}ms`);
       } else {
-        toast.error(`${toolName} failed: ${data.error}`);
+        toast.error(`${toolName} failed: ${result.error}`);
       }
     } catch (error) {
       console.error("Error testing MCP tool:", error);
       toast.error("Failed to execute tool");
     }
-  };
-
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      active: { variant: "default" as const, icon: CheckCircle2, color: "text-primary" },
-      inactive: { variant: "secondary" as const, icon: XCircle, color: "text-muted-foreground" },
-      error: { variant: "destructive" as const, icon: XCircle, color: "text-destructive" },
-    };
-
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.inactive;
-    const Icon = config.icon;
-
-    return (
-      <Badge variant={config.variant} className="flex items-center gap-1">
-        <Icon className={`h-3 w-3 ${config.color}`} />
-        {status}
-      </Badge>
-    );
   };
 
   if (isLoading) {
@@ -199,7 +105,7 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
                           </CardDescription>
                         </div>
                       </div>
-                      {getStatusBadge(server.status)}
+                      {getMCPServerStatusBadge(server.status)}
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -210,7 +116,7 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
                           Capabilities
                         </h4>
                         <div className="flex flex-wrap gap-2">
-                          {(Array.isArray(server.capabilities) ? server.capabilities : []).map((cap: string) => (
+                          {formatMCPCapabilities(server.capabilities).map((cap: string) => (
                             <Badge key={cap} variant="outline">
                               {cap.replace(/_/g, " ")}
                             </Badge>
