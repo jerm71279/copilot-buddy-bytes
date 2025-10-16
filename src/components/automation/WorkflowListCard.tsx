@@ -1,6 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { ListCard } from "@/components/ui/list-card";
 import { Play, Pause } from "lucide-react";
 import { getStatusColor } from "@/lib/automationConfig";
 
@@ -11,43 +9,32 @@ interface WorkflowListCardProps {
 
 export const WorkflowListCard = ({ workflow, onToggleStatus }: WorkflowListCardProps) => {
   return (
-    <Card className="cursor-pointer hover:shadow-md transition-shadow">
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              {workflow.workflow_name}
-              <Badge variant={getStatusColor(workflow.is_active) as any}>
-                {workflow.is_active ? 'Active' : 'Inactive'}
-              </Badge>
-            </CardTitle>
-            <CardDescription className="mt-1">
-              {workflow.description || "No description"}
-            </CardDescription>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleStatus(workflow.id, workflow.is_active);
-            }}
-          >
-            {workflow.is_active ? (
-              <><Pause className="mr-2 h-4 w-4" /> Pause</>
-            ) : (
-              <><Play className="mr-2 h-4 w-4" /> Activate</>
-            )}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <span className="capitalize">Type: {workflow.workflow_type.replace('_', ' ')}</span>
-          <span>•</span>
-          <span>Created {new Date(workflow.created_at).toLocaleDateString()}</span>
-        </div>
-      </CardContent>
-    </Card>
+    <ListCard
+      item={workflow}
+      title={workflow.workflow_name}
+      description={(item) => item.description || "No description"}
+      metadata={[
+        (item) => `Type: ${item.workflow_type.replace('_', ' ')}`,
+        (item) => `Created ${new Date(item.created_at).toLocaleDateString()}`
+      ]}
+      badges={[
+        (item) => ({
+          label: item.is_active ? 'Active' : 'Inactive',
+          variant: getStatusColor(item.is_active) as any
+        })
+      ]}
+      actions={[
+        {
+          label: workflow.is_active ? 'Pause' : 'Activate',
+          icon: workflow.is_active ? Pause : Play,
+          variant: 'outline',
+          onClick: (e) => {
+            e.stopPropagation();
+            onToggleStatus(workflow.id, workflow.is_active);
+          }
+        }
+      ]}
+      className="hover:shadow-md transition-shadow"
+    />
   );
 };

@@ -1,6 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DataTable, TableColumn } from "@/components/ui/data-table";
 import { Receipt } from "lucide-react";
 
 interface RevioInvoicesTableProps {
@@ -8,64 +6,62 @@ interface RevioInvoicesTableProps {
   revioLoading: boolean;
 }
 
+interface InvoiceRow {
+  id: string;
+  invoice_number: string;
+  customer_name: string;
+  amount: number;
+  status: string;
+  issue_date: string;
+  due_date: string;
+}
+
 export const RevioInvoicesTable = ({ revioData, revioLoading }: RevioInvoicesTableProps) => {
+  const invoices: InvoiceRow[] = revioData?.invoices || [];
+
+  const columns: TableColumn<InvoiceRow>[] = [
+    {
+      header: "Invoice #",
+      accessor: "invoice_number",
+      className: "font-medium"
+    },
+    {
+      header: "Customer",
+      accessor: "customer_name"
+    },
+    {
+      header: "Amount",
+      accessor: (row: InvoiceRow) => `$${row.amount.toLocaleString()}`
+    },
+    {
+      header: "Status",
+      accessor: "status",
+      badge: {
+        variant: (value) =>
+          value === 'paid' ? 'default' :
+          value === 'overdue' ? 'destructive' :
+          'secondary'
+      }
+    },
+    {
+      header: "Issue Date",
+      accessor: (row: InvoiceRow) => new Date(row.issue_date).toLocaleDateString()
+    },
+    {
+      header: "Due Date",
+      accessor: (row: InvoiceRow) => new Date(row.due_date).toLocaleDateString()
+    }
+  ];
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Receipt className="h-5 w-5" />
-          Revio Invoices
-        </CardTitle>
-        <CardDescription>
-          {revioLoading ? "Loading invoice data..." : "Recent invoices from Revio billing system"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {revioLoading ? (
-          <div className="flex items-center justify-center py-8 text-muted-foreground">
-            Loading invoices...
-          </div>
-        ) : revioData?.invoices && revioData.invoices.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Invoice #</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Issue Date</TableHead>
-                <TableHead>Due Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {revioData.invoices.map((invoice: any) => (
-                <TableRow key={invoice.id}>
-                  <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
-                  <TableCell>{invoice.customer_name}</TableCell>
-                  <TableCell>${invoice.amount.toLocaleString()}</TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant={
-                        invoice.status === 'paid' ? 'default' : 
-                        invoice.status === 'overdue' ? 'destructive' : 
-                        'secondary'
-                      }
-                    >
-                      {invoice.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{new Date(invoice.issue_date).toLocaleDateString()}</TableCell>
-                  <TableCell>{new Date(invoice.due_date).toLocaleDateString()}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <div className="flex items-center justify-center py-8 text-muted-foreground">
-            No invoices available
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <DataTable
+      title="Revio Invoices"
+      description={revioLoading ? "Loading invoice data..." : "Recent invoices from Revio billing system"}
+      icon={Receipt}
+      data={invoices}
+      isLoading={revioLoading}
+      emptyMessage="No invoices available"
+      columns={columns}
+    />
   );
 };
