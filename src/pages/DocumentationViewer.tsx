@@ -28,9 +28,11 @@ const DocumentationViewer = () => {
     "SECURITY_MASTER_PLAN": "Security Master Plan",
     "ARCHITECTURE": "Architecture Documentation",
     "API_REFERENCE": "API Reference",
+    "AI_FEEDBACK_LOOPS": "AI Feedback Loops",
   };
 
   const availableDocs = [
+    { key: "AI_FEEDBACK_LOOPS", title: "AI Feedback Loops", description: "3-layer AI learning architecture with continuous improvement" },
     { key: "TESTING_GUIDE", title: "Testing Guide", description: "System validation, comprehensive testing, and CI/CD integration" },
     { key: "TESTING_PROCEDURES", title: "Testing Procedures", description: "Step-by-step procedures for all testing phases" },
     { key: "INPUT_VALIDATION_GUIDE", title: "Input Validation Guide", description: "Multi-layered validation to prevent security vulnerabilities" },
