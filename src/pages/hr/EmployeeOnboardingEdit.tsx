@@ -264,12 +264,21 @@ export default function EmployeeOnboardingEdit() {
 
                 <div className="space-y-2">
                   <Label htmlFor="department">Department</Label>
-                  <Input
-                    id="department"
+                  <Select
                     value={formData.department}
-                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    placeholder="e.g., Engineering"
-                  />
+                    onValueChange={(value) => setFormData({ ...formData, department: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Executive">Executive</SelectItem>
+                      <SelectItem value="Sales & Marketing">Sales & Marketing</SelectItem>
+                      <SelectItem value="Plant Operations">Plant Operations</SelectItem>
+                      <SelectItem value="IT Operations">IT Operations</SelectItem>
+                      <SelectItem value="SOC">SOC</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
