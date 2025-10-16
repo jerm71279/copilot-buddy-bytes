@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
+import { checkRateLimit, getClientIP } from "../_shared/rateLimiter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -37,6 +38,34 @@ serve(async (req) => {
     
     // Use service role for initial queries, then filter by RBAC
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Rate limiting for public endpoint
+    const clientIP = getClientIP(req);
+    const rateLimitResult = await checkRateLimit(supabase, {
+      identifier: clientIP,
+      endpoint: 'global-search',
+      maxRequests: 100, // 100 requests per hour per IP
+      windowMinutes: 60,
+      customerId: customerId || undefined
+    });
+
+    if (!rateLimitResult.allowed) {
+      console.log("[GlobalSearch] Rate limit exceeded for IP:", clientIP);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded. Please try again later.',
+          retryAfter: rateLimitResult.retryAfter 
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': String(rateLimitResult.retryAfter || 60)
+          } 
+        }
+      );
+    }
     
     // Get authorization header to identify user
     const authHeader = req.headers.get("Authorization");
@@ -115,21 +144,17 @@ serve(async (req) => {
       });
     }
 
-    // Helper to search JSONB fields for any mention
-    const searchJsonb = (field: string, value: string) => 
-      `${field}::text ilike '%${value}%'`;
+    // SECURITY: Use parameterized queries to prevent SQL injection
+    // Supabase client methods handle escaping automatically
+    const searchPattern = `%${query}%`;
     
-    // Helper to search array fields
-    const searchArray = (field: string, value: string) =>
-      `EXISTS (SELECT 1 FROM unnest(${field}) AS elem WHERE elem::text ilike '%${value}%')`;
-
     // Search across ALL tables comprehensively - including metadata, relationships, and references
     console.log("[GlobalSearch] Starting comprehensive search for:", query);
     
     const searchPromises = [
       // Workflows - search name, description, AND execution logs (metadata)
-      supabase.from("workflow_executions").select("*").or(`workflow_name.ilike.%${query}%,execution_logs.cs.${query}`).limit(5),
-      supabase.from("workflow_templates").select("*").or(`workflow_name.ilike.%${query}%,description.ilike.%${query}%,workflow_config::text.ilike.%${query}%`).limit(5),
+      supabase.from("workflow_executions").select("*").ilike("workflow_name", searchPattern).limit(5),
+      supabase.from("workflow_templates").select("*").or(`workflow_name.ilike.${searchPattern},description.ilike.${searchPattern}`).limit(5),
       // Compliance - search titles, descriptions, findings metadata, and tags
       supabase.from("compliance_audit_reports").select("*").or(`report_title.ilike.%${query}%,findings::text.ilike.%${query}%`).limit(5),
       supabase.from("compliance_controls").select("*").or(`control_name.ilike.%${query}%,description.ilike.%${query}%,control_id.ilike.%${query}%,implementation_notes::text.ilike.%${query}%`).limit(5),
