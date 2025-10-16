@@ -100,7 +100,7 @@ export default function VendorDetail() {
       .from("user_profiles")
       .select("customer_id")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
 
     if (profile?.customer_id) {
       setCustomerId(profile.customer_id);
@@ -117,7 +117,7 @@ export default function VendorDetail() {
         .select("*")
         .eq("id", id!)
         .eq("customer_id", customerId!)
-        .single();
+        .maybeSingle();
 
       if (vendorError) throw vendorError;
       setVendor(vendorData);

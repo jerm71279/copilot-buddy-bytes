@@ -119,7 +119,7 @@ export default function VisualWorkflowBuilder() {
         .from("workflow_templates" as any)
         .select("*")
         .eq("id", workflowId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       if (!data) throw new Error("Workflow not found");
@@ -145,7 +145,7 @@ export default function VisualWorkflowBuilder() {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile?.customer_id) throw new Error("No customer ID");
 

@@ -45,7 +45,7 @@ export default function WorkflowExecutionDetail() {
           workflows(workflow_name, description, workflow_type)
         `)
         .eq("id", executionId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       setExecution(data as any);

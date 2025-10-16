@@ -29,7 +29,7 @@ const SecurityTrainingModule = () => {
         .from("security_training_modules")
         .select("*")
         .eq("id", moduleId)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;

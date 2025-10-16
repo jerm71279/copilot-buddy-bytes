@@ -31,7 +31,7 @@ export default function BreakGlassAccess() {
         .from("user_profiles")
         .select("customer_id, full_name")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return { ...data, user_id: user.id };

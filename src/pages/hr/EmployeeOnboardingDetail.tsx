@@ -79,7 +79,7 @@ export default function EmployeeOnboardingDetail() {
           template_id
         `)
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (onboardingError) throw onboardingError;
       setOnboarding(onboardingData as any as Onboarding);
@@ -100,7 +100,7 @@ export default function EmployeeOnboardingDetail() {
           .from('employee_onboarding_templates')
           .select('id, template_name, description')
           .eq('id', onboardingData.template_id)
-          .single();
+          .maybeSingle();
 
         if (!templateError && templateData) {
           setTemplate(templateData);
@@ -112,7 +112,7 @@ export default function EmployeeOnboardingDetail() {
           .from('user_profiles')
           .select('full_name')
           .eq('user_id', onboardingData.manager_id)
-          .single();
+          .maybeSingle();
 
         if (!managerError && managerData) {
           setManagerName(managerData.full_name);

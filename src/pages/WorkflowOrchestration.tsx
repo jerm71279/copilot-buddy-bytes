@@ -39,7 +39,7 @@ export default function WorkflowOrchestration() {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile?.customer_id) throw new Error("No customer ID");
 
@@ -65,7 +65,7 @@ export default function WorkflowOrchestration() {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile?.customer_id) throw new Error("No customer ID");
 
@@ -109,7 +109,7 @@ export default function WorkflowOrchestration() {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       const workflow = workflows?.find((w: any) => w.id === workflowId) as any;
       if (!workflow) throw new Error("Workflow not found");

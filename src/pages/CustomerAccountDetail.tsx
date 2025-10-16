@@ -95,7 +95,7 @@ const CustomerAccountDetail = () => {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile?.customer_id) return;
 
@@ -105,7 +105,7 @@ const CustomerAccountDetail = () => {
         .select("*")
         .eq("id", id)
         .eq("customer_id", profile.customer_id)
-        .single();
+        .maybeSingle();
 
       if (accountError) throw accountError;
       setAccount(accountData);

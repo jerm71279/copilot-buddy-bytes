@@ -56,7 +56,7 @@ export default function ComplianceControlDetail() {
         .select('*')
         .eq('id', controlId)
         .eq('framework_id', frameworkId)
-        .single();
+        .maybeSingle();
 
       if (controlError) throw controlError;
       setControl(controlData);
@@ -66,7 +66,7 @@ export default function ComplianceControlDetail() {
         .from('compliance_frameworks')
         .select('id, framework_name, framework_code')
         .eq('id', frameworkId)
-        .single();
+        .maybeSingle();
 
       if (frameworkError) throw frameworkError;
       setFramework(frameworkData);

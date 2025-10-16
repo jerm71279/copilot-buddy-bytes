@@ -36,7 +36,7 @@ export default function ComplianceFrameworkDetail() {
         .from('compliance_frameworks')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (frameworkError) throw frameworkError;
       setFramework(frameworkData);

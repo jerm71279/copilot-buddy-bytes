@@ -63,7 +63,7 @@ export default function EmployeeOnboardingEdit() {
         .from('employee_onboardings')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
