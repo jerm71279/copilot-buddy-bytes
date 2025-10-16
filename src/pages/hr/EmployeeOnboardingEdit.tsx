@@ -21,12 +21,19 @@ interface User {
   full_name: string;
 }
 
+interface Template {
+  id: string;
+  template_name: string;
+  description: string | null;
+}
+
 export default function EmployeeOnboardingEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [roles, setRoles] = useState<Role[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     employee_name: "",
@@ -47,12 +54,14 @@ export default function EmployeeOnboardingEdit() {
     postal_code: "",
     country: "",
     manager_id: "",
+    template_id: "",
   });
 
   useEffect(() => {
     loadOnboarding();
     loadRoles();
     loadUsers();
+    loadTemplates();
   }, [id]);
 
   const loadOnboarding = async () => {
@@ -68,6 +77,52 @@ export default function EmployeeOnboardingEdit() {
       if (error) throw error;
 
       const typedData = data as any;
+      
+      // Check if we have a template but no tasks - copy tasks from template
+      if (typedData.template_id) {
+        const { data: existingTasks } = await supabase
+          .from('employee_onboarding_tasks')
+          .select('id')
+          .eq('onboarding_id', id)
+          .limit(1);
+
+        // If no tasks exist, copy from template
+        if (!existingTasks || existingTasks.length === 0) {
+          const { data: templateTasks } = await supabase
+            .from('employee_onboarding_template_tasks')
+            .select('*')
+            .eq('template_id', typedData.template_id)
+            .order('sequence_order');
+
+          if (templateTasks && templateTasks.length > 0) {
+            const { data: { user } } = await supabase.auth.getUser();
+            const tasksToInsert = templateTasks.map((task: any) => ({
+              onboarding_id: id,
+              task_name: task.task_name,
+              description: task.description,
+              task_category: task.task_category,
+              sequence_order: task.sequence_order,
+              assigned_role: task.assigned_role,
+              estimated_hours: task.estimated_hours,
+              requires_employee_input: task.requires_employee_input,
+              compliance_tags: task.compliance_tags,
+              required_documents: task.required_documents,
+              status: 'not_started',
+              created_by: user?.id
+            }));
+
+            await supabase
+              .from('employee_onboarding_tasks')
+              .insert(tasksToInsert);
+
+            toast({
+              title: "Tasks Created",
+              description: `${tasksToInsert.length} onboarding tasks have been added from the template`
+            });
+          }
+        }
+      }
+
       setFormData({
         employee_name: typedData.employee_name || "",
         employee_email: typedData.employee_email || "",
@@ -87,6 +142,7 @@ export default function EmployeeOnboardingEdit() {
         postal_code: typedData.postal_code || "",
         country: typedData.country || "",
         manager_id: typedData.manager_id || "",
+        template_id: typedData.template_id || "",
       });
     } catch (error) {
       console.error('Error loading onboarding:', error);
@@ -114,35 +170,31 @@ export default function EmployeeOnboardingEdit() {
 
   const loadUsers = async () => {
     try {
-      // Get users with manager-level positions from employee_onboardings
-      const { data: onboardingData, error: onboardingError } = await supabase
-        .from('employee_onboardings')
-        .select('employee_name, employee_email, job_title')
-        .not('job_title', 'is', null);
-
-      if (onboardingError) throw onboardingError;
-
-      // Filter for manager-level titles
-      const managerKeywords = ['Manager', 'Director', 'VP', 'Vice President', 'Executive', 'Chief', 'Head', 'Lead', 'Supervisor'];
-      const managers = (onboardingData || []).filter((emp: any) => 
-        managerKeywords.some(keyword => 
-          emp.job_title?.toLowerCase().includes(keyword.toLowerCase())
-        )
-      );
-
-      // Get corresponding user profiles
-      const managerEmails = managers.map((m: any) => m.employee_email);
-      
-      const { data: profileData, error: profileError } = await supabase
+      // Get all user profiles
+      const { data, error } = await supabase
         .from('user_profiles')
         .select('user_id, full_name')
-        .in('user_id', managerEmails.length > 0 ? managerEmails : ['00000000-0000-0000-0000-000000000000'])
         .order('full_name');
 
-      if (profileError) throw profileError;
-      setUsers(profileData || []);
+      if (error) throw error;
+      setUsers(data || []);
     } catch (error) {
-      console.error('Error loading managers:', error);
+      console.error('Error loading users:', error);
+    }
+  };
+
+  const loadTemplates = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('employee_onboarding_templates')
+        .select('id, template_name, description')
+        .eq('is_active', true)
+        .order('template_name');
+
+      if (error) throw error;
+      setTemplates(data || []);
+    } catch (error) {
+      console.error('Error loading templates:', error);
     }
   };
 
@@ -182,6 +234,7 @@ export default function EmployeeOnboardingEdit() {
           postal_code: formData.postal_code || null,
           country: formData.country || null,
           manager_id: formData.manager_id || null,
+          template_id: formData.template_id || null,
         })
         .eq('id', id);
 
@@ -270,6 +323,30 @@ export default function EmployeeOnboardingEdit() {
                     onChange={(e) => setFormData({ ...formData, employee_phone: e.target.value })}
                     placeholder="(555) 123-4567"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="template_id">Onboarding Template</Label>
+                  <Select
+                    value={formData.template_id}
+                    onValueChange={(value) => setFormData({ ...formData, template_id: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a template" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {templates.map((template) => (
+                        <SelectItem key={template.id} value={template.id}>
+                          {template.template_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {!formData.template_id && (
+                    <p className="text-sm text-muted-foreground">
+                      Select a template to generate onboarding tasks
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
