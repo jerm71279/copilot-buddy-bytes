@@ -341,12 +341,21 @@ export default function EmployeeOnboardingEdit() {
 
                 <div className="space-y-2">
                   <Label htmlFor="work_location">Work Location</Label>
-                  <Input
-                    id="work_location"
+                  <Select
                     value={formData.work_location}
-                    onChange={(e) => setFormData({ ...formData, work_location: e.target.value })}
-                    placeholder="e.g., Remote, HQ Office, etc."
-                  />
+                    onValueChange={(value) => setFormData({ ...formData, work_location: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Daphne">Daphne</SelectItem>
+                      <SelectItem value="Florida">Florida</SelectItem>
+                      <SelectItem value="Virginia">Virginia</SelectItem>
+                      <SelectItem value="Parabalus(onsite)">Parabalus(onsite)</SelectItem>
+                      <SelectItem value="Remote">Remote</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
