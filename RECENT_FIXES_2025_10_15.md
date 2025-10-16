@@ -1,6 +1,38 @@
 # Recent Fixes - October 15, 2025
 
-## Validation Script Documentation Check (Latest)
+## SOC Threat Analysis Authentication Fix (Latest)
+
+**Implementation Date**: 2025-10-16
+**Bug Fix**: Fixed 401 Unauthorized error in soc-threat-analysis edge function
+
+### Problem
+The SOC Dashboard threat analysis feature was failing with "Edge Function returned a non-2xx status code" (401 Unauthorized). The edge function's authentication check was not properly handling the authorization header or providing detailed error messages.
+
+### Solution
+Enhanced authentication handling in `supabase/functions/soc-threat-analysis/index.ts`:
+- Added explicit check for missing Authorization header before creating Supabase client
+- Improved error logging for auth failures with `console.error`
+- Separated user error handling from missing user handling for better diagnostics
+- Added detailed error messages in responses to help identify specific auth issues
+- Returns specific error details instead of generic "Unauthorized" message
+
+### Files Modified
+- `supabase/functions/soc-threat-analysis/index.ts` - Enhanced auth error handling (lines 15-48)
+- `RECENT_FIXES_2025_10_15.md` - Documented this fix
+
+### Impact
+- Better debugging: Detailed error messages help identify auth issues
+- Improved reliability: Explicit header check prevents null reference errors
+- Enhanced security: Maintains authentication requirements while providing better feedback
+
+### Validation Results
+- ✅ Edge function authentication enhanced
+- ✅ Error messages now detailed and actionable
+- ✅ Proper error logging for debugging
+
+---
+
+## Validation Script Documentation Check
 
 **Implementation Date**: 2025-10-16
 **Enhancement**: Added documentation update verification to validation script
