@@ -84,6 +84,51 @@ export default function EmployeeOnboardingDetail() {
       if (onboardingError) throw onboardingError;
       setOnboarding(onboardingData as any as Onboarding);
 
+      // Check if we have a template but no tasks - copy tasks from template
+      if (onboardingData.template_id) {
+        const { data: existingTasks } = await supabase
+          .from('employee_onboarding_tasks')
+          .select('id')
+          .eq('onboarding_id', id)
+          .limit(1);
+
+        // If no tasks exist, copy from template
+        if (!existingTasks || existingTasks.length === 0) {
+          const { data: templateTasks } = await supabase
+            .from('employee_onboarding_template_tasks')
+            .select('*')
+            .eq('template_id', onboardingData.template_id)
+            .order('sequence_order');
+
+          if (templateTasks && templateTasks.length > 0) {
+            const { data: { user } } = await supabase.auth.getUser();
+            const tasksToInsert = templateTasks.map((task: any) => ({
+              onboarding_id: id,
+              task_name: task.task_name,
+              description: task.description,
+              task_category: task.task_category,
+              sequence_order: task.sequence_order,
+              assigned_role: task.assigned_role,
+              estimated_hours: task.estimated_hours,
+              requires_employee_input: task.requires_employee_input,
+              compliance_tags: task.compliance_tags,
+              required_documents: task.required_documents,
+              status: 'not_started',
+              created_by: user?.id
+            }));
+
+            await supabase
+              .from('employee_onboarding_tasks')
+              .insert(tasksToInsert);
+
+            toast({
+              title: "Tasks Created",
+              description: `${tasksToInsert.length} onboarding tasks have been added from the template`
+            });
+          }
+        }
+      }
+
       // Load tasks
       const { data: tasksData, error: tasksError } = await supabase
         .from('employee_onboarding_tasks')
