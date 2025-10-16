@@ -1,39 +1,43 @@
 import { 
-  Target, DollarSign, BarChart, CheckCircle,
-  Phone, FileText, Calendar, Users
+  Target, DollarSign, TrendingUp, Users, ArrowUpRight,
+  Phone, FileText, Calendar, CheckCircle, Clock, AlertCircle, BarChart
 } from 'lucide-react';
-import { SalesStats } from '@/hooks/useSalesData';
+import type { SalesStats } from '@/hooks/useSalesData';
 
 export const getSalesMetricCards = (stats: SalesStats) => [
   {
-    title: 'Active Deals',
-    value: stats.activeDeals,
-    description: 'In your pipeline',
-    icon: Target,
-    color: 'text-muted-foreground'
-  },
-  {
-    title: 'Monthly Revenue',
-    value: `$${(stats.monthlyRevenue / 1000).toFixed(0)}K`,
-    description: '+18% from last month',
+    title: 'Total Revenue',
+    value: `$${(stats.totalRevenue / 1000000).toFixed(2)}M`,
+    description: `+${stats.monthlyGrowth}% from last month`,
     icon: DollarSign,
     color: 'text-muted-foreground',
-    descriptionColor: 'text-success'
+    path: '/workflow/revenue?metric=Total Revenue&department=sales',
+    descriptionColor: 'text-primary'
   },
   {
-    title: 'Quota Progress',
-    value: `${stats.quotaProgress}%`,
-    description: null,
-    icon: BarChart,
+    title: 'Active Deals',
+    value: stats.activeDeals,
+    description: 'In pipeline',
+    icon: Target,
     color: 'text-muted-foreground',
-    progress: stats.quotaProgress
+    path: '/workflow/deals?metric=Active Deals&department=sales'
   },
   {
-    title: 'Closed This Month',
-    value: stats.closedDeals,
-    description: `${stats.activitiesThisWeek} activities this week`,
-    icon: CheckCircle,
-    color: 'text-muted-foreground'
+    title: 'Total Customers',
+    value: stats.customerCount,
+    description: 'Active accounts',
+    icon: Users,
+    color: 'text-muted-foreground',
+    path: '/workflow/customers?metric=Total Customers&department=sales'
+  },
+  {
+    title: 'Conversion Rate',
+    value: `${stats.conversionRate}%`,
+    description: null,
+    icon: TrendingUp,
+    color: 'text-muted-foreground',
+    path: '/workflow/conversion?metric=Conversion Rate&department=sales',
+    progress: stats.conversionRate
   }
 ];
 
