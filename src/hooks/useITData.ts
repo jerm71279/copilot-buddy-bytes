@@ -4,11 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { useDemoMode } from "./useDemoMode";
 import type { MCPServer } from "./useMCPServers";
 
-interface OperationsStats {
-  workflows: number;
-  mlInsights: number;
-  efficiency: number;
-  bottlenecks: number;
+interface ITStats {
+  integrations: number;
+  activeIntegrations: number;
+  mcpServers: number;
+  anomalies: number;
+  systemHealth: number;
 }
 
 interface UserProfile {
@@ -17,16 +18,17 @@ interface UserProfile {
   customer_id?: string;
 }
 
-export function useOperationsData() {
+export function useITData() {
   const navigate = useNavigate();
   const isPreviewMode = useDemoMode();
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [stats, setStats] = useState<OperationsStats>({
-    workflows: 0,
-    mlInsights: 0,
-    efficiency: 87,
-    bottlenecks: 3
+  const [stats, setStats] = useState<ITStats>({
+    integrations: 0,
+    activeIntegrations: 0,
+    mcpServers: 0,
+    anomalies: 0,
+    systemHealth: 98.5
   });
   const [mcpServers, setMcpServers] = useState<MCPServer[]>([]);
 
@@ -40,7 +42,7 @@ export function useOperationsData() {
       const { data } = await supabase
         .from("mcp_servers")
         .select("id, server_name, server_type")
-        .eq("server_type", "operations")
+        .eq("server_type", "it")
         .eq("status", "active")
         .order("server_name");
       
@@ -52,7 +54,7 @@ export function useOperationsData() {
 
   const checkAccess = async () => {
     if (isPreviewMode) {
-      setUserProfile({ full_name: "Demo User", department: "operations" });
+      setUserProfile({ full_name: "Demo User", department: "it" });
       await fetchStats();
       setIsLoading(false);
       return;
@@ -83,16 +85,20 @@ export function useOperationsData() {
 
   const fetchStats = async () => {
     try {
-      const [workflows, insights] = await Promise.all([
-        supabase.from("workflows").select("*", { count: "exact", head: true }),
-        supabase.from("ml_insights").select("*", { count: "exact", head: true })
+      const [integrations, mcpServers, anomalies] = await Promise.all([
+        supabase.from("integrations").select("*"),
+        supabase.from("mcp_servers").select("*", { count: "exact", head: true }),
+        supabase.from("anomaly_detections").select("*", { count: "exact", head: true })
       ]);
 
+      const activeIntegrations = integrations.data?.filter(i => i.status === "active").length || 0;
+
       setStats({
-        workflows: workflows.count || 0,
-        mlInsights: insights.count || 0,
-        efficiency: 87,
-        bottlenecks: 3
+        integrations: integrations.data?.length || 0,
+        activeIntegrations,
+        mcpServers: mcpServers.count || 0,
+        anomalies: anomalies.count || 0,
+        systemHealth: 98.5
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
@@ -116,3 +122,5 @@ export function useOperationsData() {
     handleSignOut
   };
 }
+
+export type { ITStats, UserProfile };
