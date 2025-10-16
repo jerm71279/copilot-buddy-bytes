@@ -46,7 +46,7 @@ const ChangeManagementDetail = () => {
         .from("change_requests")
         .select("*")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (changeError) throw changeError;
       setChange(changeData);
@@ -68,7 +68,7 @@ const ChangeManagementDetail = () => {
           .from("change_requests")
           .select("id, change_number, title, change_status")
           .eq("id", changeData.related_change_id)
-          .single();
+          .maybeSingle();
         
         if (relatedData) {
           setRelatedChange(relatedData);

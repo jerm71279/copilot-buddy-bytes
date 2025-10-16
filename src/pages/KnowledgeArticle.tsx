@@ -28,7 +28,7 @@ export default function KnowledgeArticle() {
         .from("knowledge_articles")
         .select("*")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       setArticle(data);

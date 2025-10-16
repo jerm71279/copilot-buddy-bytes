@@ -68,7 +68,7 @@ const CMDBEditItem = () => {
         .from("configuration_items")
         .select("*")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 

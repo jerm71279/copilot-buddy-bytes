@@ -81,7 +81,7 @@ const CMDBItemDetail = () => {
         .from("configuration_items")
         .select("*")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (ciError) throw ciError;
       setCi(ciData);

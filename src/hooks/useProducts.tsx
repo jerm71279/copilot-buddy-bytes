@@ -74,7 +74,7 @@ export const useProducts = () => {
         .update(updates)
         .eq('id', id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       toast.success('Product updated successfully');
