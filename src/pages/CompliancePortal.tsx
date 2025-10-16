@@ -1,115 +1,20 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { Shield, FileCheck, AlertTriangle, TrendingUp, Plus } from "lucide-react";
+import { Shield, FileCheck, AlertTriangle, Plus } from "lucide-react";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
-
-interface Framework {
-  id: string;
-  framework_name: string;
-  framework_code: string;
-  description: string | null;
-  industry: string;
-}
-
-interface EvidenceFile {
-  id: string;
-  file_name: string;
-  framework_id: string | null;
-  control_id: string | null;
-  uploaded_at: string;
-}
-
-interface ComplianceReport {
-  id: string;
-  report_name: string;
-  framework: string;
-  status: string;
-  generated_at: string;
-  evidence_count: number;
-}
+import { useComplianceData } from "@/hooks/useComplianceData";
+import { complianceStatCards, getStatusColor } from "@/lib/complianceConfig";
 
 export default function CompliancePortal() {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [frameworks, setFrameworks] = useState<Framework[]>([]);
-  const [evidenceFiles, setEvidenceFiles] = useState<EvidenceFile[]>([]);
-  const [reports, setReports] = useState<ComplianceReport[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [stats, setStats] = useState({
-    frameworks: 0,
-    evidenceFiles: 0,
-    reports: 0,
-    complianceScore: 0
-  });
-
-  useEffect(() => {
-    checkAuthAndLoad();
-  }, []);
-
-  const checkAuthAndLoad = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-      return;
-    }
-    await loadComplianceData();
-  };
-
-  const loadComplianceData = async () => {
-    try {
-      const [frameworksRes, evidenceRes, reportsRes] = await Promise.all([
-        supabase.from('compliance_frameworks').select('*').eq('is_active', true),
-        supabase.from('evidence_files').select('*'),
-        supabase.from('compliance_reports').select('*').order('generated_at', { ascending: false }).limit(10)
-      ]);
-
-      if (frameworksRes.error) throw frameworksRes.error;
-      if (evidenceRes.error) throw evidenceRes.error;
-      if (reportsRes.error) throw reportsRes.error;
-
-      setFrameworks(frameworksRes.data || []);
-      setEvidenceFiles(evidenceRes.data || []);
-      setReports(reportsRes.data || []);
-
-      setStats({
-        frameworks: frameworksRes.data?.length || 0,
-        evidenceFiles: evidenceRes.data?.length || 0,
-        reports: reportsRes.data?.length || 0,
-        complianceScore: 85 // Calculate based on controls/evidence
-      });
-    } catch (error) {
-      console.error('Error loading compliance data:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load compliance data",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      draft: "secondary",
-      in_review: "default",
-      approved: "default",
-      published: "default"
-    };
-    return colors[status] || "secondary";
-  };
+  const { frameworks, evidenceFiles, reports, isLoading, stats } = useComplianceData();
 
   return (
     <div className="min-h-screen bg-background">
@@ -239,7 +144,7 @@ export default function CompliancePortal() {
                             {report.framework} • {new Date(report.generated_at).toLocaleDateString()} • {report.evidence_count} evidence files
                           </p>
                         </div>
-                        <Badge variant={getStatusColor(report.status) as any}>
+                        <Badge variant={getStatusColor(report.status)}>
                           {report.status}
                         </Badge>
                       </div>
@@ -253,54 +158,28 @@ export default function CompliancePortal() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Active Frameworks
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.frameworks}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <FileCheck className="h-4 w-4" />
-                Evidence Files
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.evidenceFiles}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Compliance Score
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-[hsl(var(--success))]">{stats.complianceScore}%</div>
-              <Progress value={stats.complianceScore} className="mt-2" />
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4" />
-                Reports
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.reports}</div>
-            </CardContent>
-          </Card>
+          {complianceStatCards.map((card) => {
+            const Icon = card.icon;
+            const value = card.getValue(stats);
+            return (
+              <Card key={card.id}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Icon className="h-4 w-4" />
+                    {card.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className={`text-2xl font-bold ${card.className || ''}`}>
+                    {value}
+                  </div>
+                  {card.id === 'score' && typeof value === 'string' && (
+                    <Progress value={stats.complianceScore} className="mt-2" />
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 mt-6">
