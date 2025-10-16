@@ -53,6 +53,381 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_coordination_messages: {
+        Row: {
+          completed_at: string | null
+          content: Json
+          created_at: string
+          customer_id: string
+          from_department: string
+          id: string
+          message_type: string
+          parent_message_id: string | null
+          priority: number | null
+          processed_at: string | null
+          response_data: Json | null
+          status: string
+          subject: string
+          to_department: string
+        }
+        Insert: {
+          completed_at?: string | null
+          content: Json
+          created_at?: string
+          customer_id: string
+          from_department: string
+          id?: string
+          message_type: string
+          parent_message_id?: string | null
+          priority?: number | null
+          processed_at?: string | null
+          response_data?: Json | null
+          status?: string
+          subject: string
+          to_department: string
+        }
+        Update: {
+          completed_at?: string | null
+          content?: Json
+          created_at?: string
+          customer_id?: string
+          from_department?: string
+          id?: string
+          message_type?: string
+          parent_message_id?: string | null
+          priority?: number | null
+          processed_at?: string | null
+          response_data?: Json | null
+          status?: string
+          subject?: string
+          to_department?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_coordination_messages_parent_message_id_fkey"
+            columns: ["parent_message_id"]
+            isOneToOne: false
+            referencedRelation: "agent_coordination_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_agent_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_type: string
+          created_at: string
+          customer_id: string
+          department: string
+          description: string
+          detected_by_task_id: string | null
+          id: string
+          recommended_actions: Json | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          severity: string
+          status: string
+          supporting_data: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type: string
+          created_at?: string
+          customer_id: string
+          department: string
+          description: string
+          detected_by_task_id?: string | null
+          id?: string
+          recommended_actions?: Json | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          severity: string
+          status?: string
+          supporting_data?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type?: string
+          created_at?: string
+          customer_id?: string
+          department?: string
+          description?: string
+          detected_by_task_id?: string | null
+          id?: string
+          recommended_actions?: Json | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          supporting_data?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_agent_alerts_detected_by_task_id_fkey"
+            columns: ["detected_by_task_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agent_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_agent_learning: {
+        Row: {
+          applied_count: number | null
+          confidence_score: number | null
+          created_at: string
+          customer_id: string
+          department: string
+          id: string
+          last_applied_at: string | null
+          learned_from: string
+          learning_type: string
+          lesson: Json
+          success_rate: number | null
+        }
+        Insert: {
+          applied_count?: number | null
+          confidence_score?: number | null
+          created_at?: string
+          customer_id: string
+          department: string
+          id?: string
+          last_applied_at?: string | null
+          learned_from: string
+          learning_type: string
+          lesson: Json
+          success_rate?: number | null
+        }
+        Update: {
+          applied_count?: number | null
+          confidence_score?: number | null
+          created_at?: string
+          customer_id?: string
+          department?: string
+          id?: string
+          last_applied_at?: string | null
+          learned_from?: string
+          learning_type?: string
+          lesson?: Json
+          success_rate?: number | null
+        }
+        Relationships: []
+      }
+      ai_agent_memory: {
+        Row: {
+          access_count: number | null
+          created_at: string
+          customer_id: string
+          department: string
+          expires_at: string | null
+          id: string
+          importance_score: number | null
+          last_accessed_at: string | null
+          memory_key: string
+          memory_type: string
+          memory_value: Json
+          updated_at: string
+        }
+        Insert: {
+          access_count?: number | null
+          created_at?: string
+          customer_id: string
+          department: string
+          expires_at?: string | null
+          id?: string
+          importance_score?: number | null
+          last_accessed_at?: string | null
+          memory_key: string
+          memory_type: string
+          memory_value: Json
+          updated_at?: string
+        }
+        Update: {
+          access_count?: number | null
+          created_at?: string
+          customer_id?: string
+          department?: string
+          expires_at?: string | null
+          id?: string
+          importance_score?: number | null
+          last_accessed_at?: string | null
+          memory_key?: string
+          memory_type?: string
+          memory_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_agent_state: {
+        Row: {
+          agent_name: string
+          configuration: Json | null
+          created_at: string
+          current_task: string | null
+          customer_id: string
+          department: string
+          error_count: number | null
+          id: string
+          last_action_at: string | null
+          metrics: Json | null
+          next_scheduled_action: string | null
+          status: string
+          success_count: number | null
+          updated_at: string
+        }
+        Insert: {
+          agent_name: string
+          configuration?: Json | null
+          created_at?: string
+          current_task?: string | null
+          customer_id: string
+          department: string
+          error_count?: number | null
+          id?: string
+          last_action_at?: string | null
+          metrics?: Json | null
+          next_scheduled_action?: string | null
+          status?: string
+          success_count?: number | null
+          updated_at?: string
+        }
+        Update: {
+          agent_name?: string
+          configuration?: Json | null
+          created_at?: string
+          current_task?: string | null
+          customer_id?: string
+          department?: string
+          error_count?: number | null
+          id?: string
+          last_action_at?: string | null
+          metrics?: Json | null
+          next_scheduled_action?: string | null
+          status?: string
+          success_count?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_agent_task_executions: {
+        Row: {
+          actions_taken: Json | null
+          customer_id: string
+          department: string
+          error_message: string | null
+          executed_at: string
+          execution_time_ms: number | null
+          id: string
+          metrics_captured: Json | null
+          results: Json | null
+          status: string
+          task_id: string
+        }
+        Insert: {
+          actions_taken?: Json | null
+          customer_id: string
+          department: string
+          error_message?: string | null
+          executed_at?: string
+          execution_time_ms?: number | null
+          id?: string
+          metrics_captured?: Json | null
+          results?: Json | null
+          status: string
+          task_id: string
+        }
+        Update: {
+          actions_taken?: Json | null
+          customer_id?: string
+          department?: string
+          error_message?: string | null
+          executed_at?: string
+          execution_time_ms?: number | null
+          id?: string
+          metrics_captured?: Json | null
+          results?: Json | null
+          status?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_agent_task_executions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agent_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_agent_tasks: {
+        Row: {
+          avg_execution_time_ms: number | null
+          created_at: string
+          customer_id: string
+          department: string
+          execution_count: number | null
+          failure_count: number | null
+          id: string
+          is_active: boolean | null
+          last_executed_at: string | null
+          next_execution_at: string | null
+          priority: number | null
+          schedule_cron: string | null
+          success_count: number | null
+          task_config: Json
+          task_name: string
+          task_type: string
+          updated_at: string
+        }
+        Insert: {
+          avg_execution_time_ms?: number | null
+          created_at?: string
+          customer_id: string
+          department: string
+          execution_count?: number | null
+          failure_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_executed_at?: string | null
+          next_execution_at?: string | null
+          priority?: number | null
+          schedule_cron?: string | null
+          success_count?: number | null
+          task_config: Json
+          task_name: string
+          task_type: string
+          updated_at?: string
+        }
+        Update: {
+          avg_execution_time_ms?: number | null
+          created_at?: string
+          customer_id?: string
+          department?: string
+          execution_count?: number | null
+          failure_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_executed_at?: string | null
+          next_execution_at?: string | null
+          priority?: number | null
+          schedule_cron?: string | null
+          success_count?: number | null
+          task_config?: Json
+          task_name?: string
+          task_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_interactions: {
         Row: {
           ai_response: string
