@@ -139,8 +139,8 @@ const Auth = () => {
       }
     }
 
-    // Default to home page
-    navigate("/");
+    // Default to portal for users without specific department
+    navigate("/portal");
   };
 
   const handlePasswordReset = async (e: React.FormEvent) => {
