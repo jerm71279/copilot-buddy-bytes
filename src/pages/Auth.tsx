@@ -261,12 +261,11 @@ const Auth = () => {
 
       const redirectUrl = `${window.location.origin}/`;
       
+      // Hardcoded company name for internal use
+      const companyName = "OBERACONNECT, LLC";
+      
       // Sanitize metadata to prevent hidden null/control characters from causing DB errors
       const safeFullName = validatedData.fullName
-        .replace(/\u0000/g, "")
-        .replace(/[\x00-\x1F\x7F]/g, "")
-        .trim();
-      const safeCompany = validatedData.companyName
         .replace(/\u0000/g, "")
         .replace(/[\x00-\x1F\x7F]/g, "")
         .trim();
@@ -287,26 +286,38 @@ const Auth = () => {
       }
       
       if (data.user) {
-        // Create customer record
-        const { data: customerData, error: customerError } = await supabase
+        // Find or create OBERACONNECT customer
+        const { data: existingCustomer } = await supabase
           .from("customers")
-          .insert({
-            user_id: data.user.id,
-            contact_name: safeFullName,
-            company_name: safeCompany,
-            email: validatedData.email,
-          })
-          .select()
+          .select("id")
+          .eq("company_name", companyName)
           .maybeSingle();
 
-        if (customerError || !customerData) throw customerError || new Error("Failed to create customer");
+        let customerId: string;
 
-        // Create customer customization
-        if (customerData) {
-        const { error: customizationError } = await supabase
+        if (existingCustomer) {
+          customerId = existingCustomer.id;
+        } else {
+          // Create customer record for OBERACONNECT
+          const { data: customerData, error: customerError } = await supabase
+            .from("customers")
+            .insert({
+              user_id: data.user.id,
+              contact_name: safeFullName,
+              company_name: companyName,
+              email: validatedData.email,
+            })
+            .select()
+            .maybeSingle();
+
+          if (customerError || !customerData) throw customerError || new Error("Failed to create customer");
+          customerId = customerData.id;
+
+          // Create customer customization
+          const { error: customizationError } = await supabase
             .from("customer_customizations")
             .insert({
-              customer_id: customerData.id,
+              customer_id: customerId,
               enabled_features: ["dashboard", "integrations", "compliance", "ml_insights"],
               default_dashboard: "executive",
             });
@@ -317,26 +328,49 @@ const Auth = () => {
         // Link profile to customer (profile is auto-created by backend trigger)
         const { error: profileUpdateError } = await supabase
           .from("user_profiles")
-          .update({ customer_id: customerData.id })
+          .update({ customer_id: customerId })
           .eq("user_id", data.user.id);
 
         if (profileUpdateError) throw profileUpdateError;
 
+        // Auto-trigger employee onboarding for OBERACONNECT employees
+        const { data: templateData } = await supabase
+          .from("employee_onboarding_templates")
+          .select("id")
+          .eq("customer_id", customerId)
+          .eq("is_active", true)
+          .maybeSingle();
+
+        if (templateData) {
+          // Create employee onboarding record
+          await supabase
+            .from("employee_onboardings")
+            .insert({
+              customer_id: customerId,
+              template_id: templateData.id,
+              employee_name: safeFullName,
+              employee_email: validatedData.email,
+              start_date: new Date().toISOString().split('T')[0],
+              status: "in_progress",
+              created_by: data.user.id,
+            });
+        }
+
         // Log successful signup
         await supabase.from('audit_logs').insert({
           user_id: data.user.id,
-          customer_id: customerData.id,
+          customer_id: customerId,
           system_name: 'auth',
           action_type: 'signup_success',
           action_details: { 
             email: validatedData.email,
-            company_name: safeCompany,
+            company_name: companyName,
             timestamp: new Date().toISOString() 
           },
           compliance_tags: ['security', 'authentication']
         });
 
-        toast.success("Account created successfully! Redirecting to your dashboard...");
+        toast.success("Account created successfully! Your onboarding has been initiated.");
       }
     } catch (error: any) {
       if (error instanceof z.ZodError) {
