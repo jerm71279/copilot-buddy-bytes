@@ -28,7 +28,7 @@ interface Onboarding {
   address_line1: string | null;
   address_line2: string | null;
   city: string | null;
-  state_province: string | null;
+  state: string | null;
   postal_code: string | null;
   country: string | null;
   manager_id: string | null;
@@ -392,9 +392,9 @@ export default function EmployeeOnboardingDetail() {
               <div className="space-y-1">
                 {onboarding.address_line1 && <p className="font-medium">{onboarding.address_line1}</p>}
                 {onboarding.address_line2 && <p className="font-medium">{onboarding.address_line2}</p>}
-                {(onboarding.city || onboarding.state_province || onboarding.postal_code) && (
+                {(onboarding.city || onboarding.state || onboarding.postal_code) && (
                   <p className="text-muted-foreground">
-                    {[onboarding.city, onboarding.state_province, onboarding.postal_code].filter(Boolean).join(', ')}
+                    {[onboarding.city, onboarding.state, onboarding.postal_code].filter(Boolean).join(', ')}
                   </p>
                 )}
                 {onboarding.country && <p className="text-muted-foreground">{onboarding.country}</p>}

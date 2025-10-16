@@ -55,7 +55,7 @@ export default function EmployeeOnboardingNew() {
     address_line1: "",
     address_line2: "",
     city: "",
-    state_province: "",
+    state: "",
     postal_code: "",
     country: "",
     manager_id: "",
@@ -162,7 +162,7 @@ export default function EmployeeOnboardingNew() {
           address_line1: formData.address_line1 || null,
           address_line2: formData.address_line2 || null,
           city: formData.city || null,
-          state_province: formData.state_province || null,
+          state: formData.state || null,
           postal_code: formData.postal_code || null,
           country: formData.country || null,
           manager_id: formData.manager_id || null,
@@ -439,11 +439,11 @@ export default function EmployeeOnboardingNew() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="state_province">State/Province</Label>
+                    <Label htmlFor="state">State/Province</Label>
                     <Input
-                      id="state_province"
-                      value={formData.state_province}
-                      onChange={(e) => setFormData({ ...formData, state_province: e.target.value })}
+                      id="state"
+                      value={formData.state}
+                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                       placeholder="State or Province"
                     />
                   </div>

@@ -24,6 +24,25 @@ Added automatic data refresh to `EmployeeOnboardingDashboard.tsx`:
 
 ---
 
+## Employee Onboarding Creation Error Fix
+
+**Implementation Date**: 2025-10-16
+**Bug Fix**: Inserting into `employee_onboardings` failed due to non-existent `state_province` column.
+
+### Solution
+- Updated HR onboarding pages to use `state` (DB column) instead of `state_province`
+- Adjusted create, edit, and detail views to read/write `state`
+
+### Files Modified
+- `src/pages/hr/EmployeeOnboardingNew.tsx`
+- `src/pages/hr/EmployeeOnboardingEdit.tsx`
+- `src/pages/hr/EmployeeOnboardingDetail.tsx`
+
+### Impact
+- Onboarding creation and updates now succeed
+- Address displays correctly across views
+
+---
 ## Design System Compliance - Batch 17 (Latest - FINAL)
 
 **Implementation Date**: 2025-10-15
