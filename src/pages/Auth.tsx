@@ -266,54 +266,24 @@ const Auth = () => {
         return;
       }
 
-      // Use centralized onboarding helpers
-      const { customerId, error: customerError } = await getOrCreateDefaultCustomer();
+      // Call edge function to complete signup with service role privileges
+      const { data: signupResult, error: signupCompleteError } = await supabase.functions.invoke(
+        'complete-user-signup',
+        {
+          body: {
+            userId: signUpResult.userId,
+            fullName: validatedData.fullName,
+            emailUsername: validatedData.emailUsername
+          }
+        }
+      );
 
-      if (customerError || !customerId) {
-        console.error("Failed to get/create customer:", customerError);
-        toast.error("Account created but failed to complete setup. Please contact support.");
+      if (signupCompleteError || !signupResult?.success) {
+        console.error("Failed to complete signup:", signupCompleteError);
+        toast.error("Account created but setup incomplete. Please contact support or try logging in.");
         setIsLoading(false);
         return;
       }
-
-      // Link user to customer
-      const { error: profileError } = await linkUserToCustomer(signUpResult.userId, customerId);
-
-      if (profileError) {
-        console.error("Failed to link user to customer:", profileError);
-        toast.error("Account created but failed to complete setup. Please contact support.");
-        setIsLoading(false);
-        return;
-      }
-
-      // Create onboarding record
-      const { error: onboardingError } = await createEmployeeOnboarding({
-        userId: signUpResult.userId,
-        customerId,
-        fullName: validatedData.fullName,
-        emailUsername: validatedData.emailUsername
-      });
-
-      if (onboardingError) {
-        console.error("Failed to create onboarding record:", onboardingError);
-        toast.error("Account created but failed to create onboarding. Please contact support.");
-        setIsLoading(false);
-        return;
-      }
-
-      // Log successful signup
-      const fullEmail = `${validatedData.emailUsername.toLowerCase()}@oberaconnect.com`;
-      await supabase.from('audit_logs').insert({
-        user_id: signUpResult.userId,
-        customer_id: customerId,
-        system_name: 'auth',
-        action_type: 'signup_success',
-        action_details: { 
-          email: fullEmail,
-          timestamp: new Date().toISOString()
-        },
-        compliance_tags: ['security', 'authentication']
-      });
 
       toast.success("Account created successfully! Your onboarding has been initiated.");
     } catch (error: any) {
