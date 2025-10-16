@@ -1,22 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 import { Users } from "lucide-react";
-import MCPServerStatus from "@/components/MCPServerStatus";
-import { MCPServerConfig } from "@/components/MCPServerConfig";
-import { AIMCPGenerator } from "@/components/AIMCPGenerator";
-import MCPExecutionLogs from "@/components/MCPExecutionLogs";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
-import { AutonomousAgentMonitor } from "@/components/AutonomousAgentMonitor";
-import { AIAgentConfiguration } from "@/components/AIAgentConfiguration";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { useAdminData } from "@/hooks/useAdminData";
-import { getQuickActionCards, getStatusBadgeVariant } from "@/lib/adminConfig";
+import { getQuickActionCards } from "@/lib/adminConfig";
+import { AdminActiveView } from "@/components/admin/AdminActiveView";
+import { AdminQuickActions } from "@/components/admin/AdminQuickActions";
+import { CustomerManagementTable } from "@/components/admin/CustomerManagementTable";
 
 /**
  * Admin Dashboard Data Flow
@@ -94,122 +87,16 @@ const AdminDashboard = () => {
           <DashboardSettingsMenu dashboardName="Admin" />
         </div>
 
-        {/* Active View Content */}
-        {activeView && (
-          <Card className="mb-6">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>
-                  {activeView === 'mcp-status' && 'MCP Server Status'}
-                  {activeView === 'mcp-logs' && 'Execution Logs'}
-                  {activeView === 'mcp-configure' && 'Configure New Server'}
-                  {activeView === 'mcp-ai' && 'AI MCP Generator'}
-                  {activeView === 'ai-agents' && 'Autonomous AI Agents'}
-                  {activeView === 'ai-config' && 'AI Agent Configuration'}
-                </CardTitle>
-                <Button variant="ghost" size="sm" onClick={() => setActiveView(null)}>
-                  Close
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {activeView === 'mcp-status' && <MCPServerStatus customerId={userCustomerId} />}
-              {activeView === 'mcp-logs' && <MCPExecutionLogs customerId={userCustomerId} />}
-              {activeView === 'mcp-configure' && <MCPServerConfig customerId={userCustomerId} />}
-              {activeView === 'mcp-ai' && (
-                <AIMCPGenerator 
-                  customerId={userCustomerId}
-                  department="admin"
-                  onServersCreated={() => {
-                    toast.success("MCP servers created successfully!");
-                    setActiveView('mcp-status');
-                  }}
-                />
-              )}
-              {activeView === 'ai-agents' && <AutonomousAgentMonitor />}
-              {activeView === 'ai-config' && <AIAgentConfiguration />}
-            </CardContent>
-          </Card>
-        )}
+        <AdminActiveView 
+          activeView={activeView as any}
+          userCustomerId={userCustomerId}
+          onClose={() => setActiveView(null)}
+          onServersCreated={() => setActiveView('mcp-status')}
+        />
         
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {quickActionCards.map((card) => {
-            const Icon = card.icon;
-            return (
-              <Card 
-                key={card.id}
-                className="cursor-pointer hover:shadow-lg transition-shadow" 
-                onClick={card.onClick}
-              >
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Icon className="h-5 w-5" />
-                    {card.title}
-                  </CardTitle>
-                  <CardDescription>{card.description}</CardDescription>
-                </CardHeader>
-              </Card>
-            );
-          })}
-        </div>
+        <AdminQuickActions quickActionCards={quickActionCards} />
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Customer Management</CardTitle>
-            <CardDescription>
-              View and manage all customer accounts
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="text-center py-8">Loading customers...</div>
-            ) : customers.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                No customers yet. They will appear here once they sign up.
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Company</TableHead>
-                      <TableHead>Contact</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Plan</TableHead>
-                      <TableHead>Joined</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {customers.map((customer) => (
-                      <TableRow key={customer.id}>
-                        <TableCell className="font-medium">
-                          {customer.company_name}
-                        </TableCell>
-                        <TableCell>{customer.contact_name}</TableCell>
-                        <TableCell>{customer.email}</TableCell>
-                        <TableCell>{customer.phone || "—"}</TableCell>
-                        <TableCell>
-                          <Badge variant={getStatusBadgeVariant(customer.status)}>
-                            {customer.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{customer.plan_type}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          {new Date(customer.created_at).toLocaleDateString()}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <CustomerManagementTable customers={customers} isLoading={isLoading} />
 
         <DepartmentAIAssistant department="admin" departmentLabel="Administration" />
       </main>
