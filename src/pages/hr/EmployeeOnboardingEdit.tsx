@@ -114,15 +114,35 @@ export default function EmployeeOnboardingEdit() {
 
   const loadUsers = async () => {
     try {
-      const { data, error } = await supabase
+      // Get users with manager-level positions from employee_onboardings
+      const { data: onboardingData, error: onboardingError } = await supabase
+        .from('employee_onboardings')
+        .select('employee_name, employee_email, job_title')
+        .not('job_title', 'is', null);
+
+      if (onboardingError) throw onboardingError;
+
+      // Filter for manager-level titles
+      const managerKeywords = ['Manager', 'Director', 'VP', 'Vice President', 'Executive', 'Chief', 'Head', 'Lead', 'Supervisor'];
+      const managers = (onboardingData || []).filter((emp: any) => 
+        managerKeywords.some(keyword => 
+          emp.job_title?.toLowerCase().includes(keyword.toLowerCase())
+        )
+      );
+
+      // Get corresponding user profiles
+      const managerEmails = managers.map((m: any) => m.employee_email);
+      
+      const { data: profileData, error: profileError } = await supabase
         .from('user_profiles')
         .select('user_id, full_name')
+        .in('user_id', managerEmails.length > 0 ? managerEmails : ['00000000-0000-0000-0000-000000000000'])
         .order('full_name');
 
-      if (error) throw error;
-      setUsers(data || []);
+      if (profileError) throw profileError;
+      setUsers(profileData || []);
     } catch (error) {
-      console.error('Error loading users:', error);
+      console.error('Error loading managers:', error);
     }
   };
 
