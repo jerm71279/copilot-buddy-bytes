@@ -48,14 +48,44 @@ Deno.serve(async (req) => {
       );
     }
 
-    const requestData = await req.json() as SyncRequest;
-
-    // Validate input
-    if (!requestData.customer_id || !requestData.repository_type) {
+    // Validate request body
+    const rawBody = await req.json();
+    if (!rawBody || typeof rawBody !== 'object') {
       return new Response(
-        JSON.stringify({ error: 'customer_id and repository_type are required' }),
+        JSON.stringify({ error: 'Invalid request body' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    const requestData = rawBody as SyncRequest;
+
+    // Validate customer_id (UUID format)
+    const customer_id = String(requestData.customer_id || '').trim();
+    if (!customer_id || customer_id.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'customer_id is required and must be valid' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate repository_type
+    const validTypes = ['sharepoint_site', 'teams_channel', 'onedrive'];
+    if (!requestData.repository_type || !validTypes.includes(requestData.repository_type)) {
+      return new Response(
+        JSON.stringify({ error: 'repository_type must be sharepoint_site, teams_channel, or onedrive' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate optional repository_id
+    if (requestData.repository_id) {
+      const repository_id = String(requestData.repository_id).trim();
+      if (repository_id.length > 100) {
+        return new Response(
+          JSON.stringify({ error: 'repository_id must be less than 100 characters' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
     // Get Microsoft access token
@@ -130,13 +160,14 @@ Deno.serve(async (req) => {
 
     } catch (syncError) {
       console.error('Sync error:', syncError);
+      const errorMessage = syncError instanceof Error ? syncError.message : 'Unknown sync error';
       
       // Update sync record with failure
       await supabase
         .from('file_sync_history')
         .update({
           sync_status: 'failed',
-          errors: [{ message: syncError.message, timestamp: new Date().toISOString() }],
+          errors: [{ message: errorMessage, timestamp: new Date().toISOString() }],
           completed_at: new Date().toISOString()
         })
         .eq('id', syncRecord.id);
@@ -146,8 +177,9 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Function error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to sync files';
     return new Response(
-      JSON.stringify({ error: error.message || 'Failed to sync files' }),
+      JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

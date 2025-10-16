@@ -43,10 +43,20 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { action, ...requestData } = await req.json();
+    // Validate request body
+    const rawBody = await req.json();
+    if (!rawBody || typeof rawBody !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { action, ...requestData } = rawBody;
 
     // Validate action
-    if (!action || !['grant', 'revoke', 'list'].includes(action)) {
+    const validActions = ['grant', 'revoke', 'list'];
+    if (!action || typeof action !== 'string' || !validActions.includes(action)) {
       return new Response(
         JSON.stringify({ error: 'Invalid action. Must be grant, revoke, or list' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -88,8 +98,9 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Function error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to manage permissions';
     return new Response(
-      JSON.stringify({ error: error.message || 'Failed to manage permissions' }),
+      JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
@@ -101,20 +112,60 @@ async function grantPermission(
   grantedBy: string,
   supabase: any
 ) {
-  // Validate input
-  if (!request.file_id || !request.permission_level) {
-    throw new Error('file_id and permission_level are required');
+  // Validate file_id (UUID format)
+  const file_id = String(request.file_id || '').trim();
+  if (!file_id || file_id.length > 100) {
+    throw new Error('file_id is required and must be valid');
   }
 
+  // Validate permission_level
+  const validLevels = ['read', 'write', 'admin', 'owner'];
+  if (!request.permission_level || !validLevels.includes(request.permission_level)) {
+    throw new Error('permission_level must be read, write, admin, or owner');
+  }
+
+  // Validate at least one target is provided
   if (!request.user_id && !request.role_id && !request.department) {
     throw new Error('At least one of user_id, role_id, or department must be provided');
+  }
+
+  // Validate user_id if provided
+  if (request.user_id) {
+    const user_id = String(request.user_id).trim();
+    if (user_id.length > 100) {
+      throw new Error('user_id must be less than 100 characters');
+    }
+  }
+
+  // Validate role_id if provided
+  if (request.role_id) {
+    const role_id = String(request.role_id).trim();
+    if (role_id.length > 100) {
+      throw new Error('role_id must be less than 100 characters');
+    }
+  }
+
+  // Validate department if provided
+  if (request.department) {
+    const department = String(request.department).trim();
+    if (department.length > 100) {
+      throw new Error('department must be less than 100 characters');
+    }
+  }
+
+  // Validate expires_at if provided (ISO date string)
+  if (request.expires_at) {
+    const expires_at = String(request.expires_at).trim();
+    if (expires_at.length > 50 || !expires_at.match(/^\d{4}-\d{2}-\d{2}/)) {
+      throw new Error('expires_at must be a valid ISO date string');
+    }
   }
 
   // Get file to verify it exists
   const { data: file, error: fileError } = await supabase
     .from('file_metadata')
     .select('id, customer_id')
-    .eq('id', request.file_id)
+    .eq('id', file_id)
     .maybeSingle();
 
   if (fileError || !file) {
@@ -129,7 +180,7 @@ async function grantPermission(
   let query = supabase
     .from('file_permissions')
     .select('id')
-    .eq('file_id', request.file_id);
+    .eq('file_id', file_id);
 
   if (request.user_id) query = query.eq('user_id', request.user_id);
   if (request.role_id) query = query.eq('role_id', request.role_id);
@@ -139,7 +190,7 @@ async function grantPermission(
 
   const permissionData = {
     customer_id: customerId,
-    file_id: request.file_id,
+    file_id: file_id,
     user_id: request.user_id,
     role_id: request.role_id,
     department: request.department,
@@ -174,14 +225,16 @@ async function grantPermission(
 }
 
 async function revokePermission(permissionId: string, supabase: any) {
-  if (!permissionId) {
-    throw new Error('permission_id is required');
+  // Validate permission_id (UUID format)
+  const permission_id = String(permissionId || '').trim();
+  if (!permission_id || permission_id.length > 100) {
+    throw new Error('permission_id is required and must be valid');
   }
 
   const { error } = await supabase
     .from('file_permissions')
     .delete()
-    .eq('id', permissionId);
+    .eq('id', permission_id);
 
   if (error) throw error;
 
@@ -189,8 +242,10 @@ async function revokePermission(permissionId: string, supabase: any) {
 }
 
 async function listPermissions(fileId: string, supabase: any) {
-  if (!fileId) {
-    throw new Error('file_id is required');
+  // Validate file_id (UUID format)
+  const file_id = String(fileId || '').trim();
+  if (!file_id || file_id.length > 100) {
+    throw new Error('file_id is required and must be valid');
   }
 
   const { data, error } = await supabase
@@ -200,7 +255,7 @@ async function listPermissions(fileId: string, supabase: any) {
       user_profiles!file_permissions_user_id_fkey(user_id, full_name),
       roles!file_permissions_role_id_fkey(id, name)
     `)
-    .eq('file_id', fileId)
+    .eq('file_id', file_id)
     .order('created_at', { ascending: false });
 
   if (error) throw error;
