@@ -115,8 +115,8 @@ const portals: Portal[] = [
     path: "/compliance",
     children: [
       { name: "Audit Reports", path: "/compliance/audit-reports" },
-      { name: "Frameworks", path: "/compliance/frameworks" },
-      { name: "Evidence Upload", path: "/compliance/evidence" },
+      { name: "Frameworks", path: "/compliance" },
+      { name: "Evidence Upload", path: "/compliance/evidence/upload" },
       { name: "Remediation Rules", path: "/remediation-rules" },
     ],
   },
