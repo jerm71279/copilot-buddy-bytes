@@ -1,5 +1,8 @@
 project_id = "olrpexessehcijdvogxo"
 
+[functions.slab-sync]
+verify_jwt = true
+
 [functions.ninjaone-sync]
 verify_jwt = true
 
