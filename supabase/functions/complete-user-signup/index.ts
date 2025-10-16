@@ -137,10 +137,38 @@ Deno.serve(async (req) => {
       console.log(`Created user profile`)
     }
 
-    // Step 3: Create employee onboarding record
+    // Step 3: Create employee record in employees table
     const fullEmail = `${emailUsername}@oberaconnect.com`
     const startDate = new Date().toISOString().split('T')[0]
+    
+    // Split full name into first and last name
+    const nameParts = fullName.trim().split(' ')
+    const firstName = nameParts[0] || fullName
+    const lastName = nameParts.slice(1).join(' ') || ''
 
+    const { data: employeeData, error: employeeError } = await supabaseAdmin
+      .from('employees')
+      .insert({
+        customer_id: customerId,
+        first_name: firstName,
+        last_name: lastName,
+        email: fullEmail,
+        phone: '',
+        job_title: 'Employee',
+        employment_type: 'full_time',
+        employment_status: 'active',
+        hire_date: startDate
+      })
+      .select('id')
+      .maybeSingle()
+
+    if (employeeError) {
+      console.error('Failed to create employee record:', employeeError)
+    } else {
+      console.log(`Created employee record`)
+    }
+
+    // Step 4: Create employee onboarding record
     const { error: onboardingError } = await supabaseAdmin
       .from('employee_onboardings')
       .insert({
@@ -161,7 +189,7 @@ Deno.serve(async (req) => {
       console.log(`Created onboarding record`)
     }
 
-    // Step 4: Log audit event
+    // Step 5: Log audit event
     await supabaseAdmin.from('audit_logs').insert({
       user_id: userId,
       customer_id: customerId,
