@@ -34,14 +34,11 @@ const signupSchema = z.object({
     .min(2, "Full name must be at least 2 characters")
     .max(100, "Full name must be less than 100 characters")
     .regex(/^[a-zA-Z\s'-]+$/, "Full name can only contain letters, spaces, hyphens and apostrophes"),
-  companyName: z.string()
+  emailUsername: z.string()
     .trim()
-    .min(2, "Company name must be at least 2 characters")
-    .max(100, "Company name must be less than 100 characters"),
-  email: z.string()
-    .trim()
-    .email("Invalid email address")
-    .max(255, "Email must be less than 255 characters"),
+    .min(2, "Email username must be at least 2 characters")
+    .max(64, "Email username must be less than 64 characters")
+    .regex(/^[a-z]+\.[a-z]+$/i, "Email must be in Firstname.Lastname format"),
   password: z.string()
     .min(12, "Password must be at least 12 characters")
     .max(128, "Password must be less than 128 characters")
@@ -64,10 +61,9 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [signupEmail, setSignupEmail] = useState("");
+  const [signupEmailUsername, setSignupEmailUsername] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupName, setSignupName] = useState("");
-  const [signupCompany, setSignupCompany] = useState("");
   const [resetEmail, setResetEmail] = useState("");
   const [showResetForm, setShowResetForm] = useState(false);
 
@@ -254,12 +250,14 @@ const Auth = () => {
       // Validate inputs
       const validatedData = signupSchema.parse({
         fullName: signupName,
-        companyName: signupCompany,
-        email: signupEmail,
+        emailUsername: signupEmailUsername,
         password: signupPassword,
       });
 
       const redirectUrl = `${window.location.origin}/`;
+      
+      // Construct full email with hardcoded domain
+      const fullEmail = `${validatedData.emailUsername.toLowerCase()}@oberaconnect.com`;
       
       // Hardcoded company name for internal use
       const companyName = "OBERACONNECT, LLC";
@@ -271,7 +269,7 @@ const Auth = () => {
         .trim();
       
       const { data, error } = await supabase.auth.signUp({
-        email: validatedData.email,
+        email: fullEmail,
         password: validatedData.password,
         options: {
           emailRedirectTo: redirectUrl
@@ -305,7 +303,7 @@ const Auth = () => {
               user_id: data.user.id,
               contact_name: safeFullName,
               company_name: companyName,
-              email: validatedData.email,
+              email: fullEmail,
             })
             .select()
             .maybeSingle();
@@ -349,7 +347,7 @@ const Auth = () => {
               customer_id: customerId,
               template_id: templateData.id,
               employee_name: safeFullName,
-              employee_email: validatedData.email,
+              employee_email: fullEmail,
               start_date: new Date().toISOString().split('T')[0],
               status: "in_progress",
               created_by: data.user.id,
@@ -363,9 +361,9 @@ const Auth = () => {
           system_name: 'auth',
           action_type: 'signup_success',
           action_details: { 
-            email: validatedData.email,
+            email: fullEmail,
             company_name: companyName,
-            timestamp: new Date().toISOString() 
+            timestamp: new Date().toISOString()
           },
           compliance_tags: ['security', 'authentication']
         });
@@ -526,22 +524,26 @@ const Auth = () => {
                   <Input
                     id="signup-company"
                     type="text"
-                    placeholder="Acme Inc"
-                    value={signupCompany}
-                    onChange={(e) => setSignupCompany(e.target.value)}
-                    required
+                    value="OBERACONNECT, LLC"
+                    disabled
+                    className="bg-muted"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={signupEmail}
-                    onChange={(e) => setSignupEmail(e.target.value)}
-                    required
-                  />
+                  <Label htmlFor="signup-email">Email Username</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="signup-email"
+                      type="text"
+                      placeholder="Firstname.Lastname"
+                      value={signupEmailUsername}
+                      onChange={(e) => setSignupEmailUsername(e.target.value)}
+                      required
+                      className="flex-1"
+                    />
+                    <span className="text-muted-foreground text-sm whitespace-nowrap">@oberaconnect.com</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Format: Firstname.Lastname</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>
