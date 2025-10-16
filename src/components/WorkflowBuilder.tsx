@@ -229,9 +229,9 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
           is_active: true
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (workflowError) throw workflowError;
+      if (workflowError || !workflow) throw workflowError || new Error("Failed to create workflow");
 
       // Step 2: Save trigger configurations (if any)
       if (triggers.length > 0) {

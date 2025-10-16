@@ -80,9 +80,10 @@ const CIRelationshipMap = ({ ciId, ciName }: CIRelationshipMapProps) => {
         .from("configuration_items")
         .select("ci_name, ci_type, criticality")
         .eq("id", ciId)
-        .single();
+        .maybeSingle();
 
       if (ciError) throw ciError;
+      if (!currentCI) throw new Error("Configuration item not found");
 
       // Build nodes
       const nodeMap = new Map<string, RelationshipNode>();

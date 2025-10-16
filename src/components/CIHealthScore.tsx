@@ -85,9 +85,9 @@ const CIHealthScore = ({ ciId, customerId }: CIHealthScoreProps) => {
           calculated_at: new Date().toISOString(),
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (insertError) throw insertError;
+      if (insertError || !newMetric) throw insertError || new Error("Failed to insert health metric");
 
       setHealth(newMetric);
       toast.success("Health score calculated");

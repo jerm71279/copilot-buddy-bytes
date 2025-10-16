@@ -123,9 +123,9 @@ export function useDatabase<T extends Record<string, any>>(tableName: string) {
         .from(tableName as any)
         .insert(data as any)
         .select()
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error || !result) throw error || new Error("Failed to insert record");
 
       if (opts.showSuccessToast) {
         toast({

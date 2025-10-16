@@ -68,8 +68,8 @@ export default function PermissionManagement() {
           ...permission,
         })
         .select()
-        .single();
-      if (error) throw error;
+        .maybeSingle();
+      if (error || !data) throw error || new Error("Failed to add permission");
       return data;
     },
     onSuccess: () => {

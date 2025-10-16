@@ -101,9 +101,9 @@ export default function OnboardingNew() {
           created_by: user.id
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (onboardingError) throw onboardingError;
+      if (onboardingError || !onboarding) throw onboardingError || new Error("Failed to create onboarding");
 
       toast({
         title: "Success",

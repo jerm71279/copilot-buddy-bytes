@@ -54,9 +54,9 @@ export const useProducts = () => {
         .from('products')
         .insert([product as any])
         .select()
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error || !data) throw error || new Error("Failed to create product");
       toast.success('Product created successfully');
       fetchProducts();
       return data;

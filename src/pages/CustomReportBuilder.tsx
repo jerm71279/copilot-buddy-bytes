@@ -81,8 +81,8 @@ export default function CustomReportBuilder() {
           ]
         })
         .select()
-        .single();
-      if (error) throw error;
+        .maybeSingle();
+      if (error || !data) throw error || new Error("Failed to create report");
       return data;
     },
     onSuccess: () => {

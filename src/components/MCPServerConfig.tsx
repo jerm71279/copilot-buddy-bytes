@@ -114,9 +114,9 @@ export function MCPServerConfig({ customerId }: { customerId: string }) {
           config: {}
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (serverError) throw serverError;
+      if (serverError || !server) throw serverError || new Error("Failed to create MCP server");
 
       // Insert tools if any
       if (tools.length > 0 && server) {

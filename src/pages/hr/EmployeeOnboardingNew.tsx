@@ -171,9 +171,9 @@ export default function EmployeeOnboardingNew() {
           created_by: user.id
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (onboardingError) throw onboardingError;
+      if (onboardingError || !onboarding) throw onboardingError || new Error("Failed to create employee onboarding");
 
       toast({
         title: "Success",

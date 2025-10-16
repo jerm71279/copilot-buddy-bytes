@@ -25,7 +25,7 @@ export function OneDriveSpace({ repositories, onSync, syncing }: OneDriveSpacePr
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-green-500" />
+                <User className="h-5 w-5 text-accent" />
                 Personal OneDrive
               </CardTitle>
               <CardDescription>

@@ -228,7 +228,7 @@ const IntegrationsPage = () => {
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
                 Connect Your Business Systems
               </h1>
-              <p className="text-xl text-white/90 mb-8">
+              <p className="text-xl text-foreground/90 mb-8">
                 Securely integrate with billing platforms, Azure, network security, RMM, and cybersecurity tools. 
                 The more systems you connect, the smarter your ML-powered insights become.
               </p>

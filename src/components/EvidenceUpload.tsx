@@ -117,9 +117,9 @@ export default function EvidenceUpload({ frameworkId, controlId, onUploadComplet
           compliance_tags: complianceTags.length > 0 ? complianceTags : null
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error || !evidence) throw error || new Error("Failed to upload evidence");
 
       toast({
         title: "Success",

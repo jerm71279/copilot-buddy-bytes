@@ -63,8 +63,8 @@ export default function RemediationRules() {
           created_by: user.id
         })
         .select()
-        .single();
-      if (error) throw error;
+        .maybeSingle();
+      if (error || !data) throw error || new Error("Failed to create remediation rule");
       return data;
     },
     onSuccess: () => {

@@ -247,7 +247,7 @@ const SOCDashboard = () => {
       const { data: securityOverview } = await supabase
         .from('soc_security_overview')
         .select('*')
-        .single();
+        .maybeSingle();
 
       setMetrics({
         totalIncidents: anomalyData?.length || 0,

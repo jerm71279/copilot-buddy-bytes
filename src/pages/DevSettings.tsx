@@ -106,7 +106,7 @@ const DevSettings = () => {
           </div>
           <div>
             <strong>Current Status:</strong>
-            <p className={bypassAuth ? "text-orange-600" : "text-green-600"}>
+            <p className={bypassAuth ? "text-warning" : "text-success"}>
               {bypassAuth ? "⚠️ Authentication is BYPASSED" : "✓ Authentication is ACTIVE"}
             </p>
           </div>

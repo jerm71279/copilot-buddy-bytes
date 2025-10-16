@@ -16,7 +16,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         hero: "bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-xl transition-all duration-300",
-        gradient: "bg-gradient-accent text-white border-0 hover:opacity-90 transition-opacity",
+        gradient: "bg-gradient-accent text-accent-foreground border-0 hover:opacity-90 transition-opacity",
       },
       size: {
         default: "h-10 px-4 py-2",

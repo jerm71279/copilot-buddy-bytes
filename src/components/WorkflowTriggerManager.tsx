@@ -156,9 +156,9 @@ export const WorkflowTriggerManager = ({ customerId }: { customerId: string }) =
           is_enabled: true              // Active by default
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error || !data) throw error || new Error("Failed to create trigger");
 
       // Step 2: Generate unique webhook URL using trigger ID
       const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/workflow-webhook?id=${data.id}`;

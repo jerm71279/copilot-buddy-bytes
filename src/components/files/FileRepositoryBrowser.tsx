@@ -25,11 +25,11 @@ export function FileRepositoryBrowser({ repositories, onSync, syncing }: FileRep
   const getRepoIcon = (type: string) => {
     switch (type) {
       case 'sharepoint_site':
-        return <Cloud className="h-5 w-5 text-blue-500" />;
+        return <Cloud className="h-5 w-5 text-primary" />;
       case 'teams_channel':
-        return <FolderOpen className="h-5 w-5 text-purple-500" />;
+        return <FolderOpen className="h-5 w-5 text-secondary" />;
       case 'onedrive':
-        return <FileText className="h-5 w-5 text-green-500" />;
+        return <FileText className="h-5 w-5 text-accent" />;
       default:
         return <Cloud className="h-5 w-5" />;
     }

@@ -26,7 +26,7 @@ export function SharePointManager({ repositories, onSync, syncing }: SharePointM
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <Building className="h-5 w-5 text-blue-500" />
+                <Building className="h-5 w-5 text-primary" />
                 SharePoint Sites
               </CardTitle>
               <CardDescription>

@@ -81,7 +81,7 @@ const DelayNode = ({ data }: { data: any }) => (
 );
 
 const ApiCallNode = ({ data }: { data: any }) => (
-  <div className="px-4 py-2 shadow-md rounded-md bg-success text-white border-2 border-success">
+  <div className="px-4 py-2 shadow-md rounded-md bg-success text-success-foreground border-2 border-success">
     <div className="flex items-center gap-2">
       <Globe className="h-4 w-4" />
       <div className="font-bold">{data.label}</div>

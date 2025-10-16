@@ -42,9 +42,9 @@ export default function RoleManagement() {
         .from("roles")
         .insert(roleData)
         .select()
-        .single();
+        .maybeSingle();
       
-      if (error) throw error;
+      if (error || !data) throw error || new Error("Failed to create role");
       return data;
     },
     onSuccess: () => {
@@ -67,9 +67,10 @@ export default function RoleManagement() {
         .from("roles")
         .select("*, role_permissions(*)")
         .eq("id", roleId)
-        .single();
+        .maybeSingle();
       
       if (roleError) throw roleError;
+      if (!role) throw new Error("Role not found");
 
       // Create new role
       const { data: newRole, error: newRoleError } = await supabase
@@ -79,9 +80,9 @@ export default function RoleManagement() {
           description: role.description,
         })
         .select()
-        .single();
+        .maybeSingle();
       
-      if (newRoleError) throw newRoleError;
+      if (newRoleError || !newRole) throw newRoleError || new Error("Failed to create new role");
 
       // Copy permissions
       if (role.role_permissions && role.role_permissions.length > 0) {
