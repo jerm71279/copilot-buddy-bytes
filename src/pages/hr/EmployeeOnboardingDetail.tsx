@@ -138,6 +138,22 @@ export default function EmployeeOnboardingDetail() {
 
       if (!tasksError && tasksData) {
         setTasks(tasksData as any);
+        // Derive completion from task statuses and persist if out of sync
+        const total = tasksData.length;
+        if (total > 0) {
+          const completed = tasksData.filter((t: any) => t.status === 'completed').length;
+          const inProg = tasksData.filter((t: any) => t.status === 'in_progress').length;
+          const derived = Math.round(((completed + 0.5 * inProg) / total) * 100);
+          if (typeof onboardingData.completion_percentage === 'number' && onboardingData.completion_percentage !== derived) {
+            await supabase
+              .from('employee_onboardings')
+              .update({
+                completion_percentage: derived,
+                status: completed === total ? 'completed' : (inProg > 0 ? 'in_progress' : 'not_started')
+              })
+              .eq('id', id);
+          }
+        }
       }
 
       if (onboardingData.template_id) {
@@ -193,17 +209,31 @@ export default function EmployeeOnboardingDetail() {
 
       if (error) throw error;
 
-      // Recalculate completion percentage
-      const completedTasks = tasks.filter(t => 
-        t.id === taskId ? newStatus === 'completed' : t.status === 'completed'
-      ).length;
-      const completionPercentage = Math.round((completedTasks / tasks.length) * 100);
+      // Recalculate completion percentage (weighted: in_progress = 50%)
+      const totals = tasks.reduce(
+        (acc, t) => {
+          const status = t.id === taskId ? newStatus : t.status;
+          if (status === 'completed') acc.completed += 1;
+          if (status === 'in_progress') acc.inProgress += 1;
+          return acc;
+        },
+        { completed: 0, inProgress: 0 }
+      );
+      const totalCount = tasks.length;
+      const completionPercentage = totalCount > 0
+        ? Math.round(((totals.completed + 0.5 * totals.inProgress) / totalCount) * 100)
+        : 0;
+      const newOnboardingStatus = totals.completed === totalCount
+        ? 'completed'
+        : (totals.inProgress > 0 || newStatus === 'in_progress')
+          ? 'in_progress'
+          : 'not_started';
 
       await supabase
         .from('employee_onboardings')
         .update({ 
           completion_percentage: completionPercentage,
-          status: completionPercentage === 100 ? 'completed' : 'in_progress'
+          status: newOnboardingStatus
         })
         .eq('id', id);
 
@@ -407,9 +437,20 @@ export default function EmployeeOnboardingDetail() {
               <div>
                 <div className="flex justify-between mb-2">
                   <span className="text-sm text-muted-foreground">Completion</span>
-                  <span className="text-sm font-medium">{onboarding.completion_percentage}%</span>
+                  <span className="text-sm font-medium">{(() => {
+                    const total = tasks.length;
+                    const completed = tasks.filter(t => t.status === 'completed').length;
+                    const inProg = tasks.filter(t => t.status === 'in_progress').length;
+                    const derived = total > 0 ? Math.round(((completed + 0.5 * inProg) / total) * 100) : onboarding.completion_percentage;
+                    return derived;
+                  })()}%</span>
                 </div>
-                <Progress value={onboarding.completion_percentage} />
+                <Progress value={(() => {
+                  const total = tasks.length;
+                  const completed = tasks.filter(t => t.status === 'completed').length;
+                  const inProg = tasks.filter(t => t.status === 'in_progress').length;
+                  return total > 0 ? Math.round(((completed + 0.5 * inProg) / total) * 100) : onboarding.completion_percentage;
+                })()} />
               </div>
 
               {template && (
@@ -502,7 +543,7 @@ export default function EmployeeOnboardingDetail() {
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="pending">Pending</SelectItem>
+                                  <SelectItem value="not_started">Pending</SelectItem>
                                   <SelectItem value="in_progress">In Progress</SelectItem>
                                   <SelectItem value="completed">Completed</SelectItem>
                                 </SelectContent>
