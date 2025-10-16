@@ -261,14 +261,24 @@ const Auth = () => {
 
       const redirectUrl = `${window.location.origin}/`;
       
+      // Sanitize metadata to prevent hidden null/control characters from causing DB errors
+      const safeFullName = validatedData.fullName
+        .replace(/\u0000/g, "")
+        .replace(/[\x00-\x1F\x7F]/g, "")
+        .trim();
+      const safeCompany = validatedData.companyName
+        .replace(/\u0000/g, "")
+        .replace(/[\x00-\x1F\x7F]/g, "")
+        .trim();
+      
       const { data, error } = await supabase.auth.signUp({
         email: validatedData.email,
         password: validatedData.password,
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            full_name: validatedData.fullName,
-            company_name: validatedData.companyName,
+            full_name: safeFullName,
+            company_name: safeCompany,
           }
         }
       });
@@ -286,8 +296,8 @@ const Auth = () => {
           .from("customers")
           .insert({
             user_id: data.user.id,
-            contact_name: validatedData.fullName,
-            company_name: validatedData.companyName,
+            contact_name: safeFullName,
+            company_name: safeCompany,
             email: validatedData.email,
           })
           .select()
@@ -313,7 +323,7 @@ const Auth = () => {
           .from("user_profiles")
           .insert({
             user_id: data.user.id,
-            full_name: validatedData.fullName,
+            full_name: safeFullName,
             department: null,
             customer_id: customerData?.id || null
           });
@@ -328,7 +338,7 @@ const Auth = () => {
           action_type: 'signup_success',
           action_details: { 
             email: validatedData.email,
-            company_name: validatedData.companyName,
+            company_name: safeCompany,
             timestamp: new Date().toISOString() 
           },
           compliance_tags: ['security', 'authentication']
