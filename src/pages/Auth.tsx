@@ -314,17 +314,13 @@ const Auth = () => {
           if (customizationError) throw customizationError;
         }
 
-        // Create user profile
-        const { error: profileError } = await supabase
+        // Link profile to customer (profile is auto-created by backend trigger)
+        const { error: profileUpdateError } = await supabase
           .from("user_profiles")
-          .insert({
-            user_id: data.user.id,
-            full_name: safeFullName,
-            department: null,
-            customer_id: customerData?.id || null
-          });
+          .update({ customer_id: customerData.id })
+          .eq("user_id", data.user.id);
 
-        if (profileError) throw profileError;
+        if (profileUpdateError) throw profileUpdateError;
 
         // Log successful signup
         await supabase.from('audit_logs').insert({
