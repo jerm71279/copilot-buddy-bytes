@@ -3,127 +3,16 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Github, BookOpen, Code2, Database, FileText, ExternalLink, Workflow, Shield, Zap, Network, ChevronDown, ChevronUp } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Github, BookOpen, Code2, ExternalLink, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { useDevelopersData } from "@/hooks/useDevelopersData";
+import { coreDocs, integrationDocs, formatMarkdown } from "@/lib/developersConfig";
+import { DocumentationCard } from "@/components/developers/DocumentationCard";
+import { ToolCard } from "@/components/developers/ToolCard";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Developers = () => {
-  const [expandedDocs, setExpandedDocs] = useState<Record<string, boolean>>({});
-  const [docContents, setDocContents] = useState<Record<string, string>>({});
-  const [loadingDocs, setLoadingDocs] = useState<Record<string, boolean>>({});
-
-  const docs = [
-    {
-      title: "Architecture",
-      description: "Complete system architecture and design patterns",
-      icon: Database,
-      file: "ARCHITECTURE.md",
-      category: "Core",
-      diagram: true
-    },
-    {
-      title: "API Reference",
-      description: "Full API documentation for all endpoints",
-      icon: Code2,
-      file: "API_REFERENCE.md",
-      category: "Integration"
-    },
-    {
-      title: "Component Library",
-      description: "UI component documentation and usage",
-      icon: FileText,
-      file: "COMPONENT_LIBRARY.md",
-      category: "Frontend"
-    },
-    {
-      title: "Dashboard Data Flows",
-      description: "Data flow diagrams for all dashboards",
-      icon: Workflow,
-      file: "DASHBOARD_DATA_FLOWS.md",
-      category: "Architecture"
-    },
-    {
-      title: "Testing Guide",
-      description: "Testing procedures and validation",
-      icon: Shield,
-      file: "TESTING_GUIDE.md",
-      category: "QA"
-    },
-    {
-      title: "Platform Features",
-      description: "Complete feature index and capabilities",
-      icon: Zap,
-      file: "PLATFORM_FEATURE_INDEX.md",
-      category: "Reference"
-    }
-  ];
-
-  const integrationDocs = [
-    {
-      title: "CIPP Integration",
-      description: "Microsoft 365 tenant management integration",
-      file: "CIPP_INTEGRATION_GUIDE.md"
-    },
-    {
-      title: "Revio Integration",
-      description: "Billing and revenue data integration",
-      file: "REVIO_INTEGRATION_GUIDE.md"
-    },
-    {
-      title: "Microsoft 365",
-      description: "Calendar, email, and Teams integration",
-      file: "MICROSOFT365_INTEGRATION.md"
-    },
-    {
-      title: "CMDB & Change Management",
-      description: "Configuration management database guide",
-      file: "CMDB_CHANGE_MANAGEMENT_GUIDE.md"
-    }
-  ];
-
-  const loadDocContent = async (filename: string) => {
-    if (docContents[filename]) return;
-    
-    setLoadingDocs(prev => ({ ...prev, [filename]: true }));
-    try {
-      const response = await fetch(`/${filename}`);
-      if (response.ok) {
-        const content = await response.text();
-        setDocContents(prev => ({ ...prev, [filename]: content }));
-      }
-    } catch (error) {
-      console.error(`Error loading ${filename}:`, error);
-    } finally {
-      setLoadingDocs(prev => ({ ...prev, [filename]: false }));
-    }
-  };
-
-  const toggleDoc = (filename: string) => {
-    const isExpanding = !expandedDocs[filename];
-    setExpandedDocs(prev => ({ ...prev, [filename]: isExpanding }));
-    if (isExpanding) {
-      loadDocContent(filename);
-    }
-  };
-
-  const formatMarkdown = (text: string): string => {
-    return text
-      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-6 mb-3">$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-8 mb-4">$1</h1>')
-      .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/`(.+?)`/g, '<code class="bg-muted px-1 py-0.5 rounded text-sm">$1</code>')
-      .replace(/```([\s\S]+?)```/g, '<pre class="bg-muted p-4 rounded-lg overflow-x-auto my-4"><code>$1</code></pre>')
-      .replace(/^\* (.+)$/gim, '<li class="ml-4">• $1</li>')
-      .replace(/^\d+\. (.+)$/gim, '<li class="ml-4">$1</li>')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary hover:underline" target="_blank" rel="noopener noreferrer">$1</a>')
-      .replace(/\n\n/g, '<br /><br />')
-      .replace(/\n/g, '<br />');
-  };
+  const { expandedDocs, docContents, loadingDocs, toggleDoc } = useDevelopersData();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -208,57 +97,16 @@ const Developers = () => {
               <h2 className="text-3xl font-bold">Core Documentation</h2>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {docs.map((doc) => {
-                const Icon = doc.icon;
-                const isExpanded = expandedDocs[doc.file];
-                const isLoading = loadingDocs[doc.file];
-                
-                return (
-                  <Card key={doc.file} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-start justify-between mb-2">
-                        <Icon className="h-8 w-8 text-primary" />
-                        <Badge variant="secondary">{doc.category}</Badge>
-                      </div>
-                      <CardTitle className="text-lg">{doc.title}</CardTitle>
-                      <CardDescription>{doc.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <Collapsible open={isExpanded} onOpenChange={() => toggleDoc(doc.file)}>
-                          <CollapsibleTrigger asChild>
-                            <Button variant="outline" className="w-full">
-                              <FileText className="mr-2 h-4 w-4" />
-                              {isExpanded ? "Hide" : "View"} Documentation
-                              {isExpanded ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
-                            </Button>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent className="mt-4">
-                            {isLoading ? (
-                              <div className="p-4 text-center text-muted-foreground">Loading...</div>
-                            ) : docContents[doc.file] ? (
-                              <ScrollArea className="h-[400px] w-full rounded-md border p-4">
-                                <div 
-                                  className="prose prose-sm max-w-none"
-                                  dangerouslySetInnerHTML={{ __html: formatMarkdown(docContents[doc.file]) }}
-                                />
-                              </ScrollArea>
-                            ) : null}
-                          </CollapsibleContent>
-                        </Collapsible>
-                        {doc.diagram && (
-                          <Link to="/architecture-diagram">
-                            <Button variant="secondary" className="w-full">
-                              <Network className="mr-2 h-4 w-4" />
-                              View Full Diagram
-                            </Button>
-                          </Link>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+              {coreDocs.map((doc) => (
+                <DocumentationCard
+                  key={doc.file}
+                  doc={doc}
+                  isExpanded={expandedDocs[doc.file]}
+                  isLoading={loadingDocs[doc.file]}
+                  content={docContents[doc.file]}
+                  onToggle={() => toggleDoc(doc.file)}
+                />
+              ))}
             </div>
           </div>
 
@@ -269,42 +117,37 @@ const Developers = () => {
               <h2 className="text-3xl font-bold">Integration Guides</h2>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
-              {integrationDocs.map((doc) => {
-                const isExpanded = expandedDocs[doc.file];
-                const isLoading = loadingDocs[doc.file];
-                
-                return (
-                  <Card key={doc.file} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-lg">{doc.title}</CardTitle>
-                      <CardDescription>{doc.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Collapsible open={isExpanded} onOpenChange={() => toggleDoc(doc.file)}>
-                        <CollapsibleTrigger asChild>
-                          <Button variant="outline" className="w-full">
-                            <FileText className="mr-2 h-4 w-4" />
-                            {isExpanded ? "Hide" : "View"} Guide
-                            {isExpanded ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
-                          </Button>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="mt-4">
-                          {isLoading ? (
-                            <div className="p-4 text-center text-muted-foreground">Loading...</div>
-                          ) : docContents[doc.file] ? (
-                            <ScrollArea className="h-[400px] w-full rounded-md border p-4">
-                              <div 
-                                className="prose prose-sm max-w-none"
-                                dangerouslySetInnerHTML={{ __html: formatMarkdown(docContents[doc.file]) }}
-                              />
-                            </ScrollArea>
-                          ) : null}
-                        </CollapsibleContent>
-                      </Collapsible>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+              {integrationDocs.map((doc) => (
+                <Card key={doc.file} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <CardTitle className="text-lg">{doc.title}</CardTitle>
+                    <CardDescription>{doc.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Collapsible open={expandedDocs[doc.file]} onOpenChange={() => toggleDoc(doc.file)}>
+                      <CollapsibleTrigger asChild>
+                        <Button variant="outline" className="w-full">
+                          <FileText className="mr-2 h-4 w-4" />
+                          {expandedDocs[doc.file] ? "Hide" : "View"} Guide
+                          {expandedDocs[doc.file] ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
+                        </Button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="mt-4">
+                        {loadingDocs[doc.file] ? (
+                          <div className="p-4 text-center text-muted-foreground">Loading...</div>
+                        ) : docContents[doc.file] ? (
+                          <ScrollArea className="h-[400px] w-full rounded-md border p-4">
+                            <div 
+                              className="prose prose-sm max-w-none"
+                              dangerouslySetInnerHTML={{ __html: formatMarkdown(docContents[doc.file]) }}
+                            />
+                          </ScrollArea>
+                        ) : null}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
 
@@ -318,45 +161,22 @@ const Developers = () => {
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-4 border rounded-lg">
-                  <h4 className="font-semibold mb-2">Frontend</h4>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• React 18</li>
-                    <li>• TypeScript</li>
-                    <li>• Vite</li>
-                    <li>• Tailwind CSS</li>
-                    <li>• shadcn/ui</li>
-                  </ul>
-                </div>
-                <div className="p-4 border rounded-lg">
-                  <h4 className="font-semibold mb-2">Backend</h4>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Supabase</li>
-                    <li>• PostgreSQL</li>
-                    <li>• Edge Functions</li>
-                    <li>• Row Level Security</li>
-                    <li>• Real-time</li>
-                  </ul>
-                </div>
-                <div className="p-4 border rounded-lg">
-                  <h4 className="font-semibold mb-2">State Management</h4>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• TanStack Query</li>
-                    <li>• React Router v6</li>
-                    <li>• Custom Hooks</li>
-                    <li>• Context API</li>
-                  </ul>
-                </div>
-                <div className="p-4 border rounded-lg">
-                  <h4 className="font-semibold mb-2">Integrations</h4>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Microsoft 365</li>
-                    <li>• CIPP</li>
-                    <li>• NinjaOne</li>
-                    <li>• Revio</li>
-                    <li>• Lovable AI</li>
-                  </ul>
-                </div>
+                <ToolCard 
+                  title="Frontend"
+                  items={["React 18", "TypeScript", "Vite", "Tailwind CSS", "shadcn/ui"]}
+                />
+                <ToolCard 
+                  title="Backend"
+                  items={["Supabase", "PostgreSQL", "Edge Functions", "Row Level Security", "Real-time"]}
+                />
+                <ToolCard 
+                  title="State Management"
+                  items={["TanStack Query", "React Router v6", "Custom Hooks", "Context API"]}
+                />
+                <ToolCard 
+                  title="Integrations"
+                  items={["Microsoft 365", "CIPP", "NinjaOne", "Revio", "Lovable AI"]}
+                />
               </div>
             </CardContent>
           </Card>

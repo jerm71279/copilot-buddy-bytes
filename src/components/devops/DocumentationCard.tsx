@@ -1,30 +1,22 @@
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Card, CardDescription } from "@/components/ui/card";
+import { FileText } from "lucide-react";
 
 interface DocumentationCardProps {
+  docKey: string;
   title: string;
   description: string;
-  docKey: string;
 }
 
-export function DocumentationCard({ title, description, docKey }: DocumentationCardProps) {
-  const navigate = useNavigate();
-
+export function DocumentationCard({ docKey, title, description }: DocumentationCardProps) {
   return (
-    <div className="flex items-start justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
-      <div className="flex-1">
-        <h4 className="font-semibold mb-1">{title}</h4>
-        <p className="text-sm text-muted-foreground">
-          {description}
-        </p>
+    <Card className="p-4 hover:bg-accent/50 transition-colors">
+      <div className="flex items-start gap-3">
+        <FileText className="h-5 w-5 text-primary mt-0.5" />
+        <div>
+          <h3 className="font-semibold mb-1">{title}</h3>
+          <CardDescription>{description}</CardDescription>
+        </div>
       </div>
-      <Button 
-        variant="outline" 
-        size="sm"
-        onClick={() => navigate(`/docs?doc=${docKey}`)}
-      >
-        View
-      </Button>
-    </div>
+    </Card>
   );
 }
