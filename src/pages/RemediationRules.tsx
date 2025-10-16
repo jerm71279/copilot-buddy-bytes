@@ -29,12 +29,12 @@ export default function RemediationRules() {
   });
 
   const { data: rules, isLoading } = useQuery({
-    queryKey: ["remediation_rules"],
+    queryKey: ["automated_response_rules"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("remediation_rules")
+        .from("automated_response_rules")
         .select("*")
-        .order("priority", { ascending: false });
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
@@ -90,13 +90,13 @@ export default function RemediationRules() {
   const toggleRule = useMutation({
     mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
       const { error } = await supabase
-        .from("remediation_rules")
+        .from("automated_response_rules")
         .update({ is_active })
         .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["remediation_rules"] });
+      queryClient.invalidateQueries({ queryKey: ["automated_response_rules"] });
       toast.success("Rule status updated");
     },
   });
@@ -209,7 +209,7 @@ export default function RemediationRules() {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">
-              {rules?.filter(r => r.auto_execute).length || 0}
+              {rules?.filter(r => r.is_active).length || 0}
             </p>
           </CardContent>
         </Card>
@@ -235,10 +235,10 @@ export default function RemediationRules() {
               {rules?.map((rule) => (
                 <TableRow key={rule.id}>
                   <TableCell className="font-medium">{rule.rule_name}</TableCell>
-                  <TableCell className="max-w-md truncate">{rule.description}</TableCell>
+                  <TableCell className="max-w-md truncate">{rule.trigger_type}</TableCell>
                   <TableCell>
-                    <Badge variant={rule.auto_execute ? "default" : "secondary"}>
-                      {rule.auto_execute ? "Automatic" : "Manual Approval"}
+                    <Badge variant="default">
+                      Automatic
                     </Badge>
                   </TableCell>
                   <TableCell>
