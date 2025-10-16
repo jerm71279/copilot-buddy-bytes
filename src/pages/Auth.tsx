@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
 
@@ -304,10 +305,21 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
-          <CardDescription>Sign in to access your portal or create a new account</CardDescription>
+          <CardTitle className="text-2xl font-bold">OBERACONNECT Employee Portal</CardTitle>
+          <CardDescription>Sign in to access your employee portal or create a new account</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Customer Portal Link */}
+          <div className="mb-6">
+            <Link to="/client-auth">
+              <Button variant="outline" className="w-full">
+                <ArrowRight className="h-4 w-4 mr-2" />
+                Customer Portal Login
+              </Button>
+            </Link>
+            <Separator className="my-4" />
+          </div>
+
           {/* Microsoft 365 SSO - Primary Authentication */}
           <div className="space-y-4 mb-6">
             <Button 

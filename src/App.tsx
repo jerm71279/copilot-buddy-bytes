@@ -7,6 +7,7 @@ import DashboardPortalLanes from "./components/DashboardPortalLanes";
 import Index from "./pages/Index";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import Auth from "./pages/Auth";
+import ClientAuth from "./pages/ClientAuth";
 import DemoSelector from "./pages/DemoSelector";
 import Portal from "./pages/Portal";
 import AnalyticsPortal from "./pages/AnalyticsPortal";
@@ -153,6 +154,7 @@ const App = () => (
             </ProtectedRoute>
           } />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/client-auth" element={<ClientAuth />} />
           <Route path="/demo" element={<DemoSelector />} />
           
           {/* File Collaboration - Protected */}
