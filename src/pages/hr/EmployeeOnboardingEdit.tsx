@@ -10,30 +10,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Save } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
-
-interface Role {
-  id: string;
-  name: string;
-}
-
-interface User {
-  user_id: string;
-  full_name: string;
-}
-
-interface Template {
-  id: string;
-  template_name: string;
-  description: string | null;
-}
+import { useOnboardingRoles, useOnboardingUsers, useOnboardingTemplates } from "@/hooks/useOnboardingData";
+import { useOnboardingTemplateTasks } from "@/hooks/useOnboardingTemplateTasks";
 
 export default function EmployeeOnboardingEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const { roles } = useOnboardingRoles();
+  const { users } = useOnboardingUsers();
+  const { templates } = useOnboardingTemplates();
+  const { copyTasks } = useOnboardingTemplateTasks();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     employee_name: "",
@@ -59,9 +46,6 @@ export default function EmployeeOnboardingEdit() {
 
   useEffect(() => {
     loadOnboarding();
-    loadRoles();
-    loadUsers();
-    loadTemplates();
   }, [id]);
 
   const loadOnboarding = async () => {
@@ -78,48 +62,11 @@ export default function EmployeeOnboardingEdit() {
 
       const typedData = data as any;
       
-      // Check if we have a template but no tasks - copy tasks from template
+      // Check if we have a template but no tasks - copy from template using modularized hook
       if (typedData.template_id) {
-        const { data: existingTasks } = await supabase
-          .from('employee_onboarding_tasks')
-          .select('id')
-          .eq('onboarding_id', id)
-          .limit(1);
-
-        // If no tasks exist, copy from template
-        if (!existingTasks || existingTasks.length === 0) {
-          const { data: templateTasks } = await supabase
-            .from('employee_onboarding_template_tasks')
-            .select('*')
-            .eq('template_id', typedData.template_id)
-            .order('sequence_order');
-
-          if (templateTasks && templateTasks.length > 0) {
-            const { data: { user } } = await supabase.auth.getUser();
-            const tasksToInsert = templateTasks.map((task: any) => ({
-              onboarding_id: id,
-              task_name: task.task_name,
-              description: task.description,
-              task_category: task.task_category,
-              sequence_order: task.sequence_order,
-              assigned_role: task.assigned_role,
-              estimated_hours: task.estimated_hours,
-              requires_employee_input: task.requires_employee_input,
-              compliance_tags: task.compliance_tags,
-              required_documents: task.required_documents,
-              status: 'not_started',
-              created_by: user?.id
-            }));
-
-            await supabase
-              .from('employee_onboarding_tasks')
-              .insert(tasksToInsert);
-
-            toast({
-              title: "Tasks Created",
-              description: `${tasksToInsert.length} onboarding tasks have been added from the template`
-            });
-          }
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await copyTasks(id, typedData.template_id, user.id);
         }
       }
 
@@ -154,49 +101,6 @@ export default function EmployeeOnboardingEdit() {
     }
   };
 
-  const loadRoles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('roles')
-        .select('id, name')
-        .order('name');
-
-      if (error) throw error;
-      setRoles(data || []);
-    } catch (error) {
-      console.error('Error loading roles:', error);
-    }
-  };
-
-  const loadUsers = async () => {
-    try {
-      // Get all user profiles
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('user_id, full_name')
-        .order('full_name');
-
-      if (error) throw error;
-      setUsers(data || []);
-    } catch (error) {
-      console.error('Error loading users:', error);
-    }
-  };
-
-  const loadTemplates = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('employee_onboarding_templates')
-        .select('id, template_name, description')
-        .eq('is_active', true)
-        .order('template_name');
-
-      if (error) throw error;
-      setTemplates(data || []);
-    } catch (error) {
-      console.error('Error loading templates:', error);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

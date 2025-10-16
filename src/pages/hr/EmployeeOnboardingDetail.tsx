@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Mail, Phone, Calendar, Building, Briefcase, User, MapPin, Home, Pencil, CheckCircle2, Circle, Clock } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import { calculateProgress, syncOnboardingProgress } from "@/hooks/useOnboardingProgress";
+import { useOnboardingTemplateTasks } from "@/hooks/useOnboardingTemplateTasks";
 
 interface Onboarding {
   id: string;
@@ -58,6 +60,7 @@ export default function EmployeeOnboardingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { copyTasks } = useOnboardingTemplateTasks();
   const [onboarding, setOnboarding] = useState<Onboarding | null>(null);
   const [template, setTemplate] = useState<Template | null>(null);
   const [tasks, setTasks] = useState<OnboardingTask[]>([]);
@@ -84,48 +87,11 @@ export default function EmployeeOnboardingDetail() {
       if (onboardingError) throw onboardingError;
       setOnboarding(onboardingData as any as Onboarding);
 
-      // Check if we have a template but no tasks - copy tasks from template
+      // Check if we have a template but no tasks - copy from template using modularized hook
       if (onboardingData.template_id) {
-        const { data: existingTasks } = await supabase
-          .from('employee_onboarding_tasks')
-          .select('id')
-          .eq('onboarding_id', id)
-          .limit(1);
-
-        // If no tasks exist, copy from template
-        if (!existingTasks || existingTasks.length === 0) {
-          const { data: templateTasks } = await supabase
-            .from('employee_onboarding_template_tasks')
-            .select('*')
-            .eq('template_id', onboardingData.template_id)
-            .order('sequence_order');
-
-          if (templateTasks && templateTasks.length > 0) {
-            const { data: { user } } = await supabase.auth.getUser();
-            const tasksToInsert = templateTasks.map((task: any) => ({
-              onboarding_id: id,
-              task_name: task.task_name,
-              description: task.description,
-              task_category: task.task_category,
-              sequence_order: task.sequence_order,
-              assigned_role: task.assigned_role,
-              estimated_hours: task.estimated_hours,
-              requires_employee_input: task.requires_employee_input,
-              compliance_tags: task.compliance_tags,
-              required_documents: task.required_documents,
-              status: 'not_started',
-              created_by: user?.id
-            }));
-
-            await supabase
-              .from('employee_onboarding_tasks')
-              .insert(tasksToInsert);
-
-            toast({
-              title: "Tasks Created",
-              description: `${tasksToInsert.length} onboarding tasks have been added from the template`
-            });
-          }
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await copyTasks(id, onboardingData.template_id, user.id);
         }
       }
 
@@ -138,20 +104,12 @@ export default function EmployeeOnboardingDetail() {
 
       if (!tasksError && tasksData) {
         setTasks(tasksData as any);
-        // Derive completion from task statuses and persist if out of sync
-        const total = tasksData.length;
-        if (total > 0) {
-          const completed = tasksData.filter((t: any) => t.status === 'completed').length;
-          const inProg = tasksData.filter((t: any) => t.status === 'in_progress').length;
-          const derived = Math.round(((completed + 0.5 * inProg) / total) * 100);
-          if (typeof onboardingData.completion_percentage === 'number' && onboardingData.completion_percentage !== derived) {
-            await supabase
-              .from('employee_onboardings')
-              .update({
-                completion_percentage: derived,
-                status: completed === total ? 'completed' : (inProg > 0 ? 'in_progress' : 'not_started')
-              })
-              .eq('id', id);
+        // Sync progress using modularized utility
+        if (tasksData.length > 0) {
+          const progress = calculateProgress(tasksData as any);
+          if (typeof onboardingData.completion_percentage === 'number' && 
+              onboardingData.completion_percentage !== progress.completionPercentage) {
+            await syncOnboardingProgress(id, tasksData as any);
           }
         }
       }
@@ -209,33 +167,11 @@ export default function EmployeeOnboardingDetail() {
 
       if (error) throw error;
 
-      // Recalculate completion percentage (weighted: in_progress = 50%)
-      const totals = tasks.reduce(
-        (acc, t) => {
-          const status = t.id === taskId ? newStatus : t.status;
-          if (status === 'completed') acc.completed += 1;
-          if (status === 'in_progress') acc.inProgress += 1;
-          return acc;
-        },
-        { completed: 0, inProgress: 0 }
+      // Recalculate and update progress using modularized utility
+      const updatedTasks = tasks.map(t => 
+        t.id === taskId ? { ...t, status: newStatus } : t
       );
-      const totalCount = tasks.length;
-      const completionPercentage = totalCount > 0
-        ? Math.round(((totals.completed + 0.5 * totals.inProgress) / totalCount) * 100)
-        : 0;
-      const newOnboardingStatus = totals.completed === totalCount
-        ? 'completed'
-        : (totals.inProgress > 0 || newStatus === 'in_progress')
-          ? 'in_progress'
-          : 'not_started';
-
-      await supabase
-        .from('employee_onboardings')
-        .update({ 
-          completion_percentage: completionPercentage,
-          status: newOnboardingStatus
-        })
-        .eq('id', id);
+      await syncOnboardingProgress(id, updatedTasks);
 
       toast({
         title: "Success",
@@ -437,20 +373,11 @@ export default function EmployeeOnboardingDetail() {
               <div>
                 <div className="flex justify-between mb-2">
                   <span className="text-sm text-muted-foreground">Completion</span>
-                  <span className="text-sm font-medium">{(() => {
-                    const total = tasks.length;
-                    const completed = tasks.filter(t => t.status === 'completed').length;
-                    const inProg = tasks.filter(t => t.status === 'in_progress').length;
-                    const derived = total > 0 ? Math.round(((completed + 0.5 * inProg) / total) * 100) : onboarding.completion_percentage;
-                    return derived;
-                  })()}%</span>
+                  <span className="text-sm font-medium">
+                    {calculateProgress(tasks).completionPercentage}%
+                  </span>
                 </div>
-                <Progress value={(() => {
-                  const total = tasks.length;
-                  const completed = tasks.filter(t => t.status === 'completed').length;
-                  const inProg = tasks.filter(t => t.status === 'in_progress').length;
-                  return total > 0 ? Math.round(((completed + 0.5 * inProg) / total) * 100) : onboarding.completion_percentage;
-                })()} />
+                <Progress value={calculateProgress(tasks).completionPercentage} />
               </div>
 
               {template && (

@@ -10,34 +10,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
-
-interface Template {
-  id: string;
-  template_name: string;
-  description: string | null;
-  department_type: string;
-  estimated_days: number | null;
-}
-
-interface Role {
-  id: string;
-  name: string;
-  description: string | null;
-}
-
-interface User {
-  user_id: string;
-  full_name: string;
-}
+import { useOnboardingRoles, useOnboardingUsers, useOnboardingTemplates } from "@/hooks/useOnboardingData";
 
 export default function EmployeeOnboardingNew() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const preselectedTemplateId = searchParams.get('template');
-  const [templates, setTemplates] = useState<Template[]>([]);
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  const { templates } = useOnboardingTemplates();
+  const { roles } = useOnboardingRoles();
+  const { users } = useOnboardingUsers();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     employee_name: "",
@@ -63,59 +45,6 @@ export default function EmployeeOnboardingNew() {
 
   const selectedTemplate = templates.find(t => t.id === formData.template_id);
 
-  useEffect(() => {
-    loadTemplates();
-    loadRoles();
-    loadUsers();
-  }, []);
-
-  const loadTemplates = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('employee_onboarding_templates')
-        .select('*')
-        .eq('is_active', true)
-        .order('template_name');
-
-      if (error) throw error;
-      setTemplates(data || []);
-    } catch (error) {
-      console.error('Error loading templates:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load templates",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const loadRoles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('roles')
-        .select('id, name, description')
-        .order('name');
-
-      if (error) throw error;
-      setRoles(data || []);
-    } catch (error) {
-      console.error('Error loading roles:', error);
-    }
-  };
-
-  const loadUsers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('user_id, full_name')
-        .order('full_name');
-
-      if (error) throw error;
-      setUsers(data || []);
-    } catch (error) {
-      console.error('Error loading users:', error);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
