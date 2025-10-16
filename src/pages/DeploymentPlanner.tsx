@@ -147,9 +147,9 @@ const DeploymentPlanner = () => {
           ...newProject
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error || !data) throw error || new Error("Failed to create project");
 
       toast.success("Project created successfully");
       setProjects([data, ...projects]);

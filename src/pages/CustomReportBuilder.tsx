@@ -57,7 +57,12 @@ export default function CustomReportBuilder() {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
+
+      if (!profile?.customer_id) {
+        toast.error("Profile not found");
+        return;
+      }
 
       const { data, error } = await supabase
         .from("custom_reports")
@@ -97,7 +102,12 @@ export default function CustomReportBuilder() {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
+
+      if (!profile?.customer_id) {
+        toast.error("Profile not found");
+        return;
+      }
 
       const { data, error } = await supabase.functions.invoke("custom-report-engine", {
         body: {

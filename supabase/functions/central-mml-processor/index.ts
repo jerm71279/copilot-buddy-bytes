@@ -81,9 +81,9 @@ serve(async (req) => {
             ...globalInsight
           })
           .select()
-          .single();
+          .maybeSingle();
 
-        if (insertError) {
+        if (insertError || !newGlobalInsight) {
           console.error('Error inserting global insight:', insertError);
           continue;
         }

@@ -291,9 +291,9 @@ const Auth = () => {
             email: validatedData.email,
           })
           .select()
-          .single();
+          .maybeSingle();
 
-        if (customerError) throw customerError;
+        if (customerError || !customerData) throw customerError || new Error("Failed to create customer");
 
         // Create customer customization
         if (customerData) {

@@ -63,7 +63,7 @@ const ModuleManagement = () => {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile?.customer_id) {
         toast.error("No customer account found");
@@ -77,7 +77,7 @@ const ModuleManagement = () => {
         .from("customer_customizations")
         .select("enabled_portals, enabled_modules")
         .eq("customer_id", profile.customer_id)
-        .single();
+        .maybeSingle();
 
       if (customization) {
         const enabledPortals = customization.enabled_portals 

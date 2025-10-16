@@ -46,10 +46,17 @@ serve(async (req) => {
       .from('task_repetition_analysis')
       .select('*')
       .eq('id', taskId)
-      .single();
+      .maybeSingle();
 
-    if (taskError || !task) {
-      throw new Error("Task not found");
+    if (taskError) {
+      throw new Error(`Database error: ${taskError.message}`);
+    }
+    
+    if (!task) {
+      return new Response(
+        JSON.stringify({ error: 'Task not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     console.log(`Generating automation suggestion for task: ${task.action_type} on ${task.system_name}`);

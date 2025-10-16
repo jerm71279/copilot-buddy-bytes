@@ -51,7 +51,7 @@ export default function IncidentsDashboard() {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       const { data, error } = await supabase
         .from("incidents")
@@ -66,8 +66,8 @@ export default function IncidentsDashboard() {
           incident_number: `INC-${Date.now()}`,
         })
         .select()
-        .single();
-      if (error) throw error;
+        .maybeSingle();
+      if (error || !data) throw error || new Error("Failed to create incident");
       return data;
     },
     onSuccess: () => {

@@ -181,9 +181,9 @@ const ChangeManagementNew = () => {
         .from("change_requests")
         .insert(insertData)
         .select()
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error || !data) throw error || new Error("Failed to create change request");
 
       toast.success("Change request created successfully");
       navigate(`/change-management/${data.id}`);

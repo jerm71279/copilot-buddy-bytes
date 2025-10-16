@@ -177,9 +177,9 @@ serve(async (req) => {
           .from('change_requests')
           .insert(changeRequest)
           .select()
-          .single();
+          .maybeSingle();
 
-        if (createError) {
+        if (createError || !createdChange) {
           console.error('Error creating change request:', createError);
           continue;
         }

@@ -187,9 +187,17 @@ export default function ComplianceReportDetail() {
         .from('compliance_reports')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) {
+        toast({
+          title: "Error",
+          description: "Report not found",
+          variant: "destructive"
+        });
+        return;
+      }
       setReport(data);
     } catch (error) {
       console.error('Error loading report:', error);

@@ -93,9 +93,9 @@ const CMDBAddItem = () => {
         .from("configuration_items")
         .insert(insertData)
         .select()
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error || !data) throw error || new Error("Failed to create configuration item");
 
       toast.success("Configuration item created successfully");
       navigate(`/cmdb/${data.id}`);
