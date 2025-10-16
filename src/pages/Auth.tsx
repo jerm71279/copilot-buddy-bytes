@@ -275,11 +275,7 @@ const Auth = () => {
         email: validatedData.email,
         password: validatedData.password,
         options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: safeFullName,
-            company_name: safeCompany,
-          }
+          emailRedirectTo: redirectUrl
         }
       });
 
