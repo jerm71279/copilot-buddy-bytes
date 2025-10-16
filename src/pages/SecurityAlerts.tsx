@@ -85,7 +85,7 @@ export default function SecurityAlerts() {
         .from('user_profiles')
         .select('customer_id')
         .eq('user_id', user.user.id)
-        .single();
+        .maybeSingle();
 
       const { data, error } = await supabase
         .from('soc_metrics_dashboard' as any)

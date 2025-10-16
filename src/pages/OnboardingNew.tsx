@@ -80,7 +80,7 @@ export default function OnboardingNew() {
         .from('user_profiles')
         .select('customer_id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile?.customer_id) throw new Error("No customer profile found");
 

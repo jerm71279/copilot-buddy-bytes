@@ -53,7 +53,7 @@ export default function ThreatIntelligence() {
         .from('user_profiles')
         .select('customer_id')
         .eq('user_id', user.user?.id)
-        .single();
+        .maybeSingle();
 
       const { data, error } = await supabase
         .from('threat_intel_feeds' as any)
@@ -74,7 +74,7 @@ export default function ThreatIntelligence() {
         .from('user_profiles')
         .select('customer_id')
         .eq('user_id', user.user?.id)
-        .single();
+        .maybeSingle();
 
       let query = supabase
         .from('threat_intel_indicators' as any)

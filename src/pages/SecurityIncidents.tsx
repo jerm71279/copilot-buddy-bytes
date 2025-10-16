@@ -76,7 +76,7 @@ export default function SecurityIncidents() {
         .from('user_profiles')
         .select('customer_id')
         .eq('user_id', user.user?.id)
-        .single();
+        .maybeSingle();
 
       const { error } = await supabase
         .from('security_incidents' as any)

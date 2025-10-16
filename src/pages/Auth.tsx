@@ -195,11 +195,11 @@ const Auth = () => {
       } else {
         // Log successful login - fetch customer_id first
         if (data.user) {
-          const { data: profileData } = await supabase
+        const { data: profileData } = await supabase
             .from('user_profiles')
             .select('customer_id')
             .eq('user_id', data.user.id)
-            .single();
+            .maybeSingle();
 
           if (profileData?.customer_id) {
             await supabase.from('audit_logs').insert({

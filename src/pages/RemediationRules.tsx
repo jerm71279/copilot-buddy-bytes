@@ -52,15 +52,12 @@ export default function RemediationRules() {
         .maybeSingle();
 
       const { data, error } = await supabase
-        .from("remediation_rules")
+        .from("automated_response_rules")
         .insert({
           rule_name: rule.rule_name,
-          description: rule.description,
-          conditions: rule.conditions,
-          incident_pattern: rule.incident_pattern,
-          remediation_actions: rule.remediation_actions,
-          auto_execute: rule.auto_execute,
-          requires_approval: rule.requires_approval,
+          trigger_type: rule.description || 'manual',
+          threshold: rule.conditions,
+          actions: rule.remediation_actions,
           is_active: rule.is_active,
           customer_id: profile?.customer_id!,
           created_by: user.id

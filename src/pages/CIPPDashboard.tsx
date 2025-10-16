@@ -106,7 +106,7 @@ const CIPPDashboard = () => {
         .from('user_profiles')
         .select('customer_id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile?.customer_id) {
         toast.error("Customer profile not found");
