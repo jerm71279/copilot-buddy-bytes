@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,27 +6,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { LogOut, Users, ChevronDown, Server, TestTube, Calculator, Settings, Bot } from "lucide-react";
+import { Users } from "lucide-react";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { MCPServerConfig } from "@/components/MCPServerConfig";
 import { AIMCPGenerator } from "@/components/AIMCPGenerator";
 import MCPExecutionLogs from "@/components/MCPExecutionLogs";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useDemoMode } from "@/hooks/useDemoMode";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { AutonomousAgentMonitor } from "@/components/AutonomousAgentMonitor";
 import { AIAgentConfiguration } from "@/components/AIAgentConfiguration";
-
-
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useAdminData } from "@/hooks/useAdminData";
+import { getQuickActionCards, getStatusBadgeVariant } from "@/lib/adminConfig";
 
 /**
  * Admin Dashboard Data Flow
@@ -71,109 +61,12 @@ import {
  * ```
  */
 
-type Customer = {
-  id: string;
-  company_name: string;
-  contact_name: string;
-  email: string;
-  phone: string | null;
-  status: string;
-  plan_type: string;
-  created_at: string;
-};
-
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const isPreviewMode = useDemoMode();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [userCustomerId, setUserCustomerId] = useState<string>("00000000-0000-0000-0000-000000000000");
+  const { isLoading, isAdmin, customers, userCustomerId, isPreviewMode } = useAdminData();
   const [activeView, setActiveView] = useState<string | null>(null);
-
-  useEffect(() => {
-    checkAdminAccess();
-  }, []);
-
-  const checkAdminAccess = async () => {
-    if (isPreviewMode) {
-      setIsAdmin(true);
-      // In preview mode, try to get a real customer ID from the database
-      const { data: customers } = await supabase
-        .from("customers")
-        .select("id")
-        .limit(1)
-        .maybeSingle();
-      
-      if (customers?.id) {
-        setUserCustomerId(customers.id);
-      } else {
-        // Generate a valid UUID for preview mode if no customers exist
-        setUserCustomerId("00000000-0000-0000-0000-000000000000");
-      }
-      fetchCustomers();
-      return;
-    }
-
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      navigate("/auth");
-      return;
-    }
-
-    // Check if user has admin role
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role_id, roles(name)")
-      .eq("user_id", session.user.id);
-
-    let hasAdmin = roles?.some((ur: any) => ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin');
-
-    if (!hasAdmin) {
-      const { data: rpcHasAdmin } = await supabase.rpc('has_role', {
-        _user_id: session.user.id,
-        _role: 'admin'
-      });
-      hasAdmin = !!rpcHasAdmin;
-    }
-
-    if (!hasAdmin) {
-      toast.error("Access denied: Admin privileges required");
-      navigate("/");
-      return;
-    }
-
-    // Get user's customer_id
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setUserCustomerId(profile.customer_id);
-    }
-
-    setIsAdmin(true);
-    fetchCustomers();
-  };
-
-  const fetchCustomers = async () => {
-    setIsLoading(true);
-    const { data, error } = await supabase
-      .from("customers")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      toast.error("Failed to load customers");
-      console.error(error);
-    } else {
-      setCustomers(data || []);
-    }
-    setIsLoading(false);
-  };
+  
+  const quickActionCards = getQuickActionCards(navigate, setActiveView);
 
   const handleSignOut = async () => {
     if (isPreviewMode) {
@@ -182,19 +75,6 @@ const AdminDashboard = () => {
     }
     await supabase.auth.signOut();
     navigate("/auth");
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive"> = {
-      active: "default",
-      trial: "secondary",
-      inactive: "destructive",
-    };
-    return <Badge variant={variants[status] || "default"}>{status}</Badge>;
-  };
-
-  const getPlanBadge = (plan: string) => {
-    return <Badge variant="outline">{plan}</Badge>;
   };
 
   if (!isAdmin) {
@@ -254,65 +134,24 @@ const AdminDashboard = () => {
         
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/applications')}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Server className="h-5 w-5" />
-                Applications
-              </CardTitle>
-              <CardDescription>Manage system applications</CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/products')}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Server className="h-5 w-5" />
-                Products
-              </CardTitle>
-              <CardDescription>Manage product offerings</CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/modules')}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Server className="h-5 w-5" />
-                Module Management
-              </CardTitle>
-              <CardDescription>Enable/disable portals and modules</CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/cost-calculator')}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calculator className="h-5 w-5" />
-                Cost Calculator
-              </CardTitle>
-              <CardDescription>Calculate Lovable infrastructure costs</CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveView('ai-agents')}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bot className="h-5 w-5" />
-                AI Agents
-              </CardTitle>
-              <CardDescription>Monitor autonomous department agents</CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveView('ai-config')}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                AI Configuration
-              </CardTitle>
-              <CardDescription>Configure agents and automated tasks</CardDescription>
-            </CardHeader>
-          </Card>
+          {quickActionCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <Card 
+                key={card.id}
+                className="cursor-pointer hover:shadow-lg transition-shadow" 
+                onClick={card.onClick}
+              >
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Icon className="h-5 w-5" />
+                    {card.title}
+                  </CardTitle>
+                  <CardDescription>{card.description}</CardDescription>
+                </CardHeader>
+              </Card>
+            );
+          })}
         </div>
         
         <Card>
@@ -352,8 +191,14 @@ const AdminDashboard = () => {
                         <TableCell>{customer.contact_name}</TableCell>
                         <TableCell>{customer.email}</TableCell>
                         <TableCell>{customer.phone || "—"}</TableCell>
-                        <TableCell>{getStatusBadge(customer.status)}</TableCell>
-                        <TableCell>{getPlanBadge(customer.plan_type)}</TableCell>
+                        <TableCell>
+                          <Badge variant={getStatusBadgeVariant(customer.status)}>
+                            {customer.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{customer.plan_type}</Badge>
+                        </TableCell>
                         <TableCell>
                           {new Date(customer.created_at).toLocaleDateString()}
                         </TableCell>
