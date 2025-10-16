@@ -5,6 +5,16 @@
  * - AUTOMATIC_VALIDATION_PROCEDURES.md
  * - AI_WORK_PROCEDURES_CHECKLIST.md
  * 
+ * Validates:
+ * 1. TypeScript compilation
+ * 2. Database query safety (.single() usage)
+ * 3. Design system compliance (no hardcoded colors)
+ * 4. Security patterns
+ * 5. Edge function validation
+ * 6. Input validation coverage
+ * 7. ESLint rules
+ * 8. Documentation updates (RECENT_FIXES_2025_10_15.md, VALIDATION_PROCEDURES.md)
+ * 
  * Run this after every code change to ensure compliance.
  */
 
@@ -154,6 +164,35 @@ try {
 } catch (error) {
   warnings.push('ESLint warnings found');
   console.warn('⚠️  ESLint: Some warnings found\n');
+}
+
+// ===== 8. DOCUMENTATION UPDATES =====
+console.log('📚 Checking documentation updates...');
+try {
+  const recentFixesContent = readFileSync('RECENT_FIXES_2025_10_15.md', 'utf8');
+  const validationProceduresContent = readFileSync('VALIDATION_PROCEDURES.md', 'utf8');
+  
+  // Check if RECENT_FIXES has been updated recently (within last hour)
+  const recentFixesMatch = recentFixesContent.match(/\*\*Implementation Date\*\*:\s*(\d{4}-\d{2}-\d{2})/);
+  if (recentFixesMatch) {
+    const lastUpdateDate = recentFixesMatch[1];
+    const today = new Date().toISOString().split('T')[0];
+    
+    if (lastUpdateDate === today) {
+      console.log('✅ Documentation: RECENT_FIXES_2025_10_15.md updated today\n');
+    } else {
+      warnings.push('RECENT_FIXES_2025_10_15.md may need updating for recent changes');
+      console.warn('⚠️  Documentation: RECENT_FIXES_2025_10_15.md not updated today\n');
+      console.warn('   → Please document your changes in RECENT_FIXES_2025_10_15.md\n');
+    }
+  }
+  
+  // Reminder about validation procedures
+  console.log('📝 Reminder: Update VALIDATION_PROCEDURES.md if validation steps changed\n');
+  
+} catch (error) {
+  warnings.push('Could not verify documentation updates');
+  console.warn('⚠️  Documentation: Unable to verify updates\n');
 }
 
 // ===== SUMMARY =====
