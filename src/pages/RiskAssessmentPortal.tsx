@@ -5,20 +5,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { RiskAssessmentDialog } from "@/components/RiskAssessmentDialog";
+import { useRiskData } from "@/hooks/useRiskData";
+import { 
+  metricCards,
+  getRiskLevelColor,
+  getRiskLevelLabel,
+  getCategoryIcon,
+  getControlBadgeVariant,
+  getTreatmentBadgeVariant,
+  getTreatmentPriorityVariant,
+} from "@/lib/riskConfig";
 import { 
   Shield, 
   AlertTriangle, 
   CheckCircle2, 
   TrendingUp,
-  FileText,
   Target,
   Activity,
   Plus,
-  ExternalLink
+  ExternalLink,
+  FileText
 } from "lucide-react";
 
 const RiskAssessmentPortal = () => {
@@ -26,82 +34,9 @@ const RiskAssessmentPortal = () => {
   const [selectedTab, setSelectedTab] = useState("register");
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Fetch risk assessments
-  const { data: risks, isLoading: risksLoading, refetch: refetchRisks } = useQuery({
-    queryKey: ["risk-assessments"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("risk_assessments")
-        .select("*")
-        .order("inherent_score", { ascending: false });
-      
-      if (error) throw error;
-      return data || [];
-    },
-  });
+  const { risks, controls, treatments, stats, isLoading, refetchRisks } = useRiskData();
 
-  // Fetch risk controls
-  const { data: controls, isLoading: controlsLoading } = useQuery({
-    queryKey: ["risk-controls"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("risk_controls")
-        .select("*");
-      
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Fetch risk treatments
-  const { data: treatments, isLoading: treatmentsLoading } = useQuery({
-    queryKey: ["risk-treatments"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("risk_treatments")
-        .select("*");
-      
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Calculate statistics
-  const stats = {
-    totalRisks: risks?.length || 0,
-    criticalRisks: risks?.filter(r => r.inherent_score >= 15).length || 0,
-    highRisks: risks?.filter(r => r.inherent_score >= 10 && r.inherent_score < 15).length || 0,
-    mediumRisks: risks?.filter(r => r.inherent_score >= 6 && r.inherent_score < 10).length || 0,
-    lowRisks: risks?.filter(r => r.inherent_score < 6).length || 0,
-    treatedRisks: risks?.filter(r => r.status === 'treated' || r.status === 'monitored').length || 0,
-    activeControls: controls?.filter(c => c.implementation_status === 'implemented' || c.implementation_status === 'verified').length || 0,
-    pendingTreatments: treatments?.filter(t => t.status === 'pending' || t.status === 'in_progress').length || 0,
-  };
-
-  const getRiskLevelColor = (score: number) => {
-    if (score >= 15) return "destructive";
-    if (score >= 10) return "default";
-    if (score >= 6) return "secondary";
-    return "outline";
-  };
-
-  const getRiskLevelLabel = (score: number) => {
-    if (score >= 15) return "Critical";
-    if (score >= 10) return "High";
-    if (score >= 6) return "Medium";
-    return "Low";
-  };
-
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'cybersecurity': return <Shield className="h-4 w-4" />;
-      case 'operational': return <Activity className="h-4 w-4" />;
-      case 'compliance': return <FileText className="h-4 w-4" />;
-      default: return <AlertTriangle className="h-4 w-4" />;
-    }
-  };
-
-  if (risksLoading || controlsLoading || treatmentsLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
         <DashboardNavigation />
@@ -142,63 +77,28 @@ const RiskAssessmentPortal = () => {
 
         {/* Key Metrics */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Identified Risks</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalRisks}</div>
-              <p className="text-xs text-muted-foreground">
-                {stats.criticalRisks} critical, {stats.highRisks} high priority
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Risk Treatment Progress</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {stats.totalRisks > 0 ? Math.round((stats.treatedRisks / stats.totalRisks) * 100) : 0}%
-              </div>
-              <Progress 
-                value={stats.totalRisks > 0 ? (stats.treatedRisks / stats.totalRisks) * 100 : 0} 
-                className="mt-2" 
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                {stats.treatedRisks} of {stats.totalRisks} risks treated
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Controls</CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.activeControls}</div>
-              <p className="text-xs text-muted-foreground">
-                {controls?.length || 0} total controls deployed
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Actions</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.pendingTreatments}</div>
-              <p className="text-xs text-muted-foreground">
-                Treatment actions in progress
-              </p>
-            </CardContent>
-          </Card>
+          {metricCards.map((metric, index) => {
+            const Icon = metric.icon;
+            return (
+              <Card key={index}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
+                  <Icon className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {metric.getValue(stats)}
+                  </div>
+                  {metric.getProgress && (
+                    <Progress value={metric.getProgress(stats)} className="mt-2" />
+                  )}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {metric.getDescription(index === 2 ? controls : stats)}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Main Content Tabs */}
@@ -295,7 +195,7 @@ const RiskAssessmentPortal = () => {
                             <p className="text-sm text-muted-foreground mt-1">{control.control_description}</p>
                           </div>
                           <div className="flex flex-col gap-2">
-                            <Badge variant={control.implementation_status === 'implemented' || control.implementation_status === 'verified' ? 'default' : 'secondary'}>
+                            <Badge variant={getControlBadgeVariant(control.implementation_status)}>
                               {control.implementation_status}
                             </Badge>
                             {control.effectiveness_rating && (
@@ -349,13 +249,10 @@ const RiskAssessmentPortal = () => {
                             <p className="text-sm text-muted-foreground mt-1">{treatment.treatment_description}</p>
                           </div>
                           <div className="flex flex-col gap-2">
-                            <Badge variant={treatment.status === 'completed' ? 'default' : 'secondary'}>
+                            <Badge variant={getTreatmentBadgeVariant(treatment.status)}>
                               {treatment.status}
                             </Badge>
-                            <Badge variant={
-                              treatment.priority === 'critical' ? 'destructive' :
-                              treatment.priority === 'high' ? 'default' : 'outline'
-                            }>
+                            <Badge variant={getTreatmentPriorityVariant(treatment.priority)}>
                               {treatment.priority}
                             </Badge>
                           </div>
