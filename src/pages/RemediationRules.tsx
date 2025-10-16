@@ -49,7 +49,7 @@ export default function RemediationRules() {
         .from("user_profiles")
         .select("customer_id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       const { data, error } = await supabase
         .from("remediation_rules")

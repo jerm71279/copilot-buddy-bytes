@@ -33,7 +33,7 @@ export const useCustomerCustomization = (customerId?: string) => {
           .from('customer_customizations')
           .select('*')
           .eq('customer_id', customerId)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
         setCustomization(data as CustomerCustomization);
