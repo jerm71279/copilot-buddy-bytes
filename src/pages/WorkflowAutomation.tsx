@@ -1,14 +1,20 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { Zap, Play, Pause, Plus, Clock, CheckCircle2, GitBranch } from "lucide-react";
+import { Zap, Play, Pause, Plus, Clock } from "lucide-react";
+import { useAutomationData } from "@/hooks/useAutomationData";
+import { 
+  statCards, 
+  getStatusColor, 
+  getExecutionStatusColor, 
+  getExecutionIcon, 
+  getTriggerLabel,
+  dashboardLinks 
+} from "@/lib/automationConfig";
 
 /**
  * Workflow Automation Data Flow
@@ -65,126 +71,9 @@ import { Zap, Play, Pause, Plus, Clock, CheckCircle2, GitBranch } from "lucide-r
  * ```
  */
 
-interface Workflow {
-  id: string;
-  workflow_name: string;
-  description: string | null;
-  workflow_type: string;
-  is_active: boolean;
-  created_at: string;
-}
-
-interface WorkflowExecution {
-  id: string;
-  workflow_id: string;
-  status: string;
-  started_at: string;
-  completed_at: string | null;
-  error_message: string | null;
-  triggered_by: string;
-}
-
 export default function WorkflowAutomation() {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [workflows, setWorkflows] = useState<Workflow[]>([]);
-  const [executions, setExecutions] = useState<WorkflowExecution[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [stats, setStats] = useState({
-    total: 0,
-    active: 0,
-    executions: 0,
-    successRate: 0
-  });
-
-  useEffect(() => {
-    checkAuthAndLoad();
-  }, []);
-
-  const checkAuthAndLoad = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-      return;
-    }
-    await loadWorkflows();
-  };
-
-  const loadWorkflows = async () => {
-    try {
-      const [workflowsRes, executionsRes] = await Promise.all([
-        supabase.from('workflows').select('*').order('created_at', { ascending: false }),
-        supabase.from('workflow_executions').select('*').order('started_at', { ascending: false }).limit(20)
-      ]);
-
-      if (workflowsRes.error) throw workflowsRes.error;
-      if (executionsRes.error) throw executionsRes.error;
-
-      setWorkflows(workflowsRes.data || []);
-      setExecutions(executionsRes.data || []);
-
-      const total = workflowsRes.data?.length || 0;
-      const active = workflowsRes.data?.filter(w => w.is_active).length || 0;
-      const totalExecs = executionsRes.data?.length || 0;
-      const successExecs = executionsRes.data?.filter(e => e.status === 'completed').length || 0;
-      const successRate = totalExecs > 0 ? Math.round((successExecs / totalExecs) * 100) : 0;
-
-      setStats({ total, active, executions: totalExecs, successRate });
-    } catch (error) {
-      console.error('Error loading workflows:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load workflows",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const toggleWorkflowStatus = async (id: string, currentIsActive: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('workflows')
-        .update({ is_active: !currentIsActive })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: `Workflow ${!currentIsActive ? 'activated' : 'deactivated'}`
-      });
-
-      await loadWorkflows();
-    } catch (error) {
-      console.error('Error toggling workflow:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update workflow status",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const getStatusColor = (isActive: boolean) => {
-    return isActive ? "default" : "secondary";
-  };
-
-  const getExecutionStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      running: "default",
-      completed: "default",
-      failed: "destructive"
-    };
-    return colors[status] || "secondary";
-  };
-
-  const getExecutionIcon = (status: string) => {
-    if (status === 'completed') return <CheckCircle2 className="h-4 w-4 text-success" />;
-    if (status === 'running') return <Clock className="h-4 w-4 text-primary" />;
-    return <Clock className="h-4 w-4 text-muted-foreground" />;
-  };
+  const { workflows, executions, isLoading, stats, toggleWorkflowStatus } = useAutomationData();
 
   return (
     <div className="min-h-screen bg-background">
@@ -193,20 +82,7 @@ export default function WorkflowAutomation() {
       <main className="container mx-auto px-4 pt-56 pb-8">
         <DashboardNavigation 
           title="Workflow Automation"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
+          dashboards={dashboardLinks}
         />
         
         <div className="flex justify-between items-center mb-6">
@@ -221,53 +97,21 @@ export default function WorkflowAutomation() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <GitBranch className="h-4 w-4" />
-                Total Workflows
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.total}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Zap className="h-4 w-4" />
-                Active Workflows
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-success">{stats.active}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Play className="h-4 w-4" />
-                Executions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.executions}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4" />
-                Success Rate
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-success">{stats.successRate}%</div>
-            </CardContent>
-          </Card>
+          {statCards.map(({ icon: Icon, label, key, suffix = '', colorClass = '' }) => (
+            <Card key={key}>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${colorClass}`}>
+                  {stats[key]}{suffix}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         <Tabs defaultValue="workflows" className="space-y-4">
@@ -366,10 +210,7 @@ export default function WorkflowAutomation() {
                               {workflows.find(w => w.id === execution.workflow_id)?.workflow_name || 'Unknown Workflow'}
                             </p>
                             <p className="text-sm text-muted-foreground mt-1">
-                              {execution.triggered_by === 'manual' && '👤 Manual execution'}
-                              {execution.triggered_by === 'webhook' && '🔗 Webhook trigger'}
-                              {execution.triggered_by === 'schedule' && '⏰ Scheduled run'}
-                              {!['manual', 'webhook', 'schedule'].includes(execution.triggered_by) && `Triggered: ${execution.triggered_by}`}
+                              {getTriggerLabel(execution.triggered_by)}
                             </p>
                             <p className="text-xs text-muted-foreground mt-1">
                               Started {new Date(execution.started_at).toLocaleString()}
