@@ -10,6 +10,12 @@ These procedures run AUTOMATICALLY after every code change and before marking an
 
 After making ANY code changes, you MUST automatically run these checks:
 
+### IMPORTANT: Validation Loop Handling
+- **If validation finds issues and you fix them → RE-RUN validation on the fixes**
+- **Maximum 3 validation passes** to prevent infinite loops
+- **On each pass, only validate the files you just changed**
+- **After 3 passes with remaining issues → Report to user and ask for guidance**
+
 ### Database Query Validation
 ```bash
 # AUTOMATIC CHECKS:
@@ -342,6 +348,26 @@ if (!name) {
 2. **Before marking task complete** → Completion Checklist
 3. **When pattern detected** → Apply Pattern Detection Rules
 4. **By file type** → Run File-Type Specific Triggers
+5. **After fixing validation issues** → Re-run validation on fixes (max 3 passes)
+
+### Validation Loop Logic:
+
+**Pass 1:** Run validation on user's requested changes
+- Find issues → Fix them
+- Track which files were modified
+
+**Pass 2:** Run validation ONLY on files modified in Pass 1
+- Find more issues → Fix them
+- Track new modifications
+
+**Pass 3:** Run validation ONLY on files modified in Pass 2
+- Find issues → Fix what's critical
+- If issues remain → Report to user
+
+**After Pass 3:** If issues still exist, inform user:
+- "Fixed critical issues in 3 validation passes"
+- "Remaining issues require your input: [list issues]"
+- Don't continue looping
 
 ### Never Skip:
 
@@ -376,7 +402,7 @@ if (!name) {
 
 ---
 
-## 9. EXAMPLE WORKFLOW
+## 9. EXAMPLE WORKFLOW WITH VALIDATION LOOP
 
 ### User Request: "Add a new feature to display user profiles"
 
@@ -387,24 +413,51 @@ if (!name) {
    - Plan database schema changes
    - Identify security requirements
 
-2. **WHILE coding:**
+2. **WHILE coding (Initial Changes):**
    - Use .maybeSingle() for SELECT queries
    - Use semantic tokens for colors
    - Add input validation
    - Add loading states
 
-3. **AFTER coding (AUTOMATIC):**
+3. **VALIDATION PASS 1 (AUTOMATIC):**
    ```bash
-   ✓ Search for `.single()` → Found 0 instances
-   ✓ Search for hardcoded colors → Found 0 instances
+   ✓ Search for `.single()` → Found 2 instances in UserProfile.tsx
+   ✓ Search for hardcoded colors → Found 1 in ProfileCard.tsx
    ✓ Check TypeScript → 0 errors
    ✓ Verify RLS policies → All tables covered
    ✓ Check input validation → All inputs validated
    ```
+   **Action:** Fix the 3 issues found
+   - Change `.single()` to `.maybeSingle()` (2 places)
+   - Replace hardcoded color with semantic token (1 place)
 
-4. **RESPONSE to user:**
+4. **VALIDATION PASS 2 (AUTOMATIC - Re-check only UserProfile.tsx and ProfileCard.tsx):**
+   ```bash
+   ✓ Search for `.single()` → Found 0 instances
+   ✓ Search for hardcoded colors → Found 0 instances
+   ✓ Check TypeScript → 0 errors
+   ✓ All fixes verified
+   ```
+   **Result:** All issues resolved, no Pass 3 needed
+
+5. **RESPONSE to user:**
    - "Created user profile feature with proper validation and security"
-   - Don't need to mention automatic checks unless issue found
+   - (Don't mention validation passes unless user asks)
+
+### Example with Max Passes Reached
+
+**VALIDATION PASS 3 (AUTOMATIC):**
+   ```bash
+   ✓ Search for `.single()` → Found 0 instances
+   ✓ Search for hardcoded colors → Found 0 instances
+   ✓ Check TypeScript → 1 error (complex type inference issue)
+   ```
+   **Action:** 3 passes reached, report to user
+   
+**RESPONSE to user:**
+   - "Created user profile feature with validation and security"
+   - "Note: TypeScript warning in [file] requires review - [brief description]"
+   - "Feature is functional but type can be refined if needed"
 
 ---
 
