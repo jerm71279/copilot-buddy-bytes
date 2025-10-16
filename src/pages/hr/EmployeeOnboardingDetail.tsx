@@ -317,7 +317,7 @@ export default function EmployeeOnboardingDetail() {
                 <Briefcase className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Employment Type</p>
-                  <p className="font-medium capitalize">{onboarding.employment_type.replace('-', ' ')}</p>
+                  <p className="font-medium capitalize">{onboarding.employment_type ? onboarding.employment_type.replace('-', ' ') : 'Not specified'}</p>
                 </div>
               </div>
 
