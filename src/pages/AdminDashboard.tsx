@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { AutonomousAgentMonitor } from "@/components/AutonomousAgentMonitor";
+import { AIAgentConfiguration } from "@/components/AIAgentConfiguration";
 
 
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
@@ -233,6 +234,7 @@ const AdminDashboard = () => {
                   {activeView === 'mcp-configure' && 'Configure New Server'}
                   {activeView === 'mcp-ai' && 'AI MCP Generator'}
                   {activeView === 'ai-agents' && 'Autonomous AI Agents'}
+                  {activeView === 'ai-config' && 'AI Agent Configuration'}
                 </CardTitle>
                 <Button variant="ghost" size="sm" onClick={() => setActiveView(null)}>
                   Close
@@ -254,6 +256,7 @@ const AdminDashboard = () => {
                 />
               )}
               {activeView === 'ai-agents' && <AutonomousAgentMonitor />}
+              {activeView === 'ai-config' && <AIAgentConfiguration />}
             </CardContent>
           </Card>
         )}
@@ -317,6 +320,16 @@ const AdminDashboard = () => {
                 AI Agents
               </CardTitle>
               <CardDescription>Monitor autonomous department agents</CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveView('ai-config')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                AI Configuration
+              </CardTitle>
+              <CardDescription>Configure agents and automated tasks</CardDescription>
             </CardHeader>
           </Card>
         </div>
