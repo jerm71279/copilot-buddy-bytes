@@ -1,6 +1,36 @@
 # Recent Fixes - October 15, 2025
 
-## Employee Onboarding Dashboard Auto-Refresh (Latest)
+## Employee Directory Access Restriction (Latest)
+
+**Implementation Date**: 2025-10-16
+**Security Enhancement**: Restricted Employee Directory access to HR Dashboard only
+
+### Problem
+Employee Directory was accessible from Employee Portal navigation, allowing all employees to view sensitive HR data including employment status, potentially salaries, and other PII.
+
+### Solution
+Removed Employee Directory from employee-facing navigation:
+- Removed from Employee Portal lanes (`DashboardPortalLanes.tsx`)
+- Removed from Employee Onboarding breadcrumb navigation
+- Now only accessible through HR Dashboard at `/employees`
+
+### Files Modified
+- `src/components/DashboardPortalLanes.tsx` - Removed "Employees" from Employee Portal children
+- `src/pages/hr/EmployeeOnboardingDashboard.tsx` - Removed Employee Directory from navigation breadcrumbs
+
+### Impact
+- Enhanced security: PII access restricted to authorized HR personnel
+- Regular employees can no longer browse employee directory
+- Maintains HR access via HR Dashboard card
+
+### Validation Results
+- ✅ 0 `.single()` violations
+- ✅ 0 hardcoded colors
+- ✅ TypeScript: No errors
+
+---
+
+## Employee Onboarding Dashboard Auto-Refresh
 
 **Implementation Date**: 2025-10-16
 **Bug Fix**: Dashboard not updating count after completing employee onboarding

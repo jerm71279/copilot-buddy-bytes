@@ -126,7 +126,6 @@ export default function EmployeeOnboardingDashboard() {
           title="Employee Onboarding"
           dashboards={[
             { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "Employee Directory", path: "/employees" },
             { name: "Departments", path: "/departments" },
           ]}
         />

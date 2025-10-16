@@ -58,7 +58,6 @@ const portals: Portal[] = [
     name: "Employee Portal",
     path: "/portal",
     children: [
-      { name: "Employees", path: "/employees" },
       { name: "Departments", path: "/departments" },
       { name: "Leave Requests", path: "/leave-management" },
       { name: "Time Tracking", path: "/time-tracking" },
