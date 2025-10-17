@@ -64,33 +64,36 @@ serve(async (req) => {
     const url = sanitize((requestData as any).url, 2000);
     const source = sanitize((requestData as any).source, 200);
 
-    // Strict UUID sanitizer with hex inspection
+    // Smart UUID sanitizer - only rejects all-zero or malformed UUIDs
     const sanitizeUuid = (val: unknown): string | null => {
       if (!val) return null;
       
-      // Convert to string and inspect bytes
+      // Convert to string
       const raw = String(val);
       const bytes = Array.from(raw).map((ch) => ch.charCodeAt(0));
-      const hasNull = bytes.includes(0);
       
-      console.log('UUID inspection:', {
+      // Check if it's all zeros (the real red flag)
+      const allZeros = bytes.every((b) => b === 0) || 
+                       raw === '00000000-0000-0000-0000-000000000000';
+      
+      console.log('UUID validation:', {
         raw: raw.substring(0, 50),
         length: raw.length,
-        hasNull,
-        firstBytes: bytes.slice(0, 16),
+        allZeros,
+        hex: bytes.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join(''),
       });
       
-      if (hasNull) {
-        console.warn('UUID contains null bytes - rejecting');
+      if (allZeros) {
+        console.warn('All-zero UUID detected - rejecting');
         return null;
       }
       
-      // Clean and validate
-      const cleaned = sanitize(raw, 50).toLowerCase();
-      const uuidV4Like = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+      // Clean and validate format (allow any byte values in the string)
+      const cleaned = raw.toLowerCase().trim();
+      const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
       
-      if (!uuidV4Like.test(cleaned)) {
-        console.warn('Invalid UUID format:', cleaned);
+      if (!uuidPattern.test(cleaned)) {
+        console.warn('Invalid UUID format:', cleaned.substring(0, 50));
         return null;
       }
       
