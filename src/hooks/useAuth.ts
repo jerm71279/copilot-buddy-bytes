@@ -185,4 +185,3 @@ function useAuthSingleton() {
 
   return { ...state, requireAuth, requireCustomer, signOut, refresh };
 }
-
