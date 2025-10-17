@@ -98,7 +98,12 @@ const IntelligentAssistant = () => {
   };
 
   const handleSend = async () => {
-    if (!input.trim() || !customerId || !userId) return;
+    if (!input.trim() || !userId) {
+      if (!userId) {
+        toast.error("Not authenticated. Please sign in again.");
+      }
+      return;
+    }
 
     const userMessage: Message = {
       role: "user",
@@ -117,7 +122,7 @@ const IntelligentAssistant = () => {
           body: {
             query: input,
             conversationId: conversationId,
-            customerId: customerId,
+            customerId: customerId || null,
             userId: userId,
           },
         }
@@ -379,7 +384,7 @@ const IntelligentAssistant = () => {
                 />
                 <Button
                   onClick={handleSend}
-                  disabled={isLoading || !input.trim()}
+                  disabled={isLoading || !input.trim() || !userId}
                 >
                   <Send className="h-4 w-4" />
                 </Button>
