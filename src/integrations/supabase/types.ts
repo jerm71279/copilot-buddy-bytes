@@ -4398,6 +4398,7 @@ export type Database = {
           global_insight_id: string | null
           id: string
           impact_score: number | null
+          insight_data: Json | null
           insight_type: string
           last_detected_at: string | null
           metadata: Json | null
@@ -4418,6 +4419,7 @@ export type Database = {
           global_insight_id?: string | null
           id?: string
           impact_score?: number | null
+          insight_data?: Json | null
           insight_type: string
           last_detected_at?: string | null
           metadata?: Json | null
@@ -4438,6 +4440,7 @@ export type Database = {
           global_insight_id?: string | null
           id?: string
           impact_score?: number | null
+          insight_data?: Json | null
           insight_type?: string
           last_detected_at?: string | null
           metadata?: Json | null
@@ -5679,12 +5682,14 @@ export type Database = {
           id: string
           impact_level: string | null
           implementation_complexity: string | null
+          insight_data: Json | null
           insight_type: string
           metadata: Json | null
           priority: number | null
-          recommended_actions: Json | null
+          recommended_actions: string[] | null
           reviewed_at: string | null
           reviewed_by: string | null
+          source_insight_count: number | null
           source_insight_ids: string[]
           status: string | null
           title: string
@@ -5700,12 +5705,14 @@ export type Database = {
           id?: string
           impact_level?: string | null
           implementation_complexity?: string | null
+          insight_data?: Json | null
           insight_type: string
           metadata?: Json | null
           priority?: number | null
-          recommended_actions?: Json | null
+          recommended_actions?: string[] | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          source_insight_count?: number | null
           source_insight_ids?: string[]
           status?: string | null
           title: string
@@ -5721,12 +5728,14 @@ export type Database = {
           id?: string
           impact_level?: string | null
           implementation_complexity?: string | null
+          insight_data?: Json | null
           insight_type?: string
           metadata?: Json | null
           priority?: number | null
-          recommended_actions?: Json | null
+          recommended_actions?: string[] | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          source_insight_count?: number | null
           source_insight_ids?: string[]
           status?: string | null
           title?: string
@@ -5891,36 +5900,47 @@ export type Database = {
           correlation_strength: number | null
           correlation_type: string
           customer_id: string
-          description: string | null
+          department_insight_1_id: string
+          department_insight_2_id: string
           discovered_at: string | null
+          global_insight_id: string | null
           id: string
-          insight_a_id: string
-          insight_b_id: string
           metadata: Json | null
+          relationship_description: string | null
         }
         Insert: {
           correlation_strength?: number | null
           correlation_type: string
           customer_id: string
-          description?: string | null
+          department_insight_1_id: string
+          department_insight_2_id: string
           discovered_at?: string | null
+          global_insight_id?: string | null
           id?: string
-          insight_a_id: string
-          insight_b_id: string
           metadata?: Json | null
+          relationship_description?: string | null
         }
         Update: {
           correlation_strength?: number | null
           correlation_type?: string
           customer_id?: string
-          description?: string | null
+          department_insight_1_id?: string
+          department_insight_2_id?: string
           discovered_at?: string | null
+          global_insight_id?: string | null
           id?: string
-          insight_a_id?: string
-          insight_b_id?: string
           metadata?: Json | null
+          relationship_description?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "insight_correlations_global_insight_id_fkey"
+            columns: ["global_insight_id"]
+            isOneToOne: false
+            referencedRelation: "global_insights"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       insight_feedback: {
         Row: {
@@ -12074,6 +12094,15 @@ export type Database = {
           updated_by: string | null
           version: string | null
           warranty_expiry: string | null
+        }
+        Relationships: []
+      }
+      insight_data_flow: {
+        Row: {
+          customer_count: number | null
+          department_count: number | null
+          insight_count: number | null
+          layer: string | null
         }
         Relationships: []
       }
