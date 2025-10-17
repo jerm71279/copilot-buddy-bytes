@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
+import { removeControlCharacters } from "@/lib/sanitization";
 
 // Validation schemas
 const loginSchema = z.object({
@@ -123,10 +124,10 @@ const ClientAuth = () => {
             await supabase.from('audit_logs').insert({
               user_id: data.user.id,
               customer_id: profileData.customer_id,
-              system_name: 'auth',
-              action_type: 'customer_login_success',
+              system_name: removeControlCharacters('auth'),
+              action_type: removeControlCharacters('customer_login_success'),
               action_details: { 
-                email: validatedData.email,
+                email: removeControlCharacters(validatedData.email),
                 timestamp: new Date().toISOString() 
               },
               compliance_tags: ['security', 'authentication', 'customer_portal']
@@ -199,10 +200,10 @@ const ClientAuth = () => {
         await supabase.from('audit_logs').insert({
           user_id: signUpData.user.id,
           customer_id: validatedData.customerId,
-          system_name: 'auth',
-          action_type: 'customer_signup_completed',
+          system_name: removeControlCharacters('auth'),
+          action_type: removeControlCharacters('customer_signup_completed'),
           action_details: {
-            email: validatedData.email,
+            email: removeControlCharacters(validatedData.email),
             completed_at: new Date().toISOString()
           },
           compliance_tags: ['security', 'authentication', 'customer_portal']

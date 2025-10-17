@@ -14,6 +14,7 @@ import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
 
 import { userProfileSchema, sanitizeText } from "@/lib/validation";
+import { removeControlCharacters } from "@/lib/sanitization";
 import { handleUserSignUp, handleUserSignIn } from "@/lib/authHelpers";
 import { 
   getOrCreateDefaultCustomer, 
@@ -206,10 +207,10 @@ const Auth = () => {
             await supabase.from('audit_logs').insert({
               user_id: data.user.id,
               customer_id: profileData.customer_id,
-              system_name: 'auth',
-              action_type: 'login_success',
+              system_name: removeControlCharacters('auth'),
+              action_type: removeControlCharacters('login_success'),
               action_details: { 
-                email: validatedData.email,
+                email: removeControlCharacters(validatedData.email),
                 timestamp: new Date().toISOString() 
               },
               compliance_tags: ['security', 'authentication']
