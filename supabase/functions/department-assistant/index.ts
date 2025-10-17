@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
+import { getAuthContext } from '../_shared/supabaseAuth.ts';
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
@@ -154,42 +154,31 @@ serve(async (req) => {
       useContextInjection = true 
     } = validatedInput;
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
 
     if (!lovableApiKey) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Get user's customer_id
+    // Get authorization header and authenticate user
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       throw new Error("No authorization header");
     }
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
-    
-    if (authError || !user) {
-      throw new Error("Unauthorized");
-    }
+
+    // Use shared auth module for authentication and customer context
+    const { supabase, userId, customerId } = await getAuthContext(authHeader);
 
     const { data: userProfile } = await supabase
       .from("user_profiles")
-      .select("customer_id, department")
-      .eq("user_id", user.id)
+      .select("department")
+      .eq("user_id", userId)
       .maybeSingle();
 
     if (!userProfile) {
       throw new Error("User profile not found");
     }
-
-    const customerId = userProfile.customer_id;
-    const userDepartment = userProfile.department || department;
+    const userDepartment = userProfile?.department || department;
 
     // Get department LLM configuration
     const { data: deptConfig } = await supabase
@@ -363,7 +352,7 @@ serve(async (req) => {
         // Track template usage
         await supabase.from("prompt_usage").insert({
           customer_id: customerId,
-          user_id: user.id,
+          user_id: userId,
           template_id: templateId,
           prompt_text: query,
           context_injected: contextInjected.length > 0 ? { items: contextInjected } : {}
@@ -513,17 +502,17 @@ serve(async (req) => {
       const { data: insertedConvs } = await supabase.from("conversation_history").insert([
         {
           customer_id: customerId,
-          user_id: user.id,
+          user_id: userId,
           department,
-          conversation_id: user.id, // Could be enhanced with proper conversation tracking
+          conversation_id: userId, // Could be enhanced with proper conversation tracking
           role: "user",
           content: query,
         },
         {
           customer_id: customerId,
-          user_id: user.id,
+          user_id: userId,
           department,
-          conversation_id: user.id,
+          conversation_id: userId,
           role: "assistant",
           content: assistantMessage.content || "Response generated",
           tool_calls: assistantMessage.tool_calls,
@@ -540,7 +529,7 @@ serve(async (req) => {
     // Phase 2: Insight Generation
     // Check for patterns and generate insights after storing conversation
     try {
-      await generateInsightsIfNeeded(supabase, customerId, department, user.id, query, assistantMessage.content, conversationIds);
+      await generateInsightsIfNeeded(supabase, customerId, department, userId, query, assistantMessage.content, conversationIds);
     } catch (err) {
       console.error("Failed to generate insights:", err);
     }

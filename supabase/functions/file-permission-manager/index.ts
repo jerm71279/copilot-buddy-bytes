@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.58.0';
+import { getAuthContext } from '../_shared/supabaseAuth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,11 +20,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    );
-
+    // Authenticate user and get context
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
@@ -33,15 +29,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-
-    if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const { supabase, userId, customerId } = await getAuthContext(authHeader);
 
     // Validate request body
     const rawBody = await req.json();
@@ -63,11 +51,11 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get user's customer_id
+    // Get user's customer_id (redundant since we have it from shared auth, but keeping for validation)
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('customer_id')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .maybeSingle();
 
     if (!profile) {
@@ -81,7 +69,7 @@ Deno.serve(async (req) => {
 
     switch (action) {
       case 'grant':
-        result = await grantPermission(requestData as PermissionRequest, profile.customer_id, user.id, supabase);
+        result = await grantPermission(requestData as PermissionRequest, customerId, userId, supabase);
         break;
       case 'revoke':
         result = await revokePermission(requestData.permission_id, supabase);

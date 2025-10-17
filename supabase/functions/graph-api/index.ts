@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
+import { getAuthContext } from '../_shared/supabaseAuth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,11 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Get the user's session
+    // Authenticate user and get context
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       console.error('Missing authorization header');
@@ -32,8 +28,10 @@ serve(async (req) => {
       );
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    const { supabase, userId, customerId } = await getAuthContext(authHeader);
+
+    // Get the user object to access provider metadata
+    const { data: { user }, error: userError } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
     
     if (userError || !user) {
       console.error('Invalid user token:', userError);
@@ -50,7 +48,7 @@ serve(async (req) => {
     }
 
     const { endpoint, method = 'GET', body } = await req.json();
-    console.log(`User ${user.id} requesting: ${method} ${endpoint}`);
+    console.log(`User ${userId} requesting: ${method} ${endpoint}`);
 
     // Check if user signed in with Azure (Microsoft 365)
     const provider = user.app_metadata?.provider;
@@ -74,7 +72,7 @@ serve(async (req) => {
     const providerRefreshToken = user.user_metadata?.provider_refresh_token;
 
     if (!providerToken) {
-      console.error('No provider token found for user:', user.id);
+      console.error('No provider token found for user:', userId);
       return new Response(
         JSON.stringify({ 
           error: 'Microsoft access token not found. Please sign out and sign in again with Microsoft 365.',

@@ -1,6 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getAuthContext } from '../_shared/supabaseAuth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,17 +13,13 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
     if (!lovableApiKey) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Authenticate user
+    // Authenticate user and get context
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
@@ -32,24 +28,16 @@ serve(async (req) => {
       );
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const { supabase, userId, customerId } = await getAuthContext(authHeader);
 
     // Get user profile
     const { data: profile } = await supabase
       .from('user_profiles')
-      .select('customer_id, department')
-      .eq('user_id', user.id)
-      .single();
+      .select('department')
+      .eq('user_id', userId)
+      .maybeSingle();
 
-    if (!profile?.customer_id) {
+    if (!profile) {
       return new Response(
         JSON.stringify({ error: 'User profile not found' }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -104,9 +92,9 @@ serve(async (req) => {
       
       // Log failed execution
       await supabase.from('ai_pattern_executions').insert({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         pattern_id: patternId,
-        user_id: user.id,
+        user_id: userId,
         department: profile.department,
         input_text: inputText,
         success: false,
@@ -128,9 +116,9 @@ serve(async (req) => {
     const { error: logError } = await supabase
       .from('ai_pattern_executions')
       .insert({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         pattern_id: patternId,
-        user_id: user.id,
+        user_id: userId,
         department: profile.department,
         input_text: inputText,
         output_text: outputText,
@@ -151,8 +139,8 @@ serve(async (req) => {
 
     // Also log to ai_interactions for Layer 1 learning
     await supabase.from('ai_interactions').insert({
-      customer_id: profile.customer_id,
-      user_id: user.id,
+      customer_id: customerId,
+      user_id: userId,
       department: profile.department,
       query: inputText,
       response: outputText,
