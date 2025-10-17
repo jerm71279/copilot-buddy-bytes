@@ -1,6 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { getAuthContext } from '../_shared/supabaseAuth.ts';
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { extractKeywords, calculateTextSimilarity } from '../_shared/textUtils.ts';
+import { calculateFrequencyConfidence } from '../_shared/confidenceScoring.ts';
+import { 
+  detectRepeatedQueries, 
+  detectBottlenecks, 
+  detectOpportunities,
+  detectAllPatterns 
+} from '../_shared/patternDetection.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,7 +30,7 @@ const assistantRequestSchema = z.object({
 // Maximum payload size (2MB)
 const MAX_PAYLOAD_SIZE = 2 * 1024 * 1024;
 
-// Insight generation helper function
+// Insight generation using shared pattern detection modules
 async function generateInsightsIfNeeded(
   supabase: any,
   customerId: string,
@@ -45,82 +53,59 @@ async function generateInsightsIfNeeded(
     return; // Need at least 10 conversations to detect patterns
   }
 
-  // Detect knowledge gaps (repeated similar questions)
-  const queryLower = userQuery.toLowerCase();
-  const similarQuestions = recentConvs.filter((conv: any) => 
-    conv.role === "user" && 
-    conv.content.toLowerCase().includes(queryLower.split(' ')[0])
-  );
+  // Use shared pattern detection module to detect all patterns at once
+  const patterns = detectAllPatterns(recentConvs as any[], {
+    minFrequency: 3,
+    minConfidence: 0.65,
+    timeWindowDays: 7
+  });
 
-  if (similarQuestions.length >= 3) {
+  console.log(`Detected ${patterns.length} patterns for ${department}`);
+
+  // Process detected patterns and store as insights
+  for (const pattern of patterns) {
     // Check if insight already exists
     const { data: existingInsight } = await supabase
       .from("department_insights")
       .select("id, frequency_count")
       .eq("customer_id", customerId)
       .eq("department", department)
-      .eq("insight_type", "knowledge_gap")
-      .ilike("title", `%${queryLower.split(' ').slice(0, 3).join(' ')}%`)
+      .eq("insight_type", pattern.patternType)
+      .ilike("title", `%${pattern.title.slice(0, 30)}%`)
       .maybeSingle();
 
     if (existingInsight) {
-      // Update existing insight
+      // Update existing insight with incremented frequency
       await supabase
         .from("department_insights")
         .update({
           frequency_count: existingInsight.frequency_count + 1,
           last_detected_at: new Date().toISOString(),
-          affected_users: supabase.rpc('increment', { x: 1 })
+          confidence_score: pattern.confidence,
+          impact_score: pattern.impact
         })
         .eq("id", existingInsight.id);
     } else {
-      // Create new insight
+      // Create new insight from detected pattern
       await supabase
         .from("department_insights")
         .insert({
           customer_id: customerId,
           department,
-          insight_type: "knowledge_gap",
-          title: `Frequent questions about: ${userQuery.split(' ').slice(0, 5).join(' ')}`,
-          description: `Users in ${department} are repeatedly asking similar questions, indicating a potential knowledge gap. Consider creating a knowledge article or updating existing documentation.`,
-          confidence_score: 0.75,
-          impact_score: 7,
-          supporting_interactions: conversationIds,
-          affected_users: 1,
-          frequency_count: similarQuestions.length,
+          insight_type: pattern.patternType,
+          title: pattern.title,
+          description: pattern.description,
+          confidence_score: pattern.confidence,
+          impact_score: pattern.impact,
+          supporting_interactions: pattern.supportingConversations.slice(0, 10),
+          affected_users: pattern.affectedUsers || 1,
+          frequency_count: pattern.frequency,
           metadata: {
-            sample_questions: similarQuestions.slice(0, 3).map((q: any) => q.content),
-            detection_method: "repeated_query_pattern"
-          }
-        });
-    }
-  }
-
-  // Detect bottleneck patterns (questions about delays, issues, blockers)
-  const bottleneckKeywords = ['stuck', 'blocked', 'delay', 'waiting', 'slow', 'issue', 'problem', 'not working'];
-  if (bottleneckKeywords.some(kw => queryLower.includes(kw))) {
-    const bottleneckConvs = recentConvs.filter((conv: any) =>
-      conv.role === "user" && 
-      bottleneckKeywords.some(kw => conv.content.toLowerCase().includes(kw))
-    );
-
-    if (bottleneckConvs.length >= 5) {
-      await supabase
-        .from("department_insights")
-        .insert({
-          customer_id: customerId,
-          department,
-          insight_type: "bottleneck",
-          title: `Recurring workflow bottleneck detected in ${department}`,
-          description: `Multiple users are reporting issues with delays or blockers. This may indicate a process bottleneck that needs attention.`,
-          confidence_score: 0.80,
-          impact_score: 8,
-          supporting_interactions: bottleneckConvs.slice(0, 10).map((c: any) => c.id),
-          affected_users: new Set(bottleneckConvs.map((c: any) => c.user_id)).size,
-          frequency_count: bottleneckConvs.length,
-          metadata: {
-            common_issues: bottleneckConvs.slice(0, 5).map((c: any) => c.content),
-            detection_method: "bottleneck_keyword_analysis"
+            detection_method: "shared_pattern_detection_module",
+            pattern_details: pattern.metadata,
+            evidence_count: pattern.supportingConversations.length,
+            common_keywords: pattern.commonKeywords,
+            common_phrases: pattern.commonPhrases
           }
         });
     }

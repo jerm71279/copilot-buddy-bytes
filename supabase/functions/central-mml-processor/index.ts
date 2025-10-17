@@ -1,4 +1,12 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { extractKeywords, findCommonKeywords } from '../_shared/textUtils.ts';
+import { calculateCorrelationConfidence } from '../_shared/confidenceScoring.ts';
+import { 
+  calculateCorrelation, 
+  findCorrelations, 
+  determineCorrelationType,
+  CorrelationType 
+} from '../_shared/correlationEngine.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -103,8 +111,8 @@ async function processCustomerInsights(supabase: any, customerId: string): Promi
 
   console.log(`  📈 Processing ${insights.length} insights for customer ${customerId}`);
 
-  // Identify cross-department patterns
-  const correlations = await findCorrelations(insights);
+  // Identify cross-department patterns using shared module
+  const correlations = await findCorrelationsWrapper(insights);
   console.log(`  🔗 Found ${correlations.length} potential correlations`);
   
   // Store correlations
@@ -123,106 +131,44 @@ async function processCustomerInsights(supabase: any, customerId: string): Promi
   return { insights: generatedInsights, correlations: storedCorrelations };
 }
 
-async function findCorrelations(insights: DepartmentInsight[]): Promise<CorrelationCandidate[]> {
-  const correlations: CorrelationCandidate[] = [];
+// Use shared correlation module for finding correlations
+async function findCorrelationsWrapper(insights: DepartmentInsight[]): Promise<CorrelationCandidate[]> {
+  // Transform insights into format expected by shared module
+  const insightData = insights.map(i => ({
+    id: i.id,
+    title: i.title,
+    description: i.description,
+    insight_type: i.insight_type,
+    department: i.department,
+    confidence_score: i.confidence_score,
+    impact_score: i.impact_score,
+    first_detected_at: i.first_detected_at,
+    affected_users: i.affected_users,
+    frequency_count: i.frequency_count,
+    metadata: i.metadata
+  }));
 
-  // Only look for cross-department correlations
-  for (let i = 0; i < insights.length; i++) {
-    for (let j = i + 1; j < insights.length; j++) {
-      const insight1 = insights[i];
-      const insight2 = insights[j];
+  // Use shared correlation engine with cross-department filter
+  const correlationResults = findCorrelations(insightData, {
+    minStrength: 0.5,
+    maxPairs: 100, // Analyze up to 100 pairs
+    requireCrossDepartment: true
+  });
 
-      // Skip if same department
-      if (insight1.department === insight2.department) continue;
+  // Sort by strength and take top 10
+  const topCorrelations = correlationResults
+    .sort((a, b) => b.strength - a.strength)
+    .slice(0, 10);
 
-      // Calculate correlation
-      const correlation = calculateCorrelation(insight1, insight2);
-      
-      // Only keep strong correlations (>= 50%)
-      if (correlation.strength >= 0.5) {
-        correlations.push(correlation);
-      }
-    }
-  }
-
-  // Return top 10 strongest correlations
-  return correlations.sort((a, b) => b.strength - a.strength).slice(0, 10);
-}
-
-function calculateCorrelation(
-  insight1: DepartmentInsight,
-  insight2: DepartmentInsight
-): CorrelationCandidate {
-  let strength = 0;
-  let correlationType: 'positive' | 'negative' | 'causal' = 'positive';
-  const evidence: any = {};
-
-  // 1. Temporal proximity (occurred within 48 hours)
-  if (insight1.first_detected_at && insight2.first_detected_at) {
-    const timeDiff = Math.abs(
-      new Date(insight1.first_detected_at).getTime() - 
-      new Date(insight2.first_detected_at).getTime()
-    );
-    const hoursDiff = timeDiff / (1000 * 60 * 60);
-    
-    if (hoursDiff <= 48) {
-      strength += 0.3;
-      evidence.temporalProximity = `${hoursDiff.toFixed(0)} hours apart`;
-    }
-  }
-
-  // 2. Similar insight types
-  if (insight1.insight_type === insight2.insight_type) {
-    strength += 0.2;
-    evidence.sameType = insight1.insight_type;
-  }
-
-  // 3. Related keywords in descriptions
-  const keywords1 = extractKeywords(insight1.description + ' ' + insight1.title);
-  const keywords2 = extractKeywords(insight2.description + ' ' + insight2.title);
-  const commonKeywords = keywords1.filter(k => keywords2.includes(k));
-  
-  if (commonKeywords.length > 0) {
-    strength += Math.min(0.3, commonKeywords.length * 0.1);
-    evidence.commonKeywords = commonKeywords;
-  }
-
-  // 4. Similar impact levels
-  const impactDiff = Math.abs(insight1.impact_score - insight2.impact_score);
-  if (impactDiff <= 2) {
-    strength += 0.2;
-    evidence.similarImpact = true;
-  }
-
-  // Determine correlation type based on insight patterns
-  if (insight1.insight_type === 'bottleneck' && insight2.insight_type === 'bottleneck') {
-    correlationType = 'causal';
-  } else if (insight1.insight_type === 'opportunity' && insight2.insight_type === 'opportunity') {
-    correlationType = 'positive';
-  } else if (
-    (insight1.insight_type === 'risk' && insight2.insight_type === 'bottleneck') ||
-    (insight1.insight_type === 'bottleneck' && insight2.insight_type === 'risk')
-  ) {
-    correlationType = 'causal';
-  }
-
-  return {
-    insight1,
-    insight2,
-    strength: Math.min(1, strength),
-    correlationType,
-    evidence
-  };
-}
-
-function extractKeywords(text: string): string[] {
-  const stopWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'is', 'are', 'was', 'were', 'this', 'that', 'from'];
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s]/g, ' ')
-    .split(/\s+/)
-    .filter(word => word.length > 3 && !stopWords.includes(word))
-    .slice(0, 15);
+  // Transform results back to our format
+  return topCorrelations.map(c => ({
+    insight1: c.insight1 as any as DepartmentInsight,
+    insight2: c.insight2 as any as DepartmentInsight,
+    strength: c.strength,
+    correlationType: c.correlationType === CorrelationType.POSITIVE ? 'positive' :
+                     c.correlationType === CorrelationType.NEGATIVE ? 'negative' : 'causal',
+    evidence: c.evidence
+  }));
 }
 
 async function storeCorrelation(

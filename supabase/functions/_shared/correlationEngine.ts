@@ -182,7 +182,7 @@ export function calculateCorrelation(
 /**
  * Determine the most appropriate correlation type
  */
-function determineCorrelationType(
+export function determineCorrelationType(
   insight1: CorrelationInsight,
   insight2: CorrelationInsight,
   evidence: any
