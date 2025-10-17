@@ -8,12 +8,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Plus } from "lucide-react";
+import Navigation from "@/components/Navigation";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 interface Vendor {
   id: string;
   vendor_name: string;
   vendor_type: string;
   documentation_url?: string;
+  website_url?: string;
+  is_active: boolean;
+}
+
+interface DocumentationVendor {
+  id: string;
+  customer_id: string;
+  vendor_name: string;
+  vendor_type: string;
+  website_url: string | null;
+  documentation_url: string | null;
+  support_email: string | null;
+  support_phone: string | null;
+  notes: string | null;
+  is_active: boolean;
+  created_at: string;
+  created_by: string;
 }
 
 export default function DocumentationIngestion() {
@@ -35,17 +54,19 @@ export default function DocumentationIngestion() {
 
   const loadVendors = async () => {
     const { data } = await supabase
-      .from('documentation_vendors')
+      .from('documentation_vendors' as any)
       .select('*')
       .eq('is_active', true)
       .order('vendor_name');
     
     if (data) {
-      const mappedVendors = data.map(v => ({
+      const mappedVendors: Vendor[] = data.map((v: any) => ({
         id: v.id,
         vendor_name: v.vendor_name,
         vendor_type: v.vendor_type,
-        documentation_url: v.documentation_url || undefined
+        documentation_url: v.documentation_url || undefined,
+        website_url: v.website_url || undefined,
+        is_active: v.is_active
       }));
       setVendors(mappedVendors);
       if (mappedVendors.length > 0 && !selectedVendorId) {
@@ -86,7 +107,7 @@ export default function DocumentationIngestion() {
       }
 
       const { data, error } = await supabase
-        .from('documentation_vendors')
+        .from('documentation_vendors' as any)
         .insert({
           customer_id: profile.customer_id,
           vendor_name: newVendorName,
@@ -95,7 +116,7 @@ export default function DocumentationIngestion() {
           documentation_url: newVendorDocs || null,
           created_by: user.id,
           is_active: true
-        } as any)
+        })
         .select()
         .single();
 
@@ -114,7 +135,7 @@ export default function DocumentationIngestion() {
       loadVendors();
       
       if (data) {
-        setSelectedVendorId(data.id);
+        setSelectedVendorId((data as any).id);
       }
     } catch (error) {
       console.error('Error adding vendor:', error);
@@ -210,8 +231,11 @@ export default function DocumentationIngestion() {
   };
 
   return (
-    <div className="container mx-auto p-8">
-      <Card>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <DashboardNavigation />
+      <main className="container mx-auto p-8 space-y-6">
+        <Card>
         <CardHeader>
           <CardTitle>Documentation Ingestion</CardTitle>
           <CardDescription>
@@ -329,6 +353,7 @@ export default function DocumentationIngestion() {
           </Button>
         </CardContent>
       </Card>
+      </main>
     </div>
   );
 }

@@ -79,13 +79,13 @@ export default function VendorManagement() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from("vendors")
+        .from("vendors" as any)
         .select("*")
         .eq("customer_id", customerId!)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setVendors(data || []);
+      setVendors((data || []) as any);
     } catch (error) {
       console.error("Error fetching vendors:", error);
       toast.error("Failed to load vendors");
@@ -99,7 +99,7 @@ export default function VendorManagement() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !customerId) return;
 
-      const { error } = await supabase.from("vendors").insert([{
+      const { error } = await supabase.from("vendors" as any).insert([{
         customer_id: customerId,
         vendor_code: '',
         vendor_name: newVendor.vendor_name,

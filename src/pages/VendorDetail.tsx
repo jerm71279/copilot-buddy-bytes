@@ -113,14 +113,14 @@ export default function VendorDetail() {
 
       // Fetch vendor
       const { data: vendorData, error: vendorError } = await supabase
-        .from("vendors")
+        .from("vendors" as any)
         .select("*")
         .eq("id", id!)
         .eq("customer_id", customerId!)
         .maybeSingle();
 
       if (vendorError) throw vendorError;
-      setVendor(vendorData);
+      setVendor(vendorData as any);
 
       // Fetch contracts
       const { data: contractsData, error: contractsError } = await supabase

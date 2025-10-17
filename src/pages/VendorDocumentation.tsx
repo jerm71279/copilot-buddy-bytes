@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
+import Navigation from "@/components/Navigation";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 interface Vendor {
   id: string;
@@ -168,8 +170,11 @@ export default function VendorDocumentation() {
   };
 
   return (
-    <div className="container mx-auto p-8">
-      <Card>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <DashboardNavigation />
+      <main className="container mx-auto p-8 space-y-6">
+        <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
@@ -344,6 +349,7 @@ export default function VendorDocumentation() {
           </Table>
         </CardContent>
       </Card>
+      </main>
     </div>
   );
 }
