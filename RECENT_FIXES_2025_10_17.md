@@ -1,5 +1,44 @@
 # Recent Fixes & Updates - October 17, 2025
 
+## Profile Settings Page - NEW FEATURE ✅
+
+**Date:** 2025-10-17 3:00 AM
+**Status:** Complete & Production Ready
+**Purpose:** Allow users to change their customer association through UI
+
+### What Was Created
+
+New profile settings page that allows users to:
+- View their current customer association
+- Change customer association from dropdown
+- See their profile information
+- Get instant feedback on changes
+
+### Files Created
+
+1. **`src/pages/ProfileSettings.tsx`** - Main settings page
+   - Lists all available customers
+   - Shows current association
+   - Secure update mechanism
+   - Real-time profile refresh
+
+### Files Modified
+
+- **`src/App.tsx`** - Added ProfileSettings route at `/profile-settings`
+
+### Key Features
+
+- **Secure**: Only users can update their own profile
+- **User-friendly**: Simple dropdown selection
+- **Real-time**: Immediate profile refresh after update
+- **Protected**: Route requires authentication
+
+### Usage
+
+Navigate to `/profile-settings` to change your customer association.
+
+---
+
 ## Slack UI Refactoring - MODULARIZED & OPTIMIZED ✅
 
 **Date:** 2025-10-17 2:00 AM

@@ -32,6 +32,7 @@ import SIEMDashboard from "./pages/SIEMDashboard";
 import RiskAssessmentPortal from "./pages/RiskAssessmentPortal";
 import SharePointSync from "./pages/SharePointSync";
 import SlackSync from "./pages/SlackSync";
+import ProfileSettings from "./pages/ProfileSettings";
 import IntelligentAssistant from "./pages/IntelligentAssistant";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -311,6 +312,13 @@ const App = () => (
           <Route path="/slack-sync" element={
             <ProtectedRoute>
               <SlackSync />
+            </ProtectedRoute>
+          } />
+          
+          {/* Profile Settings - Protected */}
+          <Route path="/profile-settings" element={
+            <ProtectedRoute>
+              <ProfileSettings />
             </ProtectedRoute>
           } />
           
