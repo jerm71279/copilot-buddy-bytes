@@ -18,18 +18,27 @@ serve(async (req) => {
 
     const requestData = await req.json();
 
-    // Validate input
-    if (!requestData || typeof requestData !== 'object') {
+    // Validate input (explicit null and type checks)
+    const isObject = requestData !== null && typeof requestData === 'object';
+    if (!isObject) {
       return new Response(
         JSON.stringify({ error: 'Invalid request body' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const url = String(requestData.url || '').slice(0, 2000);
-    const source = String(requestData.source || '').slice(0, 200);
-    const customerId = requestData.customerId;
-    const vendorId = requestData.vendorId || null;
+    // Basic sanitizer for all inbound strings
+    const sanitize = (val: unknown, max = 2000) =>
+      String(val ?? '')
+        .replace(/[\x00-\x1F\x7F]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, max);
+
+    const url = sanitize((requestData as any).url, 2000);
+    const source = sanitize((requestData as any).source, 200);
+    const customerId = (requestData as any).customerId;
+    const vendorId = (requestData as any).vendorId || null;
 
     if (!url || !source || !customerId) {
       return new Response(
@@ -49,18 +58,21 @@ serve(async (req) => {
     const html = await fetchResponse.text();
     
     // Extract text content (basic HTML to text conversion)
-    const textContent = html
+    const rawContent = html
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
       .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-      .replace(/<[^>]+>/g, ' ')
-      // Remove null bytes and control characters that DB validation forbids
+      .replace(/<[^>]+>/g, ' ');
+
+    // Final sanitize and cap to 50k for DB safety
+    const textContent = (rawContent || '')
       .replace(/[\x00-\x1F\x7F]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()
-      .slice(0, 50000); // Limit to 50k characters
+      .slice(0, 50000);
 
-    // Generate title from URL
-    const title = `${source} - ${url.split('/').pop() || 'Documentation'}`;
+    // Generate title from URL and sanitize
+    let title = `${source} - ${url.split('/').pop() || 'Documentation'}`;
+    title = title.replace(/[\x00-\x1F\x7F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
 
     // Insert into knowledge_articles
     const { data: article, error } = await supabase
