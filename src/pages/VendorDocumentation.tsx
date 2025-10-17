@@ -174,119 +174,118 @@ export default function VendorDocumentation() {
       <Navigation />
       <DashboardNavigation />
       <main className="container mx-auto p-8 space-y-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-bold">Vendor Documentation Management</h1>
+            <p className="text-muted-foreground">Manage vendors and their documentation sources</p>
+          </div>
+          <Dialog open={showDialog} onOpenChange={setShowDialog}>
+            <DialogTrigger asChild>
+              <Button onClick={() => {
+                setEditingVendor(null);
+                setFormData({
+                  vendor_name: "",
+                  vendor_type: "firewall",
+                  website_url: "",
+                  documentation_url: "",
+                  support_email: "",
+                  support_phone: "",
+                  notes: ""
+                });
+              }}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Vendor
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>{editingVendor ? 'Edit' : 'Add'} Vendor</DialogTitle>
+                <DialogDescription>
+                  {editingVendor ? 'Update' : 'Create'} vendor information
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid grid-cols-2 gap-4 py-4">
+                <div>
+                  <Label htmlFor="vendor_name">Vendor Name *</Label>
+                  <Input
+                    id="vendor_name"
+                    value={formData.vendor_name}
+                    onChange={(e) => setFormData({...formData, vendor_name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="vendor_type">Type *</Label>
+                  <Select value={formData.vendor_type} onValueChange={(value) => setFormData({...formData, vendor_type: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="firewall">Firewall</SelectItem>
+                      <SelectItem value="network">Network</SelectItem>
+                      <SelectItem value="security">Security</SelectItem>
+                      <SelectItem value="software">Software</SelectItem>
+                      <SelectItem value="cloud">Cloud</SelectItem>
+                      <SelectItem value="hardware">Hardware</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="col-span-2">
+                  <Label htmlFor="website_url">Website URL</Label>
+                  <Input
+                    id="website_url"
+                    value={formData.website_url}
+                    onChange={(e) => setFormData({...formData, website_url: e.target.value})}
+                    placeholder="https://example.com"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Label htmlFor="documentation_url">Documentation URL</Label>
+                  <Input
+                    id="documentation_url"
+                    value={formData.documentation_url}
+                    onChange={(e) => setFormData({...formData, documentation_url: e.target.value})}
+                    placeholder="https://docs.example.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="support_email">Support Email</Label>
+                  <Input
+                    id="support_email"
+                    value={formData.support_email}
+                    onChange={(e) => setFormData({...formData, support_email: e.target.value})}
+                    placeholder="support@example.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="support_phone">Support Phone</Label>
+                  <Input
+                    id="support_phone"
+                    value={formData.support_phone}
+                    onChange={(e) => setFormData({...formData, support_phone: e.target.value})}
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Label htmlFor="notes">Notes</Label>
+                  <Input
+                    id="notes"
+                    value={formData.notes}
+                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                    placeholder="Additional notes..."
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={handleSave} disabled={!formData.vendor_name}>
+                  {editingVendor ? 'Update' : 'Create'} Vendor
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
         <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>Vendor Documentation Management</CardTitle>
-              <CardDescription>
-                Manage vendors and their documentation sources
-              </CardDescription>
-            </div>
-            <Dialog open={showDialog} onOpenChange={setShowDialog}>
-              <DialogTrigger asChild>
-                <Button onClick={() => {
-                  setEditingVendor(null);
-                  setFormData({
-                    vendor_name: "",
-                    vendor_type: "firewall",
-                    website_url: "",
-                    documentation_url: "",
-                    support_email: "",
-                    support_phone: "",
-                    notes: ""
-                  });
-                }}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Vendor
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>{editingVendor ? 'Edit' : 'Add'} Vendor</DialogTitle>
-                  <DialogDescription>
-                    {editingVendor ? 'Update' : 'Create'} vendor information
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid grid-cols-2 gap-4 py-4">
-                  <div>
-                    <Label htmlFor="vendor_name">Vendor Name *</Label>
-                    <Input
-                      id="vendor_name"
-                      value={formData.vendor_name}
-                      onChange={(e) => setFormData({...formData, vendor_name: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="vendor_type">Type *</Label>
-                    <Select value={formData.vendor_type} onValueChange={(value) => setFormData({...formData, vendor_type: value})}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="firewall">Firewall</SelectItem>
-                        <SelectItem value="network">Network</SelectItem>
-                        <SelectItem value="security">Security</SelectItem>
-                        <SelectItem value="software">Software</SelectItem>
-                        <SelectItem value="cloud">Cloud</SelectItem>
-                        <SelectItem value="hardware">Hardware</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="col-span-2">
-                    <Label htmlFor="website_url">Website URL</Label>
-                    <Input
-                      id="website_url"
-                      value={formData.website_url}
-                      onChange={(e) => setFormData({...formData, website_url: e.target.value})}
-                      placeholder="https://example.com"
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <Label htmlFor="documentation_url">Documentation URL</Label>
-                    <Input
-                      id="documentation_url"
-                      value={formData.documentation_url}
-                      onChange={(e) => setFormData({...formData, documentation_url: e.target.value})}
-                      placeholder="https://docs.example.com"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="support_email">Support Email</Label>
-                    <Input
-                      id="support_email"
-                      value={formData.support_email}
-                      onChange={(e) => setFormData({...formData, support_email: e.target.value})}
-                      placeholder="support@example.com"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="support_phone">Support Phone</Label>
-                    <Input
-                      id="support_phone"
-                      value={formData.support_phone}
-                      onChange={(e) => setFormData({...formData, support_phone: e.target.value})}
-                      placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <Label htmlFor="notes">Notes</Label>
-                    <Input
-                      id="notes"
-                      value={formData.notes}
-                      onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                      placeholder="Additional notes..."
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button onClick={handleSave} disabled={!formData.vendor_name}>
-                    {editingVendor ? 'Update' : 'Create'} Vendor
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
+          <CardTitle>Vendors</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
