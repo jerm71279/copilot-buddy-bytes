@@ -100,14 +100,24 @@ serve(async (req) => {
       return cleaned;
     };
 
-    const customerId = sanitizeUuid((requestData as any).customerId);
-    const vendorId = sanitizeUuid((requestData as any).vendorId);
+    let customerId = sanitizeUuid((requestData as any).customerId);
+    let vendorId = sanitizeUuid((requestData as any).vendorId);
     
     if (!customerId) {
       return new Response(
         JSON.stringify({ error: 'Invalid or missing customerId' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Additional safety: strip any null bytes that might exist at byte level
+    const stripNullBytes = (str: string): string => {
+      return str.split('').filter(ch => ch.charCodeAt(0) !== 0).join('');
+    };
+    
+    customerId = stripNullBytes(customerId);
+    if (vendorId) {
+      vendorId = stripNullBytes(vendorId);
     }
 
     if (!url || !source || !customerId) {
