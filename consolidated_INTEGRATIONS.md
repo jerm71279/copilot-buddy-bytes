@@ -25,9 +25,10 @@ This file consolidates all integration-related documentation.
 4. **NINJAONE_API_KEY** + **NINJAONE_INSTANCE** - IT management and RMM integration
 5. **CIPP_API_KEY** + **CIPP_BASE_URL** - Microsoft 365 tenant management via CIPP
 6. **SHAREPOINT_CLIENT_ID** + **SHAREPOINT_CLIENT_SECRET** - SharePoint document sync
+7. **KEEPER_API_KEY** - Keeper Security credential vault integration (enterprise password management)
 
 ### Optional for AI Features
-7. **OPENAI_API_KEY** - Only needed if not using Lovable AI models (Lovable AI covers most use cases without external API keys)
+8. **OPENAI_API_KEY** - Only needed if not using Lovable AI models (Lovable AI covers most use cases without external API keys)
 
 ### Configuration Status
 - ✅ Supabase configuration: Complete
