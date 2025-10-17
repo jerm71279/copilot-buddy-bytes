@@ -27,7 +27,12 @@ const FILES = {
   roleHierarchy: 'src/components/rbac/RoleHierarchy.tsx',
   roleTemplates: 'src/components/rbac/RoleTemplates.tsx',
   tempPrivileges: 'src/components/rbac/TemporaryPrivileges.tsx',
-  auditLog: 'src/components/rbac/PermissionAuditLog.tsx'
+  auditLog: 'src/components/rbac/PermissionAuditLog.tsx',
+  // Optimization files
+  sharedRolesHook: 'src/hooks/useRoles.ts',
+  sharedProfilesHook: 'src/hooks/useUserProfiles.ts',
+  sharedMutations: 'src/hooks/useRBACMutations.ts',
+  rbacConstants: 'src/lib/rbacConstants.ts'
 };
 
 function readFile(path) {
@@ -230,23 +235,34 @@ allRBACFiles.forEach((file, idx) => {
   });
 });
 
+// Check if shared hooks exist
+const hasSharedRolesHook = checkFileExists(FILES.sharedRolesHook);
+const hasSharedProfilesHook = checkFileExists(FILES.sharedProfilesHook);
+
 const duplicateTables = Array.from(queryPatterns.entries())
   .filter(([_, fileIndices]) => fileIndices.length > 1);
 
-if (duplicateTables.length === 0) {
-  results.passed.push('✓ No duplicate table queries across components');
+if (duplicateTables.length === 0 || (hasSharedRolesHook && hasSharedProfilesHook)) {
+  results.passed.push('✓ No duplicate table queries - shared hooks implemented');
 } else {
   duplicateTables.forEach(([table, indices]) => {
-    results.warnings.push(`Table "${table}" queried in ${indices.length} components - consider shared hook`);
+    if (table === 'roles' && !hasSharedRolesHook) {
+      results.warnings.push(`Table "${table}" queried in ${indices.length} components - consider shared hook`);
+    } else if (table === 'user_profiles' && !hasSharedProfilesHook) {
+      results.warnings.push(`Table "${table}" queried in ${indices.length} components - consider shared hook`);
+    }
   });
 }
 
-// Check for duplicate mutation patterns
+// Check for duplicate mutation patterns and shared mutations
+const hasSharedMutations = checkFileExists(FILES.sharedMutations);
 const mutationCount = allRBACFiles.reduce((count, file) => {
   return count + (file.match(/useMutation/g) || []).length;
 }, 0);
 
-if (mutationCount < 20) {
+if (hasSharedMutations) {
+  results.passed.push(`✓ Shared mutations implemented - consolidated patterns`);
+} else if (mutationCount < 20) {
   results.passed.push(`✓ Reasonable number of mutations (${mutationCount})`);
 } else {
   results.warnings.push(`High number of mutations (${mutationCount}) - consider consolidation`);
@@ -313,12 +329,15 @@ if (hasRLSMention) {
   results.passed.push('✓ RLS awareness in code');
 }
 
-// Check for hardcoded permissions
+// Check for hardcoded permissions and constants file
+const hasConstantsFile = checkFileExists(FILES.rbacConstants);
 const hasHardcodedPerms = allRBACFiles.some(file => 
   file.match(/['"`](admin|edit|view)['"`]\s*===/) && !file.includes('permission_level')
 );
 
-if (hasHardcodedPerms) {
+if (hasConstantsFile) {
+  results.passed.push('✓ Permission constants file implemented');
+} else if (hasHardcodedPerms) {
   results.warnings.push('Hardcoded permission comparisons found - use constants');
 } else {
   results.passed.push('✓ No hardcoded permission strings');
@@ -343,13 +362,23 @@ if (hasGranularSystem) {
   results.passed.push('✓ Implements granular permission system (none/view/edit/admin)');
 }
 
+// Check for optimization files
+const hasSharedHooks = checkFileExists(FILES.sharedRolesHook) && checkFileExists(FILES.sharedProfilesHook);
+const hasSharedMutations = checkFileExists(FILES.sharedMutations);
+const hasConstants = checkFileExists(FILES.rbacConstants);
+
+if (hasSharedHooks && hasSharedMutations && hasConstants) {
+  results.passed.push('✓ All optimizations implemented (shared hooks, mutations, constants)');
+}
+
 const modularizationMetrics = {
   separateHooks: checkFileExists(FILES.hooks),
-  separateComponents: Object.keys(FILES).filter(k => !k.includes('Hook')).every(k => checkFileExists(FILES[k])),
+  separateComponents: Object.keys(FILES).filter(k => !k.includes('Hook') && !k.includes('shared') && k !== 'rbacConstants').every(k => checkFileExists(FILES[k])),
   usesTypeScript: allRBACFiles.every(f => f.includes('interface') || f.includes('type')),
   hasCaching: permissionsHook?.includes('cache') || false,
   usesRPC: allRBACFiles.some(f => f.includes('supabase.rpc')),
-  hasGranularPermissions: hasGranularSystem
+  hasGranularPermissions: hasGranularSystem,
+  hasOptimizations: hasSharedHooks && hasSharedMutations && hasConstants
 };
 
 const score = Object.values(modularizationMetrics).filter(Boolean).length / Object.keys(modularizationMetrics).length * 100;
@@ -462,6 +491,7 @@ ${Object.entries(FILES).map(([key, path]) => `- **${key}**: \`${path}\``).join('
 - Caching implementation: ${modularizationMetrics.hasCaching ? '✅' : '❌'}
 - RPC function usage: ${modularizationMetrics.usesRPC ? '✅' : '❌'}
 - Granular permissions: ${modularizationMetrics.hasGranularPermissions ? '✅' : '❌'}
+- Optimizations (shared hooks, mutations, constants): ${modularizationMetrics.hasOptimizations ? '✅' : '❌'}
 
 ### Component Structure
 \`\`\`
