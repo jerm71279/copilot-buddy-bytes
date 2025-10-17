@@ -180,6 +180,11 @@ const App = () => (
               <Portal />
             </ProtectedRoute>
           } />
+          <Route path="/employeeportal" element={
+            <ProtectedRoute>
+              <Portal />
+            </ProtectedRoute>
+          } />
           
           {/* Analytics Portal - Protected but no admin required */}
           <Route path="/analytics" element={
