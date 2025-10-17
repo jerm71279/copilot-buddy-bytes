@@ -17,12 +17,12 @@ interface Vendor {
   id: string;
   vendor_name: string;
   vendor_type: string;
-  website_url?: string;
+  website?: string;
   documentation_url?: string;
-  support_email?: string;
-  support_phone?: string;
+  contact_email?: string;
+  contact_phone?: string;
   notes?: string;
-  is_active: boolean;
+  status?: string;
   created_at: string;
 }
 
@@ -30,15 +30,15 @@ export default function VendorDocumentation() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [showDialog, setShowDialog] = useState(false);
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
-  const [formData, setFormData] = useState({
-    vendor_name: "",
-    vendor_type: "firewall",
-    website_url: "",
-    documentation_url: "",
-    support_email: "",
-    support_phone: "",
-    notes: ""
-  });
+const [formData, setFormData] = useState({
+  vendor_name: "",
+  vendor_type: "firewall",
+  website: "",
+  documentation_url: "",
+  contact_email: "",
+  contact_phone: "",
+  notes: ""
+});
   const { toast } = useToast();
 
   useEffect(() => {
@@ -103,9 +103,18 @@ export default function VendorDocumentation() {
       }
 
       if (editingVendor) {
+        const payload = {
+          vendor_name: formData.vendor_name,
+          vendor_type: formData.vendor_type,
+          website: formData.website || null,
+          documentation_url: formData.documentation_url || null,
+          contact_email: formData.contact_email || null,
+          contact_phone: formData.contact_phone || null,
+          notes: formData.notes || null,
+        };
         const { error } = await supabase
           .from('documentation_vendors')
-          .update(formData)
+          .update(payload)
           .eq('id', editingVendor.id);
 
         if (error) throw error;
@@ -115,14 +124,21 @@ export default function VendorDocumentation() {
           description: "Vendor information has been updated successfully",
         });
       } else {
+        const insertPayload = {
+          vendor_name: formData.vendor_name,
+          vendor_type: formData.vendor_type,
+          website: formData.website || null,
+          documentation_url: formData.documentation_url || null,
+          contact_email: formData.contact_email || null,
+          contact_phone: formData.contact_phone || null,
+          notes: formData.notes || null,
+          customer_id: profile.customer_id,
+          created_by: user.id,
+          status: 'active'
+        };
         const { error } = await supabase
           .from('documentation_vendors')
-          .insert({
-            ...formData,
-            customer_id: profile.customer_id,
-            created_by: user.id,
-            is_active: true
-          } as any);
+          .insert(insertPayload as any);
 
         if (error) throw error;
 
@@ -134,15 +150,15 @@ export default function VendorDocumentation() {
 
       setShowDialog(false);
       setEditingVendor(null);
-      setFormData({
-        vendor_name: "",
-        vendor_type: "firewall",
-        website_url: "",
-        documentation_url: "",
-        support_email: "",
-        support_phone: "",
-        notes: ""
-      });
+setFormData({
+  vendor_name: "",
+  vendor_type: "firewall",
+  website: "",
+  documentation_url: "",
+  contact_email: "",
+  contact_phone: "",
+  notes: ""
+});
       loadVendors();
     } catch (error) {
       console.error('Error saving vendor:', error);
@@ -156,15 +172,15 @@ export default function VendorDocumentation() {
 
   const handleEdit = (vendor: Vendor) => {
     setEditingVendor(vendor);
-    setFormData({
-      vendor_name: vendor.vendor_name,
-      vendor_type: vendor.vendor_type,
-      website_url: vendor.website_url || "",
-      documentation_url: vendor.documentation_url || "",
-      support_email: vendor.support_email || "",
-      support_phone: vendor.support_phone || "",
-      notes: vendor.notes || ""
-    });
+setFormData({
+  vendor_name: vendor.vendor_name,
+  vendor_type: vendor.vendor_type,
+  website: vendor.website || "",
+  documentation_url: vendor.documentation_url || "",
+  contact_email: vendor.contact_email || "",
+  contact_phone: vendor.contact_phone || "",
+  notes: vendor.notes || ""
+});
     setShowDialog(true);
   };
 
@@ -209,15 +225,15 @@ export default function VendorDocumentation() {
             <DialogTrigger asChild>
               <Button onClick={() => {
                 setEditingVendor(null);
-                setFormData({
-                  vendor_name: "",
-                  vendor_type: "firewall",
-                  website_url: "",
-                  documentation_url: "",
-                  support_email: "",
-                  support_phone: "",
-                  notes: ""
-                });
+setFormData({
+  vendor_name: "",
+  vendor_type: "firewall",
+  website: "",
+  documentation_url: "",
+  contact_email: "",
+  contact_phone: "",
+  notes: ""
+});
               }}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Vendor
@@ -256,13 +272,13 @@ export default function VendorDocumentation() {
                   </Select>
                 </div>
                 <div className="col-span-2">
-                  <Label htmlFor="website_url">Website URL</Label>
-                  <Input
-                    id="website_url"
-                    value={formData.website_url}
-                    onChange={(e) => setFormData({...formData, website_url: e.target.value})}
-                    placeholder="https://example.com"
-                  />
+<Label htmlFor="website">Website URL</Label>
+<Input
+  id="website"
+  value={formData.website}
+  onChange={(e) => setFormData({...formData, website: e.target.value})}
+  placeholder="https://example.com"
+/>
                 </div>
                 <div className="col-span-2">
                   <Label htmlFor="documentation_url">Documentation URL</Label>
@@ -274,22 +290,22 @@ export default function VendorDocumentation() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="support_email">Support Email</Label>
-                  <Input
-                    id="support_email"
-                    value={formData.support_email}
-                    onChange={(e) => setFormData({...formData, support_email: e.target.value})}
-                    placeholder="support@example.com"
-                  />
+<Label htmlFor="contact_email">Support Email</Label>
+<Input
+  id="contact_email"
+  value={formData.contact_email}
+  onChange={(e) => setFormData({...formData, contact_email: e.target.value})}
+  placeholder="support@example.com"
+/>
                 </div>
                 <div>
-                  <Label htmlFor="support_phone">Support Phone</Label>
-                  <Input
-                    id="support_phone"
-                    value={formData.support_phone}
-                    onChange={(e) => setFormData({...formData, support_phone: e.target.value})}
-                    placeholder="+1 (555) 123-4567"
-                  />
+<Label htmlFor="contact_phone">Support Phone</Label>
+<Input
+  id="contact_phone"
+  value={formData.contact_phone}
+  onChange={(e) => setFormData({...formData, contact_phone: e.target.value})}
+  placeholder="+1 (555) 123-4567"
+/>
                 </div>
                 <div className="col-span-2">
                   <Label htmlFor="notes">Notes</Label>
@@ -334,12 +350,12 @@ export default function VendorDocumentation() {
                     <Badge variant="outline">{vendor.vendor_type}</Badge>
                   </TableCell>
                   <TableCell>
-                    {vendor.website_url && (
-                      <a href={vendor.website_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
-                        <ExternalLink className="h-3 w-3" />
-                        Visit
-                      </a>
-                    )}
+{vendor.website && (
+  <a href={vendor.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+    <ExternalLink className="h-3 w-3" />
+    Visit
+  </a>
+)}
                   </TableCell>
                   <TableCell>
                     {vendor.documentation_url && (
@@ -350,13 +366,13 @@ export default function VendorDocumentation() {
                     )}
                   </TableCell>
                   <TableCell className="text-sm">
-                    {vendor.support_email && <div>{vendor.support_email}</div>}
-                    {vendor.support_phone && <div className="text-muted-foreground">{vendor.support_phone}</div>}
+{vendor.contact_email && <div>{vendor.contact_email}</div>}
+{vendor.contact_phone && <div className="text-muted-foreground">{vendor.contact_phone}</div>}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={vendor.is_active ? "default" : "secondary"}>
-                      {vendor.is_active ? "Active" : "Inactive"}
-                    </Badge>
+<Badge variant={vendor.status === 'active' ? "default" : "secondary"}>
+  {vendor.status === 'active' ? "Active" : "Inactive"}
+</Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">

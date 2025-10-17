@@ -16,8 +16,8 @@ interface Vendor {
   vendor_name: string;
   vendor_type: string;
   documentation_url?: string;
-  website_url?: string;
-  is_active: boolean;
+  website?: string;
+  status?: string;
 }
 
 interface DocumentationVendor {
@@ -56,18 +56,18 @@ export default function DocumentationIngestion() {
     const { data } = await supabase
       .from('documentation_vendors' as any)
       .select('*')
-      .eq('is_active', true)
+.eq('status', 'active')
       .order('vendor_name');
     
     if (data) {
-      const mappedVendors: Vendor[] = data.map((v: any) => ({
-        id: v.id,
-        vendor_name: v.vendor_name,
-        vendor_type: v.vendor_type,
-        documentation_url: v.documentation_url || undefined,
-        website_url: v.website_url || undefined,
-        is_active: v.is_active
-      }));
+const mappedVendors: Vendor[] = data.map((v: any) => ({
+  id: v.id,
+  vendor_name: v.vendor_name,
+  vendor_type: v.vendor_type,
+  documentation_url: v.documentation_url || undefined,
+  website: v.website || undefined,
+  status: v.status
+}));
       setVendors(mappedVendors);
       if (mappedVendors.length > 0 && !selectedVendorId) {
         setSelectedVendorId(mappedVendors[0].id);
@@ -106,19 +106,19 @@ export default function DocumentationIngestion() {
         return;
       }
 
-      const { data, error } = await supabase
-        .from('documentation_vendors' as any)
-        .insert({
-          customer_id: profile.customer_id,
-          vendor_name: newVendorName,
-          vendor_type: newVendorType,
-          website_url: newVendorWebsite || null,
-          documentation_url: newVendorDocs || null,
-          created_by: user.id,
-          is_active: true
-        })
-        .select()
-        .single();
+const { data, error } = await supabase
+  .from('documentation_vendors' as any)
+  .insert({
+    customer_id: profile.customer_id,
+    vendor_name: newVendorName,
+    vendor_type: newVendorType,
+    website: newVendorWebsite || null,
+    documentation_url: newVendorDocs || null,
+    created_by: user.id,
+    status: 'active'
+  })
+  .select()
+  .single();
 
       if (error) throw error;
 

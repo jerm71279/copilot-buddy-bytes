@@ -4686,6 +4686,7 @@ export type Database = {
           credit_limit: number | null
           current_balance: number | null
           customer_id: string
+          documentation_url: string | null
           id: string
           insurance_info: Json | null
           notes: string | null
@@ -4720,6 +4721,7 @@ export type Database = {
           credit_limit?: number | null
           current_balance?: number | null
           customer_id: string
+          documentation_url?: string | null
           id?: string
           insurance_info?: Json | null
           notes?: string | null
@@ -4754,6 +4756,7 @@ export type Database = {
           credit_limit?: number | null
           current_balance?: number | null
           customer_id?: string
+          documentation_url?: string | null
           id?: string
           insurance_info?: Json | null
           notes?: string | null
