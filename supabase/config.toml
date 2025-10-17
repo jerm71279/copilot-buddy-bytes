@@ -104,3 +104,9 @@ verify_jwt = true
 
 [functions.azure-event-grid-webhook]
 verify_jwt = false
+
+[functions.keeper-sync]
+verify_jwt = true
+
+[functions.keeper-get-credential]
+verify_jwt = true
