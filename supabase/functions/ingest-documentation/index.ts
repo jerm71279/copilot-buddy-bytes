@@ -146,18 +146,69 @@ serve(async (req) => {
 
     console.log('Payload sanitized, inserting article...');
 
-    const { data: article, error } = await supabase
-      .from('knowledge_articles')
-      .insert(safePayload)
-      .select()
-      .maybeSingle();
+      // Attempt minimal insert first to isolate any problematic fields
+      const minimalPayload = stripZeroDeep({
+        customer_id: customerId,
+        vendor_id: vendorId,
+        title,
+        content: textContent,
+        article_type: 'documentation',
+        source_type: 'vendor_documentation',
+        status: 'published',
+        version: 1,
+        created_by: customerId,
+      });
 
-    if (error) {
-      console.error('Error inserting article:', error);
-      throw error;
-    }
+      let { data: article, error } = await supabase
+        .from('knowledge_articles')
+        .insert(minimalPayload)
+        .select()
+        .maybeSingle();
 
-    console.log('Documentation ingested successfully:', article.id);
+      // If we hit a null-character issue, try an ASCII-only fallback for content
+      if (error && (error.message?.toLowerCase().includes('null character') || error.code === '54000')) {
+        console.warn('Minimal insert failed due to null character. Retrying with ASCII-only content.');
+        const asciiContent = Array.from(textContent)
+          .map((ch) => (ch.charCodeAt(0) >= 32 && ch.charCodeAt(0) !== 127 ? ch : ' '))
+          .join(' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 50000);
+
+        const asciiPayload = { ...minimalPayload, content: asciiContent };
+        const retry = await supabase
+          .from('knowledge_articles')
+          .insert(asciiPayload)
+          .select()
+          .maybeSingle();
+
+        article = retry.data as typeof article;
+        error = retry.error as typeof error;
+      }
+
+      if (error) {
+        console.error('Error inserting article:', error);
+        throw error;
+      }
+
+      // Best-effort update to add non-essential fields (source_metadata, tags)
+      const nonEssentialUpdates: Record<string, any> = {};
+      if (safePayload.source_metadata) nonEssentialUpdates.source_metadata = safePayload.source_metadata;
+      if (safePayload.tags) nonEssentialUpdates.tags = safePayload.tags;
+
+      if (Object.keys(nonEssentialUpdates).length > 0) {
+        const { error: updateError } = await supabase
+          .from('knowledge_articles')
+          .update(stripZeroDeep(nonEssentialUpdates))
+          .eq('id', (article as any).id)
+          .select()
+          .maybeSingle();
+        if (updateError) {
+          console.warn('Non-essential field update failed (continuing):', updateError);
+        }
+      }
+
+      console.log('Documentation ingested successfully:', (article as any).id);
 
     return new Response(
       JSON.stringify({ 
