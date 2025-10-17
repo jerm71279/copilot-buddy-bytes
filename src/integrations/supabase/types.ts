@@ -5828,34 +5828,46 @@ export type Database = {
         Row: {
           compliance_tags: string[] | null
           created_at: string
+          credential_name: string
           credential_type: string
           customer_id: string
           encrypted_data: string
           expires_at: string | null
           id: string
           integration_id: string
+          is_active: boolean | null
+          last_synced_at: string | null
+          metadata: Json | null
           updated_at: string
         }
         Insert: {
           compliance_tags?: string[] | null
           created_at?: string
+          credential_name?: string
           credential_type: string
           customer_id: string
           encrypted_data: string
           expires_at?: string | null
           id?: string
           integration_id: string
+          is_active?: boolean | null
+          last_synced_at?: string | null
+          metadata?: Json | null
           updated_at?: string
         }
         Update: {
           compliance_tags?: string[] | null
           created_at?: string
+          credential_name?: string
           credential_type?: string
           customer_id?: string
           encrypted_data?: string
           expires_at?: string | null
           id?: string
           integration_id?: string
+          is_active?: boolean | null
+          last_synced_at?: string | null
+          metadata?: Json | null
           updated_at?: string
         }
         Relationships: [
