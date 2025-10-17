@@ -94,26 +94,51 @@ serve(async (req) => {
     let title = `${source} - ${url.split('/').pop() || 'Documentation'}`;
     title = title.replace(/[\x00-\x1F\x7F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
 
+    // Debug: log sanitization metrics
+    const hasNull = (s: string) => /\u0000/.test(s);
+    console.log('ingest-documentation: sanitize-stats', {
+      hasNullTitle: hasNull(title),
+      hasNullContent: hasNull(textContent),
+      titleLen: title.length,
+      contentLen: textContent.length,
+    });
+
     // Insert into knowledge_articles
+    // Build payload and deep-sanitize to guarantee no null bytes anywhere
+    const payload = {
+      customer_id: customerId,
+      vendor_id: vendorId,
+      title,
+      content: textContent,
+      article_type: 'documentation',
+      source_type: 'vendor_documentation',
+      source_metadata: sanitizeJson({
+        url,
+        source,
+        ingested_at: new Date().toISOString()
+      }),
+      status: 'published',
+      version: 1,
+      tags: sanitizeJson(['technical', 'documentation', sanitize(source.toLowerCase(), 50)]),
+      created_by: customerId
+    } as const;
+
+    const stripZeroDeep = (val: any): any => {
+      if (typeof val === 'string') return val.replace(/\u0000/g, '');
+      if (Array.isArray(val)) return val.map(stripZeroDeep);
+      if (val && typeof val === 'object') {
+        const out: Record<string, any> = {};
+        for (const [k, v] of Object.entries(val)) out[k] = stripZeroDeep(v);
+        return out;
+      }
+      return val;
+    };
+
+    const safePayload = stripZeroDeep(payload);
+
     const { data: article, error } = await supabase
       .from('knowledge_articles')
-      .insert({
-        customer_id: customerId,
-        vendor_id: vendorId,
-        title,
-        content: textContent,
-        article_type: 'documentation',
-        source_type: 'vendor_documentation',
-        source_metadata: sanitizeJson({
-          url,
-          source,
-          ingested_at: new Date().toISOString()
-        }),
-        status: 'published',
-        version: 1,
-        tags: sanitizeJson(['technical', 'documentation', sanitize(source.toLowerCase(), 50)]),
-        created_by: customerId
-      })
+      .insert(safePayload)
       .select()
       .maybeSingle();
 
