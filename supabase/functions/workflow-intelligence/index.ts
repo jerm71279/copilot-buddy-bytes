@@ -1,6 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { getAuthContext } from '../_shared/supabaseAuth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -34,51 +34,22 @@ serve(async (req) => {
       );
     }
     
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
     if (!lovableApiKey) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    // Get authorization header
+    // Get authorization header and authenticate user
     const authHeader = req.headers.get('authorization');
     if (!authHeader) {
       throw new Error('No authorization header');
     }
 
-    // Create client with user's token for auth
-    const supabaseUser = createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        headers: { authorization: authHeader }
-      }
-    });
+    // Use shared auth module for authentication and customer context
+    const { supabase, userId, customerId } = await getAuthContext(authHeader);
 
-    // Get user from their token
-    const { data: { user }, error: userError } = await supabaseUser.auth.getUser();
-    
-    if (userError || !user) {
-      console.error('Auth error:', userError);
-      throw new Error('Unauthorized');
-    }
-
-    // Create service role client for data operations
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Get user's customer_id
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('customer_id')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (!profile?.customer_id) {
-      throw new Error('No customer associated with user');
-    }
-
-    console.log(`Processing ${type} query for customer ${profile.customer_id}`);
+    console.log(`Processing ${type} query for customer ${customerId}`);
 
     // Calculate timeframe
     const daysAgo = parseInt(timeframe.replace('d', ''));
@@ -107,7 +78,7 @@ serve(async (req) => {
             compliance_tags
           )
         `)
-        .eq('customer_id', profile.customer_id)
+        .eq('customer_id', customerId)
         .gte('started_at', sinceDate.toISOString())
         .order('started_at', { ascending: false })
         .limit(50);
@@ -120,7 +91,7 @@ serve(async (req) => {
       const { data: auditLogs } = await supabase
         .from('audit_logs')
         .select('*')
-        .eq('customer_id', profile.customer_id)
+        .eq('customer_id', customerId)
         .gte('timestamp', sinceDate.toISOString())
         .not('compliance_tags', 'is', null)
         .order('timestamp', { ascending: false })
@@ -134,7 +105,7 @@ serve(async (req) => {
       const { data: changes } = await supabase
         .from('change_requests')
         .select('*')
-        .eq('customer_id', profile.customer_id)
+        .eq('customer_id', customerId)
         .gte('created_at', sinceDate.toISOString())
         .order('created_at', { ascending: false })
         .limit(30);
@@ -147,7 +118,7 @@ serve(async (req) => {
       const { data: anomalies } = await supabase
         .from('anomaly_detections')
         .select('*')
-        .eq('customer_id', profile.customer_id)
+        .eq('customer_id', customerId)
         .gte('created_at', sinceDate.toISOString())
         .order('created_at', { ascending: false })
         .limit(20);
@@ -259,8 +230,8 @@ Format your response in markdown with clear sections.`;
     await supabase
       .from('ai_interactions')
       .insert({
-        customer_id: profile.customer_id,
-        user_id: user.id,
+        customer_id: customerId,
+        user_id: userId,
         conversation_id: crypto.randomUUID(),
         interaction_type: `workflow_intelligence_${type}`,
         user_query: query,
