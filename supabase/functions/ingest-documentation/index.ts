@@ -68,8 +68,29 @@ serve(async (req) => {
     const sanitizeUuid = (val: unknown): string | null => {
       if (!val) return null;
       
+      // If it's a Uint8Array (16 bytes), convert to canonical string
+      if (typeof val === 'object' && val instanceof Uint8Array) {
+        const bytes = Array.from(val as Uint8Array);
+        if (bytes.length !== 16) {
+          console.warn('UUID byte array is not 16 bytes:', bytes.length);
+          return null;
+        }
+        // Convert to canonical UUID string format
+        const hex = bytes.map(b => b.toString(16).padStart(2, '0')).join('');
+        const formatted = `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20,32)}`;
+        console.log('Converted binary UUID to string:', formatted);
+        return formatted;
+      }
+      
       // Convert to string
       const raw = String(val);
+      
+      // Check for null bytes in the string representation
+      if (/\u0000/.test(raw)) {
+        console.error('UUID string contains null bytes - REJECTING');
+        return null;
+      }
+      
       const bytes = Array.from(raw).map((ch) => ch.charCodeAt(0));
       
       // Check if it's all zeros (the real red flag)
@@ -80,6 +101,7 @@ serve(async (req) => {
         raw: raw.substring(0, 50),
         length: raw.length,
         allZeros,
+        hasNullBytes: /\u0000/.test(raw),
         hex: bytes.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join(''),
       });
       
@@ -112,11 +134,21 @@ serve(async (req) => {
 
     // Comprehensive null-byte stripping for all data types
     const stripNullBytes = (str: string): string => {
+      const hasNulls = /\u0000/.test(str);
+      if (hasNulls) {
+        console.error('FOUND NULL BYTES in string - stripping:', str.substring(0, 100));
+      }
       return str.split('').filter(ch => ch.charCodeAt(0) !== 0).join('');
     };
     
     const stripZeroDeep = (val: any): any => {
-      if (typeof val === 'string') return stripNullBytes(val);
+      if (typeof val === 'string') {
+        const stripped = stripNullBytes(val);
+        if (stripped !== val) {
+          console.warn('Stripped null bytes from string');
+        }
+        return stripped;
+      }
       if (Array.isArray(val)) return val.map(stripZeroDeep);
       if (val && typeof val === 'object') {
         const out: Record<string, any> = {};
@@ -129,6 +161,15 @@ serve(async (req) => {
     customerId = stripNullBytes(customerId);
     if (vendorId) {
       vendorId = stripNullBytes(vendorId);
+    }
+    
+    // Final boundary check - reject if any nulls remain
+    if (/\u0000/.test(customerId) || (vendorId && /\u0000/.test(vendorId))) {
+      console.error('NULL BYTES STILL PRESENT AFTER STRIPPING - REJECTING REQUEST');
+      return new Response(
+        JSON.stringify({ error: 'Invalid data: null bytes detected in UUID fields' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     if (!url || !source || !customerId) {
