@@ -17,7 +17,20 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const requestData = await req.json();
+    // STEP 1: Inspect raw request body BEFORE JSON parsing
+    const rawBody = await req.text();
+    console.log('Raw body length:', rawBody.length);
+    console.log('Raw body has null bytes?', rawBody.includes('\u0000'));
+    
+    if (rawBody.includes('\u0000')) {
+      console.error('❌ NULL BYTES DETECTED IN RAW HTTP REQUEST BODY');
+      return new Response(
+        JSON.stringify({ error: 'Invalid request: null bytes detected in request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const requestData = JSON.parse(rawBody);
 
     // Validate input (explicit null and type checks)
     const isObject = requestData !== null && typeof requestData === 'object';
@@ -64,6 +77,9 @@ serve(async (req) => {
 
     const url = sanitize((requestData as any).url, 2000);
     const source = sanitize((requestData as any).source, 200);
+    
+    console.log('After sanitize - URL has null bytes?', /\u0000/.test(url));
+    console.log('After sanitize - Source has null bytes?', /\u0000/.test(source));
 
     // Smart UUID sanitizer - only rejects all-zero or malformed UUIDs
     const sanitizeUuid = (val: unknown): string | null => {
@@ -123,12 +139,37 @@ serve(async (req) => {
       return cleaned;
     };
 
-    let customerId = sanitizeUuid((requestData as any).customerId);
-    let vendorId = sanitizeUuid((requestData as any).vendorId);
+    // STEP 2: Validate UUID format BEFORE any processing
+    const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    
+    const rawCustomerId = String((requestData as any).customerId || '');
+    const rawVendorId = (requestData as any).vendorId ? String((requestData as any).vendorId) : null;
+    
+    console.log('Raw customerId:', rawCustomerId, 'has null bytes?', /\u0000/.test(rawCustomerId));
+    console.log('Raw vendorId:', rawVendorId, 'has null bytes?', rawVendorId ? /\u0000/.test(rawVendorId) : false);
+    
+    if (!UUID_REGEX.test(rawCustomerId)) {
+      console.error('❌ Invalid UUID format for customerId:', rawCustomerId.substring(0, 50));
+      return new Response(
+        JSON.stringify({ error: 'Invalid customerId format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (rawVendorId && !UUID_REGEX.test(rawVendorId)) {
+      console.error('❌ Invalid UUID format for vendorId:', rawVendorId.substring(0, 50));
+      return new Response(
+        JSON.stringify({ error: 'Invalid vendorId format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    let customerId = sanitizeUuid(rawCustomerId);
+    let vendorId = rawVendorId ? sanitizeUuid(rawVendorId) : null;
     
     if (!customerId) {
       return new Response(
-        JSON.stringify({ error: 'Invalid or missing customerId' }),
+        JSON.stringify({ error: 'Invalid or missing customerId after sanitization' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -182,14 +223,29 @@ serve(async (req) => {
 
     console.log('Fetching documentation from:', url);
 
-    // Fetch the documentation page
-    const fetchResponse = await fetch(url);
+    // STEP 3: Fetch with proper encoding handling
+    const fetchResponse = await fetch(url, {
+      headers: { 
+        'Accept-Charset': 'utf-8',
+        'User-Agent': 'Mozilla/5.0 (compatible; DocumentationBot/1.0)'
+      }
+    });
+    
     if (!fetchResponse.ok) {
       throw new Error(`Failed to fetch documentation: ${fetchResponse.statusText}`);
     }
 
-    const html = await fetchResponse.text();
-    console.log('Fetched HTML length:', html.length, 'has null?', /\u0000/.test(html));
+    // Decode with explicit UTF-8 and error handling
+    const buffer = await fetchResponse.arrayBuffer();
+    const html = new TextDecoder('utf-8', { fatal: false, ignoreBOM: true }).decode(buffer);
+    
+    console.log('Fetched HTML length:', html.length);
+    console.log('HTML encoding check - has null bytes?', /\u0000/.test(html));
+    
+    if (/\u0000/.test(html)) {
+      console.error('❌ NULL BYTES DETECTED IN FETCHED HTML');
+      // Strip null bytes from HTML before processing
+    }
     
     // Extract text content (basic HTML to text conversion)
     const rawContent = html
@@ -248,6 +304,13 @@ serve(async (req) => {
     
     debugUuid('customerId', customerId);
     debugUuid('vendorId', vendorId);
+    
+    // STEP 4: Final pre-insert validation
+    console.log('=== FINAL PRE-INSERT VALIDATION ===');
+    console.log('Title null bytes?', /\u0000/.test(title));
+    console.log('Content null bytes?', /\u0000/.test(textContent));
+    console.log('CustomerId null bytes?', /\u0000/.test(customerId));
+    console.log('VendorId null bytes?', vendorId ? /\u0000/.test(vendorId) : 'N/A');
 
     // Step 1: Insert placeholder with only validated text UUIDs - remove placeholderPayloadBase
     console.log('Inserting placeholder article with customer_id:', customerId);
