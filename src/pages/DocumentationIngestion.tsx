@@ -234,7 +234,7 @@ export default function DocumentationIngestion() {
     <div className="min-h-screen bg-background">
       <Navigation />
       <DashboardNavigation />
-      <main className="container mx-auto p-8 space-y-6">
+      <main className="container mx-auto p-8 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <Card>
         <CardHeader>
           <CardTitle>Documentation Ingestion</CardTitle>
