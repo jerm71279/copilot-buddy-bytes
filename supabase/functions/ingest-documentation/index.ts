@@ -53,6 +53,8 @@ serve(async (req) => {
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
       .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
       .replace(/<[^>]+>/g, ' ')
+      // Remove null bytes and control characters that DB validation forbids
+      .replace(/[\x00-\x1F\x7F]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()
       .slice(0, 50000); // Limit to 50k characters
