@@ -259,33 +259,85 @@ serve(async (req) => {
     };
 
     let fetchResponse: Response;
+    let html: string;
+    let usedFirecrawl = false;
+    
     try {
       fetchResponse = await fetchWithRetry(url, 3);
+      // Decode with explicit UTF-8 and error handling
+      const buffer = await fetchResponse.arrayBuffer();
+      html = new TextDecoder('utf-8', { fatal: false, ignoreBOM: true }).decode(buffer);
     } catch (e) {
-      console.error('❌ Failed to fetch documentation after retries:', e);
-      return new Response(
-        JSON.stringify({ error: 'Unable to fetch the provided URL. The site may be blocking automated requests. Try another page or paste content manually.' }),
-        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      console.warn('❌ Direct fetch failed, attempting Firecrawl fallback:', e);
+      
+      // Try Firecrawl as fallback
+      const firecrawlApiKey = Deno.env.get('FIRECRAWL_API_KEY');
+      if (!firecrawlApiKey) {
+        console.error('No Firecrawl API key configured');
+        return new Response(
+          JSON.stringify({ error: 'Unable to fetch the provided URL. The site may be blocking automated requests.' }),
+          { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      try {
+        console.log('🔥 Attempting Firecrawl scrape for:', url);
+        const firecrawlResponse = await fetch('https://api.firecrawl.dev/v1/scrape', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${firecrawlApiKey}`,
+          },
+          body: JSON.stringify({
+            url: url,
+            formats: ['markdown', 'html'],
+            onlyMainContent: true,
+            timeout: 30000,
+          }),
+        });
+        
+        if (!firecrawlResponse.ok) {
+          const errorText = await firecrawlResponse.text();
+          console.error('Firecrawl API error:', firecrawlResponse.status, errorText);
+          throw new Error(`Firecrawl API returned ${firecrawlResponse.status}`);
+        }
+        
+        const firecrawlData = await firecrawlResponse.json();
+        console.log('✅ Firecrawl succeeded');
+        
+        // Firecrawl returns cleaner content - use markdown if available, fallback to html
+        html = firecrawlData.data?.markdown || firecrawlData.data?.html || '';
+        usedFirecrawl = true;
+        
+        if (!html) {
+          throw new Error('Firecrawl returned empty content');
+        }
+      } catch (firecrawlError) {
+        console.error('❌ Firecrawl also failed:', firecrawlError);
+        return new Response(
+          JSON.stringify({ 
+            error: 'Unable to fetch the provided URL. The site may be blocking all automated requests. Please try a different URL or contact support.' 
+          }),
+          { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
-
-    // Decode with explicit UTF-8 and error handling
-    const buffer = await fetchResponse.arrayBuffer();
-    const html = new TextDecoder('utf-8', { fatal: false, ignoreBOM: true }).decode(buffer);
     
-    console.log('Fetched HTML length:', html.length);
-    console.log('HTML encoding check - has null bytes?', /\u0000/.test(html));
+    console.log('Fetched content length:', html.length, '(via', usedFirecrawl ? 'Firecrawl' : 'direct fetch', ')');
+    console.log('Content encoding check - has null bytes?', /\u0000/.test(html));
     
     if (/\u0000/.test(html)) {
-      console.error('❌ NULL BYTES DETECTED IN FETCHED HTML');
-      // Strip null bytes from HTML before processing
+      console.error('❌ NULL BYTES DETECTED IN FETCHED CONTENT');
+      // Strip null bytes from content before processing
     }
     
-    // Extract text content (basic HTML to text conversion)
-    const rawContent = html
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-      .replace(/<[^>]+>/g, ' ');
+    // Extract text content (if Firecrawl was used, markdown is already clean)
+    const rawContent = usedFirecrawl 
+      ? html  // Firecrawl returns clean markdown/text
+      : html
+          .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+          .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+          .replace(/<[^>]+>/g, ' ');
 
     console.log('Raw content length:', rawContent.length, 'has null?', /\u0000/.test(rawContent));
 
@@ -295,7 +347,8 @@ serve(async (req) => {
     console.log('Content sanitized, length:', textContent.length);
 
     // Generate title from URL and apply byte-level sanitization
-    let title = sanitize(`${source} - ${url.split('/').pop() || 'Documentation'}`, 200);
+    const titlePrefix = usedFirecrawl ? `${source} (via Firecrawl)` : source;
+    let title = sanitize(`${titlePrefix} - ${url.split('/').pop() || 'Documentation'}`, 200);
 
     // Build payload with recursively sanitized JSONB fields
     const payload = {
