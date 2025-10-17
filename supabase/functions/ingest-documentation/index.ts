@@ -146,52 +146,87 @@ serve(async (req) => {
 
     console.log('Payload sanitized, inserting article...');
 
-      // Attempt minimal insert first to isolate any problematic fields
-      const minimalPayload = stripZeroDeep({
-        customer_id: customerId,
-        vendor_id: vendorId,
-        title,
-        content: textContent,
-        article_type: 'documentation',
-        source_type: 'vendor_documentation',
-        status: 'published',
-        version: 1,
-        created_by: customerId,
+      // Stepwise insert to isolate problematic fields
+      const asciiStrict = (s: string) => Array.from(s)
+        .map((ch) => {
+          const code = ch.charCodeAt(0);
+          return code >= 32 && code <= 126 ? ch : ' ';
+        })
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      const baseIds = { customer_id: customerId, vendor_id: vendorId, created_by: customerId };
+      const baseFixed = {
+        article_type: 'documentation' as const,
+        source_type: 'vendor_documentation' as const,
+        status: 'published' as const,
+        version: 1 as const,
+      };
+
+      // 1) Insert with ultra-safe placeholder values only
+      const placeholderPayload = stripZeroDeep({
+        ...baseIds,
+        ...baseFixed,
+        title: 'Documentation',
+        content: 'Placeholder',
       });
 
       let { data: article, error } = await supabase
         .from('knowledge_articles')
-        .insert(minimalPayload)
+        .insert(placeholderPayload)
         .select()
         .maybeSingle();
 
-      // If we hit a null-character issue, try an ASCII-only fallback for content
-      if (error && (error.message?.toLowerCase().includes('null character') || error.code === '54000')) {
-        console.warn('Minimal insert failed due to null character. Retrying with ASCII-only content.');
-        const asciiContent = Array.from(textContent)
-          .map((ch) => (ch.charCodeAt(0) >= 32 && ch.charCodeAt(0) !== 127 ? ch : ' '))
-          .join(' ')
-          .replace(/\s+/g, ' ')
-          .trim()
-          .slice(0, 50000);
-
-        const asciiPayload = { ...minimalPayload, content: asciiContent };
-        const retry = await supabase
-          .from('knowledge_articles')
-          .insert(asciiPayload)
-          .select()
-          .maybeSingle();
-
-        article = retry.data as typeof article;
-        error = retry.error as typeof error;
-      }
-
       if (error) {
-        console.error('Error inserting article:', error);
+        console.error('Placeholder insert failed:', error);
         throw error;
       }
 
-      // Best-effort update to add non-essential fields (source_metadata, tags)
+      const articleId = (article as any).id;
+
+      // 2) Try updating content with strict ASCII first
+      const contentAscii = asciiStrict(textContent).slice(0, 50000);
+      let { error: updContentAsciiErr } = await supabase
+        .from('knowledge_articles')
+        .update({ content: contentAscii })
+        .eq('id', articleId)
+        .select()
+        .maybeSingle();
+      if (updContentAsciiErr) {
+        console.warn('ASCII content update failed (keeping placeholder):', updContentAsciiErr);
+      } else {
+        // 3) If ASCII update succeeded, try upgrading to sanitized original content
+        const { error: updContentOrigErr } = await supabase
+          .from('knowledge_articles')
+          .update({ content: textContent })
+          .eq('id', articleId)
+          .select()
+          .maybeSingle();
+        if (updContentOrigErr) {
+          console.warn('Original content update failed, reverting to ASCII:', updContentOrigErr);
+          await supabase
+            .from('knowledge_articles')
+            .update({ content: contentAscii })
+            .eq('id', articleId)
+            .select()
+            .maybeSingle();
+        }
+      }
+
+      // 4) Update title (ASCII strict to be safe)
+      const titleAscii = asciiStrict(title).slice(0, 200);
+      const { error: updTitleErr } = await supabase
+        .from('knowledge_articles')
+        .update({ title: titleAscii })
+        .eq('id', articleId)
+        .select()
+        .maybeSingle();
+      if (updTitleErr) {
+        console.warn('Title update failed (keeping generic):', updTitleErr);
+      }
+
+      // 5) Best-effort update to add non-essential fields (source_metadata, tags)
       const nonEssentialUpdates: Record<string, any> = {};
       if (safePayload.source_metadata) nonEssentialUpdates.source_metadata = safePayload.source_metadata;
       if (safePayload.tags) nonEssentialUpdates.tags = safePayload.tags;
@@ -200,7 +235,7 @@ serve(async (req) => {
         const { error: updateError } = await supabase
           .from('knowledge_articles')
           .update(stripZeroDeep(nonEssentialUpdates))
-          .eq('id', (article as any).id)
+          .eq('id', articleId)
           .select()
           .maybeSingle();
         if (updateError) {
@@ -208,7 +243,7 @@ serve(async (req) => {
         }
       }
 
-      console.log('Documentation ingested successfully:', (article as any).id);
+      console.log('Documentation ingested successfully:', articleId);
 
     return new Response(
       JSON.stringify({ 
