@@ -24,7 +24,7 @@ export interface PermissionCheck {
 }
 
 export function usePermissions(): PermissionCheck {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isAdmin, isLoading: authLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const permissionCacheRef = useRef<Map<string, boolean>>(new Map());
 
@@ -38,6 +38,9 @@ export function usePermissions(): PermissionCheck {
   ): Promise<boolean> => {
     if (!user) return false;
     if (level === "none") return false; // Explicitly denied
+    
+    // Super Admins have full access to everything
+    if (isAdmin) return true;
 
     const cacheKey = `${resource}:${level}`;
     
@@ -66,10 +69,13 @@ export function usePermissions(): PermissionCheck {
       console.error("Permission check error:", error);
       return false;
     }
-  }, [user]);
+  }, [user, isAdmin]);
 
   const getPermissionLevel = useCallback(async (resource: string): Promise<PermissionLevel> => {
     if (!user) return "none";
+    
+    // Super Admins always have admin level access
+    if (isAdmin) return "admin";
 
     // Check from highest to lowest permission level
     const levels: PermissionLevel[] = ["admin", "edit", "view"];
@@ -82,7 +88,7 @@ export function usePermissions(): PermissionCheck {
     }
     
     return "none"; // No access
-  }, [user, checkPermission]);
+  }, [user, isAdmin, checkPermission]);
 
   return {
     hasPermission: false, // Use checkPermission for actual checks
