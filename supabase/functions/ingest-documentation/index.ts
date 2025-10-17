@@ -223,16 +223,50 @@ serve(async (req) => {
 
     console.log('Fetching documentation from:', url);
 
-    // STEP 3: Fetch with proper encoding handling
-    const fetchResponse = await fetch(url, {
-      headers: { 
-        'Accept-Charset': 'utf-8',
-        'User-Agent': 'Mozilla/5.0 (compatible; DocumentationBot/1.0)'
-      }
+    // STEP 3: Fetch with proper encoding handling + robust retries and headers
+    const buildHeaders = () => ({
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Accept-Charset': 'utf-8',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
     });
-    
-    if (!fetchResponse.ok) {
-      throw new Error(`Failed to fetch documentation: ${fetchResponse.statusText}`);
+
+    const fetchWithRetry = async (targetUrl: string, attempts = 3): Promise<Response> => {
+      let lastErr: unknown = null;
+      for (let i = 1; i <= attempts; i++) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 12000);
+          const res = await fetch(targetUrl, {
+            headers: buildHeaders(),
+            redirect: 'follow',
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status} ${res.statusText}`);
+          }
+          return res;
+        } catch (err) {
+          lastErr = err;
+          console.warn(`Fetch attempt ${i} failed:`, err instanceof Error ? err.message : String(err));
+          await new Promise(r => setTimeout(r, i * 300));
+        }
+      }
+      throw lastErr instanceof Error ? lastErr : new Error('Unknown fetch error');
+    };
+
+    let fetchResponse: Response;
+    try {
+      fetchResponse = await fetchWithRetry(url, 3);
+    } catch (e) {
+      console.error('❌ Failed to fetch documentation after retries:', e);
+      return new Response(
+        JSON.stringify({ error: 'Unable to fetch the provided URL. The site may be blocking automated requests. Try another page or paste content manually.' }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Decode with explicit UTF-8 and error handling
