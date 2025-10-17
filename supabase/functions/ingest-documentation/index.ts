@@ -122,15 +122,12 @@ serve(async (req) => {
     // All string fields are already sanitized via sanitize() function
     // which removes null bytes at byte level, so no additional stripping needed
 
-    // Strip actual null bytes and any JSON escape sequence "\\u0000"
+    // Final deep strip and stepwise insert to isolate any problematic field
     const stripZero = (s: string) => {
-      // Remove actual null bytes (codepoint 0)
-      let cleaned = Array.from(s).filter(ch => ch.charCodeAt(0) !== 0).join('');
-      // Remove JSON escape sequence for null byte to prevent Postgres from parsing it
+      let cleaned = Array.from(s).filter((ch) => ch.charCodeAt(0) !== 0).join('');
       cleaned = cleaned.replace(/\\u0000/gi, '');
       return cleaned;
     };
-
     const stripZeroDeep = (val: any): any => {
       if (typeof val === 'string') return stripZero(val);
       if (Array.isArray(val)) return val.map(stripZeroDeep);
@@ -142,28 +139,68 @@ serve(async (req) => {
       return val;
     };
 
-    const safePayload = stripZeroDeep(payload);
+    // Step 1: Insert placeholder-only minimal row (pure ASCII)
+    const placeholderPayload = {
+      customer_id: customerId,
+      vendor_id: vendorId,
+      created_by: customerId,
+      article_type: 'documentation' as const,
+      source_type: 'vendor_documentation' as const,
+      status: 'published' as const,
+      version: 1,
+      title: sanitize('Doc', 200),
+      content: sanitize('Placeholder', 50000),
+    };
 
-    console.log('Payload sanitized, inserting article...');
+    console.log('Inserting placeholder article...');
+    const { data: created, error: createErr } = await supabase
+      .from('knowledge_articles')
+      .insert(placeholderPayload)
+      .select()
+      .maybeSingle();
 
-      const { data: article, error } = await supabase
+    if (createErr) {
+      console.error('Placeholder insert failed:', createErr);
+      throw createErr;
+    }
+
+    const articleId = (created as any).id;
+
+    // Helper to attempt field update and log failures without throwing
+    const safeUpdate = async (patch: Record<string, any>, label: string) => {
+      const cleaned = stripZeroDeep(patch);
+      const { error: updErr } = await supabase
         .from('knowledge_articles')
-        .insert(safePayload)
+        .update(cleaned)
+        .eq('id', articleId)
         .select()
         .maybeSingle();
-
-      if (error) {
-        console.error('Insert failed:', error);
-        throw error;
+      if (updErr) {
+        console.warn(`Update failed for ${label}:`, updErr);
+        return false;
       }
+      return true;
+    };
 
-      console.log('Documentation ingested successfully:', (article as any).id);
+    // Step 2: Update content (ASCII-safe first)
+    const contentAscii = sanitize(textContent, 50000);
+    await safeUpdate({ content: contentAscii }, 'content(ascii)');
+
+    // Step 3: Try upgrading title and content to sanitized originals
+    await safeUpdate({ title }, 'title');
+    await safeUpdate({ content: textContent }, 'content(original)');
+
+    // Step 4: Non-essential fields one by one
+    await safeUpdate({ tags: sanitizeJson(['technical', 'documentation', sanitize(source.toLowerCase(), 50)]) }, 'tags');
+    await safeUpdate({ source_metadata: sanitizeJson({ url, source, ingested_at: new Date().toISOString() }) }, 'source_metadata');
+
+    console.log('Documentation ingested successfully:', articleId);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        articleId: article.id,
-        title: article.title
+        articleId,
+        title
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
