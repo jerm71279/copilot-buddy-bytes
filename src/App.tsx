@@ -34,6 +34,7 @@ import SharePointSync from "./pages/SharePointSync";
 import SlackSync from "./pages/SlackSync";
 import ProfileSettings from "./pages/ProfileSettings";
 import IntelligentAssistant from "./pages/IntelligentAssistant";
+import DocumentationIngestion from "./pages/DocumentationIngestion";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ApplicationsAdmin from "./pages/ApplicationsAdmin";
@@ -183,6 +184,13 @@ const App = () => (
           <Route path="/employeeportal" element={
             <ProtectedRoute>
               <Portal />
+            </ProtectedRoute>
+          } />
+          
+          {/* Documentation Ingestion - Admin only */}
+          <Route path="/documentation-ingestion" element={
+            <ProtectedRoute requireAdmin>
+              <DocumentationIngestion />
             </ProtectedRoute>
           } />
           
