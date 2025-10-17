@@ -229,7 +229,7 @@ export default function DashboardPortalLanes() {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [enabledPortals, setEnabledPortals] = useState<string[]>([]);
   const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({});
   const [openPortals, setOpenPortals] = useState<{ [key: string]: boolean }>(() => 
@@ -242,7 +242,7 @@ export default function DashboardPortalLanes() {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
-  const shouldHide = !isAuthenticated || hideOnRoutes.includes(currentPath);
+  const shouldHide = isLoading || !isAuthenticated || hideOnRoutes.includes(currentPath);
 
   // Map portal paths to slugs for filtering
   const portalSlugMap: Record<string, string> = {
