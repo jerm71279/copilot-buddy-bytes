@@ -273,9 +273,18 @@ serve(async (req) => {
 
     // Helper to attempt field update and log failures without throwing
     const safeUpdate = async (patch: Record<string, any>, label: string) => {
+      const cleanedPatch = stripZeroDeep(patch);
+      try {
+        console.log('DB boundary check', {
+          label,
+          keys: Object.keys(cleanedPatch),
+          types: Object.fromEntries(Object.entries(cleanedPatch).map(([k, v]) => [k, Array.isArray(v) ? 'array' : typeof v])),
+          hasNulls: Object.fromEntries(Object.entries(cleanedPatch).map(([k, v]) => [k, typeof v === 'string' && /\u0000/.test(v as string)])),
+        });
+      } catch (_) {}
       const { error: updErr } = await supabase
         .from('knowledge_articles')
-        .update(patch)
+        .update(cleanedPatch)
         .eq('id', articleId)
         .select()
         .maybeSingle();
