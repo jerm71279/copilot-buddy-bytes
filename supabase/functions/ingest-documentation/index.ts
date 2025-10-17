@@ -78,11 +78,17 @@ serve(async (req) => {
       .replace(/<[^>]+>/g, ' ');
 
     // Final sanitize and cap to 50k for DB safety
-    const textContent = (rawContent || '')
+    let textContent = (rawContent || '')
       .replace(/[\x00-\x1F\x7F]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()
       .slice(0, 50000);
+
+    // Extra hardening against any stray nulls
+    if (/\u0000/.test(textContent)) {
+      console.warn('Null bytes detected in content - removing');
+      textContent = textContent.replace(/\u0000/g, ' ');
+    }
 
     // Generate title from URL and sanitize
     let title = `${source} - ${url.split('/').pop() || 'Documentation'}`;
