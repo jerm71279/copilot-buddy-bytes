@@ -16,7 +16,20 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { url, source, category, customerId, vendorId } = await req.json();
+    const requestData = await req.json();
+
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const url = String(requestData.url || '').slice(0, 2000);
+    const source = String(requestData.source || '').slice(0, 200);
+    const customerId = requestData.customerId;
+    const vendorId = requestData.vendorId || null;
 
     if (!url || !source || !customerId) {
       return new Response(
@@ -52,19 +65,23 @@ serve(async (req) => {
       .from('knowledge_articles')
       .insert({
         customer_id: customerId,
-        vendor_id: vendorId || null,
+        vendor_id: vendorId,
         title,
         content: textContent,
-        category: category || 'technical_documentation',
-        source,
-        source_url: url,
-        is_verified: true,
-        usage_count: 0,
-        confidence_score: 0.95,
-        tags: ['technical', 'documentation', source.toLowerCase()]
+        article_type: 'documentation',
+        source_type: 'vendor_documentation',
+        source_metadata: {
+          url,
+          source,
+          ingested_at: new Date().toISOString()
+        },
+        status: 'published',
+        version: 1,
+        tags: ['technical', 'documentation', source.toLowerCase()],
+        created_by: customerId
       })
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error inserting article:', error);
