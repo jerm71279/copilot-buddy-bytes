@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { usePortalPermissions } from "@/hooks/useNavigationPermissions";
+import { useAuth } from "@/hooks/useAuth";
 
 // Portals are the main navigation items (non-dashboard pages) with optional children
 interface Portal {
@@ -228,7 +229,7 @@ export default function DashboardPortalLanes() {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isAuthenticated } = useAuth();
   const [enabledPortals, setEnabledPortals] = useState<string[]>([]);
   const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({});
   const [openPortals, setOpenPortals] = useState<{ [key: string]: boolean }>(() => 
@@ -241,7 +242,7 @@ export default function DashboardPortalLanes() {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
-  const shouldHide = !isLoggedIn || hideOnRoutes.includes(currentPath);
+  const shouldHide = !isAuthenticated || hideOnRoutes.includes(currentPath);
 
   // Map portal paths to slugs for filtering
   const portalSlugMap: Record<string, string> = {
@@ -298,23 +299,6 @@ export default function DashboardPortalLanes() {
     };
 
     loadSettings();
-  }, []);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsLoggedIn(!!session);
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkAuth();
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, []);
 
   useEffect(() => {
