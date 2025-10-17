@@ -64,15 +64,48 @@ serve(async (req) => {
     const url = sanitize((requestData as any).url, 2000);
     const source = sanitize((requestData as any).source, 200);
 
-    // Strict UUID sanitizer (byte-level clean + RFC4122 pattern)
+    // Strict UUID sanitizer with hex inspection
     const sanitizeUuid = (val: unknown): string | null => {
-      const s = sanitize(val, 50).toLowerCase();
+      if (!val) return null;
+      
+      // Convert to string and inspect bytes
+      const raw = String(val);
+      const bytes = Array.from(raw).map((ch) => ch.charCodeAt(0));
+      const hasNull = bytes.includes(0);
+      
+      console.log('UUID inspection:', {
+        raw: raw.substring(0, 50),
+        length: raw.length,
+        hasNull,
+        firstBytes: bytes.slice(0, 16),
+      });
+      
+      if (hasNull) {
+        console.warn('UUID contains null bytes - rejecting');
+        return null;
+      }
+      
+      // Clean and validate
+      const cleaned = sanitize(raw, 50).toLowerCase();
       const uuidV4Like = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-      return uuidV4Like.test(s) ? s : null;
+      
+      if (!uuidV4Like.test(cleaned)) {
+        console.warn('Invalid UUID format:', cleaned);
+        return null;
+      }
+      
+      return cleaned;
     };
 
     const customerId = sanitizeUuid((requestData as any).customerId);
-    const vendorId = sanitizeUuid((requestData as any).vendorId) || null;
+    const vendorId = sanitizeUuid((requestData as any).vendorId);
+    
+    if (!customerId) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid or missing customerId' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (!url || !source || !customerId) {
       return new Response(
@@ -147,18 +180,27 @@ serve(async (req) => {
       return val;
     };
 
-    // Debug UUID fields for null bytes
+    // Debug UUID fields for null bytes before insert
     const debugUuid = (label: string, s: string | null) => {
-      if (!s) { console.log(`${label}: null`); return; }
+      if (!s) { 
+        console.log(`${label}: null`); 
+        return; 
+      }
       const codes = Array.from(s).map((ch) => ch.charCodeAt(0));
       const hasNull = codes.includes(0);
-      const preview = codes.slice(0, 8);
-      console.log(`${label}:`, { value: s, preview, hasNull });
+      const preview = codes.slice(0, 12);
+      console.log(`${label}:`, { 
+        value: s, 
+        length: s.length,
+        preview, 
+        hasNull 
+      });
     };
+    
     debugUuid('customerId', customerId);
     debugUuid('vendorId', vendorId);
 
-    // Step 1: Insert placeholder-only minimal row (pure ASCII)
+    // Step 1: Insert placeholder with only validated text UUIDs
     const placeholderPayloadBase = {
       article_type: 'documentation' as const,
       source_type: 'vendor_documentation' as const,
@@ -168,7 +210,9 @@ serve(async (req) => {
       content: 'Placeholder',
     };
 
-    console.log('Inserting placeholder article...');
+    console.log('Inserting placeholder article with customer_id:', customerId);
+    
+    // First attempt: with both IDs
     let createRes = await supabase
       .from('knowledge_articles')
       .insert({
