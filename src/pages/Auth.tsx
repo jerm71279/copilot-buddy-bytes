@@ -82,9 +82,12 @@ const Auth = () => {
     };
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session) {
-        await redirectToDepartmentDashboard(session.user.id);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        // Avoid async work directly in the callback to prevent deadlocks
+        setTimeout(() => {
+          redirectToDepartmentDashboard(session.user!.id);
+        }, 0);
       }
     });
 
@@ -193,7 +196,7 @@ const Auth = () => {
       } else {
         // Log successful login - fetch customer_id first
         if (data.user) {
-        const { data: profileData } = await supabase
+          const { data: profileData } = await supabase
             .from('user_profiles')
             .select('customer_id')
             .eq('user_id', data.user.id)
@@ -212,6 +215,9 @@ const Auth = () => {
               compliance_tags: ['security', 'authentication']
             });
           }
+
+          // Proactively redirect after successful login to avoid waiting on auth listener timings
+          await redirectToDepartmentDashboard(data.user.id);
         }
         toast.success("Logged in successfully");
       }
