@@ -32,9 +32,9 @@ serve(async (req) => {
     const customerId = String(requestData.customerId || '').slice(0, 100);
     const userId = String(requestData.userId || '').slice(0, 100);
     
-    if (!query || !customerId || !userId) {
+    if (!query || !userId) {
       return new Response(
-        JSON.stringify({ error: 'Query, customerId, and userId are required' }),
+        JSON.stringify({ error: 'Query and userId are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -42,36 +42,64 @@ serve(async (req) => {
     console.log("Processing intelligent query:", query);
 
     // Step 1: Retrieve relevant knowledge from knowledge base (RAG)
-    const { data: relevantArticles, error: articlesError } = await supabaseClient
-      .from("knowledge_articles")
-      .select("id, title, content, tags, article_type")
-      .eq("status", "published")
-      .eq("customer_id", customerId)
-      .limit(5);
+    let relevantArticles: any[] | null = null;
+    let articlesError: any = null;
+    try {
+      let q = supabaseClient
+        .from("knowledge_articles")
+        .select("id, title, content, tags, article_type, updated_at")
+        .eq("status", "published")
+        .order("updated_at", { ascending: false })
+        .limit(5);
+      if (customerId) q = q.eq("customer_id", customerId);
+      const { data: artData, error: artErr } = await q;
+      relevantArticles = artData;
+      articlesError = artErr;
+    } catch (e) {
+      console.error("Error fetching articles:", e);
+    }
 
     if (articlesError) {
       console.error("Error fetching articles:", articlesError);
     }
 
     // Step 2: Get recent insights for context
-    const { data: recentInsights, error: insightsError } = await supabaseClient
-      .from("knowledge_insights")
-      .select("title, description, confidence_score, insight_type")
-      .eq("customer_id", customerId)
-      .order("created_at", { ascending: false })
-      .limit(5);
+    let recentInsights: any[] | null = null;
+    let insightsError: any = null;
+    try {
+      let iq = supabaseClient
+        .from("knowledge_insights")
+        .select("title, description, confidence_score, insight_type, created_at, customer_id")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      if (customerId) iq = iq.eq("customer_id", customerId);
+      const { data: insData, error: insErr } = await iq;
+      recentInsights = insData;
+      insightsError = insErr;
+    } catch (e) {
+      console.error("Error fetching insights:", e);
+    }
 
     if (insightsError) {
       console.error("Error fetching insights:", insightsError);
     }
 
     // Step 2b: Get recent workflow execution patterns
-    const { data: recentWorkflows, error: workflowsError } = await supabaseClient
-      .from("workflow_executions")
-      .select("workflow_id, status, started_at, completed_at, error_message")
-      .eq("customer_id", customerId)
-      .order("started_at", { ascending: false })
-      .limit(10);
+    let recentWorkflows: any[] | null = null;
+    let workflowsError: any = null;
+    try {
+      let wq = supabaseClient
+        .from("workflow_executions")
+        .select("workflow_id, status, started_at, completed_at, error_message, customer_id")
+        .order("started_at", { ascending: false })
+        .limit(10);
+      if (customerId) wq = wq.eq("customer_id", customerId);
+      const { data: wfData, error: wfErr } = await wq;
+      recentWorkflows = wfData;
+      workflowsError = wfErr;
+    } catch (e) {
+      console.error("Error fetching workflows:", e);
+    }
 
     if (workflowsError) {
       console.error("Error fetching workflows:", workflowsError);
