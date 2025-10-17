@@ -35,6 +35,7 @@ import SlackSync from "./pages/SlackSync";
 import ProfileSettings from "./pages/ProfileSettings";
 import IntelligentAssistant from "./pages/IntelligentAssistant";
 import DocumentationIngestion from "./pages/DocumentationIngestion";
+import VendorDocumentation from "./pages/VendorDocumentation";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ApplicationsAdmin from "./pages/ApplicationsAdmin";
@@ -184,6 +185,12 @@ const App = () => (
           <Route path="/employeeportal" element={
             <ProtectedRoute>
               <Portal />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/vendor-documentation" element={
+            <ProtectedRoute requireAdmin>
+              <VendorDocumentation />
             </ProtectedRoute>
           } />
           

@@ -4670,6 +4670,111 @@ export type Database = {
           },
         ]
       }
+      documentation_vendors: {
+        Row: {
+          address: string | null
+          certifications: Json | null
+          city: string | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          contract_end_date: string | null
+          contract_start_date: string | null
+          country: string | null
+          created_at: string
+          created_by: string
+          credit_limit: number | null
+          current_balance: number | null
+          customer_id: string
+          id: string
+          insurance_info: Json | null
+          notes: string | null
+          on_time_delivery_rate: number | null
+          payment_terms: string | null
+          performance_score: number | null
+          postal_code: string | null
+          preferred_payment_method: string | null
+          quality_rating: number | null
+          state: string | null
+          status: string
+          tags: string[] | null
+          tax_id: string | null
+          updated_at: string
+          vendor_code: string
+          vendor_name: string
+          vendor_type: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          certifications?: Json | null
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          country?: string | null
+          created_at?: string
+          created_by: string
+          credit_limit?: number | null
+          current_balance?: number | null
+          customer_id: string
+          id?: string
+          insurance_info?: Json | null
+          notes?: string | null
+          on_time_delivery_rate?: number | null
+          payment_terms?: string | null
+          performance_score?: number | null
+          postal_code?: string | null
+          preferred_payment_method?: string | null
+          quality_rating?: number | null
+          state?: string | null
+          status?: string
+          tags?: string[] | null
+          tax_id?: string | null
+          updated_at?: string
+          vendor_code: string
+          vendor_name: string
+          vendor_type: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          certifications?: Json | null
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string
+          credit_limit?: number | null
+          current_balance?: number | null
+          customer_id?: string
+          id?: string
+          insurance_info?: Json | null
+          notes?: string | null
+          on_time_delivery_rate?: number | null
+          payment_terms?: string | null
+          performance_score?: number | null
+          postal_code?: string | null
+          preferred_payment_method?: string | null
+          quality_rating?: number | null
+          state?: string | null
+          status?: string
+          tags?: string[] | null
+          tax_id?: string | null
+          updated_at?: string
+          vendor_code?: string
+          vendor_name?: string
+          vendor_type?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       employee_certifications: {
         Row: {
           certification_body: string | null
@@ -6329,7 +6434,7 @@ export type Database = {
             foreignKeyName: "inventory_items_vendor_id_fkey"
             columns: ["vendor_id"]
             isOneToOne: false
-            referencedRelation: "vendors"
+            referencedRelation: "documentation_vendors"
             referencedColumns: ["id"]
           },
         ]
@@ -6583,6 +6688,7 @@ export type Database = {
           title: string
           updated_at: string
           updated_by: string | null
+          vendor_id: string | null
           version: number
         }
         Insert: {
@@ -6600,6 +6706,7 @@ export type Database = {
           title: string
           updated_at?: string
           updated_by?: string | null
+          vendor_id?: string | null
           version?: number
         }
         Update: {
@@ -6617,6 +6724,7 @@ export type Database = {
           title?: string
           updated_at?: string
           updated_by?: string | null
+          vendor_id?: string | null
           version?: number
         }
         Relationships: [
@@ -6625,6 +6733,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "knowledge_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "knowledge_articles_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "documentation_vendors"
             referencedColumns: ["id"]
           },
         ]
@@ -8186,7 +8301,7 @@ export type Database = {
             foreignKeyName: "project_expenses_vendor_id_fkey"
             columns: ["vendor_id"]
             isOneToOne: false
-            referencedRelation: "vendors"
+            referencedRelation: "documentation_vendors"
             referencedColumns: ["id"]
           },
         ]
@@ -8779,7 +8894,7 @@ export type Database = {
             foreignKeyName: "purchase_orders_vendor_id_fk_fkey"
             columns: ["vendor_id_fk"]
             isOneToOne: false
-            referencedRelation: "vendors"
+            referencedRelation: "documentation_vendors"
             referencedColumns: ["id"]
           },
         ]
@@ -11511,7 +11626,7 @@ export type Database = {
             foreignKeyName: "vendor_contracts_vendor_id_fkey"
             columns: ["vendor_id"]
             isOneToOne: false
-            referencedRelation: "vendors"
+            referencedRelation: "documentation_vendors"
             referencedColumns: ["id"]
           },
         ]
@@ -11567,115 +11682,10 @@ export type Database = {
             foreignKeyName: "vendor_performance_vendor_id_fkey"
             columns: ["vendor_id"]
             isOneToOne: false
-            referencedRelation: "vendors"
+            referencedRelation: "documentation_vendors"
             referencedColumns: ["id"]
           },
         ]
-      }
-      vendors: {
-        Row: {
-          address: string | null
-          certifications: Json | null
-          city: string | null
-          contact_email: string | null
-          contact_name: string | null
-          contact_phone: string | null
-          contract_end_date: string | null
-          contract_start_date: string | null
-          country: string | null
-          created_at: string
-          created_by: string
-          credit_limit: number | null
-          current_balance: number | null
-          customer_id: string
-          id: string
-          insurance_info: Json | null
-          notes: string | null
-          on_time_delivery_rate: number | null
-          payment_terms: string | null
-          performance_score: number | null
-          postal_code: string | null
-          preferred_payment_method: string | null
-          quality_rating: number | null
-          state: string | null
-          status: string
-          tags: string[] | null
-          tax_id: string | null
-          updated_at: string
-          vendor_code: string
-          vendor_name: string
-          vendor_type: string
-          website: string | null
-        }
-        Insert: {
-          address?: string | null
-          certifications?: Json | null
-          city?: string | null
-          contact_email?: string | null
-          contact_name?: string | null
-          contact_phone?: string | null
-          contract_end_date?: string | null
-          contract_start_date?: string | null
-          country?: string | null
-          created_at?: string
-          created_by: string
-          credit_limit?: number | null
-          current_balance?: number | null
-          customer_id: string
-          id?: string
-          insurance_info?: Json | null
-          notes?: string | null
-          on_time_delivery_rate?: number | null
-          payment_terms?: string | null
-          performance_score?: number | null
-          postal_code?: string | null
-          preferred_payment_method?: string | null
-          quality_rating?: number | null
-          state?: string | null
-          status?: string
-          tags?: string[] | null
-          tax_id?: string | null
-          updated_at?: string
-          vendor_code: string
-          vendor_name: string
-          vendor_type: string
-          website?: string | null
-        }
-        Update: {
-          address?: string | null
-          certifications?: Json | null
-          city?: string | null
-          contact_email?: string | null
-          contact_name?: string | null
-          contact_phone?: string | null
-          contract_end_date?: string | null
-          contract_start_date?: string | null
-          country?: string | null
-          created_at?: string
-          created_by?: string
-          credit_limit?: number | null
-          current_balance?: number | null
-          customer_id?: string
-          id?: string
-          insurance_info?: Json | null
-          notes?: string | null
-          on_time_delivery_rate?: number | null
-          payment_terms?: string | null
-          performance_score?: number | null
-          postal_code?: string | null
-          preferred_payment_method?: string | null
-          quality_rating?: number | null
-          state?: string | null
-          status?: string
-          tags?: string[] | null
-          tax_id?: string | null
-          updated_at?: string
-          vendor_code?: string
-          vendor_name?: string
-          vendor_type?: string
-          website?: string | null
-        }
-        Relationships: []
       }
       warehouses: {
         Row: {
@@ -12128,7 +12138,7 @@ export type Database = {
             foreignKeyName: "inventory_items_vendor_id_fkey"
             columns: ["vendor_id"]
             isOneToOne: false
-            referencedRelation: "vendors"
+            referencedRelation: "documentation_vendors"
             referencedColumns: ["id"]
           },
         ]

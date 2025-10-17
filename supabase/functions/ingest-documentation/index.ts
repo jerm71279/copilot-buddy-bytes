@@ -16,7 +16,7 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { url, source, category, customerId } = await req.json();
+    const { url, source, category, customerId, vendorId } = await req.json();
 
     if (!url || !source || !customerId) {
       return new Response(
@@ -52,6 +52,7 @@ serve(async (req) => {
       .from('knowledge_articles')
       .insert({
         customer_id: customerId,
+        vendor_id: vendorId || null,
         title,
         content: textContent,
         category: category || 'technical_documentation',
@@ -60,7 +61,7 @@ serve(async (req) => {
         is_verified: true,
         usage_count: 0,
         confidence_score: 0.95,
-        tags: ['firewall', 'sonicwall', 'technical', 'documentation']
+        tags: ['technical', 'documentation', source.toLowerCase()]
       })
       .select()
       .single();
