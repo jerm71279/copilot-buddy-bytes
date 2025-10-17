@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -10,18 +10,22 @@ interface DepartmentInsight {
   customer_id: string;
   department: string;
   insight_type: string;
-  insight_data: any;
+  title: string;
+  description: string;
   confidence_score: number;
-  created_at: string;
+  impact_score: number;
+  frequency_count: number;
+  affected_users: number;
+  first_detected_at?: string;
+  metadata: any;
 }
 
-interface GlobalInsightPattern {
-  pattern_type: string;
-  affected_departments: string[];
-  frequency: number;
-  confidence_score: number;
-  recommended_actions: string[];
-  insight_data: any;
+interface CorrelationCandidate {
+  insight1: DepartmentInsight;
+  insight2: DepartmentInsight;
+  strength: number;
+  correlationType: 'positive' | 'negative' | 'causal';
+  evidence: any;
 }
 
 Deno.serve(async (req) => {
@@ -30,374 +34,332 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
-    // Service role client for cron job
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    console.log('🧠 Starting Central MML Analysis...');
 
-    console.log('[Central MML] Starting cross-department intelligence analysis...');
-
-    // Get all department insights from last 7 days
-    const { data: recentInsights, error: insightsError } = await supabase
+    // Get all customers with recent department insights
+    const { data: customers, error: customersError } = await supabase
       .from('department_insights')
-      .select('*')
-      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
-      .order('created_at', { ascending: false });
+      .select('customer_id')
+      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+      .order('customer_id');
 
-    if (insightsError) {
-      console.error('[Central MML] Error fetching insights:', insightsError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to fetch insights' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    if (customersError) throw customersError;
 
-    if (!recentInsights || recentInsights.length === 0) {
-      console.log('[Central MML] No recent insights to process');
-      return new Response(
-        JSON.stringify({ message: 'No insights to process', processed: 0 }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const uniqueCustomers = [...new Set(customers?.map(c => c.customer_id) || [])];
+    console.log(`📊 Processing ${uniqueCustomers.length} customers`);
 
-    console.log(`[Central MML] Analyzing ${recentInsights.length} insights from ${new Set(recentInsights.map(i => i.department)).size} departments`);
+    let totalGlobalInsights = 0;
+    let totalCorrelations = 0;
 
-    // Group insights by customer and pattern type
-    const customerInsights = new Map<string, DepartmentInsight[]>();
-    recentInsights.forEach((insight: DepartmentInsight) => {
-      const existing = customerInsights.get(insight.customer_id) || [];
-      customerInsights.set(insight.customer_id, [...existing, insight]);
-    });
-
-    const globalInsightsCreated: any[] = [];
-    const correlationsCreated: any[] = [];
-    const articlesCreated: any[] = [];
-
-    // Process each customer's insights
-    for (const [customerId, insights] of customerInsights.entries()) {
-      console.log(`[Central MML] Processing ${insights.length} insights for customer ${customerId}`);
-
-      // Identify cross-department patterns
-      const patterns = identifyCrossDepartmentPatterns(insights);
-
-      for (const pattern of patterns) {
-        // Create global insight
-        const { data: globalInsight, error: globalError } = await supabase
-          .from('global_insights')
-          .insert({
-            customer_id: customerId,
-            insight_type: pattern.pattern_type,
-            affected_departments: pattern.affected_departments,
-            confidence_score: pattern.confidence_score,
-            insight_data: pattern.insight_data,
-            source_insight_count: pattern.frequency,
-            recommended_actions: pattern.recommended_actions,
-          })
-          .select()
-          .maybeSingle();
-
-        if (globalError) {
-          console.error('[Central MML] Error creating global insight:', globalError);
-          continue;
-        }
-
-        if (globalInsight) {
-          globalInsightsCreated.push(globalInsight);
-          console.log(`[Central MML] Created global insight: ${pattern.pattern_type}`);
-
-          // Create correlations between department insights
-          const correlations = createInsightCorrelations(insights, pattern, globalInsight.id);
-          
-          for (const correlation of correlations) {
-            const { error: corrError } = await supabase
-              .from('insight_correlations')
-              .insert(correlation);
-
-            if (!corrError) {
-              correlationsCreated.push(correlation);
-            }
-          }
-
-          // Auto-generate knowledge article if pattern is frequent
-          if (pattern.frequency >= 3 && pattern.confidence_score > 0.7) {
-            const article = await generateKnowledgeArticle(
-              supabase,
-              customerId,
-              pattern,
-              lovableApiKey
-            );
-
-            if (article) {
-              articlesCreated.push(article);
-              console.log(`[Central MML] Auto-generated knowledge article: ${article.title}`);
-            }
-          }
-
-          // Create feedback loop to departments
-          await createInsightFeedback(supabase, customerId, globalInsight, pattern);
-        }
+    for (const customerId of uniqueCustomers) {
+      try {
+        const result = await processCustomerInsights(supabase, customerId);
+        totalGlobalInsights += result.insights;
+        totalCorrelations += result.correlations;
+      } catch (error) {
+        console.error(`❌ Error processing customer ${customerId}:`, error);
       }
     }
 
-    console.log(`[Central MML] Analysis complete: ${globalInsightsCreated.length} global insights, ${correlationsCreated.length} correlations, ${articlesCreated.length} articles`);
+    console.log(`✅ Analysis complete: ${totalGlobalInsights} global insights, ${totalCorrelations} correlations`);
 
     return new Response(
       JSON.stringify({
         success: true,
-        processed: recentInsights.length,
-        global_insights_created: globalInsightsCreated.length,
-        correlations_created: correlationsCreated.length,
-        articles_created: articlesCreated.length,
-        insights: globalInsightsCreated,
+        customersProcessed: uniqueCustomers.length,
+        globalInsightsGenerated: totalGlobalInsights,
+        correlationsFound: totalCorrelations,
+        timestamp: new Date().toISOString()
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('[Central MML] Error:', error);
+    console.error('❌ Central MML Error:', error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ error: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
 
-function identifyCrossDepartmentPatterns(insights: DepartmentInsight[]): GlobalInsightPattern[] {
-  const patterns: GlobalInsightPattern[] = [];
-  const insightsByType = new Map<string, DepartmentInsight[]>();
+async function processCustomerInsights(supabase: any, customerId: string): Promise<{ insights: number; correlations: number }> {
+  // Get recent high-quality department insights (last 7 days, confidence > 60%)
+  const { data: insights, error: insightsError } = await supabase
+    .from('department_insights')
+    .select('*')
+    .eq('customer_id', customerId)
+    .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+    .gte('confidence_score', 0.6)
+    .order('impact_score', { ascending: false });
 
-  // Group by insight type
-  insights.forEach(insight => {
-    const existing = insightsByType.get(insight.insight_type) || [];
-    insightsByType.set(insight.insight_type, [...existing, insight]);
-  });
+  if (insightsError) throw insightsError;
+  if (!insights || insights.length < 2) return { insights: 0, correlations: 0 };
 
-  // Identify patterns that appear across multiple departments
-  for (const [type, typeInsights] of insightsByType.entries()) {
-    const departments = new Set(typeInsights.map(i => i.department));
-    
-    // Pattern only if it appears in 2+ departments
-    if (departments.size >= 2) {
-      const avgConfidence = typeInsights.reduce((sum, i) => sum + i.confidence_score, 0) / typeInsights.length;
-      
-      // Extract common themes from insight data
-      const commonThemes = extractCommonThemes(typeInsights);
-      const recommendedActions = generateRecommendedActions(type, commonThemes, Array.from(departments));
+  console.log(`  📈 Processing ${insights.length} insights for customer ${customerId}`);
 
-      patterns.push({
-        pattern_type: type,
-        affected_departments: Array.from(departments),
-        frequency: typeInsights.length,
-        confidence_score: avgConfidence,
-        recommended_actions: recommendedActions,
-        insight_data: {
-          common_themes: commonThemes,
-          department_counts: Object.fromEntries(
-            Array.from(departments).map(dept => [
-              dept,
-              typeInsights.filter(i => i.department === dept).length
-            ])
-          ),
-          sample_insights: typeInsights.slice(0, 3).map(i => i.insight_data),
-        },
-      });
-    }
-  }
-
-  return patterns;
-}
-
-function extractCommonThemes(insights: DepartmentInsight[]): string[] {
-  const themes = new Set<string>();
+  // Identify cross-department patterns
+  const correlations = await findCorrelations(insights);
+  console.log(`  🔗 Found ${correlations.length} potential correlations`);
   
-  insights.forEach(insight => {
-    if (insight.insight_data?.keywords) {
-      insight.insight_data.keywords.forEach((kw: string) => themes.add(kw));
-    }
-    if (insight.insight_data?.category) {
-      themes.add(insight.insight_data.category);
-    }
-  });
-
-  return Array.from(themes).slice(0, 5);
-}
-
-function generateRecommendedActions(type: string, themes: string[], departments: string[]): string[] {
-  const actions: string[] = [];
-
-  if (type === 'repeated_question') {
-    actions.push('Create knowledge article to address common question');
-    actions.push(`Train ${departments.join(', ')} staff on this topic`);
-  } else if (type === 'process_bottleneck') {
-    actions.push('Implement workflow automation');
-    actions.push('Cross-train teams to reduce bottleneck');
-  } else if (type === 'compliance_gap') {
-    actions.push('Schedule organization-wide compliance review');
-    actions.push('Update policies and procedures');
-  } else if (type === 'security_concern') {
-    actions.push('Conduct security awareness training');
-    actions.push('Review and update access controls');
+  // Store correlations
+  let storedCorrelations = 0;
+  for (const correlation of correlations) {
+    const stored = await storeCorrelation(supabase, customerId, correlation);
+    if (stored) storedCorrelations++;
   }
 
-  if (themes.length > 0) {
-    actions.push(`Focus on: ${themes.join(', ')}`);
+  // Generate global insights from correlations
+  let generatedInsights = 0;
+  if (correlations.length > 0) {
+    generatedInsights = await generateGlobalInsights(supabase, customerId, insights, correlations);
   }
 
-  return actions;
+  return { insights: generatedInsights, correlations: storedCorrelations };
 }
 
-function createInsightCorrelations(
-  insights: DepartmentInsight[],
-  pattern: GlobalInsightPattern,
-  globalInsightId: string
-): any[] {
-  const correlations: any[] = [];
+async function findCorrelations(insights: DepartmentInsight[]): Promise<CorrelationCandidate[]> {
+  const correlations: CorrelationCandidate[] = [];
 
-  // Find related insights
-  const patternInsights = insights.filter(i => 
-    pattern.affected_departments.includes(i.department) &&
-    i.insight_type === pattern.pattern_type
-  );
+  // Only look for cross-department correlations
+  for (let i = 0; i < insights.length; i++) {
+    for (let j = i + 1; j < insights.length; j++) {
+      const insight1 = insights[i];
+      const insight2 = insights[j];
 
-  // Create correlations between pairs
-  for (let i = 0; i < patternInsights.length; i++) {
-    for (let j = i + 1; j < patternInsights.length; j++) {
-      correlations.push({
-        global_insight_id: globalInsightId,
-        department_insight_1_id: patternInsights[i].id,
-        department_insight_2_id: patternInsights[j].id,
-        correlation_strength: pattern.confidence_score,
-        correlation_type: 'cross_department_pattern',
-        relationship_description: `Both departments experiencing ${pattern.pattern_type}`,
-      });
+      // Skip if same department
+      if (insight1.department === insight2.department) continue;
+
+      // Calculate correlation
+      const correlation = calculateCorrelation(insight1, insight2);
+      
+      // Only keep strong correlations (>= 50%)
+      if (correlation.strength >= 0.5) {
+        correlations.push(correlation);
+      }
     }
   }
 
-  return correlations;
+  // Return top 10 strongest correlations
+  return correlations.sort((a, b) => b.strength - a.strength).slice(0, 10);
 }
 
-async function generateKnowledgeArticle(
+function calculateCorrelation(
+  insight1: DepartmentInsight,
+  insight2: DepartmentInsight
+): CorrelationCandidate {
+  let strength = 0;
+  let correlationType: 'positive' | 'negative' | 'causal' = 'positive';
+  const evidence: any = {};
+
+  // 1. Temporal proximity (occurred within 48 hours)
+  if (insight1.first_detected_at && insight2.first_detected_at) {
+    const timeDiff = Math.abs(
+      new Date(insight1.first_detected_at).getTime() - 
+      new Date(insight2.first_detected_at).getTime()
+    );
+    const hoursDiff = timeDiff / (1000 * 60 * 60);
+    
+    if (hoursDiff <= 48) {
+      strength += 0.3;
+      evidence.temporalProximity = `${hoursDiff.toFixed(0)} hours apart`;
+    }
+  }
+
+  // 2. Similar insight types
+  if (insight1.insight_type === insight2.insight_type) {
+    strength += 0.2;
+    evidence.sameType = insight1.insight_type;
+  }
+
+  // 3. Related keywords in descriptions
+  const keywords1 = extractKeywords(insight1.description + ' ' + insight1.title);
+  const keywords2 = extractKeywords(insight2.description + ' ' + insight2.title);
+  const commonKeywords = keywords1.filter(k => keywords2.includes(k));
+  
+  if (commonKeywords.length > 0) {
+    strength += Math.min(0.3, commonKeywords.length * 0.1);
+    evidence.commonKeywords = commonKeywords;
+  }
+
+  // 4. Similar impact levels
+  const impactDiff = Math.abs(insight1.impact_score - insight2.impact_score);
+  if (impactDiff <= 2) {
+    strength += 0.2;
+    evidence.similarImpact = true;
+  }
+
+  // Determine correlation type based on insight patterns
+  if (insight1.insight_type === 'bottleneck' && insight2.insight_type === 'bottleneck') {
+    correlationType = 'causal';
+  } else if (insight1.insight_type === 'opportunity' && insight2.insight_type === 'opportunity') {
+    correlationType = 'positive';
+  } else if (
+    (insight1.insight_type === 'risk' && insight2.insight_type === 'bottleneck') ||
+    (insight1.insight_type === 'bottleneck' && insight2.insight_type === 'risk')
+  ) {
+    correlationType = 'causal';
+  }
+
+  return {
+    insight1,
+    insight2,
+    strength: Math.min(1, strength),
+    correlationType,
+    evidence
+  };
+}
+
+function extractKeywords(text: string): string[] {
+  const stopWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'is', 'are', 'was', 'were', 'this', 'that', 'from'];
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s]/g, ' ')
+    .split(/\s+/)
+    .filter(word => word.length > 3 && !stopWords.includes(word))
+    .slice(0, 15);
+}
+
+async function storeCorrelation(
   supabase: any,
   customerId: string,
-  pattern: GlobalInsightPattern,
-  lovableApiKey?: string
-): Promise<any | null> {
-  try {
-    if (!lovableApiKey) {
-      console.log('[Central MML] No AI key available, skipping article generation');
-      return null;
-    }
+  correlation: CorrelationCandidate
+): Promise<boolean> {
+  // Check if correlation already exists
+  const { data: existing } = await supabase
+    .from('insight_correlations')
+    .select('id')
+    .eq('customer_id', customerId)
+    .eq('insight_1_id', correlation.insight1.id)
+    .eq('insight_2_id', correlation.insight2.id)
+    .maybeSingle();
 
-    const prompt = `Generate a concise knowledge base article based on this organizational pattern:
+  if (existing) return false;
 
-Pattern Type: ${pattern.pattern_type}
-Affected Departments: ${pattern.affected_departments.join(', ')}
-Frequency: ${pattern.frequency} occurrences
-Common Themes: ${pattern.insight_data.common_themes?.join(', ') || 'N/A'}
-
-Create an article with:
-1. Clear title (max 100 chars)
-2. Problem description
-3. Step-by-step solution
-4. Best practices
-
-Format as JSON: { "title": "...", "content": "..." }`;
-
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: 'You are a knowledge management AI. Generate clear, actionable documentation.' },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-      }),
+  const { error } = await supabase
+    .from('insight_correlations')
+    .insert({
+      customer_id: customerId,
+      dept_1: correlation.insight1.department,
+      dept_2: correlation.insight2.department,
+      correlation_type: correlation.correlationType,
+      strength: correlation.strength,
+      insight_1_id: correlation.insight1.id,
+      insight_2_id: correlation.insight2.id,
+      evidence: correlation.evidence
     });
 
-    if (!aiResponse.ok) {
-      console.error('[Central MML] AI API error:', await aiResponse.text());
-      return null;
-    }
-
-    const aiData = await aiResponse.json();
-    const generatedText = aiData.choices?.[0]?.message?.content;
-
-    if (!generatedText) {
-      return null;
-    }
-
-    // Parse AI response
-    const articleData = JSON.parse(generatedText);
-
-    // Create knowledge article
-    const { data: article, error } = await supabase
-      .from('knowledge_articles')
-      .insert({
-        customer_id: customerId,
-        title: articleData.title.substring(0, 200),
-        content: articleData.content,
-        category: pattern.pattern_type,
-        tags: pattern.insight_data.common_themes || [],
-        is_published: true,
-        auto_generated: true,
-        source_metadata: {
-          generated_by: 'central_mml_processor',
-          pattern_type: pattern.pattern_type,
-          departments: pattern.affected_departments,
-        },
-      })
-      .select()
-      .maybeSingle();
-
-    if (error) {
-      console.error('[Central MML] Error creating article:', error);
-      return null;
-    }
-
-    return article;
-
-  } catch (error) {
-    console.error('[Central MML] Error generating article:', error);
-    return null;
-  }
+  return !error;
 }
 
-async function createInsightFeedback(
+async function generateGlobalInsights(
   supabase: any,
   customerId: string,
-  globalInsight: any,
-  pattern: GlobalInsightPattern
-): Promise<void> {
-  try {
-    // Create feedback for each affected department
-    for (const department of pattern.affected_departments) {
-      await supabase
-        .from('insight_feedback')
-        .insert({
-          customer_id: customerId,
-          global_insight_id: globalInsight.id,
-          target_department: department,
-          feedback_type: 'proactive_recommendation',
-          feedback_data: {
-            recommendation: `Organization-wide pattern detected: ${pattern.pattern_type}`,
-            suggested_actions: pattern.recommended_actions,
-            other_departments: pattern.affected_departments.filter(d => d !== department),
-            confidence: pattern.confidence_score,
-          },
-          priority: pattern.confidence_score > 0.8 ? 'high' : 'medium',
-        });
+  insights: DepartmentInsight[],
+  correlations: CorrelationCandidate[]
+): Promise<number> {
+  let created = 0;
+
+  // Generate insights for top 5 strongest correlations
+  for (const correlation of correlations.slice(0, 5)) {
+    const affectedDepts = [correlation.insight1.department, correlation.insight2.department];
+    const sourceInsights = [correlation.insight1.id, correlation.insight2.id];
+
+    let title = '';
+    let description = '';
+    let insightType: 'cross_dept_pattern' | 'org_trend' | 'innovation_opportunity' = 'cross_dept_pattern';
+    let recommendations: any[] = [];
+    let roiEstimate: number | null = null;
+
+    if (correlation.correlationType === 'causal') {
+      title = `Cross-Department Impact: ${correlation.insight1.department} → ${correlation.insight2.department}`;
+      description = `Analysis reveals ${correlation.insight1.title} in ${correlation.insight1.department} is correlated with ${correlation.insight2.title} in ${correlation.insight2.department}. This suggests a causal relationship (${(correlation.strength * 100).toFixed(0)}% confidence) that could be addressed with coordinated action.`;
+      insightType = 'cross_dept_pattern';
+      
+      recommendations = [
+        {
+          action: `Establish coordination between ${correlation.insight1.department} and ${correlation.insight2.department}`,
+          priority: 'high',
+          estimatedImpact: 'Addressing root cause could resolve both issues simultaneously'
+        },
+        {
+          action: 'Create cross-functional task force',
+          priority: 'medium',
+          estimatedImpact: 'Improved visibility and faster issue resolution'
+        },
+        {
+          action: 'Implement shared metrics dashboard',
+          priority: 'low',
+          estimatedImpact: 'Early warning system for future occurrences'
+        }
+      ];
+
+      // Estimate ROI based on affected users and impact
+      const totalAffected = correlation.insight1.affected_users + correlation.insight2.affected_users;
+      roiEstimate = totalAffected * 100; // $100 per affected user
+
+    } else if (correlation.correlationType === 'positive') {
+      title = `Organization-Wide Trend: ${affectedDepts.join(' & ')}`;
+      description = `Both ${correlation.insight1.department} and ${correlation.insight2.department} are experiencing parallel patterns in ${correlation.insight1.insight_type}s. This organization-wide trend (${(correlation.strength * 100).toFixed(0)}% strength) suggests systemic factors at play.`;
+      insightType = 'org_trend';
+      
+      recommendations = [
+        {
+          action: 'Conduct organization-wide assessment',
+          priority: 'high',
+          estimatedImpact: 'Identify systemic root causes'
+        },
+        {
+          action: 'Share successful strategies across departments',
+          priority: 'medium',
+          estimatedImpact: 'Leverage best practices organization-wide'
+        }
+      ];
+
+      roiEstimate = (correlation.insight1.affected_users + correlation.insight2.affected_users) * 75;
     }
 
-    console.log(`[Central MML] Created feedback for ${pattern.affected_departments.length} departments`);
+    const avgImpact = Math.round((correlation.insight1.impact_score + correlation.insight2.impact_score) / 2);
+    const avgConfidence = (correlation.insight1.confidence_score + correlation.insight2.confidence_score) / 2;
 
-  } catch (error) {
-    console.error('[Central MML] Error creating feedback:', error);
+    // Check if similar insight already exists (last 7 days)
+    const { data: existing } = await supabase
+      .from('global_insights')
+      .select('id')
+      .eq('customer_id', customerId)
+      .eq('title', title)
+      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .maybeSingle();
+
+    if (existing) continue;
+
+    const { error } = await supabase
+      .from('global_insights')
+      .insert({
+        customer_id: customerId,
+        insight_type: insightType,
+        title,
+        description,
+        affected_departments: affectedDepts,
+        source_insights: sourceInsights,
+        confidence_score: Number((correlation.strength * avgConfidence).toFixed(2)),
+        impact_score: Math.min(10, avgImpact + 2),
+        actionable_recommendations: recommendations,
+        roi_estimate: roiEstimate,
+        implementation_complexity: correlation.strength > 0.8 ? 'high' : 'medium',
+        status: 'new'
+      });
+
+    if (!error) {
+      created++;
+      console.log(`  ✨ Created global insight: ${title}`);
+    }
   }
+
+  return created;
 }
