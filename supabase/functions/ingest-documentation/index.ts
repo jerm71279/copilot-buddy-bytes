@@ -498,6 +498,35 @@ serve(async (req) => {
         .maybeSingle();
     }
 
+    if (createRes.error && (createRes.error.message?.toLowerCase().includes('null character') || createRes.error.code === '54000')) {
+      console.warn('Placeholder insert still failing. Retrying without created_by and vendor_id...');
+      const ultraMinimalPayload = sanitizeForSupabase(
+        {
+          article_type: 'documentation',
+          source_type: 'vendor_documentation',
+          status: 'published',
+          version: 1,
+          title: 'Doc',
+          content: 'Placeholder',
+          customer_id: customerId,
+        },
+        {
+          uuidFields: ['customer_id'],
+          enums: {
+            source_type: ['manual', 'ai_generated', 'file_import', 'workflow_insight', 'vendor_documentation'],
+            article_type: ['sop', 'guide', 'faq', 'documentation', 'insight'],
+            status: ['draft', 'published', 'archived'],
+          },
+          stripOtherControls: true,
+        }
+      );
+      createRes = await supabase
+        .from('knowledge_articles')
+        .insert(ultraMinimalPayload)
+        .select()
+        .maybeSingle();
+    }
+
     if (createRes.error) {
       console.error('Placeholder insert failed:', createRes.error);
       throw createRes.error;
