@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { GlobalSearch } from "@/components/GlobalSearch";
@@ -111,19 +111,23 @@ export default function DashboardPortalLanes() {
 
   // Filter portals based on customer settings (organization-level)
   // MUST be computed before any early returns to avoid hook ordering violations
-  const orgFilteredPortals = enabledPortals.length > 0 
-    ? portals.filter(portal => {
-        const slug = portalSlugMap[portal.path];
-        return !slug || enabledPortals.includes(slug);
-      })
-    : portals;
+  const orgFilteredPortals = useMemo(() => (
+    enabledPortals.length > 0 
+      ? portals.filter(portal => {
+          const slug = portalSlugMap[portal.path];
+          return !slug || enabledPortals.includes(slug);
+        })
+      : portals
+  ), [enabledPortals]);
 
-  const orgFilteredCategories = Object.keys(enabledModules).length > 0
-    ? categories.filter(category => {
-        const slug = categorySlugMap[category.name];
-        return !slug || enabledModules[slug] !== false;
-      })
-    : categories;
+  const orgFilteredCategories = useMemo(() => (
+    Object.keys(enabledModules).length > 0
+      ? categories.filter(category => {
+          const slug = categorySlugMap[category.name];
+          return !slug || enabledModules[slug] !== false;
+        })
+      : categories
+  ), [enabledModules]);
 
   // Filter portals based on RBAC permissions (user-level)
   // MUST be called before any early returns to avoid hook ordering violations

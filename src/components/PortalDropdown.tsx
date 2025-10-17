@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Portal, Category } from "@/config/portals";
+
 
 interface PortalDropdownProps {
   items: { name: string; path: string }[];

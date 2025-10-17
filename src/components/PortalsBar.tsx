@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { Portal, Category } from "@/config/portals";
+import { Portal } from "@/config/portals";
 import { PortalDropdown } from "./PortalDropdown";
 
 interface PortalsBarProps {
