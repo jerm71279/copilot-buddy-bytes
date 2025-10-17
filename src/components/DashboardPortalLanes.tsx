@@ -228,6 +228,12 @@ export default function DashboardPortalLanes() {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
+  
+  // Don't render on marketing homepage
+  if (currentPath === '/') {
+    return null;
+  }
+  
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [enabledPortals, setEnabledPortals] = useState<string[]>([]);
   const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({});
