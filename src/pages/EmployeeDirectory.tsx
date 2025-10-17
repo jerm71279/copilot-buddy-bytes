@@ -366,8 +366,7 @@ const EmployeeDirectory = () => {
                   {filteredEmployees.map((employee) => (
                     <TableRow
                       key={employee.id}
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => navigate(`/employees/${employee.id}`)}
+                      className="hover:bg-muted/50"
                     >
                       <TableCell className="font-medium">{employee.employee_number}</TableCell>
                       <TableCell>

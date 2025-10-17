@@ -1,6 +1,70 @@
 # Recent Fixes - October 15, 2025
 
-## Slab Knowledge Base Integration (Latest)
+## Employee Directory 404 Fix (Latest)
+
+**Implementation Date**: 2025-10-17
+**Bug Fix**: Removed broken employee detail navigation causing 404 errors
+
+### Problem
+Employee Directory table rows were clickable and navigated to `/employees/${employee.id}`, but no route or detail page exists for individual employees. This caused 404 errors whenever users clicked on any employee in the directory.
+
+### Solution
+Removed the problematic navigation:
+- Removed `onClick` handler from employee table rows
+- Removed `cursor-pointer` styling (no longer clickable)
+- Employees now display as view-only table rows
+
+### Files Modified
+- `src/App.tsx` - Confirmed single `/employees` route (removed duplicate attempt)
+- `src/pages/EmployeeDirectory.tsx` - Removed onClick navigation (lines 365-384)
+- `RECENT_FIXES_2025_10_15.md` (this file)
+
+### Impact
+- No more 404 errors when viewing employees
+- Employees displayed in table format (view-only)
+- Future enhancement: Can add employee detail page and restore navigation when ready
+
+---
+
+## HR Employee Onboarding 404 Fix
+
+**Implementation Date**: 2025-10-17
+**Bug Fix**: Fixed 404 errors in HR Employee Onboarding pages due to missing customer_id filtering
+
+### Problem
+All HR Employee Onboarding pages (dashboard, templates, detail, edit, new) were failing to load data because queries weren't filtering by `customer_id`. This violated RLS policies and caused 404/empty data issues.
+
+### Solution
+Added customer_id filtering to all data fetching operations:
+
+**Dashboard** (`src/pages/hr/EmployeeOnboardingDashboard.tsx`):
+- Added user authentication check
+- Fetched customer_id from user_profiles
+- Filtered employee_onboardings by customer_id
+
+**Templates** (`src/pages/hr/EmployeeOnboardingTemplates.tsx`):
+- Added customer_id lookup before loading templates
+- Filtered employee_onboarding_templates by customer_id
+
+**Data Hook** (`src/hooks/useOnboardingData.ts`):
+- Updated `useOnboardingTemplates` hook to fetch customer_id
+- Filtered templates by customer_id in the query
+
+### Files Modified
+- `src/pages/hr/EmployeeOnboardingDashboard.tsx` - Added customer_id filtering (lines 72-100)
+- `src/pages/hr/EmployeeOnboardingTemplates.tsx` - Added customer_id filtering (lines 52-80)
+- `src/hooks/useOnboardingData.ts` - Updated templates hook (lines 113-140)
+- `RECENT_FIXES_2025_10_15.md` (this file)
+
+### Impact
+- All HR Employee Onboarding pages now load data correctly
+- Proper RLS compliance with customer_id scoping
+- Users can create, view, and manage employee onboardings
+- Templates are properly scoped to each customer
+
+---
+
+## Slab Knowledge Base Integration
 
 **Implementation Date**: 2025-10-17
 **New Feature**: Added Slab knowledge base sync edge function
