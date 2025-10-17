@@ -1,11 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
-  Settings, 
-  Shield, 
-  TrendingUp, 
-  DollarSign, 
-  Users, 
-  BarChart3,
   ArrowLeft,
   ChevronDown,
   Search,
@@ -20,210 +14,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { usePortalPermissions } from "@/hooks/useNavigationPermissions";
 import { useAuth } from "@/hooks/useAuth";
-
-// Portals are the main navigation items (non-dashboard pages) with optional children
-interface Portal {
-  name: string;
-  path: string;
-  children?: { name: string; path: string; }[];
-}
-
-// Categories organize dashboards by theme
-interface Category {
-  name: string;
-  icon: any;
-  dashboards: { name: string; path: string; }[];
-}
-
-const portals: Portal[] = [
-  {
-    name: "Deployment Planner",
-    path: "/deployment-planner",
-  },
-  {
-    name: "DevOps Portal",
-    path: "/devops",
-    children: [
-      { name: "Documentation", path: "/docs" },
-      { name: "Link Validation", path: "/test/link-validation" },
-      { name: "Input Validation", path: "/test/input-validation" },
-      { name: "System Validation", path: "/test/validation" },
-      { name: "Comprehensive Tests", path: "/test/comprehensive" },
-      { name: "Workflow Evidence", path: "/test/workflow-evidence" },
-      { name: "Network Monitoring", path: "/network-monitoring" },
-      { name: "Architecture Canvas", path: "/architecture/canvas" },
-      { name: "Data Flow Portal", path: "/data-flows" },
-      { name: "MCP Servers", path: "/mcp-servers" },
-    ],
-  },
-  {
-    name: "Employee Portal",
-    path: "/portal",
-    children: [
-      { name: "Departments", path: "/departments" },
-      { name: "Leave Requests", path: "/leave-management" },
-      { name: "Time Tracking", path: "/time-tracking" },
-    ],
-  },
-  {
-    name: "Client Portal",
-    path: "/client-portal",
-  },
-  {
-    name: "Operations Portal",
-    path: "/dashboard/operations",
-    children: [
-      { name: "CMDB", path: "/cmdb" },
-      { name: "Add CMDB Item", path: "/cmdb/add" },
-      { name: "Change Management", path: "/change-management" },
-      { name: "New Change", path: "/change-management/new" },
-      { name: "Incidents", path: "/incidents" },
-      { name: "Network Monitoring", path: "/network-monitoring" },
-      { name: "SLA Management", path: "/sla-management" },
-      { name: "Client Onboarding", path: "/onboarding" },
-      { name: "New Client", path: "/onboarding/new" },
-      { name: "Onboarding Templates", path: "/onboarding/templates" },
-    ],
-  },
-  {
-    name: "Admin Portal",
-    path: "/admin",
-    children: [
-      { name: "Applications", path: "/admin/applications" },
-      { name: "Products", path: "/admin/products" },
-      { name: "MCP Servers", path: "/mcp-servers" },
-      { name: "RBAC", path: "/rbac" },
-      { name: "Privileged Access", path: "/audit/privileged-access" },
-      { name: "Customers", path: "/customers" },
-      { name: "Security Training", path: "/security-training" },
-      { name: "Employee Feedback", path: "/employee-feedback" },
-      { name: "Internal Operations", path: "/internal-operations" },
-    ],
-  },
-  {
-    name: "Integrations Portal",
-    path: "/integrations",
-    children: [
-      { name: "NinjaOne", path: "/ninjaone" },
-      { name: "CIPP", path: "/cipp" },
-    ],
-  },
-  {
-    name: "Compliance Portal",
-    path: "/compliance",
-    children: [
-      { name: "Audit Reports", path: "/compliance/audit-reports" },
-      { name: "Frameworks", path: "/compliance" },
-      { name: "Evidence Upload", path: "/compliance/evidence/upload" },
-      { name: "Remediation Rules", path: "/remediation-rules" },
-    ],
-  },
-  {
-    name: "Risk Assessment",
-    path: "/risk-assessment",
-  },
-  {
-    name: "Sales Portal",
-    path: "/sales-portal",
-    children: [
-      { name: "Leads", path: "/leads" },
-      { name: "Opportunities", path: "/opportunities" },
-      { name: "Quotes", path: "/quotes" },
-      { name: "Contracts", path: "/contracts" },
-      { name: "Projects", path: "/projects" },
-    ],
-  },
-  {
-    name: "Finance Portal",
-    path: "/budgets",
-    children: [
-      { name: "Invoices", path: "/invoices" },
-      { name: "Expenses", path: "/expenses" },
-      { name: "Purchase Orders", path: "/purchase-orders" },
-      { name: "Asset Financials", path: "/asset-financials" },
-      { name: "Financial Reports", path: "/financial-reports" },
-      { name: "Vendors", path: "/vendors" },
-      { name: "Inventory", path: "/inventory" },
-      { name: "Warehouses", path: "/warehouses" },
-    ],
-  },
-  {
-    name: "Analytics Portal",
-    path: "/analytics",
-    children: [
-      { name: "Data Flows", path: "/data-flows" },
-      { name: "Predictive Insights", path: "/predictive-insights" },
-      { name: "Custom Reports", path: "/reports/builder" },
-    ],
-  },
-  {
-    name: "Automation Portal",
-    path: "/workflow-automation",
-    children: [
-      { name: "Workflow Automation", path: "/workflows" },
-      { name: "Workflow Orchestration", path: "/workflow-orchestration" },
-      { name: "Visual Builder", path: "/workflows/visual-builder" },
-      { name: "Workflow Intelligence", path: "/workflow-intelligence" },
-      { name: "Intelligent Assistant", path: "/intelligent-assistant" },
-    ],
-  },
-  {
-    name: "Knowledge Portal",
-    path: "/knowledge",
-    children: [
-      { name: "Articles", path: "/knowledge" },
-      { name: "Upload", path: "/knowledge/upload" },
-    ],
-  },
-];
-
-const categories: Category[] = [
-  {
-    name: "IT Services",
-    icon: Settings,
-    dashboards: [
-      { name: "Operations", path: "/dashboard/operations" },
-      { name: "IT", path: "/dashboard/it" },
-    ],
-  },
-  {
-    name: "Compliance & Security",
-    icon: Shield,
-    dashboards: [
-      { name: "Compliance", path: "/dashboard/compliance" },
-      { name: "SOC", path: "/dashboard/soc" },
-    ],
-  },
-  {
-    name: "Business & Sales",
-    icon: TrendingUp,
-    dashboards: [
-      { name: "Sales", path: "/dashboard/sales" },
-    ],
-  },
-  {
-    name: "Finance",
-    icon: DollarSign,
-    dashboards: [
-      { name: "Finance", path: "/dashboard/finance" },
-    ],
-  },
-  {
-    name: "HR & People",
-    icon: Users,
-    dashboards: [
-      { name: "HR", path: "/dashboard/hr" },
-      { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
-    ],
-  },
-  {
-    name: "Analytics & Automation",
-    icon: BarChart3,
-    dashboards: [
-      { name: "Executive", path: "/dashboard/executive" },
-    ],
-  },
-];
+import { portals, categories, portalSlugMap, categorySlugMap, Portal, Category } from "@/config/portals";
+import { PortalsBar } from "./PortalsBar";
+import { PortalDropdown } from "./PortalDropdown";
 
 export default function DashboardPortalLanes() {
   const location = useLocation();
@@ -243,28 +36,6 @@ export default function DashboardPortalLanes() {
 
   const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
   const shouldHide = isLoading || !isAuthenticated || hideOnRoutes.includes(currentPath);
-
-  // Map portal paths to slugs for filtering
-  const portalSlugMap: Record<string, string> = {
-    '/portal': 'employee',
-    '/client-portal': 'client',
-    '/dashboard/operations': 'operations',
-    '/admin': 'admin',
-    '/integrations': 'integrations',
-    '/compliance': 'compliance',
-    '/analytics': 'analytics',
-    '/data-flow': 'data_flow',
-  };
-
-  // Map category names to module slugs
-  const categorySlugMap: Record<string, string> = {
-    'IT Services': 'it_services',
-    'Compliance & Security': 'compliance_security',
-    'Business & Sales': 'sales_marketing',
-    'Finance': 'finance',
-    'HR & People': 'hr',
-    'Analytics & Automation': 'executive',
-  };
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -393,13 +164,6 @@ export default function DashboardPortalLanes() {
     setOpenCategories(categories.reduce((acc, c) => ({ ...acc, [c.name]: false }), {}));
   };
 
-  // Calculate grid columns based on item count (minimum space for 4 items)
-  const getGridColumns = (itemCount: number): string => {
-    if (itemCount <= 4) return "grid-cols-1 sm:grid-cols-2";
-    if (itemCount <= 8) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
-    return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
-  };
-
   // Check if current page is a main portal/dashboard page
   const allPages = [
     ...portals.map(p => p.path),
@@ -413,94 +177,14 @@ export default function DashboardPortalLanes() {
       {/* Row 1: Portals with dropdowns */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
-          <ScrollArea className="w-full">
-            <div className="flex gap-2 pb-2 min-w-max">
-              {filteredPortals.map((portal) => {
-                const isActive = currentPath === portal.path || 
-                  (portal.children && portal.children.some(child => currentPath.startsWith(child.path)));
-                const isOpen = openPortals[portal.path];
-
-                return (
-                  <div key={portal.path} className="relative inline-block">
-                    {portal.children && portal.children.length > 0 ? (
-                      <Collapsible open={isOpen} onOpenChange={() => togglePortal(portal.path)}>
-                        <div className="flex items-center gap-1">
-                          <Link
-                            to={portal.path}
-                            className={cn(
-                              "inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-all",
-                              isActive
-                                ? "bg-primary text-primary-foreground shadow-sm"
-                                : "bg-muted/30 text-foreground hover:bg-muted/50"
-                            )}
-                          >
-                            {portal.name}
-                          </Link>
-                          <CollapsibleTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className={cn(
-                                "h-8 w-8 p-0 transition-transform",
-                                isOpen && "rotate-180"
-                              )}
-                            >
-                              <ChevronDown className="h-3 w-3" />
-                            </Button>
-                          </CollapsibleTrigger>
-                        </div>
-                        <CollapsibleContent className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
-                          {isOpen && (
-                            <>
-                              <div 
-                                className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[10000]" 
-                                onClick={closeAll}
-                              />
-                              <div 
-                                className="fixed left-1/2 -translate-x-1/2 z-[10001] bg-popover border border-border rounded-lg shadow-2xl p-6 max-w-4xl w-[90vw]"
-                                style={{ top: 'var(--lanes-bottom)' }}
-                              >
-                                <div className={cn("grid gap-3", getGridColumns(portal.children.length))}>
-                                  {portal.children.map((child) => (
-                                    <Link
-                                      key={child.path}
-                                      to={child.path}
-                                      onClick={closeAll}
-                                      className={cn(
-                                        "block px-4 py-3 text-sm rounded-md transition-colors",
-                                        currentPath === child.path
-                                          ? "bg-primary text-primary-foreground font-medium"
-                                          : "text-foreground hover:bg-muted"
-                                      )}
-                                    >
-                                      {child.name}
-                                    </Link>
-                                  ))}
-                                </div>
-                              </div>
-                            </>
-                          )}
-                        </CollapsibleContent>
-                      </Collapsible>
-                    ) : (
-                      <Link
-                        to={portal.path}
-                        className={cn(
-                          "inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-all",
-                          isActive
-                            ? "bg-primary text-primary-foreground shadow-sm"
-                            : "bg-muted/30 text-foreground hover:bg-muted/50"
-                        )}
-                      >
-                        {portal.name}
-                      </Link>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          <PortalsBar 
+            portals={filteredPortals}
+            currentPath={currentPath}
+            openStates={openPortals}
+            onToggle={togglePortal}
+            onCloseAll={closeAll}
+            lanesBottom="var(--lanes-bottom)"
+          />
         </div>
       </div>
 
@@ -551,28 +235,12 @@ export default function DashboardPortalLanes() {
                               className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[10000]" 
                               onClick={closeAll}
                             />
-                            <div 
-                              className="fixed left-1/2 -translate-x-1/2 z-[10001] bg-popover border border-border rounded-lg shadow-2xl p-6 max-w-4xl w-[90vw]"
-                              style={{ top: 'var(--lanes-bottom)' }}
-                            >
-                              <div className={cn("grid gap-3", getGridColumns(category.dashboards.length))}>
-                                {category.dashboards.map((dashboard) => (
-                                  <Link
-                                    key={dashboard.path}
-                                    to={dashboard.path}
-                                    onClick={closeAll}
-                                    className={cn(
-                                      "block px-4 py-3 text-sm rounded-md transition-colors",
-                                      currentPath === dashboard.path
-                                        ? "bg-primary text-primary-foreground font-medium"
-                                        : "text-foreground hover:bg-muted"
-                                    )}
-                                  >
-                                    {dashboard.name}
-                                  </Link>
-                                ))}
-                              </div>
-                            </div>
+                          <PortalDropdown
+                            items={category.dashboards}
+                            currentPath={currentPath}
+                            onClose={closeAll}
+                            lanesBottom="var(--lanes-bottom)"
+                          />
                           </>
                         )}
                       </CollapsibleContent>
