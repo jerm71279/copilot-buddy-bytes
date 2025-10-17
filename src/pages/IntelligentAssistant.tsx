@@ -147,8 +147,9 @@ const IntelligentAssistant = () => {
         await loadMetrics();
       }
     } catch (error) {
-      console.error("Error:", error);
-      toast.error("Failed to get response");
+      console.error("Error invoking intelligent-assistant:", error);
+      const msg = (error as any)?.message || (error as any)?.error || "Failed to get response";
+      toast.error(typeof msg === 'string' ? msg : 'Failed to get response');
     } finally {
       setIsLoading(false);
     }

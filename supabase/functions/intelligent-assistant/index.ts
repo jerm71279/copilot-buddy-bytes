@@ -32,9 +32,9 @@ serve(async (req) => {
     const customerId = String(requestData.customerId || '').slice(0, 100);
     const userId = String(requestData.userId || '').slice(0, 100);
     
-    if (!query || !userId) {
+    if (!query) {
       return new Response(
-        JSON.stringify({ error: 'Query and userId are required' }),
+        JSON.stringify({ error: 'Query is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -264,33 +264,38 @@ If no valuable insight is found, return {"has_insight": false}`,
       }
     }
 
-    // Step 6: Log interaction
-    const { data: interaction, error: logError } = await supabaseClient
-      .from("ai_interactions")
-      .insert({
-        customer_id: customerId,
-        user_id: userId,
-        conversation_id: conversationId,
-        interaction_type: "query",
-        user_query: query,
-        ai_response: assistantResponse,
-        knowledge_sources: relevantArticles?.map((a) => a.id) || [],
-        confidence_score: insightData?.confidence_score || 0.8,
-        insight_generated: insightData?.has_insight || false,
-        metadata: {
-          articles_used: relevantArticles?.length || 0,
-          insights_referenced: recentInsights?.length || 0,
-        },
-      })
-      .select()
-      .maybeSingle();
+    // Step 6: Log interaction (only if we have org + user context)
+    let interaction: any = null;
+    if (customerId && userId) {
+      const { data: interactionData, error: logError } = await supabaseClient
+        .from("ai_interactions")
+        .insert({
+          customer_id: customerId,
+          user_id: userId,
+          conversation_id: conversationId,
+          interaction_type: "query",
+          user_query: query,
+          ai_response: assistantResponse,
+          knowledge_sources: relevantArticles?.map((a) => a.id) || [],
+          confidence_score: insightData?.confidence_score || 0.8,
+          insight_generated: insightData?.has_insight || false,
+          metadata: {
+            articles_used: relevantArticles?.length || 0,
+            insights_referenced: recentInsights?.length || 0,
+          },
+        })
+        .select()
+        .maybeSingle();
 
-    if (logError || !interaction) {
-      console.error("Failed to log interaction:", logError);
+      if (logError || !interactionData) {
+        console.error("Failed to log interaction:", logError);
+      } else {
+        interaction = interactionData;
+      }
     }
 
-    // Step 7: Create insight if valuable
-    if (insightData?.has_insight && insightData?.confidence_score > 0.7) {
+    // Step 7: Create insight if valuable (only with org context)
+    if (customerId && userId && insightData?.has_insight && insightData?.confidence_score > 0.7) {
       const { error: insightError } = await supabaseClient
         .from("knowledge_insights")
         .insert({
@@ -336,30 +341,32 @@ If no valuable insight is found, return {"has_insight": false}`,
       }
     }
 
-    // Step 9: Update learning metrics
-    const today = new Date().toISOString().split("T")[0];
-    const { data: existingMetrics } = await supabaseClient
-      .from("ai_learning_metrics")
-      .select("*")
-      .eq("customer_id", customerId)
-      .eq("metric_date", today)
-      .maybeSingle();
-
-    if (existingMetrics) {
-      await supabaseClient
+    // Step 9: Update learning metrics (only with org context) 
+    if (customerId) {
+      const today = new Date().toISOString().split("T")[0];
+      const { data: existingMetrics } = await supabaseClient
         .from("ai_learning_metrics")
-        .update({
-          total_interactions: existingMetrics.total_interactions + 1,
-          insights_generated: existingMetrics.insights_generated + (insightData?.has_insight ? 1 : 0),
-        })
-        .eq("id", existingMetrics.id);
-    } else {
-      await supabaseClient.from("ai_learning_metrics").insert({
-        customer_id: customerId,
-        metric_date: today,
-        total_interactions: 1,
-        insights_generated: insightData?.has_insight ? 1 : 0,
-      });
+        .select("*")
+        .eq("customer_id", customerId)
+        .eq("metric_date", today)
+        .maybeSingle();
+
+      if (existingMetrics) {
+        await supabaseClient
+          .from("ai_learning_metrics")
+          .update({
+            total_interactions: existingMetrics.total_interactions + 1,
+            insights_generated: existingMetrics.insights_generated + (insightData?.has_insight ? 1 : 0),
+          })
+          .eq("id", existingMetrics.id);
+      } else {
+        await supabaseClient.from("ai_learning_metrics").insert({
+          customer_id: customerId,
+          metric_date: today,
+          total_interactions: 1,
+          insights_generated: insightData?.has_insight ? 1 : 0,
+        });
+      }
     }
 
     return new Response(
