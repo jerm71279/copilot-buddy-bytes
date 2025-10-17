@@ -120,8 +120,14 @@ serve(async (req) => {
       created_by: customerId
     } as const;
 
+    const stripZero = (s: string) => {
+      // Remove any codepoint 0 characters defensively at the byte level
+      // Using Array.from to handle surrogate pairs reliably
+      return Array.from(s).filter(ch => ch.charCodeAt(0) !== 0).join('');
+    };
+
     const stripZeroDeep = (val: any): any => {
-      if (typeof val === 'string') return val.replace(/\u0000/g, '');
+      if (typeof val === 'string') return stripZero(val);
       if (Array.isArray(val)) return val.map(stripZeroDeep);
       if (val && typeof val === 'object') {
         const out: Record<string, any> = {};
@@ -131,6 +137,12 @@ serve(async (req) => {
       return val;
     };
 
+    const hasNullDeep = (val: any): boolean => {
+      if (typeof val === 'string') return /\u0000/.test(val);
+      if (Array.isArray(val)) return val.some(hasNullDeep);
+      if (val && typeof val === 'object') return Object.values(val).some(hasNullDeep);
+      return false;
+    };
     const safePayload = stripZeroDeep(payload);
 
     // Debug: log ALL fields before insert
@@ -140,9 +152,10 @@ serve(async (req) => {
       urlHasNull: /\u0000/.test(url),
       sourceHasNull: /\u0000/.test(source),
       metadataStr: JSON.stringify(safePayload.source_metadata),
-      metadataHasNull: /\u0000/.test(JSON.stringify(safePayload.source_metadata)),
+      metadataHasNull: hasNullDeep(safePayload.source_metadata),
       tagsStr: JSON.stringify(safePayload.tags),
-      tagsHasNull: /\u0000/.test(JSON.stringify(safePayload.tags))
+      tagsHasNull: hasNullDeep(safePayload.tags),
+      payloadHasNull: hasNullDeep(safePayload)
     });
 
     const { data: article, error } = await supabase
