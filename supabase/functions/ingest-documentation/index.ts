@@ -47,7 +47,7 @@ serve(async (req) => {
       return cleaned.slice(0, max);
     };
 
-    // Deep sanitize any JSON object/array structure
+    // Deep sanitize any JSON object/array structure recursively
     const sanitizeJson = (val: unknown): any => {
       if (typeof val === 'string') return sanitize(val);
       if (Array.isArray(val)) return val.map(sanitizeJson);
@@ -100,7 +100,7 @@ serve(async (req) => {
     // Generate title from URL and apply byte-level sanitization
     let title = sanitize(`${source} - ${url.split('/').pop() || 'Documentation'}`, 200);
 
-    // Build payload and deep-sanitize to guarantee no null bytes anywhere
+    // Build payload with recursively sanitized JSONB fields
     const payload = {
       customer_id: customerId,
       vendor_id: vendorId,
