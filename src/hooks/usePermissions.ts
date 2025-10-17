@@ -4,10 +4,14 @@ import { useAuth } from "./useAuth";
 
 /**
  * Centralized Permission Management Hook
- * Eliminates repeated permission checks
+ * Supports granular permission levels:
+ * - none: Denied access (hidden entirely)
+ * - view: View-only (read-only, no modifications)
+ * - edit: Read/write (can modify data)
+ * - admin: Read/write/execute (full access including special operations)
  */
 
-export type PermissionLevel = "view" | "edit" | "admin";
+export type PermissionLevel = "none" | "view" | "edit" | "admin";
 
 export interface PermissionCheck {
   hasPermission: boolean;
@@ -16,6 +20,7 @@ export interface PermissionCheck {
     resource: string,
     level?: PermissionLevel
   ) => Promise<boolean>;
+  getPermissionLevel: (resource: string) => Promise<PermissionLevel>;
 }
 
 export function usePermissions(): PermissionCheck {
@@ -34,6 +39,7 @@ export function usePermissions(): PermissionCheck {
     level: PermissionLevel = "view"
   ): Promise<boolean> => {
     if (!user) return false;
+    if (level === "none") return false; // Explicitly denied
 
     const cacheKey = `${resource}:${level}`;
     if (permissionCache.has(cacheKey)) {
@@ -62,10 +68,27 @@ export function usePermissions(): PermissionCheck {
     }
   };
 
+  const getPermissionLevel = async (resource: string): Promise<PermissionLevel> => {
+    if (!user) return "none";
+
+    // Check from highest to lowest permission level
+    const levels: PermissionLevel[] = ["admin", "edit", "view"];
+    
+    for (const level of levels) {
+      const hasAccess = await checkPermission(resource, level);
+      if (hasAccess) {
+        return level;
+      }
+    }
+    
+    return "none"; // No access
+  };
+
   return {
     hasPermission: false, // Use checkPermission for actual checks
     isLoading,
     checkPermission,
+    getPermissionLevel,
   };
 }
 

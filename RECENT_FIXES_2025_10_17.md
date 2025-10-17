@@ -1,6 +1,267 @@
 # Recent Fixes & Updates - October 17, 2025
 
-## ✅ RBAC Permission-Based Navigation Filtering - PRODUCTION READY (Latest)
+## ✅ Granular RBAC Permission Levels - PRODUCTION READY (Latest)
+
+**Status**: 🟢 IMPLEMENTED  
+**Impact**: Full granular control over portal/dashboard visibility and actions
+
+### What Was Implemented
+
+Enhanced RBAC system with 4-level granular permissions that control both visibility and available actions:
+
+1. **None (Denied)** - Hidden entirely, no access
+2. **View Only** - Read-only access, no modifications
+3. **Read/Write (Edit)** - Can view and modify data
+4. **Read/Write/Execute (Admin)** - Full access including special operations
+
+### Permission Levels Explained
+
+| Level | Visibility | Read | Write | Execute | Use Case |
+|-------|-----------|------|-------|---------|----------|
+| **None** | ❌ Hidden | ❌ | ❌ | ❌ | Denied access |
+| **View** | ✅ Visible | ✅ | ❌ | ❌ | View-only users, reports |
+| **Edit** | ✅ Visible | ✅ | ✅ | ❌ | Regular employees, operators |
+| **Admin** | ✅ Visible | ✅ | ✅ | ✅ | Managers, administrators |
+
+### Files Created
+
+**1. `src/hooks/useResourcePermissions.ts`** (97 lines)
+- `useResourcePermissions(resource)` - Get permission level for a resource
+- `useActionPermissions(resource)` - Check specific action permissions
+- `PermissionGate` - Component wrapper for permission-based rendering
+
+**Action-Level Permissions:**
+```typescript
+const permissions = useActionPermissions("admin");
+// Returns:
+{
+  canCreate: boolean,    // Edit or Admin
+  canUpdate: boolean,    // Edit or Admin
+  canDelete: boolean,    // Admin only
+  canManage: boolean,    // Admin only
+  canExport: boolean,    // View, Edit, or Admin
+  canImport: boolean,    // Edit or Admin
+  canArchive: boolean,   // Admin only
+  canRestore: boolean,   // Admin only
+}
+```
+
+**2. `src/components/PermissionBadge.tsx`** (64 lines)
+- Visual indicators for permission levels
+- Consistent color coding (none/gray, view/blue, edit/green, admin/purple)
+- Shows icon + label or just icon
+
+**3. `src/components/ActionButton.tsx`** (86 lines)
+- Smart button that auto-checks permissions
+- Disables if user lacks required permission
+- Shows tooltip explaining why action is disabled
+- Integrates with action permissions system
+
+### Updated Files
+
+**`src/hooks/usePermissions.ts`**
+- Added `"none"` to `PermissionLevel` type
+- Added `getPermissionLevel()` function to determine highest permission
+- Enhanced caching to include permission level queries
+
+**`src/hooks/useNavigationPermissions.ts`**
+- Returns `NavigationItemWithPermission<T>` with permission metadata
+- Each nav item includes: `permissionLevel`, `canView`, `canEdit`, `canExecute`, `isReadOnly`
+- Recursively processes children with their own permission levels
+
+### Usage Examples
+
+#### 1. Check Permission Level
+```typescript
+const { permissionLevel, canEdit, canExecute, isReadOnly } = useResourcePermissions("admin");
+
+// Hide create button for view-only users
+{canEdit && <Button>Create New</Button>}
+
+// Show read-only badge
+{isReadOnly && <Badge>Read-Only</Badge>}
+```
+
+#### 2. Action-Based Buttons
+```tsx
+import { ActionButton } from "@/components/ActionButton";
+
+// Auto-disabled if user lacks permission
+<ActionButton resource="budgets" action="create">
+  Create Budget
+</ActionButton>
+
+<ActionButton resource="budgets" action="delete">
+  Delete Budget
+</ActionButton>
+```
+
+#### 3. Permission Gate Component
+```tsx
+import { PermissionGate } from "@/hooks/useResourcePermissions";
+
+<PermissionGate resource="admin" minimumLevel="edit">
+  <EditForm />
+</PermissionGate>
+
+<PermissionGate resource="admin" minimumLevel="admin" fallback={<ReadOnlyView />}>
+  <AdminControls />
+</PermissionGate>
+```
+
+#### 4. Permission Badges
+```tsx
+import { PermissionBadge, PermissionLevelIndicator } from "@/components/PermissionBadge";
+
+// Show permission badge
+<PermissionBadge level={permissionLevel} />
+
+// Show with explanation
+<PermissionLevelIndicator level="view" />
+// Output: [View Only badge] Read-only - No modifications
+```
+
+### Navigation with Permission Metadata
+
+The `useNavigationPermissions` hook now returns enriched items:
+
+```typescript
+const { items, isLoading } = usePortalPermissions(portals);
+
+// Each item now has:
+items.map(item => (
+  <div>
+    <Link to={item.path}>{item.name}</Link>
+    {item.isReadOnly && <Badge>Read-Only</Badge>}
+    {item.canEdit && <Button>Configure</Button>}
+    {item.canExecute && <Button>Manage</Button>}
+  </div>
+));
+```
+
+### Permission Hierarchy
+
+**Automatic Inheritance:**
+- Admin level includes Edit + View permissions
+- Edit level includes View permissions
+- View level is minimum for visibility
+
+**RPC Function Logic:**
+```sql
+has_permission(user_id, 'admin', 'view')  -- TRUE (admin can view)
+has_permission(user_id, 'edit', 'admin')  -- FALSE (edit can't do admin actions)
+has_permission(user_id, 'view', 'edit')   -- FALSE (view can't edit)
+```
+
+### UI Patterns
+
+**1. Conditional Actions:**
+```tsx
+const { canEdit, canDelete, isReadOnly } = useResourcePermissions("tickets");
+
+return (
+  <Card>
+    {isReadOnly && <Badge variant="secondary">Read-Only</Badge>}
+    <CardContent>
+      {/* Content always visible */}
+    </CardContent>
+    <CardFooter>
+      {canEdit && <Button>Edit</Button>}
+      {canDelete && <Button variant="destructive">Delete</Button>}
+    </CardFooter>
+  </Card>
+);
+```
+
+**2. Form Protection:**
+```tsx
+const { canEdit, isReadOnly } = useResourcePermissions("budgets");
+
+<Input disabled={isReadOnly} />
+<Select disabled={isReadOnly}>
+  <SelectItem>Option</SelectItem>
+</Select>
+```
+
+**3. Tab/Section Control:**
+```tsx
+<Tabs>
+  <TabsList>
+    <TabsTrigger value="view">View</TabsTrigger>
+    {canEdit && <TabsTrigger value="edit">Edit</TabsTrigger>}
+    {canExecute && <TabsTrigger value="settings">Settings</TabsTrigger>}
+  </TabsList>
+</Tabs>
+```
+
+### Security Architecture
+
+**Defense in Depth:**
+1. **UI Layer** - Hide/disable actions (convenience)
+2. **Navigation Filter** - Filter accessible routes
+3. **Protected Routes** - Server-side session check
+4. **RLS Policies** - Database-level enforcement (primary security)
+
+**Best Practices:**
+- ✅ Always use `ActionButton` for sensitive operations
+- ✅ Check `isReadOnly` before allowing form edits
+- ✅ Use `PermissionGate` for entire sections
+- ✅ Display `PermissionBadge` for user awareness
+- ❌ Never rely solely on UI for security
+- ❌ Don't expose sensitive data even in read-only mode
+
+### Testing Checklist
+
+**As Admin User (Full Access):**
+- [ ] All portals/dashboards visible
+- [ ] All action buttons enabled
+- [ ] Can create, edit, delete, manage
+- [ ] No read-only badges shown
+
+**As Edit User (Read/Write):**
+- [ ] Portals/dashboards visible
+- [ ] Create/Edit buttons enabled
+- [ ] Delete/Manage buttons disabled with tooltip
+- [ ] Can modify forms and data
+
+**As View User (Read-Only):**
+- [ ] Portals/dashboards visible
+- [ ] "Read-Only" badges shown
+- [ ] All action buttons disabled
+- [ ] Forms are read-only/disabled
+- [ ] Can export but not import
+
+**As Denied User (No Access):**
+- [ ] Portals/dashboards completely hidden
+- [ ] Navigation filtered out
+- [ ] Routes redirect or show access denied
+
+### Migration Path
+
+**Existing Permissions:**
+- `"view"` → View-only access (read-only)
+- `"edit"` → Read/write access
+- `"admin"` → Full access (read/write/execute)
+- No permission → `"none"` (denied, hidden)
+
+**No Breaking Changes:**
+All existing permission checks continue to work. New granular features are opt-in.
+
+### Files Summary
+
+Created:
+- ✅ `src/hooks/useResourcePermissions.ts` - Permission checking hooks
+- ✅ `src/components/PermissionBadge.tsx` - Visual permission indicators
+- ✅ `src/components/ActionButton.tsx` - Permission-aware buttons
+
+Modified:
+- ✅ `src/hooks/usePermissions.ts` - Added `getPermissionLevel()`
+- ✅ `src/hooks/useNavigationPermissions.ts` - Returns permission metadata
+- ✅ `RECENT_FIXES_2025_10_17.md` - Documentation
+
+---
+
+## ✅ RBAC Permission-Based Navigation Filtering - PRODUCTION READY
 
 **Status**: 🟢 IMPLEMENTED  
 **Impact**: Navigation now respects user-level RBAC permissions

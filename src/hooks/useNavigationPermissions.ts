@@ -1,17 +1,27 @@
 import { useState, useEffect, useMemo } from "react";
-import { usePermissions } from "./usePermissions";
+import { usePermissions, PermissionLevel } from "./usePermissions";
 
 /**
  * Navigation Permission Filter Hook
  * Filters navigation items based on user's RBAC permissions
+ * Also returns permission level for each item to control UI actions
  */
 
-interface NavigationItem {
+export interface NavigationItem {
   name: string;
   path: string;
   children?: NavigationItem[];
   icon?: any;
   description?: string;
+}
+
+export interface NavigationItemWithPermission<T extends NavigationItem> extends NavigationItem {
+  permissionLevel: PermissionLevel; // Now includes "none" | "view" | "edit" | "admin"
+  canView: boolean;
+  canEdit: boolean;
+  canExecute: boolean;
+  isReadOnly: boolean;
+  originalItem: T;
 }
 
 interface UseNavigationPermissionsOptions {
@@ -24,62 +34,103 @@ export function useNavigationPermissions<T extends NavigationItem>(
   options: UseNavigationPermissionsOptions = {}
 ) {
   const { resourceType = "portal", minPermission = "view" } = options;
-  const { checkPermission } = usePermissions();
-  const [filteredItems, setFilteredItems] = useState<T[]>([]);
+  const { checkPermission, getPermissionLevel } = usePermissions();
+  const [filteredItems, setFilteredItems] = useState<NavigationItemWithPermission<T>[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const filterItems = async () => {
       setIsLoading(true);
       
-      const filtered: (T | null)[] = await Promise.all(
+      const filtered: (NavigationItemWithPermission<T> | null)[] = await Promise.all(
         items.map(async (item) => {
           // Extract resource name from path (e.g., "/admin" -> "admin")
           const resourceName = item.path.split("/").filter(Boolean)[0] || item.path;
           
-          // Check if user has permission for this item
-          const hasPermission = await checkPermission(
+          // Get the user's permission level for this resource
+          const permissionLevel = await getPermissionLevel(resourceName);
+
+          // If no permission (none), hide completely
+          if (permissionLevel === "none") {
+            return null;
+          }
+
+          // Check if meets minimum permission requirement
+          const hasMinPermission = await checkPermission(
             resourceName,
             minPermission
           );
 
-          if (!hasPermission) {
+          if (!hasMinPermission) {
             return null;
           }
 
+          // Calculate permission flags
+          // Note: At this point, permissionLevel cannot be "none" (filtered out above)
+          const canView = true; // Always true if we reach here
+          const canEdit = (permissionLevel === "edit" || permissionLevel === "admin");
+          const canExecute = (permissionLevel === "admin");
+          const isReadOnly = (permissionLevel === "view");
+
           // If item has children, filter them recursively
+          let processedChildren: any = undefined;
+          
           if (item.children && item.children.length > 0) {
-            const filteredChildren: (NavigationItem | null)[] = await Promise.all(
+            const childrenResults = await Promise.all(
               item.children.map(async (child) => {
                 const childResourceName = child.path.split("/").filter(Boolean)[0] || child.path;
-                const hasChildPermission = await checkPermission(
+                const childPermissionLevel = await getPermissionLevel(childResourceName);
+                
+                if (childPermissionLevel === "none") {
+                  return null;
+                }
+
+                const hasChildMinPermission = await checkPermission(
                   childResourceName,
                   minPermission
                 );
-                return hasChildPermission ? child : null;
+
+                if (!hasChildMinPermission) {
+                  return null;
+                }
+
+                return {
+                  ...child,
+                  permissionLevel: childPermissionLevel,
+                  canView: true, // Always true if we reach here
+                  canEdit: (childPermissionLevel === "edit" || childPermissionLevel === "admin"),
+                  canExecute: (childPermissionLevel === "admin"),
+                  isReadOnly: (childPermissionLevel === "view"),
+                  originalItem: child,
+                } as any;
               })
             );
 
-            // Only include parent if it has at least one accessible child
-            const accessibleChildren = filteredChildren.filter(
-              (child): child is NavigationItem => child !== null
-            );
+            const accessibleChildren = childrenResults.filter((child): child is any => child !== null);
 
             if (accessibleChildren.length === 0) {
               return null;
             }
 
-            return {
-              ...item,
-              children: accessibleChildren as T["children"],
-            } as T;
+            processedChildren = accessibleChildren;
           }
 
-          return item;
+          return {
+            ...item,
+            permissionLevel,
+            canView,
+            canEdit,
+            canExecute,
+            isReadOnly,
+            originalItem: item,
+            children: processedChildren,
+          } as any as NavigationItemWithPermission<T>;
         })
       );
 
-      setFilteredItems(filtered.filter((item): item is T => item !== null));
+      setFilteredItems(
+        filtered.filter((item): item is NavigationItemWithPermission<T> => item !== null)
+      );
       setIsLoading(false);
     };
 
