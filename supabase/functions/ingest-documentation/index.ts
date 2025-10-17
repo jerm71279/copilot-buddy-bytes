@@ -120,10 +120,16 @@ serve(async (req) => {
       created_by: customerId
     } as const;
 
+    // Strip null bytes AND their JSON escape sequence representation
+    // Postgres JSONB cannot store \u0000 even as escape sequences because it
+    // parses them during insert and converts to actual null bytes, which TEXT rejects
     const stripZero = (s: string) => {
-      // Remove any codepoint 0 characters defensively at the byte level
-      // Using Array.from to handle surrogate pairs reliably
-      return Array.from(s).filter(ch => ch.charCodeAt(0) !== 0).join('');
+      // Remove actual null bytes (codepoint 0)
+      let cleaned = Array.from(s).filter(ch => ch.charCodeAt(0) !== 0).join('');
+      // Remove JSON escape sequence for null byte: \u0000
+      // This prevents Postgres JSONB from parsing it as a null byte
+      cleaned = cleaned.replace(/\\u0000/gi, '');
+      return cleaned;
     };
 
     const stripZeroDeep = (val: any): any => {
@@ -136,27 +142,9 @@ serve(async (req) => {
       }
       return val;
     };
-
-    const hasNullDeep = (val: any): boolean => {
-      if (typeof val === 'string') return /\u0000/.test(val);
-      if (Array.isArray(val)) return val.some(hasNullDeep);
-      if (val && typeof val === 'object') return Object.values(val).some(hasNullDeep);
-      return false;
-    };
     const safePayload = stripZeroDeep(payload);
 
-    // Debug: log ALL fields before insert
-    console.log('Pre-insert field check:', {
-      titleHasNull: /\u0000/.test(title),
-      contentHasNull: /\u0000/.test(textContent),
-      urlHasNull: /\u0000/.test(url),
-      sourceHasNull: /\u0000/.test(source),
-      metadataStr: JSON.stringify(safePayload.source_metadata),
-      metadataHasNull: hasNullDeep(safePayload.source_metadata),
-      tagsStr: JSON.stringify(safePayload.tags),
-      tagsHasNull: hasNullDeep(safePayload.tags),
-      payloadHasNull: hasNullDeep(safePayload)
-    });
+    console.log('Payload sanitized, inserting article...');
 
     const { data: article, error } = await supabase
       .from('knowledge_articles')
