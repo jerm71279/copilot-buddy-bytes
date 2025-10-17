@@ -51,10 +51,34 @@ export default function EmployeeOnboardingTemplates() {
 
   const loadTemplates = async () => {
     try {
+      // Get current user's customer_id
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/auth');
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('customer_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!profile?.customer_id) {
+        toast({
+          title: "Setup Required",
+          description: "Please complete your profile setup first.",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('employee_onboarding_templates')
         .select('*')
-        .order('created_at', { ascending: false });
+        .eq('customer_id', profile.customer_id)
+        .order('created_at', { ascending: false});
 
       if (error) throw error;
       setTemplates(data || []);

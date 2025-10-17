@@ -112,9 +112,29 @@ export function useOnboardingTemplates() {
 
   const loadTemplates = async () => {
     try {
+      // Get current user's customer_id
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('customer_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!profile?.customer_id) {
+        console.error('No customer_id found for user');
+        setIsLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('employee_onboarding_templates')
         .select('id, template_name, description, department_type, estimated_days')
+        .eq('customer_id', profile.customer_id)
         .eq('is_active', true)
         .order('template_name');
 
