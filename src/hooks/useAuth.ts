@@ -38,23 +38,25 @@ export function useAuth() {
   const notify = useNotification();
 
   useEffect(() => {
-    loadAuth();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === "SIGNED_IN" && session) {
-          await loadProfile(session.user.id);
-        } else if (event === "SIGNED_OUT") {
-          setState({
-            user: null,
-            profile: null,
-            customerId: null,
-            isLoading: false,
-            isAuthenticated: false,
-          });
-        }
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        // Defer Supabase calls to avoid async work inside the callback (prevents deadlocks)
+        setTimeout(() => {
+          loadProfile(session.user.id);
+        }, 0);
+      } else if (event === "SIGNED_OUT") {
+        setState({
+          user: null,
+          profile: null,
+          customerId: null,
+          isLoading: false,
+          isAuthenticated: false,
+        });
       }
-    );
+    });
+
+    // After subscribing, check for existing session
+    loadAuth();
 
     return () => {
       authListener.subscription.unsubscribe();
