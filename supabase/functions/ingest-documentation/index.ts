@@ -122,12 +122,33 @@ serve(async (req) => {
     // All string fields are already sanitized via sanitize() function
     // which removes null bytes at byte level, so no additional stripping needed
 
-    console.log('Attempting to insert documentation...');
+    // Strip actual null bytes and any JSON escape sequence "\\u0000"
+    const stripZero = (s: string) => {
+      // Remove actual null bytes (codepoint 0)
+      let cleaned = Array.from(s).filter(ch => ch.charCodeAt(0) !== 0).join('');
+      // Remove JSON escape sequence for null byte to prevent Postgres from parsing it
+      cleaned = cleaned.replace(/\\u0000/gi, '');
+      return cleaned;
+    };
 
-      // Single insert with all sanitized fields
+    const stripZeroDeep = (val: any): any => {
+      if (typeof val === 'string') return stripZero(val);
+      if (Array.isArray(val)) return val.map(stripZeroDeep);
+      if (val && typeof val === 'object') {
+        const out: Record<string, any> = {};
+        for (const [k, v] of Object.entries(val)) out[k] = stripZeroDeep(v);
+        return out;
+      }
+      return val;
+    };
+
+    const safePayload = stripZeroDeep(payload);
+
+    console.log('Payload sanitized, inserting article...');
+
       const { data: article, error } = await supabase
         .from('knowledge_articles')
-        .insert(payload)
+        .insert(safePayload)
         .select()
         .maybeSingle();
 
