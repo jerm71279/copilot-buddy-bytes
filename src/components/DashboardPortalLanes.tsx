@@ -429,7 +429,7 @@ export default function DashboardPortalLanes() {
       {/* Row 1: Portals with dropdowns */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
-          <div className="relative overflow-x-auto overflow-y-visible">
+          <ScrollArea className="w-full">
             <div className="flex gap-2 pb-2 min-w-max">
               {filteredPortals.map((portal) => {
                 const isActive = currentPath === portal.path || 
@@ -515,14 +515,15 @@ export default function DashboardPortalLanes() {
                 );
               })}
             </div>
-          </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </div>
       </div>
 
       {/* Row 2: Categories with Dashboard dropdowns */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
-          <div className="relative overflow-x-auto overflow-y-visible">
+          <ScrollArea className="w-full">
             <div className="flex gap-2 pb-2 min-w-max">
               {filteredCategories.map((category) => {
                 const CategoryIcon = category.icon;
@@ -618,7 +619,8 @@ export default function DashboardPortalLanes() {
                 </kbd>
               </Button>
             </div>
-          </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </div>
       </div>
 
