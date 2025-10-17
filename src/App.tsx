@@ -35,6 +35,7 @@ import SlackSync from "./pages/SlackSync";
 import ProfileSettings from "./pages/ProfileSettings";
 import IntelligentAssistant from "./pages/IntelligentAssistant";
 import DocumentationIngestion from "./pages/DocumentationIngestion";
+import SOCConfiguration from "./pages/SOCConfiguration";
 import VendorDocumentation from "./pages/VendorDocumentation";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -198,6 +199,13 @@ const App = () => (
           <Route path="/documentation-ingestion" element={
             <ProtectedRoute requireAdmin>
               <DocumentationIngestion />
+            </ProtectedRoute>
+          } />
+          
+          {/* SOC Configuration - Admin only */}
+          <Route path="/soc-configuration" element={
+            <ProtectedRoute requireAdmin>
+              <SOCConfiguration />
             </ProtectedRoute>
           } />
           
