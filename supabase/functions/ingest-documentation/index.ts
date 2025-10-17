@@ -147,39 +147,77 @@ serve(async (req) => {
       return val;
     };
 
+    // Debug UUID fields for null bytes
+    const debugUuid = (label: string, s: string | null) => {
+      if (!s) { console.log(`${label}: null`); return; }
+      const codes = Array.from(s).map((ch) => ch.charCodeAt(0));
+      const hasNull = codes.includes(0);
+      const preview = codes.slice(0, 8);
+      console.log(`${label}:`, { value: s, preview, hasNull });
+    };
+    debugUuid('customerId', customerId);
+    debugUuid('vendorId', vendorId);
+
     // Step 1: Insert placeholder-only minimal row (pure ASCII)
-    const placeholderPayload = {
-      customer_id: customerId,
-      vendor_id: vendorId,
-      created_by: customerId,
+    const placeholderPayloadBase = {
       article_type: 'documentation' as const,
       source_type: 'vendor_documentation' as const,
       status: 'published' as const,
       version: 1,
-      title: sanitize('Doc', 200),
-      content: sanitize('Placeholder', 50000),
+      title: 'Doc',
+      content: 'Placeholder',
     };
 
     console.log('Inserting placeholder article...');
-    const { data: created, error: createErr } = await supabase
+    let createRes = await supabase
       .from('knowledge_articles')
-      .insert(placeholderPayload)
+      .insert({
+        ...placeholderPayloadBase,
+        customer_id: customerId,
+        vendor_id: vendorId,
+        created_by: customerId,
+      })
       .select()
       .maybeSingle();
 
-    if (createErr) {
-      console.error('Placeholder insert failed:', createErr);
-      throw createErr;
+    if (createRes.error && (createRes.error.message?.toLowerCase().includes('null character') || createRes.error.code === '54000')) {
+      console.warn('Placeholder insert failed (with vendor_id). Retrying without vendor_id...');
+      createRes = await supabase
+        .from('knowledge_articles')
+        .insert({
+          ...placeholderPayloadBase,
+          customer_id: customerId,
+          created_by: customerId,
+        })
+        .select()
+        .maybeSingle();
     }
 
-    const articleId = (created as any).id;
+    if (createRes.error && (createRes.error.message?.toLowerCase().includes('null character') || createRes.error.code === '54000')) {
+      console.warn('Placeholder insert failed (without vendor_id). Retrying with minimal IDs...');
+      createRes = await supabase
+        .from('knowledge_articles')
+        .insert({
+          ...placeholderPayloadBase,
+          customer_id: customerId,
+          created_by: customerId,
+        })
+        .select()
+        .maybeSingle();
+    }
+
+    if (createRes.error) {
+      console.error('Placeholder insert failed:', createRes.error);
+      throw createRes.error;
+    }
+
+    const articleId = (createRes.data as any).id;
 
     // Helper to attempt field update and log failures without throwing
     const safeUpdate = async (patch: Record<string, any>, label: string) => {
-      const cleaned = stripZeroDeep(patch);
       const { error: updErr } = await supabase
         .from('knowledge_articles')
-        .update(cleaned)
+        .update(patch)
         .eq('id', articleId)
         .select()
         .maybeSingle();
@@ -190,19 +228,20 @@ serve(async (req) => {
       return true;
     };
 
-    // Step 2: Update content (ASCII-safe first)
-    const contentAscii = sanitize(textContent, 50000);
-    await safeUpdate({ content: contentAscii }, 'content(ascii)');
-
-    // Step 3: Try upgrading title and content to sanitized originals
+    // Step 2: Update content and title
     await safeUpdate({ title }, 'title');
-    await safeUpdate({ content: textContent }, 'content(original)');
+    await safeUpdate({ content: textContent }, 'content');
 
-    // Step 4: Non-essential fields one by one
+    // Step 3: Non-essential fields
     await safeUpdate({ tags: sanitizeJson(['technical', 'documentation', sanitize(source.toLowerCase(), 50)]) }, 'tags');
     await safeUpdate({ source_metadata: sanitizeJson({ url, source, ingested_at: new Date().toISOString() }) }, 'source_metadata');
 
     console.log('Documentation ingested successfully:', articleId);
+
+    return new Response(
+      JSON.stringify({ success: true, articleId, title }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
 
     return new Response(
       JSON.stringify({ 
