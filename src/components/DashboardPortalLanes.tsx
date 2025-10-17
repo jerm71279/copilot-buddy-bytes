@@ -34,7 +34,7 @@ export default function DashboardPortalLanes() {
   const lanesRef = useRef<HTMLDivElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const hideOnRoutes = ['/', '/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
+  const hideOnRoutes = ['/auth', '/demo', '/integrations', '/developers', '/architecture-diagram'];
   const shouldHide = isLoading || !isAuthenticated || hideOnRoutes.includes(currentPath);
 
   useEffect(() => {
