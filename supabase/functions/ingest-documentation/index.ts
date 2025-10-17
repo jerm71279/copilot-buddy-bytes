@@ -63,8 +63,16 @@ serve(async (req) => {
 
     const url = sanitize((requestData as any).url, 2000);
     const source = sanitize((requestData as any).source, 200);
-    const customerId = (requestData as any).customerId;
-    const vendorId = (requestData as any).vendorId || null;
+
+    // Strict UUID sanitizer (byte-level clean + RFC4122 pattern)
+    const sanitizeUuid = (val: unknown): string | null => {
+      const s = sanitize(val, 50).toLowerCase();
+      const uuidV4Like = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+      return uuidV4Like.test(s) ? s : null;
+    };
+
+    const customerId = sanitizeUuid((requestData as any).customerId);
+    const vendorId = sanitizeUuid((requestData as any).vendorId) || null;
 
     if (!url || !source || !customerId) {
       return new Response(
