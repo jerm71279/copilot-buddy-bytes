@@ -61,19 +61,45 @@ export default function VendorDocumentation() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: profile } = await supabase
+      // Try to get user's customer
+      let { data: profile } = await supabase
         .from('user_profiles')
         .select('customer_id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
+      // If no customer linked yet, attempt to complete signup
       if (!profile?.customer_id) {
-        toast({
-          title: "Error",
-          description: "Cannot save vendor without organization",
-          variant: "destructive",
+        const fullName = (user.user_metadata?.full_name as string | undefined) || (user.email ?? 'User');
+        const emailUsername = (user.email || '').split('@')[0] || 'user';
+        const { error: completeError } = await supabase.functions.invoke('complete-user-signup', {
+          body: { userId: user.id, fullName, emailUsername }
         });
-        return;
+        
+        if (completeError) {
+          toast({
+            title: "Profile setup required",
+            description: "We couldn't auto-complete your profile. Please contact an admin.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        const refreshed = await supabase
+          .from('user_profiles')
+          .select('customer_id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        profile = refreshed.data ?? null;
+
+        if (!profile?.customer_id) {
+          toast({
+            title: "Profile setup required",
+            description: "Your account is missing an organization link.",
+            variant: "destructive",
+          });
+          return;
+        }
       }
 
       if (editingVendor) {
