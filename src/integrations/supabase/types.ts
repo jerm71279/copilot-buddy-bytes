@@ -10389,6 +10389,95 @@ export type Database = {
           },
         ]
       }
+      slack_sync_config: {
+        Row: {
+          access_token_encrypted: string
+          channel_ids: string[]
+          created_at: string
+          customer_id: string
+          id: string
+          last_sync_at: string | null
+          sync_enabled: boolean
+          sync_frequency_hours: number
+          updated_at: string
+          workspace_id: string
+          workspace_name: string
+        }
+        Insert: {
+          access_token_encrypted: string
+          channel_ids?: string[]
+          created_at?: string
+          customer_id: string
+          id?: string
+          last_sync_at?: string | null
+          sync_enabled?: boolean
+          sync_frequency_hours?: number
+          updated_at?: string
+          workspace_id: string
+          workspace_name: string
+        }
+        Update: {
+          access_token_encrypted?: string
+          channel_ids?: string[]
+          created_at?: string
+          customer_id?: string
+          id?: string
+          last_sync_at?: string | null
+          sync_enabled?: boolean
+          sync_frequency_hours?: number
+          updated_at?: string
+          workspace_id?: string
+          workspace_name?: string
+        }
+        Relationships: []
+      }
+      slack_sync_logs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          messages_failed: number | null
+          messages_synced: number | null
+          status: string
+          sync_completed_at: string | null
+          sync_config_id: string
+          sync_details: Json | null
+          sync_started_at: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          messages_failed?: number | null
+          messages_synced?: number | null
+          status: string
+          sync_completed_at?: string | null
+          sync_config_id: string
+          sync_details?: Json | null
+          sync_started_at?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          messages_failed?: number | null
+          messages_synced?: number | null
+          status?: string
+          sync_completed_at?: string | null
+          sync_config_id?: string
+          sync_details?: Json | null
+          sync_started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "slack_sync_logs_sync_config_id_fkey"
+            columns: ["sync_config_id"]
+            isOneToOne: false
+            referencedRelation: "slack_sync_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       snmp_traps: {
         Row: {
           acknowledged_at: string | null

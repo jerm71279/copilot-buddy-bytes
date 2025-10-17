@@ -60,6 +60,12 @@ export const knowledgeActionButtons = [
     variant: "outline" as const
   },
   {
+    label: "Slack Sync",
+    path: "/slack-sync",
+    icon: <Cloud className="h-4 w-4" />,
+    variant: "outline" as const
+  },
+  {
     label: "Generate from Workflows",
     path: "/knowledge/generate",
     icon: <Lightbulb className="h-4 w-4" />,
