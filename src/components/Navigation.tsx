@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Menu, LogOut, Brain, Search, LayoutDashboard, Globe, User, CheckCircle2, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { GlobalSearch } from "./GlobalSearch";
+import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,21 +18,13 @@ import oberaLogo from "@/assets/obera-logo-cropped.png";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [userEmail, setUserEmail] = useState<string>("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const { isAuthenticated, isAdmin, user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const isLandingPage = location.pathname === "/" || location.pathname === "/auth";
 
   useEffect(() => {
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkAuth();
-    });
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
@@ -43,42 +35,13 @@ const Navigation = () => {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      subscription.unsubscribe();
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    setIsLoggedIn(!!session);
-    setUserEmail(session?.user?.email || "");
-
-    if (session) {
-      const { data: roles } = await supabase
-        .from("user_roles")
-        .select("role_id, roles(name)")
-        .eq("user_id", session.user.id);
-      
-      let hasAdmin = roles?.some((ur: any) => ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin');
-
-      if (!hasAdmin) {
-        const { data: rpcHasAdmin } = await supabase.rpc('has_role', {
-          _user_id: session.user.id,
-          _role: 'admin'
-        });
-        hasAdmin = !!rpcHasAdmin;
-      }
-
-      setIsAdmin(!!hasAdmin);
-    } else {
-      setIsAdmin(false);
-    }
-  };
-
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     setIsMenuOpen(false);
-    navigate("/");
   };
 
   const scrollToSection = (sectionId: string) => {
@@ -133,7 +96,7 @@ const Navigation = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center justify-center flex-1 gap-6">
-              {isLoggedIn && (
+              {isAuthenticated && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -269,7 +232,7 @@ const Navigation = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
               
-              {isLoggedIn && (
+              {isAuthenticated && (
                 <>
                   <Link 
                     to="/knowledge"
@@ -349,13 +312,13 @@ const Navigation = () => {
 
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center gap-3 ml-auto">
-              {isLoggedIn ? (
+              {isAuthenticated ? (
                 <>
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-accent/10 rounded-lg border border-accent/20">
                     <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))]" />
                     <div className="flex flex-col">
                       <span className="text-xs font-medium">Logged In</span>
-                      <span className="text-xs text-muted-foreground truncate max-w-[150px]">{userEmail}</span>
+                      <span className="text-xs text-muted-foreground truncate max-w-[150px]">{user?.email || ''}</span>
                     </div>
                   </div>
                   <Link to="/portal">
@@ -434,7 +397,7 @@ const Navigation = () => {
               >
                 GitHub
               </Link>
-              {isLoggedIn && (
+              {isAuthenticated && (
                 <>
                   <div className="border-b border-border pb-2 mb-2">
                     <div className="text-xs font-semibold text-muted-foreground px-4 py-2">DASHBOARDS</div>
@@ -570,7 +533,7 @@ const Navigation = () => {
                 Pricing
               </button>
               <div className="border-t border-border mt-2 pt-2">
-                {isLoggedIn ? (
+                {isAuthenticated ? (
                   <>
                     <Link to="/portal" onClick={() => setIsMenuOpen(false)}>
                       <Button variant="ghost" size="sm" className="justify-start w-full">

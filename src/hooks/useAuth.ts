@@ -24,6 +24,7 @@ export interface AuthState {
   customerId: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
 }
 
 export function useAuth() {
@@ -33,6 +34,7 @@ export function useAuth() {
     customerId: null,
     isLoading: true,
     isAuthenticated: false,
+    isAdmin: false,
   });
   const navigate = useNavigate();
   const notify = useNotification();
@@ -51,6 +53,7 @@ export function useAuth() {
           customerId: null,
           isLoading: false,
           isAuthenticated: false,
+          isAdmin: false,
         });
       }
     });
@@ -76,6 +79,7 @@ export function useAuth() {
           customerId: null,
           isLoading: false,
           isAuthenticated: false,
+          isAdmin: false,
         });
         return;
       }
@@ -89,6 +93,7 @@ export function useAuth() {
         customerId: null,
         isLoading: false,
         isAuthenticated: false,
+        isAdmin: false,
       });
     }
   };
@@ -105,12 +110,33 @@ export function useAuth() {
 
       const { data: userData } = await supabase.auth.getUser();
 
+      // Check admin role
+      let isAdmin = false;
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role_id, roles(name)")
+        .eq("user_id", userId);
+      
+      isAdmin = roles?.some((ur: any) => 
+        ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin'
+      ) || false;
+
+      // Fallback to RPC
+      if (!isAdmin) {
+        const { data: rpcHasAdmin } = await supabase.rpc('has_role', {
+          _user_id: userId,
+          _role: 'admin'
+        });
+        isAdmin = !!rpcHasAdmin;
+      }
+
       setState({
         user: userData.user,
         profile: profile as UserProfile | null,
         customerId: profile?.customer_id || null,
         isLoading: false,
         isAuthenticated: true,
+        isAdmin,
       });
     } catch (error) {
       console.error("Error loading profile:", error);

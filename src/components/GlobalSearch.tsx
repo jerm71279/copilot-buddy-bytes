@@ -32,13 +32,8 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
 
     setLoading(true);
     try {
-      const { data: session } = await supabase.auth.getSession();
-      
       const { data, error } = await supabase.functions.invoke("global-search", {
-        body: { query: searchQuery },
-        headers: session?.session ? {
-          Authorization: `Bearer ${session.session.access_token}`
-        } : {}
+        body: { query: searchQuery }
       });
 
       if (error) throw error;
