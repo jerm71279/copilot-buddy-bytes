@@ -249,36 +249,32 @@ serve(async (req) => {
     debugUuid('customerId', customerId);
     debugUuid('vendorId', vendorId);
 
-    // Step 1: Insert placeholder with only validated text UUIDs
-    const placeholderPayloadBase = {
-      article_type: 'documentation' as const,
-      source_type: 'vendor_documentation' as const,
-      status: 'published' as const,
-      version: 1,
-      title: 'Doc',
-      content: 'Placeholder',
-    };
-
+    // Step 1: Insert placeholder with only validated text UUIDs - remove placeholderPayloadBase
     console.log('Inserting placeholder article with customer_id:', customerId);
     
     // Use comprehensive sanitizer with strict UUID and enum validation
-    const rawPlaceholder = {
-      ...placeholderPayloadBase,
-      customer_id: customerId,
-      vendor_id: vendorId,
-      created_by: customerId,
-    };
-    
-    const sanitizedPlaceholder = sanitizeForSupabase(rawPlaceholder, {
-      nulPolicy: 'remove',
-      stripOtherControls: true,
-      uuidFields: ['customer_id', 'vendor_id', 'created_by'],
-      enums: {
-        article_type: ['documentation', 'article', 'faq', 'guide'],
-        source_type: ['internal', 'external', 'vendor_documentation', 'customer_documentation'],
-        status: ['draft', 'published', 'archived'],
+    const sanitizedPlaceholder = sanitizeForSupabase(
+      {
+        article_type: 'documentation',
+        source_type: 'vendor_documentation',
+        status: 'published',
+        version: 1,
+        title: 'Doc',
+        content: 'Placeholder',
+        customer_id: customerId,
+        vendor_id: vendorId,
+        created_by: customerId,
       },
-    });
+      {
+        uuidFields: ['customer_id', 'vendor_id', 'created_by'],
+        enums: {
+          source_type: ['internal', 'external', 'kb_article', 'vendor_documentation'],
+          article_type: ['documentation', 'howto', 'faq'],
+          status: ['draft', 'published', 'archived'],
+        },
+        stripOtherControls: true,
+      }
+    );
     
     console.log('Sanitized placeholder:', JSON.stringify(sanitizedPlaceholder).substring(0, 200));
     
@@ -291,20 +287,27 @@ serve(async (req) => {
 
     if (createRes.error && (createRes.error.message?.toLowerCase().includes('null character') || createRes.error.code === '54000')) {
       console.warn('Placeholder insert failed (with vendor_id). Retrying without vendor_id...');
-      const retryPayload = sanitizeForSupabase({
-        ...placeholderPayloadBase,
-        customer_id: customerId,
-        created_by: customerId,
-      }, {
-        nulPolicy: 'remove',
-        stripOtherControls: true,
-        uuidFields: ['customer_id', 'created_by'],
-        enums: {
-          article_type: ['documentation', 'article', 'faq', 'guide'],
-          source_type: ['internal', 'external', 'vendor_documentation', 'customer_documentation'],
-          status: ['draft', 'published', 'archived'],
+      const retryPayload = sanitizeForSupabase(
+        {
+          article_type: 'documentation',
+          source_type: 'vendor_documentation',
+          status: 'published',
+          version: 1,
+          title: 'Doc',
+          content: 'Placeholder',
+          customer_id: customerId,
+          created_by: customerId,
         },
-      });
+        {
+          uuidFields: ['customer_id', 'created_by'],
+          enums: {
+            source_type: ['internal', 'external', 'kb_article', 'vendor_documentation'],
+            article_type: ['documentation', 'howto', 'faq'],
+            status: ['draft', 'published', 'archived'],
+          },
+          stripOtherControls: true,
+        }
+      );
       createRes = await supabase
         .from('knowledge_articles')
         .insert(retryPayload)
@@ -314,20 +317,27 @@ serve(async (req) => {
 
     if (createRes.error && (createRes.error.message?.toLowerCase().includes('null character') || createRes.error.code === '54000')) {
       console.warn('Placeholder insert failed (without vendor_id). Retrying with minimal IDs...');
-      const minimalPayload = sanitizeForSupabase({
-        ...placeholderPayloadBase,
-        customer_id: customerId,
-        created_by: customerId,
-      }, {
-        nulPolicy: 'remove',
-        stripOtherControls: true,
-        uuidFields: ['customer_id', 'created_by'],
-        enums: {
-          article_type: ['documentation', 'article', 'faq', 'guide'],
-          source_type: ['internal', 'external', 'vendor_documentation', 'customer_documentation'],
-          status: ['draft', 'published', 'archived'],
+      const minimalPayload = sanitizeForSupabase(
+        {
+          article_type: 'documentation',
+          source_type: 'vendor_documentation',
+          status: 'published',
+          version: 1,
+          title: 'Doc',
+          content: 'Placeholder',
+          customer_id: customerId,
+          created_by: customerId,
         },
-      });
+        {
+          uuidFields: ['customer_id', 'created_by'],
+          enums: {
+            source_type: ['internal', 'external', 'kb_article', 'vendor_documentation'],
+            article_type: ['documentation', 'howto', 'faq'],
+            status: ['draft', 'published', 'archived'],
+          },
+          stripOtherControls: true,
+        }
+      );
       createRes = await supabase
         .from('knowledge_articles')
         .insert(minimalPayload)
