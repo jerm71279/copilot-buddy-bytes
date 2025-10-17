@@ -28,121 +28,123 @@ export interface AuthState {
 }
 
 export function useAuth() {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    profile: null,
-    customerId: null,
-    isLoading: true,
-    isAuthenticated: false,
-    isAdmin: false,
+  return useAuthSingleton();
+}
+
+// ---------------- Singleton Auth Store (prevents duplicate subscriptions) ----------------
+
+let authInitialized = false;
+let authSubscription: { unsubscribe: () => void } | null = null;
+
+const initialAuthState: AuthState = {
+  user: null,
+  profile: null,
+  customerId: null,
+  isLoading: true,
+  isAuthenticated: false,
+  isAdmin: false,
+};
+
+let globalAuthState: AuthState = initialAuthState;
+const listeners = new Set<(s: AuthState) => void>();
+
+const broadcast = () => {
+  for (const l of listeners) l(globalAuthState);
+};
+
+const setGlobalState = (next: AuthState) => {
+  globalAuthState = next;
+  broadcast();
+};
+
+const loadProfileGlobal = async (userId: string) => {
+  try {
+    const { data: profile, error } = await supabase
+      .from("user_profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    const { data: userData } = await supabase.auth.getUser();
+
+    // Admin check
+    let isAdmin = false;
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role_id, roles(name)")
+      .eq("user_id", userId);
+
+    isAdmin = roles?.some((ur: any) => ur.roles?.name === "Super Admin" || ur.roles?.name === "Admin") || false;
+
+    if (!isAdmin) {
+      const { data: rpcHasAdmin } = await supabase.rpc("has_role", {
+        _user_id: userId,
+        _role: "admin",
+      });
+      isAdmin = !!rpcHasAdmin;
+    }
+
+    setGlobalState({
+      user: userData.user,
+      profile: (profile as UserProfile) || null,
+      customerId: profile?.customer_id || null,
+      isLoading: false,
+      isAuthenticated: true,
+      isAdmin,
+    });
+  } catch (e) {
+    console.error("Error loading profile:", e);
+    setGlobalState({ ...globalAuthState, isLoading: false });
+  }
+};
+
+const initAuthOnce = async () => {
+  if (authInitialized) return;
+  authInitialized = true;
+
+  const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN" && session) {
+      setTimeout(() => {
+        loadProfileGlobal(session.user.id);
+      }, 0);
+    } else if (event === "SIGNED_OUT") {
+      setGlobalState({ ...initialAuthState, isLoading: false });
+    }
   });
+
+  authSubscription = listener.subscription;
+
+  // Bootstrap existing session
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    setGlobalState({ ...initialAuthState, isLoading: false });
+  } else {
+    await loadProfileGlobal(session.user.id);
+  }
+};
+
+function useAuthSingleton() {
+  const [state, setState] = useState<AuthState>(globalAuthState);
   const navigate = useNavigate();
   const notify = useNotification();
 
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        // Defer Supabase calls to avoid async work inside the callback (prevents deadlocks)
-        setTimeout(() => {
-          loadProfile(session.user.id);
-        }, 0);
-      } else if (event === "SIGNED_OUT") {
-        setState({
-          user: null,
-          profile: null,
-          customerId: null,
-          isLoading: false,
-          isAuthenticated: false,
-          isAdmin: false,
-        });
-      }
-    });
-
-    // After subscribing, check for existing session
-    loadAuth();
-
+    // Subscribe to global store
+    const listener = (s: AuthState) => setState(s);
+    listeners.add(listener);
+    // Initialize once
+    if (!authInitialized) {
+      initAuthOnce();
+    } else {
+      // Sync immediate
+      setState(globalAuthState);
+    }
     return () => {
-      authListener.subscription.unsubscribe();
+      listeners.delete(listener);
     };
   }, []);
-
-  const loadAuth = async () => {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        setState({
-          user: null,
-          profile: null,
-          customerId: null,
-          isLoading: false,
-          isAuthenticated: false,
-          isAdmin: false,
-        });
-        return;
-      }
-
-      await loadProfile(session.user.id);
-    } catch (error) {
-      console.error("Error loading auth:", error);
-      setState({
-        user: null,
-        profile: null,
-        customerId: null,
-        isLoading: false,
-        isAuthenticated: false,
-        isAdmin: false,
-      });
-    }
-  };
-
-  const loadProfile = async (userId: string) => {
-    try {
-      const { data: profile, error } = await supabase
-        .from("user_profiles")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      const { data: userData } = await supabase.auth.getUser();
-
-      // Check admin role
-      let isAdmin = false;
-      const { data: roles } = await supabase
-        .from("user_roles")
-        .select("role_id, roles(name)")
-        .eq("user_id", userId);
-      
-      isAdmin = roles?.some((ur: any) => 
-        ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin'
-      ) || false;
-
-      // Fallback to RPC
-      if (!isAdmin) {
-        const { data: rpcHasAdmin } = await supabase.rpc('has_role', {
-          _user_id: userId,
-          _role: 'admin'
-        });
-        isAdmin = !!rpcHasAdmin;
-      }
-
-      setState({
-        user: userData.user,
-        profile: profile as UserProfile | null,
-        customerId: profile?.customer_id || null,
-        isLoading: false,
-        isAuthenticated: true,
-        isAdmin,
-      });
-    } catch (error) {
-      console.error("Error loading profile:", error);
-      setState((prev) => ({ ...prev, isLoading: false }));
-    }
-  };
 
   const requireAuth = (redirectTo: string = "/auth") => {
     if (!state.isAuthenticated && !state.isLoading) {
@@ -172,11 +174,15 @@ export function useAuth() {
     }
   };
 
-  return {
-    ...state,
-    requireAuth,
-    requireCustomer,
-    signOut,
-    refresh: loadAuth,
+  const refresh = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      setGlobalState({ ...initialAuthState, isLoading: false });
+    } else {
+      await loadProfileGlobal(session.user.id);
+    }
   };
+
+  return { ...state, requireAuth, requireCustomer, signOut, refresh };
 }
+
