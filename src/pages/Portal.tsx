@@ -14,8 +14,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { usePortalData } from "@/hooks/usePortalData";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
-import { quickAccessTools, analyticsDashboards } from "@/lib/portalConfig";
+import { quickAccessTools, analyticsDashboards, adminTools } from "@/lib/portalConfig";
 import { useToolPermissions, useDashboardPermissions } from "@/hooks/useNavigationPermissions";
+import { useAuth } from "@/hooks/useAuth";
 
 const Portal = () => {
   const navigate = useNavigate();
@@ -24,10 +25,12 @@ const Portal = () => {
   
   // Use modularized data fetching hook
   const { loading, profile, customer, recentArticles, recentWorkflows } = usePortalData();
+  const { isAdmin } = useAuth();
 
   // Filter navigation items based on RBAC permissions
   const { items: filteredQuickAccessTools, isLoading: toolsLoading } = useToolPermissions(quickAccessTools);
   const { items: filteredAnalyticsDashboards, isLoading: dashboardsLoading } = useDashboardPermissions(analyticsDashboards);
+  const { items: filteredAdminTools, isLoading: adminToolsLoading } = useToolPermissions(adminTools);
   
   // Use modularized keyboard shortcut hook
   useKeyboardShortcut(
@@ -50,7 +53,7 @@ const Portal = () => {
     navigate("/");
   };
 
-  if (loading || toolsLoading || dashboardsLoading) {
+  if (loading || toolsLoading || dashboardsLoading || adminToolsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -167,6 +170,29 @@ const Portal = () => {
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
+
+              {/* Admin Tools Section - Only for Super Admins */}
+              {isAdmin && filteredAdminTools.length > 0 && (
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <Shield className="mr-2 h-4 w-4" />
+                    Admin Tools
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    {filteredAdminTools.map((tool) => (
+                      <DropdownMenuItem key={tool.name} asChild>
+                        <Link to={tool.path} className="flex items-center gap-3 cursor-pointer">
+                          <tool.icon className="h-4 w-4" />
+                          <div className="flex-1">
+                            <p className="font-medium">{tool.name}</p>
+                            <p className="text-xs text-muted-foreground">{tool.description}</p>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

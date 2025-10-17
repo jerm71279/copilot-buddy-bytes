@@ -10,7 +10,13 @@ import {
   FileText, 
   Settings,
   BarChart3,
-  Activity
+  Activity,
+  Lock,
+  ShieldCheck,
+  Bot,
+  UserCog,
+  Server,
+  Key
 } from "lucide-react";
 
 /**
@@ -93,6 +99,58 @@ export const quickAccessTools: PortalTool[] = [
     icon: Settings, 
     path: "/testing-dashboard", 
     description: "System validation and testing" 
+  },
+];
+
+// Admin Tools - Only visible to Super Admins and Admins
+export const adminTools: PortalTool[] = [
+  { 
+    name: "RBAC Portal", 
+    icon: Lock, 
+    path: "/rbac", 
+    description: "Role-based access control and permissions" 
+  },
+  { 
+    name: "Admin Dashboard", 
+    icon: Settings, 
+    path: "/admin", 
+    description: "System administration and configuration" 
+  },
+  { 
+    name: "Automation Hub", 
+    icon: Zap, 
+    path: "/automation", 
+    description: "Configure automated workflows and tasks" 
+  },
+  { 
+    name: "AI Administration", 
+    icon: Bot, 
+    path: "/ai-hub", 
+    description: "Manage AI agents and patterns" 
+  },
+  { 
+    name: "User Management", 
+    icon: UserCog, 
+    path: "/users", 
+    description: "Manage users, roles, and permissions" 
+  },
+  { 
+    name: "Privileged Access", 
+    icon: Key, 
+    path: "/audit/privileged-access", 
+    description: "Audit privileged access and break-glass" 
+  },
+  { 
+    name: "SAW Management", 
+    icon: ShieldCheck, 
+    path: "/saw-management", 
+    description: "Secure admin workstation configuration" 
+  },
+  { 
+    name: "MCP Servers", 
+    icon: Server, 
+    path: "/mcp-dashboard", 
+    description: "Model context protocol server management" 
   },
 ];
 
