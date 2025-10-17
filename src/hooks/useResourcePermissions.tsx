@@ -19,7 +19,7 @@ export function useResourcePermissions(resource: string) {
       setIsLoading(false);
     };
     checkLevel();
-  }, [resource]);
+  }, [resource, getPermissionLevel]);
 
   return {
     permissionLevel,

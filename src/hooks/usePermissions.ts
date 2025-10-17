@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
@@ -26,15 +26,13 @@ export interface PermissionCheck {
 export function usePermissions(): PermissionCheck {
   const { user, isLoading: authLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [permissionCache, setPermissionCache] = useState<
-    Map<string, boolean>
-  >(new Map());
+  const permissionCacheRef = useRef<Map<string, boolean>>(new Map());
 
   useEffect(() => {
     setIsLoading(authLoading);
   }, [authLoading]);
 
-  const checkPermission = async (
+  const checkPermission = useCallback(async (
     resource: string,
     level: PermissionLevel = "view"
   ): Promise<boolean> => {
@@ -42,8 +40,10 @@ export function usePermissions(): PermissionCheck {
     if (level === "none") return false; // Explicitly denied
 
     const cacheKey = `${resource}:${level}`;
-    if (permissionCache.has(cacheKey)) {
-      return permissionCache.get(cacheKey)!;
+    
+    // Check cache using ref (doesn't trigger re-renders)
+    if (permissionCacheRef.current.has(cacheKey)) {
+      return permissionCacheRef.current.get(cacheKey)!;
     }
 
     try {
@@ -60,15 +60,15 @@ export function usePermissions(): PermissionCheck {
       }
 
       const hasAccess = data === true;
-      setPermissionCache((prev) => new Map(prev).set(cacheKey, hasAccess));
+      permissionCacheRef.current.set(cacheKey, hasAccess);
       return hasAccess;
     } catch (error) {
       console.error("Permission check error:", error);
       return false;
     }
-  };
+  }, [user]);
 
-  const getPermissionLevel = async (resource: string): Promise<PermissionLevel> => {
+  const getPermissionLevel = useCallback(async (resource: string): Promise<PermissionLevel> => {
     if (!user) return "none";
 
     // Check from highest to lowest permission level
@@ -82,7 +82,7 @@ export function usePermissions(): PermissionCheck {
     }
     
     return "none"; // No access
-  };
+  }, [user, checkPermission]);
 
   return {
     hasPermission: false, // Use checkPermission for actual checks
@@ -111,7 +111,7 @@ export function useResourcePermission(
       setIsLoading(false);
     };
     check();
-  }, [resource, level]);
+  }, [resource, level, checkPermission]);
 
   return { hasPermission, isLoading };
 }

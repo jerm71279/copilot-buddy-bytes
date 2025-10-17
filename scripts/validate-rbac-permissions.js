@@ -94,6 +94,34 @@ if (permissionsHook) {
   } else {
     results.warnings.push('No caching mechanism found - may cause performance issues');
   }
+  
+  // Check for useRef-based cache (prevents unnecessary re-renders)
+  if (permissionsHook.includes('useRef') && permissionsHook.includes('permissionCacheRef')) {
+    results.passed.push('✓ Uses useRef for cache (prevents re-renders)');
+  } else if (permissionsHook.includes('useState') && permissionsHook.includes('permissionCache')) {
+    results.warnings.push('Cache uses useState - consider useRef to prevent re-renders');
+  }
+  
+  // Check for useCallback to prevent infinite loops
+  if (permissionsHook.includes('useCallback')) {
+    results.passed.push('✓ Uses useCallback for stable function references');
+  } else {
+    results.critical.push('Missing useCallback - may cause infinite render loops (React error #310)');
+  }
+  
+  // Check for proper useEffect dependencies
+  const useEffectMatches = permissionsHook.match(/useEffect\([^)]+\),\s*\[([^\]]*)\]/g);
+  if (useEffectMatches) {
+    const allHaveDeps = useEffectMatches.every(match => {
+      const deps = match.match(/\[([^\]]*)\]/)[1].trim();
+      return deps.length > 0; // Has at least one dependency or empty array
+    });
+    if (allHaveDeps) {
+      results.passed.push('✓ All useEffect hooks have dependency arrays');
+    } else {
+      results.critical.push('Some useEffect hooks missing dependency arrays - causes infinite loops');
+    }
+  }
 
   // Check for proper error handling
   if (permissionsHook.includes('try') && permissionsHook.includes('catch')) {
@@ -353,6 +381,19 @@ console.log('📊 Calculating modularization score...');
 // Check for granular permission system
 const resourceHooks = readFile(FILES.resourceHooks);
 const navigationHooks = readFile(FILES.navigationHooks);
+
+// Validate resourceHooks for infinite loop prevention
+if (resourceHooks) {
+  // Check for proper useEffect dependencies
+  const hasGetPermissionLevelDep = resourceHooks.includes('useEffect') && 
+                                   resourceHooks.includes('[resource, getPermissionLevel]');
+  if (hasGetPermissionLevelDep) {
+    results.passed.push('✓ useResourcePermissions has complete dependencies (prevents loops)');
+  } else {
+    results.critical.push('useResourcePermissions missing dependencies - will cause infinite loops!');
+  }
+}
+
 const hasGranularSystem = resourceHooks?.includes('getPermissionLevel') && 
                           navigationHooks?.includes('permissionLevel') &&
                           checkFileExists(FILES.permissionBadge) &&

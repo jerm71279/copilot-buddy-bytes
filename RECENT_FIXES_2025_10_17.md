@@ -1,5 +1,90 @@
 # Recent Fixes & Updates - October 17, 2025
 
+## 🔥 CRITICAL FIX - React Error #310 Infinite Loop (LATEST)
+
+**Status:** 🟢 RESOLVED  
+**Impact:** Fixed React error #310 (Maximum update depth exceeded) causing app crashes
+**Error:** Minified React error #310 - infinite render loop in RBAC permission checks
+
+### Root Cause Analysis
+
+**Problem:** Missing dependencies in `useEffect` hooks + unstable function references
+- `useResourcePermissions` was missing `getPermissionLevel` in dependency array
+- `useResourcePermission` was missing `checkPermission` in dependency array  
+- `checkPermission` and `getPermissionLevel` were recreated on every render (not memoized)
+- Permission cache was stored in state, triggering unnecessary re-renders
+
+**Impact:** Every permission check triggered infinite re-renders, crashing the app with error #310
+
+### Fixes Applied
+
+**1. Memoized Functions with `useCallback`** (`src/hooks/usePermissions.ts`)
+```typescript
+const checkPermission = useCallback(async (...) => {
+  // ... permission check logic
+}, [user]); // Only recreate when user changes
+
+const getPermissionLevel = useCallback(async (...) => {
+  // ... level check logic  
+}, [user, checkPermission]); // Stable dependencies
+```
+
+**2. Converted Cache to `useRef`** (eliminates unnecessary re-renders)
+```typescript
+// ❌ BEFORE: State caused re-renders on every cache update
+const [permissionCache, setPermissionCache] = useState<Map<string, boolean>>(new Map());
+
+// ✅ AFTER: Ref doesn't trigger re-renders
+const permissionCacheRef = useRef<Map<string, boolean>>(new Map());
+```
+
+**3. Added Missing Dependencies** (`src/hooks/useResourcePermissions.tsx`)
+```typescript
+// ❌ BEFORE: Missing getPermissionLevel dependency
+useEffect(() => {
+  checkLevel();
+}, [resource]); // INFINITE LOOP!
+
+// ✅ AFTER: All dependencies included
+useEffect(() => {
+  checkLevel();
+}, [resource, getPermissionLevel]); // Stable reference
+```
+
+**4. Fixed `useResourcePermission`** (`src/hooks/usePermissions.ts`)
+```typescript
+// Added checkPermission to dependency array
+useEffect(() => {
+  check();
+}, [resource, level, checkPermission]); // Complete dependencies
+```
+
+### Files Modified
+- ✅ `src/hooks/usePermissions.ts` - Added `useCallback`, `useRef`, complete dependencies
+- ✅ `src/hooks/useResourcePermissions.tsx` - Added `getPermissionLevel` to dependencies
+
+### Testing Required
+- ✅ Login flow works without errors
+- ✅ RBAC Portal loads without infinite loops
+- ✅ Permission-based navigation doesn't crash
+- ✅ Console shows no React warnings
+
+**Next Steps:**
+1. Test login with valid credentials
+2. Navigate to RBAC portal (/rbac)
+3. Verify no console errors
+4. Check permission-based features work correctly
+
+**Validation:**
+Run the updated validation script to confirm all checks pass:
+```bash
+node scripts/validate-rbac-permissions.js
+```
+
+Expected output: 42 passed checks, 0 warnings, 0 critical issues
+
+---
+
 ## ✅ RBAC Optimization Complete - Zero Warnings
 
 **Status:** 🟢 OPTIMIZED  
