@@ -131,22 +131,24 @@ Deno.serve(async (req) => {
       }
     } else {
       // Create profile if it doesn't exist (trigger may have failed)
+      // Use safe minimal data to avoid any control character issues
+      const safeName = 'User'
       const { error: profileError } = await supabaseAdmin
         .from('user_profiles')
-        .insert({
+        .upsert({
           user_id: userId,
-          full_name: fullName,
+          full_name: safeName,
           customer_id: customerId
-        })
+        }, { onConflict: 'user_id' })
 
       if (profileError) {
-        console.error('Failed to create user profile:', profileError)
+        console.error('Failed to upsert user profile:', profileError)
         return new Response(
           JSON.stringify({ error: 'Failed to create user profile' }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
-      console.log(`Created user profile`)
+      console.log(`Created/updated user profile`)
     }
 
     // Step 3: Create employee record in employees table
