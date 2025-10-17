@@ -15,6 +15,7 @@ import { GlobalSearch } from "@/components/GlobalSearch";
 import { usePortalData } from "@/hooks/usePortalData";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { quickAccessTools, analyticsDashboards } from "@/lib/portalConfig";
+import { useToolPermissions, useDashboardPermissions } from "@/hooks/useNavigationPermissions";
 
 const Portal = () => {
   const navigate = useNavigate();
@@ -23,6 +24,10 @@ const Portal = () => {
   
   // Use modularized data fetching hook
   const { loading, profile, customer, recentArticles, recentWorkflows } = usePortalData();
+
+  // Filter navigation items based on RBAC permissions
+  const { items: filteredQuickAccessTools, isLoading: toolsLoading } = useToolPermissions(quickAccessTools);
+  const { items: filteredAnalyticsDashboards, isLoading: dashboardsLoading } = useDashboardPermissions(analyticsDashboards);
   
   // Use modularized keyboard shortcut hook
   useKeyboardShortcut(
@@ -45,7 +50,7 @@ const Portal = () => {
     navigate("/");
   };
 
-  if (loading) {
+  if (loading || toolsLoading || dashboardsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -116,17 +121,23 @@ const Portal = () => {
                   Quick Access
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
-                  {quickAccessTools.map((tool) => (
-                    <DropdownMenuItem key={tool.name} asChild>
-                      <Link to={tool.path} className="flex items-center gap-3 cursor-pointer">
-                        <tool.icon className="h-4 w-4" />
-                        <div className="flex-1">
-                          <p className="font-medium">{tool.name}</p>
-                          <p className="text-xs text-muted-foreground">{tool.description}</p>
-                        </div>
-                      </Link>
+                  {filteredQuickAccessTools.length > 0 ? (
+                    filteredQuickAccessTools.map((tool) => (
+                      <DropdownMenuItem key={tool.name} asChild>
+                        <Link to={tool.path} className="flex items-center gap-3 cursor-pointer">
+                          <tool.icon className="h-4 w-4" />
+                          <div className="flex-1">
+                            <p className="font-medium">{tool.name}</p>
+                            <p className="text-xs text-muted-foreground">{tool.description}</p>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <DropdownMenuItem disabled>
+                      <p className="text-sm text-muted-foreground">No accessible tools</p>
                     </DropdownMenuItem>
-                  ))}
+                  )}
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
               
@@ -193,17 +204,23 @@ const Portal = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-80">
-                    {analyticsDashboards.map((dashboard) => (
-                      <DropdownMenuItem key={dashboard.name} asChild>
-                        <Link to={dashboard.path} className="flex items-center gap-3 cursor-pointer">
-                          <dashboard.icon className="h-4 w-4" />
-                          <div className="flex-1">
-                            <p className="font-medium">{dashboard.name}</p>
-                            <p className="text-xs text-muted-foreground">{dashboard.description}</p>
-                          </div>
-                        </Link>
+                    {filteredAnalyticsDashboards.length > 0 ? (
+                      filteredAnalyticsDashboards.map((dashboard) => (
+                        <DropdownMenuItem key={dashboard.name} asChild>
+                          <Link to={dashboard.path} className="flex items-center gap-3 cursor-pointer">
+                            <dashboard.icon className="h-4 w-4" />
+                            <div className="flex-1">
+                              <p className="font-medium">{dashboard.name}</p>
+                              <p className="text-xs text-muted-foreground">{dashboard.description}</p>
+                            </div>
+                          </Link>
+                        </DropdownMenuItem>
+                      ))
+                    ) : (
+                      <DropdownMenuItem disabled>
+                        <p className="text-sm text-muted-foreground">No accessible dashboards</p>
                       </DropdownMenuItem>
-                    ))}
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

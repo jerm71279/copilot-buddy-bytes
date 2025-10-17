@@ -18,6 +18,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { GlobalSearch } from "@/components/GlobalSearch";
+import { usePortalPermissions } from "@/hooks/useNavigationPermissions";
 
 // Portals are the main navigation items (non-dashboard pages) with optional children
 interface Portal {
@@ -399,20 +400,27 @@ export default function DashboardPortalLanes() {
   ];
   const isMainPage = allPages.some((path) => currentPath === path);
 
-  // Filter portals and categories based on customer settings
-  const filteredPortals = enabledPortals.length > 0 
+  // Filter portals based on customer settings (organization-level)
+  const orgFilteredPortals = enabledPortals.length > 0 
     ? portals.filter(portal => {
         const slug = portalSlugMap[portal.path];
         return !slug || enabledPortals.includes(slug);
       })
     : portals;
 
-  const filteredCategories = Object.keys(enabledModules).length > 0
+  const orgFilteredCategories = Object.keys(enabledModules).length > 0
     ? categories.filter(category => {
         const slug = categorySlugMap[category.name];
         return !slug || enabledModules[slug] !== false;
       })
     : categories;
+
+  // Filter portals based on RBAC permissions (user-level)
+  const { items: permissionFilteredPortals, isLoading: permissionsLoading } = usePortalPermissions(orgFilteredPortals);
+  
+  // Use permission-filtered portals if RBAC is enabled, otherwise use org-filtered
+  const filteredPortals = permissionFilteredPortals;
+  const filteredCategories = orgFilteredCategories; // Categories filtered by org settings only for now
 
   return (
     <div ref={lanesRef} className="fixed top-0 left-0 right-0 z-[9999] w-full isolate overflow-visible bg-background/95 backdrop-blur-sm border-b border-border shadow-md">

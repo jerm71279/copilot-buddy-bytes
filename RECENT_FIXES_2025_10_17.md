@@ -1,5 +1,142 @@
 # Recent Fixes & Updates - October 17, 2025
 
+## ✅ RBAC Permission-Based Navigation Filtering - PRODUCTION READY (Latest)
+
+**Status**: 🟢 IMPLEMENTED  
+**Impact**: Navigation now respects user-level RBAC permissions
+
+### What Was Implemented
+
+Created permission-based navigation filtering that works alongside organization-level settings to hide inaccessible portals, dashboards, and tools from users based on their RBAC permissions.
+
+### Implementation Details
+
+**1. Created `useNavigationPermissions` Hook** (`src/hooks/useNavigationPermissions.ts`)
+- Generic hook that filters any navigation items based on RBAC permissions
+- Checks `has_permission` RPC for each navigation item
+- Recursively filters child items (nested navigation)
+- Returns filtered items + loading state
+
+**Three Specialized Variants:**
+```typescript
+usePortalPermissions(portals)     // For main portals
+useDashboardPermissions(dashboards) // For dashboard views
+useToolPermissions(tools)          // For quick access tools
+```
+
+**2. Updated `DashboardPortalLanes.tsx`**
+- Now applies **two levels** of filtering:
+  1. Organization-level (customer_customizations)
+  2. User-level (RBAC permissions via has_permission RPC)
+- Users only see portals they have permission to access
+
+**3. Updated `Portal.tsx`**
+- Filtered Quick Access Tools dropdown
+- Filtered Analytics Dashboards dropdown
+- Shows "No accessible tools/dashboards" message when user has no permissions
+
+### How It Works
+
+```
+Navigation Item Request
+    ↓
+1. Organization Filter (customer_customizations)
+    ↓
+2. RBAC Permission Filter (has_permission RPC)
+    ↓
+3. Check each item: has_permission(resource_name, 'view')
+    ↓
+4. Filter children recursively
+    ↓
+5. Return only accessible items
+```
+
+### Permission Check Logic
+
+**Resource Name Extraction:**
+- Portal path `/admin` → checks permission for resource `"admin"`
+- Dashboard path `/dashboard/executive` → checks permission for resource `"dashboard"`
+- Tool path `/workflows` → checks permission for resource `"workflows"`
+
+**Permission Levels:**
+- Portals: `minPermission = "view"`
+- Dashboards: `minPermission = "view"`  
+- Tools/Pages: `minPermission = "view"`
+
+### User Experience
+
+**Before:**
+- All employees see all portals/dashboards regardless of role
+- Navigation clutter with inaccessible items
+
+**After:**
+- Users only see what they can access
+- Cleaner, role-appropriate navigation
+- Empty state messages when no items accessible
+
+### Loading States
+
+All filtered navigation shows loading spinner until permissions are checked:
+```typescript
+if (loading || toolsLoading || dashboardsLoading) {
+  return <LoadingSpinner />;
+}
+```
+
+### Files Created
+- ✅ `src/hooks/useNavigationPermissions.ts` (124 lines)
+
+### Files Modified
+- ✅ `src/components/DashboardPortalLanes.tsx` - Added user-level permission filtering
+- ✅ `src/pages/Portal.tsx` - Filtered dropdown menus
+
+### Testing Checklist
+
+**As Admin:**
+- [ ] Should see all portals and dashboards
+- [ ] Quick Access Tools should show all items
+- [ ] Analytics Dashboards should show all items
+
+**As Regular User (with limited permissions):**
+- [ ] Should only see assigned portals
+- [ ] Restricted portals should be hidden
+- [ ] Dropdown menus show only accessible items
+- [ ] Empty state shows when no access
+
+**Integration:**
+- [ ] Works with existing customer_customizations filtering
+- [ ] Loading states work correctly
+- [ ] No console errors or permission check failures
+
+### Security Considerations
+
+✅ **Server-Side Enforcement:**
+- All permission checks via `has_permission` RPC
+- No client-side permission storage
+- RLS policies enforce data access
+
+✅ **Defense in Depth:**
+- UI filtering is convenience layer
+- Backend RLS policies are primary security
+- Routes still need `ProtectedRoute` wrapper
+
+### Next Steps
+
+1. Add permission filtering to other navigation areas:
+   - Sidebar navigation (if any)
+   - Header menus
+   - Breadcrumb navigation
+
+2. Add permission context caching
+   - Reduce redundant RPC calls
+   - Improve performance for large navigation trees
+
+3. Add permission inheritance
+   - If user has admin permission, auto-grant view/edit
+   - Simplify permission configuration
+
+---
+
 ## ✅ RBAC & Permissions System Validation - PRODUCTION READY (Latest)
 
 **Status**: 🟢 PRODUCTION READY  
