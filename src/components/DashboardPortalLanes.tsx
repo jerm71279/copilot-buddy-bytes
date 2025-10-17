@@ -354,6 +354,30 @@ export default function DashboardPortalLanes() {
     };
   }, [shouldHide]);
 
+  // Filter portals based on customer settings (organization-level)
+  // MUST be computed before any early returns to avoid hook ordering violations
+  const orgFilteredPortals = enabledPortals.length > 0 
+    ? portals.filter(portal => {
+        const slug = portalSlugMap[portal.path];
+        return !slug || enabledPortals.includes(slug);
+      })
+    : portals;
+
+  const orgFilteredCategories = Object.keys(enabledModules).length > 0
+    ? categories.filter(category => {
+        const slug = categorySlugMap[category.name];
+        return !slug || enabledModules[slug] !== false;
+      })
+    : categories;
+
+  // Filter portals based on RBAC permissions (user-level)
+  // MUST be called before any early returns to avoid hook ordering violations
+  const { items: permissionFilteredPortals, isLoading: permissionsLoading } = usePortalPermissions(orgFilteredPortals);
+  
+  // Use permission-filtered portals if RBAC is enabled, otherwise use org-filtered
+  const filteredPortals = permissionFilteredPortals;
+  const filteredCategories = orgFilteredCategories; // Categories filtered by org settings only for now
+
   if (shouldHide) {
     return null;
   }
@@ -399,28 +423,6 @@ export default function DashboardPortalLanes() {
     ...categories.flatMap(c => c.dashboards.map(d => d.path)),
   ];
   const isMainPage = allPages.some((path) => currentPath === path);
-
-  // Filter portals based on customer settings (organization-level)
-  const orgFilteredPortals = enabledPortals.length > 0 
-    ? portals.filter(portal => {
-        const slug = portalSlugMap[portal.path];
-        return !slug || enabledPortals.includes(slug);
-      })
-    : portals;
-
-  const orgFilteredCategories = Object.keys(enabledModules).length > 0
-    ? categories.filter(category => {
-        const slug = categorySlugMap[category.name];
-        return !slug || enabledModules[slug] !== false;
-      })
-    : categories;
-
-  // Filter portals based on RBAC permissions (user-level)
-  const { items: permissionFilteredPortals, isLoading: permissionsLoading } = usePortalPermissions(orgFilteredPortals);
-  
-  // Use permission-filtered portals if RBAC is enabled, otherwise use org-filtered
-  const filteredPortals = permissionFilteredPortals;
-  const filteredCategories = orgFilteredCategories; // Categories filtered by org settings only for now
 
   return (
     <div ref={lanesRef} className="fixed top-0 left-0 right-0 z-[9999] w-full isolate overflow-visible bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
