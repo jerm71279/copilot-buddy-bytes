@@ -1,4 +1,12 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
+/**
+ * Keeper Get Credential Edge Function
+ * Retrieves and decrypts synced credentials from platform storage
+ * Uses modular shared utilities for maintainability
+ */
+
+import { getAuthContext } from '../_shared/supabaseAuth.ts';
+import { retrieveCredential } from '../_shared/credentialStorage.ts';
+import { logCredentialAccess } from '../_shared/auditLogger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -6,78 +14,41 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Get authenticated user
+    // Step 1: Authenticate user and get context
     const authHeader = req.headers.get('Authorization')!;
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    const { supabase, userId, customerId } = await getAuthContext(authHeader);
 
-    if (userError || !user) {
-      throw new Error('Unauthorized');
-    }
-
-    // Get user's customer_id
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('customer_id')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (!profile?.customer_id) {
-      throw new Error('Customer not found');
-    }
-
+    // Step 2: Parse and validate request body
     const { credential_name, record_uid } = await req.json();
 
     if (!credential_name && !record_uid) {
       throw new Error('credential_name or record_uid is required');
     }
 
-    // Query integration_credentials
-    let query = supabase
-      .from('integration_credentials')
-      .select('*')
-      .eq('customer_id', profile.customer_id)
-      .eq('credential_type', 'keeper_secret');
-
-    if (credential_name) {
-      query = query.eq('credential_name', credential_name);
-    } else if (record_uid) {
-      query = query.contains('metadata', { recordUid: record_uid });
-    }
-
-    const { data: credential, error: credError } = await query.maybeSingle();
-
-    if (credError || !credential) {
-      throw new Error('Credential not found');
-    }
-
-    // Decrypt and return credential data
-    const decryptedData = JSON.parse(
-      new TextDecoder().decode(credential.encrypted_data)
+    // Step 3: Retrieve and decrypt credential
+    const decryptedData = await retrieveCredential(
+      supabase,
+      customerId,
+      credential_name,
+      record_uid
     );
 
-    // Log access
-    await supabase.from('audit_logs').insert({
-      customer_id: profile.customer_id,
-      user_id: user.id,
-      system_name: 'keeper',
-      action_type: 'credential_access',
-      action_details: {
-        credential_name: credential.credential_name,
-        record_uid: decryptedData.recordUid,
-      },
-      compliance_tags: ['security', 'credential_access'],
-    });
+    // Step 4: Log credential access to audit trail
+    await logCredentialAccess(
+      supabase,
+      customerId,
+      userId,
+      decryptedData.title,
+      decryptedData.recordUid
+    );
 
+    // Step 5: Return decrypted credential
     return new Response(
       JSON.stringify({
         success: true,
@@ -99,6 +70,7 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('Error in keeper-get-credential:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    
     return new Response(
       JSON.stringify({ error: errorMessage }),
       {
