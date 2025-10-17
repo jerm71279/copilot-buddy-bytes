@@ -11,6 +11,15 @@ interface SignupRequest {
   emailUsername: string
 }
 
+// Remove control characters (including null bytes) and trim/limit length
+function sanitize(input: unknown, max = 200): string {
+  const s = String(input ?? '')
+    .replace(/[\x00-\x1F\x7F]+/g, '')
+    .trim()
+    .slice(0, max)
+  return s
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -40,13 +49,16 @@ Deno.serve(async (req) => {
       )
     }
 
-    const userId = String(requestData.userId || '').trim()
-    const fullName = String(requestData.fullName || '').trim().slice(0, 200)
-    const emailUsername = String(requestData.emailUsername || '').trim().slice(0, 100)
+    const userId = sanitize(requestData.userId, 200)
+    const fullNameCandidate = sanitize(requestData.fullName, 200)
+    const emailUsernameCandidate = sanitize(requestData.emailUsername, 100)
 
-    if (!userId || !fullName || !emailUsername) {
+    const fullName = fullNameCandidate || emailUsernameCandidate || 'User'
+    const emailUsername = emailUsernameCandidate || 'user'
+
+    if (!userId || !emailUsername) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields: userId, fullName, emailUsername' }),
+        JSON.stringify({ error: 'Missing required fields: userId, emailUsername' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
