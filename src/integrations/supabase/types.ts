@@ -557,6 +557,205 @@ export type Database = {
           },
         ]
       }
+      ai_pattern_chains: {
+        Row: {
+          chain_name: string
+          created_at: string | null
+          created_by: string | null
+          customer_id: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          pattern_sequence: string[]
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          chain_name: string
+          created_at?: string | null
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          pattern_sequence: string[]
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          chain_name?: string
+          created_at?: string | null
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          pattern_sequence?: string[]
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_pattern_chains_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_pattern_chains_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
+      ai_pattern_executions: {
+        Row: {
+          created_at: string | null
+          customer_id: string | null
+          department: string | null
+          error_message: string | null
+          execution_time_ms: number | null
+          id: string
+          input_text: string
+          metadata: Json | null
+          model_used: string | null
+          output_text: string | null
+          pattern_id: string | null
+          success: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id?: string | null
+          department?: string | null
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          input_text: string
+          metadata?: Json | null
+          model_used?: string | null
+          output_text?: string | null
+          pattern_id?: string | null
+          success?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string | null
+          department?: string | null
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          input_text?: string
+          metadata?: Json | null
+          model_used?: string | null
+          output_text?: string | null
+          pattern_id?: string | null
+          success?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_pattern_executions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_pattern_executions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "ai_pattern_executions_pattern_id_fkey"
+            columns: ["pattern_id"]
+            isOneToOne: false
+            referencedRelation: "ai_patterns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_patterns: {
+        Row: {
+          avg_execution_time_ms: number | null
+          category: string
+          created_at: string | null
+          created_by: string | null
+          customer_id: string | null
+          description: string | null
+          id: string
+          input_placeholder: string | null
+          is_active: boolean | null
+          is_system_pattern: boolean | null
+          output_format: string | null
+          pattern_name: string
+          pattern_slug: string
+          system_prompt: string
+          tags: string[] | null
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          avg_execution_time_ms?: number | null
+          category: string
+          created_at?: string | null
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          id?: string
+          input_placeholder?: string | null
+          is_active?: boolean | null
+          is_system_pattern?: boolean | null
+          output_format?: string | null
+          pattern_name: string
+          pattern_slug: string
+          system_prompt: string
+          tags?: string[] | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          avg_execution_time_ms?: number | null
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          id?: string
+          input_placeholder?: string | null
+          is_active?: boolean | null
+          is_system_pattern?: boolean | null
+          output_format?: string | null
+          pattern_name?: string
+          pattern_slug?: string
+          system_prompt?: string
+          tags?: string[] | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_patterns_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_patterns_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
       anomaly_detections: {
         Row: {
           affected_user_id: string | null

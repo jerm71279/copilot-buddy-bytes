@@ -91,6 +91,7 @@ import ArchitectureDiagram from "./pages/ArchitectureDiagram";
 import ArchitectureCanvas from "./pages/ArchitectureCanvas";
 import WorkflowIntelligence from "./pages/WorkflowIntelligence";
 import PromptLibraryPage from "./pages/PromptLibraryPage";
+import PatternLibrary from "./pages/PatternLibrary";
 import AIHub from "./pages/AIHub";
 import SLAManagement from "./pages/SLAManagement";
 import TimeTracking from "./pages/TimeTracking";
@@ -153,6 +154,11 @@ const App = () => (
           <Route path="/prompt-library" element={
             <ProtectedRoute>
               <PromptLibraryPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/pattern-library" element={
+            <ProtectedRoute>
+              <PatternLibrary />
             </ProtectedRoute>
           } />
           <Route path="/auth" element={<Auth />} />
