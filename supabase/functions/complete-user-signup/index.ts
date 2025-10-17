@@ -131,24 +131,43 @@ Deno.serve(async (req) => {
       }
     } else {
       // Create profile if it doesn't exist (trigger may have failed)
-      // Use safe minimal data to avoid any control character issues
-      const safeName = 'User'
+      // Upsert only user_id and customer_id to avoid any problematic text values
       const { error: profileError } = await supabaseAdmin
         .from('user_profiles')
-        .upsert({
-          user_id: userId,
-          full_name: safeName,
-          customer_id: customerId
-        }, { onConflict: 'user_id' })
+        .upsert(
+          {
+            user_id: userId,
+            customer_id: customerId
+          },
+          { onConflict: 'user_id' }
+        )
 
       if (profileError) {
-        console.error('Failed to upsert user profile:', profileError)
-        return new Response(
-          JSON.stringify({ error: 'Failed to create user profile' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
+        console.error('First upsert failed, attempting minimal insert then update:', profileError)
+        // Fallback: insert minimal row then update customer link
+        const { error: insertFallbackError } = await supabaseAdmin
+          .from('user_profiles')
+          .insert({ user_id: userId })
+
+        if (insertFallbackError) {
+          console.error('Fallback insert failed:', insertFallbackError)
+          return new Response(
+            JSON.stringify({ error: 'Failed to create user profile' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+        }
+
+        const { error: linkUpdateError } = await supabaseAdmin
+          .from('user_profiles')
+          .update({ customer_id: customerId })
+          .eq('user_id', userId)
+
+        if (linkUpdateError) {
+          console.error('Failed to link user to customer after insert:', linkUpdateError)
+          // Not fatal - continue
+        }
       }
-      console.log(`Created/updated user profile`)
+      console.log(`Ensured user profile exists and is linked`)
     }
 
     // Step 3: Create employee record in employees table
