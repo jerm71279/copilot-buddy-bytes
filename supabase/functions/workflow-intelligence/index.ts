@@ -35,14 +35,13 @@ serve(async (req) => {
     }
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
     if (!lovableApiKey) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Get authorization header
     const authHeader = req.headers.get('authorization');
@@ -50,13 +49,23 @@ serve(async (req) => {
       throw new Error('No authorization header');
     }
 
-    // Get user from token
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    // Create client with user's token for auth
+    const supabaseUser = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: { authorization: authHeader }
+      }
+    });
+
+    // Get user from their token
+    const { data: { user }, error: userError } = await supabaseUser.auth.getUser();
     
     if (userError || !user) {
+      console.error('Auth error:', userError);
       throw new Error('Unauthorized');
     }
+
+    // Create service role client for data operations
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get user's customer_id
     const { data: profile } = await supabase

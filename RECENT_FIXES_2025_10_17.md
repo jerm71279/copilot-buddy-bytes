@@ -1,5 +1,61 @@
 # Recent Fixes & Updates - October 17, 2025
 
+## Workflow Intelligence Authentication Fix - CRITICAL BUG FIX ✅
+
+**Date:** 2025-10-17 3:45 AM
+**Status:** Fixed & Production Ready
+**Issue:** "Unauthorized" error when using AI Hub workflow intelligence
+
+### Problem
+
+The workflow-intelligence edge function was failing with "Unauthorized" error because it was incorrectly using the service role key to validate user tokens. This caused all AI Hub queries to fail.
+
+### Root Cause
+
+```typescript
+// ❌ WRONG: Can't use service role client to validate user tokens
+const supabase = createClient(supabaseUrl, serviceRoleKey);
+const { user } = await supabase.auth.getUser(userToken); // This fails!
+```
+
+### Solution
+
+Created two separate Supabase clients:
+1. **User client** (anon key + user token) for authentication
+2. **Service client** (service role key) for data operations
+
+```typescript
+// ✅ CORRECT: Use anon key with user's token for auth
+const supabaseUser = createClient(supabaseUrl, anonKey, {
+  global: { headers: { authorization: authHeader } }
+});
+const { user } = await supabaseUser.auth.getUser(); // Works!
+
+// Then use service role for data
+const supabase = createClient(supabaseUrl, serviceRoleKey);
+```
+
+### Files Modified
+
+- **`supabase/functions/workflow-intelligence/index.ts`** - Fixed authentication flow
+
+### Key Changes
+
+- Added `SUPABASE_ANON_KEY` environment variable usage
+- Split client creation into user-auth client and service-role client
+- Proper token validation using anon key
+- Enhanced error logging for debugging
+
+### Validation
+
+The fix resolves the authentication error and allows users to:
+- Query workflow trends and analytics
+- Analyze change request patterns
+- Get AI-powered compliance insights
+- Stream real-time analysis results
+
+---
+
 ## Profile Settings Refactoring - MODULARIZED ✅
 
 **Date:** 2025-10-17 3:30 AM
