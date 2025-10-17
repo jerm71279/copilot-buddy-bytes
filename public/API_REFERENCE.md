@@ -1,10 +1,15 @@
 # OberaConnect API Reference
 
-**Last Updated:** October 9, 2025  
+**Last Updated:** October 17, 2025  
 **API Version:** 2.0  
-**Total Edge Functions:** 17
+**Total Edge Functions:** 18
 
-## 🆕 Recent Updates (October 9, 2025)
+## 🆕 Recent Updates (October 17, 2025)
+
+### New Edge Functions
+- **`slab-sync`**: Slab knowledge base integration for syncing articles and webhooks
+
+### Previous Updates (October 9, 2025)
 
 ### New Database Tables
 - **`products`**: Product catalog with pricing, features, and billing cycles

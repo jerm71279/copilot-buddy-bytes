@@ -1,11 +1,20 @@
 # OberaConnect API Reference
 
-**Last Updated:** October 15, 2025  
+**Last Updated:** October 17, 2025  
 **API Version:** 2.1  
-**Total Edge Functions:** 19  
+**Total Edge Functions:** 20  
 **Platform Status:** **5% Code Duplication (93% reduction from 70%)**
 
-## 🆕 Recent Updates (October 15, 2025)
+## 🆕 Recent Updates (October 17, 2025)
+
+### New Edge Functions
+- **`slab-sync`**: Slab knowledge base integration for syncing articles and webhooks
+
+### Code Quality Improvements
+- AI Hub modularization: Reduced AIHub.tsx from 232 to 66 lines (71% reduction)
+- Created reusable AI components and hooks for better maintainability
+
+### Previous Updates (October 15, 2025)
 
 ### Phase 2: Comprehensive Hook Ecosystem - 5% Duplication Target Achieved
 
