@@ -23,9 +23,10 @@ serve(async (req) => {
     );
 
     const requestData = await req.json();
-    
-    // Validate input
-    if (!requestData || typeof requestData !== 'object') {
+
+    // Validate input (explicit null and type checks)
+    const isObject = requestData !== null && typeof requestData === 'object';
+    if (!isObject) {
       return new Response(
         JSON.stringify({ error: 'Invalid request body' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

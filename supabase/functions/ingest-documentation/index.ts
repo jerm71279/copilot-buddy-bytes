@@ -35,6 +35,20 @@ serve(async (req) => {
         .trim()
         .slice(0, max);
 
+    // Deep sanitize any JSON object/array structure
+    const sanitizeJson = (val: unknown): any => {
+      if (typeof val === 'string') return sanitize(val);
+      if (Array.isArray(val)) return val.map(sanitizeJson);
+      if (val && typeof val === 'object') {
+        const out: Record<string, any> = {};
+        for (const [k, v] of Object.entries(val as Record<string, any>)) {
+          out[k] = sanitizeJson(v);
+        }
+        return out;
+      }
+      return val;
+    };
+
     const url = sanitize((requestData as any).url, 2000);
     const source = sanitize((requestData as any).source, 200);
     const customerId = (requestData as any).customerId;
@@ -84,14 +98,14 @@ serve(async (req) => {
         content: textContent,
         article_type: 'documentation',
         source_type: 'vendor_documentation',
-        source_metadata: {
+        source_metadata: sanitizeJson({
           url,
           source,
           ingested_at: new Date().toISOString()
-        },
+        }),
         status: 'published',
         version: 1,
-        tags: ['technical', 'documentation', source.toLowerCase()],
+        tags: sanitizeJson(['technical', 'documentation', sanitize(source.toLowerCase(), 50)]),
         created_by: customerId
       })
       .select()
