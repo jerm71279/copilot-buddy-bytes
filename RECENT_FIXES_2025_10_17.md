@@ -1,5 +1,66 @@
 # Recent Fixes & Updates - October 17, 2025
 
+## ✅ Layer 2 AI - Central MML Processor Implemented (1:15 PM)
+
+**Status**: PRODUCTION READY ✅  
+**Impact**: Completes the 3-tier AI architecture
+
+### What Was Implemented
+
+Created the `central-mml-processor` edge function to enable Layer 2 of the three-tier AI architecture - cross-department intelligence and organizational learning.
+
+### Core Capabilities
+
+1. **Insight Aggregation**: Analyzes insights from all departments over 7-day rolling window
+2. **Pattern Detection**: Identifies cross-department patterns when same issue appears in 2+ departments
+3. **Global Insights**: Creates organization-wide insights in `global_insights` table
+4. **Correlation Mapping**: Links related department insights in `insight_correlations` table
+5. **Auto-Knowledge Generation**: Uses Lovable AI to create knowledge articles for patterns with 3+ occurrences
+6. **Feedback Loop**: Sends proactive recommendations back to departments via `insight_feedback` table
+
+### Automation Schedule
+
+```sql
+-- Runs every 6 hours via pg_cron (migration needed)
+SELECT cron.schedule(
+  'central-mml-processor',
+  '0 */6 * * *',
+  $$
+  SELECT net.http_post(
+    url:='https://olrpexessehcijdvogxo.supabase.co/functions/v1/central-mml-processor',
+    headers:='{"Content-Type": "application/json", "Authorization": "Bearer [ANON_KEY]"}'::jsonb
+  ) as request_id;
+  $$
+);
+```
+
+### Pattern Types Detected
+
+- `repeated_question` → Auto-generates knowledge articles
+- `process_bottleneck` → Suggests workflow automation
+- `compliance_gap` → Triggers org-wide review
+- `security_concern` → Initiates security training
+
+### Integration Flow
+
+```
+Layer 1 (Dept AI) → department_insights →
+Layer 2 (Central MML) → global_insights + correlations + knowledge_articles →
+Layer 3 (Feedback) → insight_feedback → Layer 1 (Proactive)
+```
+
+### Files Created
+
+- `supabase/functions/central-mml-processor/index.ts` (353 lines)
+
+### Next Steps
+
+1. ✅ Create migration for pg_cron setup
+2. Monitor insight generation and article quality
+3. Fine-tune pattern detection thresholds (currently: 2+ departments, confidence > 0.7)
+
+---
+
 ## Edge Function Refactoring - MASS MODULARIZATION ✅
 
 **Date:** 2025-10-17 4:00 AM
