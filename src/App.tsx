@@ -609,12 +609,7 @@ const App = () => (
             </ProtectedRoute>
           } />
           
-          {/* Data Flow Portal - Admin Only */}
-          <Route path="/data-flow" element={
-            <ProtectedRoute requireAdmin>
-              <DataFlowPortal />
-            </ProtectedRoute>
-          } />
+          {/* Data Flow Portal - Admin Only - REMOVED: Duplicate of /data-flows route below */}
           
           {/* Link Validation Tool - Admin Only */}
           <Route path="/test/link-validation" element={

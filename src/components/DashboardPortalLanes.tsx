@@ -50,7 +50,7 @@ const portals: Portal[] = [
       { name: "Workflow Evidence", path: "/test/workflow-evidence" },
       { name: "Network Monitoring", path: "/network-monitoring" },
       { name: "Architecture Canvas", path: "/architecture/canvas" },
-      { name: "Data Flow Portal", path: "/data-flow" },
+      { name: "Data Flow Portal", path: "/data-flows" },
       { name: "MCP Servers", path: "/mcp-servers" },
     ],
   },

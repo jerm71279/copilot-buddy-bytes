@@ -1,6 +1,40 @@
 # Recent Fixes - October 15, 2025
 
-## Employee Directory 404 Fix (Latest)
+## Link Validation & Duplicate Route Fix (Latest)
+
+**Implementation Date**: 2025-10-17
+**Bug Fix**: Removed duplicate Data Flow Portal route causing navigation confusion
+
+### Problem
+Two routes existed for the same Data Flow Portal component:
+- `/data-flow` (Admin Only)
+- `/data-flows` (Protected)
+
+This caused navigation inconsistencies:
+- Navigation.tsx used `/data-flows`
+- DashboardPortalLanes used `/data-flow`
+- Users would get different results depending on which link they clicked
+
+### Solution
+- Removed duplicate `/data-flow` route from App.tsx
+- Updated DashboardPortalLanes to use `/data-flows` consistently
+- Created comprehensive LINK_VALIDATION_REPORT.md documenting all 150+ routes
+
+### Files Modified
+- `src/App.tsx` - Removed duplicate route (line 612-617)
+- `src/components/DashboardPortalLanes.tsx` - Updated to `/data-flows` (line 53)
+- `LINK_VALIDATION_REPORT.md` - Created comprehensive route documentation
+- `RECENT_FIXES_2025_10_15.md` (this file)
+
+### Impact
+- Consistent navigation across all components
+- No more confusion about which Data Flow Portal route to use
+- All navigation now uses `/data-flows` (Protected route)
+- Comprehensive documentation of all application routes for future reference
+
+---
+
+## Employee Directory 404 Fix
 
 **Implementation Date**: 2025-10-17
 **Bug Fix**: Removed broken employee detail navigation causing 404 errors
