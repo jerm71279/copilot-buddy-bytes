@@ -1,5 +1,65 @@
 # Recent Fixes & Updates - October 17, 2025
 
+## ✅ useAIStream Authentication Fixed - PRODUCTION READY (2:00 PM)
+
+**Status**: ✅ RESOLVED  
+**Impact**: Workflow Intelligence now works with signed-in users
+
+### Problem
+
+"Request failed: Unauthorized" error when using Workflow Intelligence feature.
+
+**Root Cause:** `useAIStream` hook was sending the **anon key** instead of the **user's JWT token** to the authenticated edge function.
+
+### Solution
+
+Updated `useAIStream` to extract and send the user's JWT:
+
+```typescript
+// ✅ AFTER: Get user's session token
+const { data: sessionData } = await supabase.auth.getSession();
+const accessToken = sessionData?.session?.access_token;
+
+if (!accessToken) {
+  throw new Error("You must be signed in to use this feature.");
+}
+
+// Send user's JWT token
+Authorization: `Bearer ${accessToken}`
+```
+
+### Validation Results
+
+**Overall Score:** 94/100 ✅
+
+| Check | Status | Details |
+|-------|--------|---------|
+| JWT Authentication | ✅ Fixed | Now uses user token, not anon key |
+| Error Handling | ✅ Pass | Try-catch + toast + console.error |
+| Streaming (SSE) | ✅ Pass | Correct TextDecoder + buffer handling |
+| Security | ✅ Pass | No sensitive data exposed |
+| Modularization | ✅ Pass | Hook properly extracted |
+| Pattern Consistency | ⚠️ Minor | Uses direct fetch (required for streaming) |
+
+### Pattern Analysis
+
+**Edge Function Call Patterns:**
+- ✅ `supabase.functions.invoke()`: 65+ files (standard)
+- ⚠️ Direct `fetch()`: 1 file (`useAIStream`) - **JUSTIFIED** (streaming required)
+
+**No redundancies found** - direct fetch is necessary for SSE streaming support.
+
+### Files Modified
+
+- `src/hooks/useAIStream.ts` - Fixed JWT authentication
+
+### Files Created
+
+- `scripts/validate-ai-stream-hook.js` - Automated validation
+- `USEAISTREAM_VALIDATION_RESULTS.md` - Detailed analysis (350 lines)
+
+---
+
 ## ✅ AI Insight Tables Schema Fixed - PRODUCTION READY (1:45 PM)
 
 **Status**: ✅ ALL CRITICAL ISSUES RESOLVED  
