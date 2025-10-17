@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.58.0";
+import { sanitizeForSupabase } from "../_shared/sanitizeForSupabase.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -260,12 +261,23 @@ serve(async (req) => {
 
     console.log('Inserting placeholder article with customer_id:', customerId);
     
-    // Deep sanitize the placeholder payload to remove any null bytes
-    const sanitizedPlaceholder = stripZeroDeep({
+    // Use comprehensive sanitizer with strict UUID and enum validation
+    const rawPlaceholder = {
       ...placeholderPayloadBase,
       customer_id: customerId,
       vendor_id: vendorId,
       created_by: customerId,
+    };
+    
+    const sanitizedPlaceholder = sanitizeForSupabase(rawPlaceholder, {
+      nulPolicy: 'remove',
+      stripOtherControls: true,
+      uuidFields: ['customer_id', 'vendor_id', 'created_by'],
+      enums: {
+        article_type: ['documentation', 'article', 'faq', 'guide'],
+        source_type: ['internal', 'external', 'vendor_documentation', 'customer_documentation'],
+        status: ['draft', 'published', 'archived'],
+      },
     });
     
     console.log('Sanitized placeholder:', JSON.stringify(sanitizedPlaceholder).substring(0, 200));
@@ -279,10 +291,19 @@ serve(async (req) => {
 
     if (createRes.error && (createRes.error.message?.toLowerCase().includes('null character') || createRes.error.code === '54000')) {
       console.warn('Placeholder insert failed (with vendor_id). Retrying without vendor_id...');
-      const retryPayload = stripZeroDeep({
+      const retryPayload = sanitizeForSupabase({
         ...placeholderPayloadBase,
         customer_id: customerId,
         created_by: customerId,
+      }, {
+        nulPolicy: 'remove',
+        stripOtherControls: true,
+        uuidFields: ['customer_id', 'created_by'],
+        enums: {
+          article_type: ['documentation', 'article', 'faq', 'guide'],
+          source_type: ['internal', 'external', 'vendor_documentation', 'customer_documentation'],
+          status: ['draft', 'published', 'archived'],
+        },
       });
       createRes = await supabase
         .from('knowledge_articles')
@@ -293,10 +314,19 @@ serve(async (req) => {
 
     if (createRes.error && (createRes.error.message?.toLowerCase().includes('null character') || createRes.error.code === '54000')) {
       console.warn('Placeholder insert failed (without vendor_id). Retrying with minimal IDs...');
-      const minimalPayload = stripZeroDeep({
+      const minimalPayload = sanitizeForSupabase({
         ...placeholderPayloadBase,
         customer_id: customerId,
         created_by: customerId,
+      }, {
+        nulPolicy: 'remove',
+        stripOtherControls: true,
+        uuidFields: ['customer_id', 'created_by'],
+        enums: {
+          article_type: ['documentation', 'article', 'faq', 'guide'],
+          source_type: ['internal', 'external', 'vendor_documentation', 'customer_documentation'],
+          status: ['draft', 'published', 'archived'],
+        },
       });
       createRes = await supabase
         .from('knowledge_articles')
@@ -314,15 +344,20 @@ serve(async (req) => {
 
     // Helper to attempt field update and log failures without throwing
     const safeUpdate = async (patch: Record<string, any>, label: string) => {
-      const cleanedPatch = stripZeroDeep(patch);
+      const cleanedPatch = sanitizeForSupabase(patch, {
+        nulPolicy: 'remove',
+        stripOtherControls: true,
+      });
       try {
         console.log('DB boundary check', {
           label,
           keys: Object.keys(cleanedPatch),
           types: Object.fromEntries(Object.entries(cleanedPatch).map(([k, v]) => [k, Array.isArray(v) ? 'array' : typeof v])),
-          hasNulls: Object.fromEntries(Object.entries(cleanedPatch).map(([k, v]) => [k, typeof v === 'string' && /\u0000/.test(v as string)])),
         });
-      } catch (_) {}
+      } catch (e) {
+        console.error(`Sanitization failed for ${label}:`, e);
+        return false;
+      }
       const { error: updErr } = await supabase
         .from('knowledge_articles')
         .update(cleanedPatch)
