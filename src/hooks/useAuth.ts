@@ -106,29 +106,48 @@ export function useAuth() {
         .eq("user_id", userId)
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error loading profile:", error);
+        throw error;
+      }
 
       const { data: userData } = await supabase.auth.getUser();
 
-      // Check admin role
+      // Check admin role - try direct query first
       let isAdmin = false;
-      const { data: roles } = await supabase
+      console.log("Checking admin role for user:", userId);
+      
+      const { data: roles, error: rolesError } = await supabase
         .from("user_roles")
         .select("role_id, roles(name)")
         .eq("user_id", userId);
       
-      isAdmin = roles?.some((ur: any) => 
-        ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin'
-      ) || false;
+      if (rolesError) {
+        console.error("Error fetching roles:", rolesError);
+      } else {
+        console.log("User roles from direct query:", roles);
+        isAdmin = roles?.some((ur: any) => 
+          ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin'
+        ) || false;
+      }
 
-      // Fallback to RPC
+      // Fallback to RPC if direct query failed or returned false
       if (!isAdmin) {
-        const { data: rpcHasAdmin } = await supabase.rpc('has_role', {
+        console.log("Trying RPC has_role fallback...");
+        const { data: rpcHasAdmin, error: rpcError } = await supabase.rpc('has_role', {
           _user_id: userId,
           _role: 'admin'
         });
-        isAdmin = !!rpcHasAdmin;
+        
+        if (rpcError) {
+          console.error("Error in has_role RPC:", rpcError);
+        } else {
+          console.log("RPC has_role result:", rpcHasAdmin);
+          isAdmin = !!rpcHasAdmin;
+        }
       }
+
+      console.log("Final isAdmin value:", isAdmin);
 
       setState({
         user: userData.user,
@@ -140,7 +159,14 @@ export function useAuth() {
       });
     } catch (error) {
       console.error("Error loading profile:", error);
-      setState((prev) => ({ ...prev, isLoading: false }));
+      setState({
+        user: null,
+        profile: null,
+        customerId: null,
+        isLoading: false,
+        isAuthenticated: false,
+        isAdmin: false,
+      });
     }
   };
 
