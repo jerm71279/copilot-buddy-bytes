@@ -268,8 +268,11 @@ serve(async (req) => {
       {
         uuidFields: ['customer_id', 'vendor_id', 'created_by'],
         enums: {
-          source_type: ['internal', 'external', 'kb_article', 'vendor_documentation'],
-          article_type: ['documentation', 'howto', 'faq'],
+          // Synced with CHECK constraint: ('manual', 'ai_generated', 'file_import', 'workflow_insight', 'vendor_documentation')
+          source_type: ['manual', 'ai_generated', 'file_import', 'workflow_insight', 'vendor_documentation'],
+          // Synced with CHECK constraint: ('sop', 'guide', 'faq', 'documentation', 'insight')
+          article_type: ['sop', 'guide', 'faq', 'documentation', 'insight'],
+          // Synced with CHECK constraint: ('draft', 'published', 'archived')
           status: ['draft', 'published', 'archived'],
         },
         stripOtherControls: true,
@@ -301,8 +304,8 @@ serve(async (req) => {
         {
           uuidFields: ['customer_id', 'created_by'],
           enums: {
-            source_type: ['internal', 'external', 'kb_article', 'vendor_documentation'],
-            article_type: ['documentation', 'howto', 'faq'],
+            source_type: ['manual', 'ai_generated', 'file_import', 'workflow_insight', 'vendor_documentation'],
+            article_type: ['sop', 'guide', 'faq', 'documentation', 'insight'],
             status: ['draft', 'published', 'archived'],
           },
           stripOtherControls: true,
@@ -331,8 +334,8 @@ serve(async (req) => {
         {
           uuidFields: ['customer_id', 'created_by'],
           enums: {
-            source_type: ['internal', 'external', 'kb_article', 'vendor_documentation'],
-            article_type: ['documentation', 'howto', 'faq'],
+            source_type: ['manual', 'ai_generated', 'file_import', 'workflow_insight', 'vendor_documentation'],
+            article_type: ['sop', 'guide', 'faq', 'documentation', 'insight'],
             status: ['draft', 'published', 'archived'],
           },
           stripOtherControls: true,
