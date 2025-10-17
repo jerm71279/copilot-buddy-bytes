@@ -70,12 +70,15 @@ serve(async (req) => {
     }
 
     const html = await fetchResponse.text();
+    console.log('Fetched HTML length:', html.length, 'has null?', /\u0000/.test(html));
     
     // Extract text content (basic HTML to text conversion)
     const rawContent = html
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
       .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
       .replace(/<[^>]+>/g, ' ');
+
+    console.log('Raw content length:', rawContent.length, 'has null?', /\u0000/.test(rawContent));
 
     // Final sanitize and cap to 50k for DB safety
     let textContent = (rawContent || '')
@@ -84,26 +87,20 @@ serve(async (req) => {
       .trim()
       .slice(0, 50000);
 
+    console.log('After sanitize length:', textContent.length, 'has null?', /\u0000/.test(textContent));
+
     // Extra hardening against any stray nulls
     if (/\u0000/.test(textContent)) {
       console.warn('Null bytes detected in content - removing');
       textContent = textContent.replace(/\u0000/g, ' ');
     }
 
+    console.log('Final content length:', textContent.length, 'has null?', /\u0000/.test(textContent));
+
     // Generate title from URL and sanitize
     let title = `${source} - ${url.split('/').pop() || 'Documentation'}`;
     title = title.replace(/[\x00-\x1F\x7F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
 
-    // Debug: log sanitization metrics
-    const hasNull = (s: string) => /\u0000/.test(s);
-    console.log('ingest-documentation: sanitize-stats', {
-      hasNullTitle: hasNull(title),
-      hasNullContent: hasNull(textContent),
-      titleLen: title.length,
-      contentLen: textContent.length,
-    });
-
-    // Insert into knowledge_articles
     // Build payload and deep-sanitize to guarantee no null bytes anywhere
     const payload = {
       customer_id: customerId,
@@ -135,6 +132,18 @@ serve(async (req) => {
     };
 
     const safePayload = stripZeroDeep(payload);
+
+    // Debug: log ALL fields before insert
+    console.log('Pre-insert field check:', {
+      titleHasNull: /\u0000/.test(title),
+      contentHasNull: /\u0000/.test(textContent),
+      urlHasNull: /\u0000/.test(url),
+      sourceHasNull: /\u0000/.test(source),
+      metadataStr: JSON.stringify(safePayload.source_metadata),
+      metadataHasNull: /\u0000/.test(JSON.stringify(safePayload.source_metadata)),
+      tagsStr: JSON.stringify(safePayload.tags),
+      tagsHasNull: /\u0000/.test(JSON.stringify(safePayload.tags))
+    });
 
     const { data: article, error } = await supabase
       .from('knowledge_articles')
