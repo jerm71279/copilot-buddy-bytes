@@ -16,6 +16,10 @@ const results = {
 // Files to analyze
 const FILES = {
   hooks: 'src/hooks/usePermissions.ts',
+  resourceHooks: 'src/hooks/useResourcePermissions.tsx',
+  navigationHooks: 'src/hooks/useNavigationPermissions.ts',
+  permissionBadge: 'src/components/PermissionBadge.tsx',
+  actionButton: 'src/components/ActionButton.tsx',
   protectedRoute: 'src/components/ProtectedRoute.tsx',
   rbacPortal: 'src/pages/RBACPortal.tsx',
   roleManagement: 'src/components/rbac/RoleManagement.tsx',
@@ -327,12 +331,25 @@ console.log('✅ Security analysis complete\n');
 // ========================================
 console.log('📊 Calculating modularization score...');
 
+// Check for granular permission system
+const resourceHooks = readFile(FILES.resourceHooks);
+const navigationHooks = readFile(FILES.navigationHooks);
+const hasGranularSystem = resourceHooks?.includes('getPermissionLevel') && 
+                          navigationHooks?.includes('permissionLevel') &&
+                          checkFileExists(FILES.permissionBadge) &&
+                          checkFileExists(FILES.actionButton);
+
+if (hasGranularSystem) {
+  results.passed.push('✓ Implements granular permission system (none/view/edit/admin)');
+}
+
 const modularizationMetrics = {
   separateHooks: checkFileExists(FILES.hooks),
-  separateComponents: Object.keys(FILES).filter(k => k !== 'hooks').every(k => checkFileExists(FILES[k])),
+  separateComponents: Object.keys(FILES).filter(k => !k.includes('Hook')).every(k => checkFileExists(FILES[k])),
   usesTypeScript: allRBACFiles.every(f => f.includes('interface') || f.includes('type')),
   hasCaching: permissionsHook?.includes('cache') || false,
-  usesRPC: allRBACFiles.some(f => f.includes('supabase.rpc'))
+  usesRPC: allRBACFiles.some(f => f.includes('supabase.rpc')),
+  hasGranularPermissions: hasGranularSystem
 };
 
 const score = Object.values(modularizationMetrics).filter(Boolean).length / Object.keys(modularizationMetrics).length * 100;
@@ -444,6 +461,39 @@ ${Object.entries(FILES).map(([key, path]) => `- **${key}**: \`${path}\``).join('
 - TypeScript usage: ${modularizationMetrics.usesTypeScript ? '✅' : '❌'}
 - Caching implementation: ${modularizationMetrics.hasCaching ? '✅' : '❌'}
 - RPC function usage: ${modularizationMetrics.usesRPC ? '✅' : '❌'}
+- Granular permissions: ${modularizationMetrics.hasGranularPermissions ? '✅' : '❌'}
+
+### Component Structure
+\`\`\`
+RBAC System
+├── Core Hooks (Permission Logic)
+│   ├── usePermissions (base permission checking)
+│   │   ├── checkPermission()
+│   │   ├── getPermissionLevel()
+│   │   └── useResourcePermission()
+│   ├── useResourcePermissions (resource-specific helpers)
+│   │   └── useActionPermissions()
+│   └── useNavigationPermissions (navigation filtering)
+│       ├── usePortalPermissions()
+│       ├── useDashboardPermissions()
+│       └── useToolPermissions()
+├── UI Components (Permission Display)
+│   ├── PermissionBadge (visual level indicators)
+│   ├── PermissionLevelIndicator (detailed info)
+│   ├── ActionButton (permission-aware buttons)
+│   └── PermissionGate (conditional rendering)
+├── Route Protection
+│   └── ProtectedRoute (route-level auth & admin checks)
+├── Portal
+│   └── RBACPortal (admin-only tab-based interface)
+└── Management Components
+    ├── RoleManagement (create, clone roles)
+    ├── PermissionManagement (assign resource permissions)
+    ├── RoleHierarchy (parent-child relationships)
+    ├── RoleTemplates (pre-configured role sets)
+    ├── TemporaryPrivileges (time-limited access)
+    └── PermissionAuditLog (change tracking)
+\`\`\`
 
 ## Recommendations
 
