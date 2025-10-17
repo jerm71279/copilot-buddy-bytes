@@ -110,9 +110,20 @@ serve(async (req) => {
       );
     }
 
-    // Additional safety: strip any null bytes that might exist at byte level
+    // Comprehensive null-byte stripping for all data types
     const stripNullBytes = (str: string): string => {
       return str.split('').filter(ch => ch.charCodeAt(0) !== 0).join('');
+    };
+    
+    const stripZeroDeep = (val: any): any => {
+      if (typeof val === 'string') return stripNullBytes(val);
+      if (Array.isArray(val)) return val.map(stripZeroDeep);
+      if (val && typeof val === 'object') {
+        const out: Record<string, any> = {};
+        for (const [k, v] of Object.entries(val)) out[k] = stripZeroDeep(v);
+        return out;
+      }
+      return val;
     };
     
     customerId = stripNullBytes(customerId);
@@ -176,23 +187,6 @@ serve(async (req) => {
     // All string fields are already sanitized via sanitize() function
     // which removes null bytes at byte level, so no additional stripping needed
 
-    // Final deep strip and stepwise insert to isolate any problematic field
-    const stripZero = (s: string) => {
-      let cleaned = Array.from(s).filter((ch) => ch.charCodeAt(0) !== 0).join('');
-      cleaned = cleaned.replace(/\\u0000/gi, '');
-      return cleaned;
-    };
-    const stripZeroDeep = (val: any): any => {
-      if (typeof val === 'string') return stripZero(val);
-      if (Array.isArray(val)) return val.map(stripZeroDeep);
-      if (val && typeof val === 'object') {
-        const out: Record<string, any> = {};
-        for (const [k, v] of Object.entries(val)) out[k] = stripZeroDeep(v);
-        return out;
-      }
-      return val;
-    };
-
     // Debug UUID fields for null bytes before insert
     const debugUuid = (label: string, s: string | null) => {
       if (!s) { 
@@ -225,40 +219,47 @@ serve(async (req) => {
 
     console.log('Inserting placeholder article with customer_id:', customerId);
     
+    // Deep sanitize the placeholder payload to remove any null bytes
+    const sanitizedPlaceholder = stripZeroDeep({
+      ...placeholderPayloadBase,
+      customer_id: customerId,
+      vendor_id: vendorId,
+      created_by: customerId,
+    });
+    
+    console.log('Sanitized placeholder:', JSON.stringify(sanitizedPlaceholder).substring(0, 200));
+    
     // First attempt: with both IDs
     let createRes = await supabase
       .from('knowledge_articles')
-      .insert({
-        ...placeholderPayloadBase,
-        customer_id: customerId,
-        vendor_id: vendorId,
-        created_by: customerId,
-      })
+      .insert(sanitizedPlaceholder)
       .select()
       .maybeSingle();
 
     if (createRes.error && (createRes.error.message?.toLowerCase().includes('null character') || createRes.error.code === '54000')) {
       console.warn('Placeholder insert failed (with vendor_id). Retrying without vendor_id...');
+      const retryPayload = stripZeroDeep({
+        ...placeholderPayloadBase,
+        customer_id: customerId,
+        created_by: customerId,
+      });
       createRes = await supabase
         .from('knowledge_articles')
-        .insert({
-          ...placeholderPayloadBase,
-          customer_id: customerId,
-          created_by: customerId,
-        })
+        .insert(retryPayload)
         .select()
         .maybeSingle();
     }
 
     if (createRes.error && (createRes.error.message?.toLowerCase().includes('null character') || createRes.error.code === '54000')) {
       console.warn('Placeholder insert failed (without vendor_id). Retrying with minimal IDs...');
+      const minimalPayload = stripZeroDeep({
+        ...placeholderPayloadBase,
+        customer_id: customerId,
+        created_by: customerId,
+      });
       createRes = await supabase
         .from('knowledge_articles')
-        .insert({
-          ...placeholderPayloadBase,
-          customer_id: customerId,
-          created_by: customerId,
-        })
+        .insert(minimalPayload)
         .select()
         .maybeSingle();
     }
