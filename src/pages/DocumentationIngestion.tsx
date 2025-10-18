@@ -186,14 +186,58 @@ export default function DocumentationIngestion() {
         const status = (error as any).status as number | undefined;
         const msg = (error as any).message as string | undefined;
         const lower = (msg || '').toLowerCase();
-        if (status === 404 || lower.includes('no documentation found')) {
-          toast({
-            title: "No documentation found",
-            description: "Please ingest this vendor’s docs first, then try again.",
-            variant: "destructive",
-          });
-          return;
-        }
+          if (status === 404 || lower.includes('no documentation found')) {
+            if (selectedVendor.documentation_url) {
+              toast({
+                title: "Ingesting docs",
+                description: "No docs found. Ingesting the vendor’s default URL, then retrying...",
+              });
+
+              const { error: ingestError } = await supabase.functions.invoke('ingest-documentation', {
+                body: {
+                  url: selectedVendor.documentation_url,
+                  source: selectedVendor.vendor_name || 'Unknown',
+                  category: 'technical_documentation',
+                  customerId,
+                  vendorId: selectedVendorId
+                }
+              });
+
+              if (ingestError) {
+                toast({
+                  title: "Ingestion failed",
+                  description: "Could not ingest the default documentation URL. Please add docs and try again.",
+                  variant: "destructive",
+                });
+                return;
+              }
+
+              // Retry extraction after ingesting
+              const { data: retryData, error: retryError } = await supabase.functions.invoke('extract-api-instructions', {
+                body: {
+                  vendorId: selectedVendorId,
+                  customerId,
+                  vendorName: selectedVendor.vendor_name
+                }
+              });
+
+              if (retryError) throw retryError;
+
+              setApiInstructions(retryData.instructions);
+              toast({
+                title: "Instructions extracted",
+                description: `Successfully extracted API key instructions for ${retryData.vendorName}`,
+              });
+              return;
+            } else {
+              toast({
+                title: "No documentation found",
+                description: "Please ingest this vendor’s docs first, then try again.",
+                variant: "destructive",
+              });
+              return;
+            }
+          }
         if (status === 429 || lower.includes('rate limit')) {
           toast({
             title: "Rate limited",
