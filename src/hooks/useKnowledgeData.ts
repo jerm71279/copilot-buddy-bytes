@@ -15,7 +15,6 @@ export interface KnowledgeArticle {
   article_type: string;
   version: number | string;
   tags: string[];
-  accessible_departments?: string[];
   updated_at: string;
   status: string;
   category_id?: string;
@@ -79,7 +78,6 @@ export function useKnowledgeData() {
           .from("knowledge_articles")
           .select("*")
           .eq("status", "published")
-          .or(`accessible_departments.cs.{all},accessible_departments.cs.{${dept}}`)
           .order("updated_at", { ascending: false }),
         supabase
           .from("knowledge_insights")

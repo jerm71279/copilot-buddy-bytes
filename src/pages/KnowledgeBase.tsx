@@ -133,21 +133,6 @@ export default function KnowledgeBase() {
                           </Badge>
                         ))}
                       </div>
-                      {article.accessible_departments && article.accessible_departments.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-2">
-                          {article.accessible_departments.includes('all') ? (
-                            <Badge variant="secondary" className="text-xs">
-                              All Departments
-                            </Badge>
-                          ) : (
-                            article.accessible_departments.map((dept: string, idx: number) => (
-                              <Badge key={idx} variant="secondary" className="text-xs capitalize">
-                                {dept}
-                              </Badge>
-                            ))
-                          )}
-                        </div>
-                      )}
                       <p className="text-xs text-muted-foreground mt-2">
                         Updated {new Date(article.updated_at).toLocaleDateString()}
                       </p>

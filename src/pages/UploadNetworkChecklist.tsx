@@ -217,8 +217,7 @@ export default function UploadNetworkChecklist() {
           article_type: 'guide',
           status: 'published',
           tags: ['network', 'survey', 'checklist', 'infrastructure', 'compliance', 'security'],
-          created_by: user.id,
-          department: 'IT'
+          created_by: user.id
         });
 
       if (insertError) throw insertError;
