@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, Plus, X } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -18,6 +18,7 @@ import { CreateVendorInput } from "@/types/vendor";
 
 export default function DocumentationIngestion() {
   const [url, setUrl] = useState("");
+  const [urls, setUrls] = useState<string[]>([]);
   const [category, setCategory] = useState("technical_documentation");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -39,6 +40,47 @@ export default function DocumentationIngestion() {
     if (vendor?.documentation_url) {
       setUrl(vendor.documentation_url);
     }
+    // Clear URLs when switching vendors
+    setUrls([]);
+  };
+
+  const handleAddUrl = () => {
+    if (!url) {
+      toast({
+        title: "Missing URL",
+        description: "Please enter a documentation URL",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate URL format
+    const urlValidation = validateUrl(url);
+    if (!urlValidation.valid) {
+      toast({
+        title: "Invalid URL",
+        description: urlValidation.error,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check for duplicates
+    if (urls.includes(urlValidation.sanitized)) {
+      toast({
+        title: "Duplicate URL",
+        description: "This URL has already been added",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUrls([...urls, urlValidation.sanitized]);
+    setUrl("");
+  };
+
+  const handleRemoveUrl = (urlToRemove: string) => {
+    setUrls(urls.filter(u => u !== urlToRemove));
   };
 
   const handleAddVendor = async (input: CreateVendorInput) => {
@@ -59,45 +101,50 @@ export default function DocumentationIngestion() {
       return;
     }
 
-    if (!url || !selectedVendorId) {
+    if (urls.length === 0 || !selectedVendorId) {
       toast({
         title: "Missing information",
-        description: "Please provide both a vendor and documentation URL",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Validate URL format
-    const urlValidation = validateUrl(url);
-    if (!urlValidation.valid) {
-      toast({
-        title: "Invalid URL",
-        description: urlValidation.error,
+        description: "Please provide both a vendor and at least one documentation URL",
         variant: "destructive",
       });
       return;
     }
 
     setLoading(true);
+    let successCount = 0;
+    let failCount = 0;
+
     try {
-      const { data, error } = await supabase.functions.invoke('ingest-documentation', {
-        body: {
-          url: urlValidation.sanitized,
-          source: selectedVendor?.vendor_name || 'Unknown',
-          category,
-          customerId,
-          vendorId: selectedVendorId
+      for (const urlToIngest of urls) {
+        try {
+          const { data, error } = await supabase.functions.invoke('ingest-documentation', {
+            body: {
+              url: urlToIngest,
+              source: selectedVendor?.vendor_name || 'Unknown',
+              category,
+              customerId,
+              vendorId: selectedVendorId
+            }
+          });
+
+          if (error) throw error;
+          successCount++;
+        } catch (error) {
+          console.error(`Error ingesting ${urlToIngest}:`, error);
+          failCount++;
         }
-      });
+      }
 
-      if (error) throw error;
+      if (successCount > 0) {
+        toast({
+          title: "Documentation ingested",
+          description: `Successfully added ${successCount} documentation source(s)${failCount > 0 ? `, ${failCount} failed` : ''}`,
+        });
+      } else {
+        throw new Error('All ingestion attempts failed');
+      }
 
-      toast({
-        title: "Documentation ingested",
-        description: `Successfully added: ${data.title}`,
-      });
-
+      setUrls([]);
       setUrl("");
       setCategory("technical_documentation");
     } catch (error) {
@@ -180,15 +227,50 @@ export default function DocumentationIngestion() {
             </div>
 
             {/* Documentation URL */}
-            <div>
-              <Label htmlFor="url">Documentation URL *</Label>
-              <Input
-                id="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://docs.example.com/..."
-                maxLength={2000}
-              />
+            <div className="space-y-2">
+              <Label htmlFor="url">Documentation URLs</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddUrl()}
+                  placeholder="https://docs.example.com/..."
+                  maxLength={2000}
+                />
+                <Button 
+                  type="button"
+                  variant="outline" 
+                  size="icon"
+                  onClick={handleAddUrl}
+                  disabled={!url}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {/* URL List */}
+              {urls.length > 0 && (
+                <div className="space-y-2 mt-4">
+                  <Label>Added URLs ({urls.length})</Label>
+                  <div className="space-y-1">
+                    {urls.map((addedUrl, index) => (
+                      <div key={index} className="flex items-center gap-2 p-2 bg-muted rounded-md">
+                        <span className="flex-1 text-sm truncate">{addedUrl}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveUrl(addedUrl)}
+                          className="h-6 w-6 shrink-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Category */}
@@ -206,10 +288,10 @@ export default function DocumentationIngestion() {
             {/* Submit Button */}
             <Button 
               onClick={handleIngest} 
-              disabled={loading || !url || !selectedVendorId || !customerId}
+              disabled={loading || urls.length === 0 || !selectedVendorId || !customerId}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Ingest Documentation
+              Ingest {urls.length} Documentation Source{urls.length !== 1 ? 's' : ''}
             </Button>
           </CardContent>
         </Card>
