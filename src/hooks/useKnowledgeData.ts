@@ -72,11 +72,13 @@ export function useKnowledgeData() {
       }
 
       // Load all data in parallel for efficiency
+      // Filter out auto-generated integration documents
       const [articlesResult, insightsResult, categoriesResult] = await Promise.all([
         supabase
           .from("knowledge_articles")
           .select("*")
           .eq("status", "published")
+          .not("source_type", "in", '("ninjaone_api","sharepoint_api","integration","vendor_documentation")')
           .order("updated_at", { ascending: false }),
         supabase
           .from("knowledge_insights")
