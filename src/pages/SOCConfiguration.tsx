@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, CheckSquare, FileDown } from "lucide-react";
+import { Loader2, CheckSquare, FileDown, ChevronDown, CheckCircle2, Circle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ReactMarkdown from "react-markdown";
 import { useCustomerAuth } from "@/hooks/useCustomerAuth";
@@ -25,6 +26,15 @@ export default function SOCConfiguration() {
   const [customRequirements, setCustomRequirements] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [checklist, setChecklist] = useState<string | null>(null);
+  const [preChecklistOpen, setPreChecklistOpen] = useState(true);
+  const [preChecklistItems, setPreChecklistItems] = useState({
+    documentation: false,
+    siteInfo: false,
+    credentials: false,
+    models: false,
+    requirements: false,
+    timeline: false,
+  });
 
   // Fetch available vendors
   const { data: vendors, isLoading: vendorsLoading } = useQuery({
@@ -144,6 +154,143 @@ export default function SOCConfiguration() {
             Generate AI-powered configuration checklists based on vendor documentation
           </p>
         </div>
+
+        {/* Pre-Configuration Readiness Checklist */}
+        <Collapsible open={preChecklistOpen} onOpenChange={setPreChecklistOpen} className="mb-6">
+          <Card>
+            <CardHeader>
+              <CollapsibleTrigger className="flex items-center justify-between w-full text-left hover:opacity-80 transition-opacity">
+                <div className="flex items-center gap-2">
+                  <CardTitle>Pre-Configuration Readiness Checklist</CardTitle>
+                  {Object.values(preChecklistItems).every(Boolean) && (
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                  )}
+                </div>
+                <ChevronDown className={`h-5 w-5 transition-transform ${preChecklistOpen ? 'rotate-180' : ''}`} />
+              </CollapsibleTrigger>
+              <CardDescription>
+                Complete these items before generating your configuration checklist
+              </CardDescription>
+            </CardHeader>
+            <CollapsibleContent>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <button
+                    onClick={() => setPreChecklistItems(prev => ({ ...prev, documentation: !prev.documentation }))}
+                    className="mt-0.5"
+                  >
+                    {preChecklistItems.documentation ? (
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    ) : (
+                      <Circle className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </button>
+                  <div>
+                    <p className="font-medium">Vendor Documentation Loaded</p>
+                    <p className="text-sm text-muted-foreground">
+                      Ensure vendor documentation has been ingested for selected equipment
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <button
+                    onClick={() => setPreChecklistItems(prev => ({ ...prev, siteInfo: !prev.siteInfo }))}
+                    className="mt-0.5"
+                  >
+                    {preChecklistItems.siteInfo ? (
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    ) : (
+                      <Circle className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </button>
+                  <div>
+                    <p className="font-medium">Site Information Gathered</p>
+                    <p className="text-sm text-muted-foreground">
+                      IP ranges, VLAN requirements, network topology, site-specific details
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <button
+                    onClick={() => setPreChecklistItems(prev => ({ ...prev, credentials: !prev.credentials }))}
+                    className="mt-0.5"
+                  >
+                    {preChecklistItems.credentials ? (
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    ) : (
+                      <Circle className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </button>
+                  <div>
+                    <p className="font-medium">Access Credentials Ready</p>
+                    <p className="text-sm text-muted-foreground">
+                      Admin credentials, SNMP community strings, management access details
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <button
+                    onClick={() => setPreChecklistItems(prev => ({ ...prev, models: !prev.models }))}
+                    className="mt-0.5"
+                  >
+                    {preChecklistItems.models ? (
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    ) : (
+                      <Circle className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </button>
+                  <div>
+                    <p className="font-medium">Equipment Models/Part Numbers Confirmed</p>
+                    <p className="text-sm text-muted-foreground">
+                      Exact model numbers, firmware versions, license requirements
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <button
+                    onClick={() => setPreChecklistItems(prev => ({ ...prev, requirements: !prev.requirements }))}
+                    className="mt-0.5"
+                  >
+                    {preChecklistItems.requirements ? (
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    ) : (
+                      <Circle className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </button>
+                  <div>
+                    <p className="font-medium">Security & Compliance Requirements Defined</p>
+                    <p className="text-sm text-muted-foreground">
+                      Security policies, compliance standards, hardening requirements
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <button
+                    onClick={() => setPreChecklistItems(prev => ({ ...prev, timeline: !prev.timeline }))}
+                    className="mt-0.5"
+                  >
+                    {preChecklistItems.timeline ? (
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    ) : (
+                      <Circle className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </button>
+                  <div>
+                    <p className="font-medium">Deployment Timeline Confirmed</p>
+                    <p className="text-sm text-muted-foreground">
+                      Installation team coordination, site access, configuration window scheduled
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Input Form */}
