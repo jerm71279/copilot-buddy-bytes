@@ -48,6 +48,12 @@ export const knowledgeActionButtons = [
     variant: "default" as const
   },
   {
+    label: "Upload Network Checklist",
+    path: "/knowledge/upload-checklist",
+    icon: <FileText className="h-4 w-4" />,
+    variant: "default" as const
+  },
+  {
     label: "Upload Files",
     path: "/knowledge/upload",
     icon: <Upload className="h-4 w-4" />,

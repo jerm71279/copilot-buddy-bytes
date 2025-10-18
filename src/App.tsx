@@ -136,6 +136,7 @@ import NavigationScaffold from "./pages/NavigationScaffold";
 import CMMCReadiness from "./pages/CMMCReadiness";
 import LovableCostCalculator from "./pages/LovableCostCalculator";
 import FileCollaboration from "./pages/FileCollaboration";
+import UploadNetworkChecklist from "./pages/UploadNetworkChecklist";
 
 const queryClient = new QueryClient();
 
@@ -244,6 +245,11 @@ const App = () => (
           <Route path="/knowledge/:id" element={
             <ProtectedRoute>
               <KnowledgeArticle />
+            </ProtectedRoute>
+          } />
+          <Route path="/knowledge/upload-checklist" element={
+            <ProtectedRoute>
+              <UploadNetworkChecklist />
             </ProtectedRoute>
           } />
           
