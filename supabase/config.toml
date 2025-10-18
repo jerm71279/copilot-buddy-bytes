@@ -110,3 +110,9 @@ verify_jwt = true
 
 [functions.keeper-get-credential]
 verify_jwt = true
+
+[functions.ingest-documentation]
+verify_jwt = true
+
+[functions.extract-api-instructions]
+verify_jwt = true
