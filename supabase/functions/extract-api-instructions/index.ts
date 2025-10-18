@@ -22,7 +22,17 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { vendorId, customerId, vendorName } = await req.json();
+    const requestData = await req.json();
+
+    // Validate input body shape
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { vendorId, customerId, vendorName } = requestData as { vendorId?: string; customerId?: string; vendorName?: string };
 
     if (!vendorId || !customerId || !vendorName) {
       return new Response(
@@ -88,8 +98,8 @@ If you cannot find clear API key instructions, return an error message in the su
 
     const userPrompt = `Extract API key setup instructions for ${vendorName} from the following documentation:\n\n${combinedContent}`;
 
-    // Call Lovable AI Gateway
-    const aiResponse = await fetch('https://api.lovable.app/v1/ai/chat', {
+    // Call Lovable AI Gateway (OpenAI-compatible)
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${lovableApiKey}`,
@@ -109,7 +119,22 @@ If you cannot find clear API key instructions, return an error message in the su
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
       console.error('AI API error:', aiResponse.status, errorText);
-      throw new Error(`AI API returned ${aiResponse.status}: ${errorText}`);
+      if (aiResponse.status === 429) {
+        return new Response(
+          JSON.stringify({ error: 'Rate limits exceeded, please try again later.' }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (aiResponse.status === 402) {
+        return new Response(
+          JSON.stringify({ error: 'Payment required, please add funds to your Lovable AI workspace.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      return new Response(
+        JSON.stringify({ error: `AI gateway error: ${aiResponse.status}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const aiData = await aiResponse.json();

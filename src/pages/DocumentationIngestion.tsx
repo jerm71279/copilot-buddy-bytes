@@ -182,7 +182,34 @@ export default function DocumentationIngestion() {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        const status = (error as any).status;
+        if (status === 404) {
+          toast({
+            title: "No documentation found",
+            description: "Please ingest this vendor’s docs first, then try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+        if (status === 429) {
+          toast({
+            title: "Rate limited",
+            description: "Please wait a moment and try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+        if (status === 402) {
+          toast({
+            title: "AI credits required",
+            description: "Please add credits to your workspace and retry.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw error as any;
+      }
 
       setApiInstructions(data.instructions);
       toast({
