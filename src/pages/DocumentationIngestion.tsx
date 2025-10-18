@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, AlertCircle, Plus, X } from "lucide-react";
+import { Loader2, AlertCircle, Plus, X, FileText } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -21,6 +21,8 @@ export default function DocumentationIngestion() {
   const [urls, setUrls] = useState<string[]>([]);
   const [category, setCategory] = useState("technical_documentation");
   const [loading, setLoading] = useState(false);
+  const [extracting, setExtracting] = useState(false);
+  const [apiInstructions, setApiInstructions] = useState<any>(null);
   const { toast } = useToast();
   
   // Custom hooks for auth and vendor management
@@ -147,6 +149,7 @@ export default function DocumentationIngestion() {
       setUrls([]);
       setUrl("");
       setCategory("technical_documentation");
+      setApiInstructions(null);
     } catch (error) {
       console.error('Error ingesting documentation:', error);
       toast({
@@ -156,6 +159,45 @@ export default function DocumentationIngestion() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExtractInstructions = async () => {
+    if (!selectedVendorId || !selectedVendor || !customerId) {
+      toast({
+        title: "Missing information",
+        description: "Please select a vendor first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setExtracting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('extract-api-instructions', {
+        body: {
+          vendorId: selectedVendorId,
+          customerId,
+          vendorName: selectedVendor.vendor_name
+        }
+      });
+
+      if (error) throw error;
+
+      setApiInstructions(data.instructions);
+      toast({
+        title: "Instructions extracted",
+        description: `Successfully extracted API key instructions for ${data.vendorName}`,
+      });
+    } catch (error) {
+      console.error('Error extracting instructions:', error);
+      toast({
+        title: "Extraction failed",
+        description: error instanceof Error ? error.message : 'An error occurred',
+        variant: "destructive",
+      });
+    } finally {
+      setExtracting(false);
     }
   };
 
@@ -285,16 +327,121 @@ export default function DocumentationIngestion() {
               />
             </div>
 
-            {/* Submit Button */}
-            <Button 
-              onClick={handleIngest} 
-              disabled={loading || urls.length === 0 || !selectedVendorId || !customerId}
-            >
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Ingest {urls.length} Documentation Source{urls.length !== 1 ? 's' : ''}
-            </Button>
+            {/* Submit Buttons */}
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleIngest} 
+                disabled={loading || urls.length === 0 || !selectedVendorId || !customerId}
+                className="flex-1"
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Ingest {urls.length} Documentation Source{urls.length !== 1 ? 's' : ''}
+              </Button>
+              
+              <Button 
+                onClick={handleExtractInstructions}
+                disabled={extracting || !selectedVendorId || !customerId}
+                variant="outline"
+                className="flex-1"
+              >
+                {extracting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <FileText className="mr-2 h-4 w-4" />
+                Extract API Key Instructions
+              </Button>
+            </div>
           </CardContent>
         </Card>
+
+        {/* API Instructions Display */}
+        {apiInstructions && (
+          <Card>
+            <CardHeader>
+              <CardTitle>API Key Setup Instructions</CardTitle>
+              <CardDescription>
+                Extracted from {selectedVendor?.vendor_name} documentation
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {apiInstructions.summary && (
+                <div>
+                  <Label className="text-base font-semibold">Summary</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{apiInstructions.summary}</p>
+                </div>
+              )}
+
+              {apiInstructions.location && (
+                <div>
+                  <Label className="text-base font-semibold">Location</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{apiInstructions.location}</p>
+                </div>
+              )}
+
+              {apiInstructions.prerequisites?.length > 0 && (
+                <div>
+                  <Label className="text-base font-semibold">Prerequisites</Label>
+                  <ul className="list-disc list-inside text-sm text-muted-foreground mt-1 space-y-1">
+                    {apiInstructions.prerequisites.map((prereq: string, idx: number) => (
+                      <li key={idx}>{prereq}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {apiInstructions.requiredCredentials?.length > 0 && (
+                <div>
+                  <Label className="text-base font-semibold">Required Credentials</Label>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {apiInstructions.requiredCredentials.map((cred: string, idx: number) => (
+                      <span key={idx} className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-md">
+                        {cred}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {apiInstructions.steps?.length > 0 && (
+                <div>
+                  <Label className="text-base font-semibold">Steps</Label>
+                  <ol className="list-decimal list-inside text-sm text-muted-foreground mt-1 space-y-2">
+                    {apiInstructions.steps.map((step: string, idx: number) => (
+                      <li key={idx} className="pl-2">{step}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              {apiInstructions.permissions?.length > 0 && (
+                <div>
+                  <Label className="text-base font-semibold">Required Permissions</Label>
+                  <ul className="list-disc list-inside text-sm text-muted-foreground mt-1 space-y-1">
+                    {apiInstructions.permissions.map((perm: string, idx: number) => (
+                      <li key={idx}>{perm}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {apiInstructions.securityNotes?.length > 0 && (
+                <div>
+                  <Label className="text-base font-semibold">Security Notes</Label>
+                  <ul className="list-disc list-inside text-sm text-muted-foreground mt-1 space-y-1">
+                    {apiInstructions.securityNotes.map((note: string, idx: number) => (
+                      <li key={idx}>{note}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {apiInstructions.additionalInfo && (
+                <div>
+                  <Label className="text-base font-semibold">Additional Information</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{apiInstructions.additionalInfo}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );

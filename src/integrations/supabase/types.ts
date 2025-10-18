@@ -4673,6 +4673,7 @@ export type Database = {
       documentation_vendors: {
         Row: {
           address: string | null
+          api_key_instructions: Json | null
           certifications: Json | null
           city: string | null
           contact_email: string | null
@@ -4708,6 +4709,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          api_key_instructions?: Json | null
           certifications?: Json | null
           city?: string | null
           contact_email?: string | null
@@ -4743,6 +4745,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          api_key_instructions?: Json | null
           certifications?: Json | null
           city?: string | null
           contact_email?: string | null
