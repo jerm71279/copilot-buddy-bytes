@@ -113,10 +113,15 @@ export default function KnowledgeBase() {
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-2">
-                          {getArticleIcon(article.knowledge_type || article.article_type)}
-                          <Badge className={getArticleTypeColor(article.knowledge_type || article.article_type)}>
-                            {formatArticleType(article.knowledge_type || article.article_type)}
+                          {getArticleIcon(article.article_type)}
+                          <Badge className={getArticleTypeColor(article.article_type)}>
+                            {formatArticleType(article.article_type)}
                           </Badge>
+                          {article.source_type && (
+                            <Badge variant="secondary" className="text-xs">
+                              {article.source_type}
+                            </Badge>
+                          )}
                         </div>
                         <span className="text-xs text-muted-foreground">v{article.version || '1.0'}</span>
                       </div>

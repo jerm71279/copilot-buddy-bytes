@@ -11,7 +11,6 @@ export interface KnowledgeArticle {
   id: string;
   title: string;
   content: string;
-  knowledge_type?: string;
   article_type: string;
   version: number | string;
   tags: string[];
