@@ -6,8 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, AlertCircle, Plus, X, FileText } from "lucide-react";
+import { Loader2, AlertCircle, Plus, X, FileText, Settings } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCustomerAuth } from "@/hooks/useCustomerAuth";
@@ -452,40 +453,38 @@ export default function DocumentationIngestion() {
                 Ingest {urls.length} Documentation Source{urls.length !== 1 ? 's' : ''}
               </Button>
               
-              <Button 
-                onClick={handleExtractInstructions}
-                disabled={extracting || !selectedVendorId || !customerId}
-                variant="outline"
-                className="flex-1"
-              >
-                {extracting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                <FileText className="mr-2 h-4 w-4" />
-                Extract API Key Instructions
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" disabled={!selectedVendorId || !customerId}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    Tools
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {selectedVendor?.api_key_instructions && (
+                    <DropdownMenuItem onClick={() => setApiInstructions(selectedVendor.api_key_instructions)}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      View Saved Instructions
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem 
+                    onClick={handleExtractInstructions}
+                    disabled={extracting}
+                  >
+                    {extracting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {!extracting && <FileText className="mr-2 h-4 w-4" />}
+                    Extract API Instructions
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={handleTestNinjaOne}
+                    disabled={loading}
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    Test NinjaOne Connection
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-
-            {/* View Saved Instructions Button */}
-            {selectedVendor?.api_key_instructions && (
-              <Button 
-                onClick={() => setApiInstructions(selectedVendor.api_key_instructions)}
-                variant="secondary"
-                className="w-full"
-              >
-                <FileText className="mr-2 h-4 w-4" />
-                View Saved Instructions for {selectedVendor.vendor_name}
-              </Button>
-            )}
-
-            {/* Test NinjaOne Connection Button */}
-            <Button 
-              onClick={handleTestNinjaOne}
-              variant="outline"
-              className="w-full"
-              disabled={loading}
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              Test NinjaOne Connection
-            </Button>
           </CardContent>
         </Card>
 
