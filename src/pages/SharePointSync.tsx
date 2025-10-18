@@ -279,7 +279,7 @@ const SharePointSync = () => {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="container mx-auto px-4 py-8 space-y-6 mt-32">
         <DashboardNavigation 
           title="SharePoint Sync"
           dashboards={[
@@ -299,7 +299,7 @@ const SharePointSync = () => {
         />
 
         {/* Header with Add Button */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center relative z-20">
           <div>
             <h2 className="text-2xl font-bold">Sync Configurations</h2>
             <p className="text-muted-foreground">
