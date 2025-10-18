@@ -49,8 +49,8 @@ serve(async (req) => {
       .select('title, content')
       .eq('vendor_id', vendorId)
       .eq('customer_id', customerId)
-      .eq('article_type', 'documentation')
-      .limit(10);
+      .order('created_at', { ascending: false })
+      .limit(20);
 
     if (fetchError) {
       throw new Error(`Failed to fetch documentation: ${fetchError.message}`);

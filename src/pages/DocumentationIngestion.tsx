@@ -183,8 +183,10 @@ export default function DocumentationIngestion() {
       });
 
       if (error) {
-        const status = (error as any).status;
-        if (status === 404) {
+        const status = (error as any).status as number | undefined;
+        const msg = (error as any).message as string | undefined;
+        const lower = (msg || '').toLowerCase();
+        if (status === 404 || lower.includes('no documentation found')) {
           toast({
             title: "No documentation found",
             description: "Please ingest this vendor’s docs first, then try again.",
@@ -192,7 +194,7 @@ export default function DocumentationIngestion() {
           });
           return;
         }
-        if (status === 429) {
+        if (status === 429 || lower.includes('rate limit')) {
           toast({
             title: "Rate limited",
             description: "Please wait a moment and try again.",
@@ -200,7 +202,7 @@ export default function DocumentationIngestion() {
           });
           return;
         }
-        if (status === 402) {
+        if (status === 402 || lower.includes('payment required')) {
           toast({
             title: "AI credits required",
             description: "Please add credits to your workspace and retry.",
@@ -218,9 +220,10 @@ export default function DocumentationIngestion() {
       });
     } catch (error) {
       console.error('Error extracting instructions:', error);
+      const msg = (error as any)?.message || 'An error occurred';
       toast({
         title: "Extraction failed",
-        description: error instanceof Error ? error.message : 'An error occurred',
+        description: msg,
         variant: "destructive",
       });
     } finally {
