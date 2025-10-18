@@ -80,18 +80,52 @@ serve(async (req) => {
 
       if (docUrl) {
         try {
-          const resp = await fetch(docUrl, { headers: { 'User-Agent': 'LovableBot/1.0' } });
-          if (resp.ok) {
-            const html = await resp.text();
-            const text = html
-              .replace(/<script[\s\S]*?<\/script>/gi, '')
-              .replace(/<style[\s\S]*?<\/style>/gi, '')
-              .replace(/<[^>]+>/g, ' ')
-              .replace(/\s+/g, ' ')
-              .trim();
-            combinedContent = `# ${vendorName} Documentation\n\n` + text.slice(0, 50000);
-          } else {
-            console.warn('Fallback URL fetch failed with status', resp.status);
+          // Use Firecrawl for better content extraction
+          const firecrawlApiKey = Deno.env.get('FIRECRAWL_API_KEY');
+          
+          if (firecrawlApiKey) {
+            console.log('Using Firecrawl to extract content from:', docUrl);
+            const firecrawlResp = await fetch('https://api.firecrawl.dev/v1/scrape', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${firecrawlApiKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                url: docUrl,
+                formats: ['markdown'],
+                onlyMainContent: true,
+              }),
+            });
+
+            if (firecrawlResp.ok) {
+              const firecrawlData = await firecrawlResp.json();
+              const markdown = firecrawlData?.data?.markdown || '';
+              if (markdown) {
+                combinedContent = `# ${vendorName} Documentation\n\n` + markdown.slice(0, 50000);
+                console.log('Successfully extracted content via Firecrawl');
+              }
+            } else {
+              console.warn('Firecrawl failed with status:', firecrawlResp.status);
+            }
+          }
+
+          // Fallback to basic HTML parsing if Firecrawl not available or failed
+          if (!combinedContent) {
+            console.log('Falling back to basic HTML parsing');
+            const resp = await fetch(docUrl, { headers: { 'User-Agent': 'LovableBot/1.0' } });
+            if (resp.ok) {
+              const html = await resp.text();
+              const text = html
+                .replace(/<script[\s\S]*?<\/script>/gi, '')
+                .replace(/<style[\s\S]*?<\/style>/gi, '')
+                .replace(/<[^>]+>/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+              combinedContent = `# ${vendorName} Documentation\n\n` + text.slice(0, 50000);
+            } else {
+              console.warn('Fallback URL fetch failed with status', resp.status);
+            }
           }
         } catch (e) {
           console.error('Fallback fetch error:', e);
