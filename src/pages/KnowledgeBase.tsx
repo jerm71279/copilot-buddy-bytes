@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, ExternalLink, Video } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, ExternalLink, Video, FileText, Sparkles } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { useKnowledgeData } from "@/hooks/useKnowledgeData";
@@ -42,9 +43,25 @@ export default function KnowledgeBase() {
         />
         
         <div className="mb-8">
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-6">
             Searchable insights from training videos and uploaded content
           </p>
+          
+          {/* Quick Actions */}
+          <div className="flex flex-wrap gap-3">
+            <Button asChild variant="default">
+              <Link to="/knowledge/analyze-training">
+                <Video className="h-4 w-4 mr-2" />
+                AI Video Analysis
+              </Link>
+            </Button>
+            <Button asChild variant="default">
+              <Link to="/knowledge/upload-checklist">
+                <FileText className="h-4 w-4 mr-2" />
+                Upload Network Checklist
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Search Bar */}
