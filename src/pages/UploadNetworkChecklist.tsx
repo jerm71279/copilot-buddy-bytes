@@ -33,171 +33,213 @@ export default function UploadNetworkChecklist() {
       }
 
       const checklistContent = `
-# 🧭 OberaConnect Network Site Survey Checklist
+# 🔧 SOC Network Discovery & Installation Planning Checklist
 
-## 📋 Pre-Survey Planning
+## 📋 Phase 1: Network Scope & Discovery
 
-### Business & Technical Requirements
-- Define survey goals (coverage, capacity, interference, compliance)
-- Identify target areas (indoor/outdoor zones, rack rooms, mesh nodes)
-- Choose survey type (passive, active, predictive, hybrid)
-- Gather business and technical requirements (SLA, latency, throughput)
-- Note compliance frameworks (ISO, HIPAA, NIST, SOC 2)
-- Flag environmental constraints (metal, wildlife, burn zones)
+### Initial Site Assessment
+- Conduct site walkthrough and document physical layout
+- Identify all network closets, patch panels, and cable runs
+- Document existing network equipment (switches, routers, firewalls, APs)
+- Note power availability and PoE requirements
+- Identify environmental constraints (HVAC, electrical interference, physical obstructions)
+- Map building access points and security requirements
 
-### OberaConnect Integration Points
+### Network Discovery Tools
 - **NinjaOne Integration**: Pull existing device inventory and network topology
-- **CIPP Integration**: Review Microsoft 365 tenant network policies and configurations
-- **Configuration Management Database (CMDB)**: Document all Configuration Items (CIs) related to network infrastructure
-- **Compliance Portal**: Link survey findings to relevant compliance controls and frameworks
+- **Network Scanning**: Use discovery tools (Nmap, SolarWinds, Lansweeper) to identify:
+  - Active devices and IP ranges
+  - Operating systems and firmware versions
+  - Open ports and services
+  - Network protocols in use
+  - Unauthorized or rogue devices
+- **CMDB Documentation**: Record all discovered Configuration Items (CIs)
+- **Diagram Creation**: Generate network topology diagrams in OberaConnect Knowledge Base
+
+### Existing Infrastructure Analysis
+- Document current network architecture and design
+- Identify VLANs, subnets, and routing configuration
+- Review existing security policies and ACLs
+- Note any legacy systems or end-of-life equipment
+- Document current bandwidth utilization and traffic patterns
+- Review existing vendor support contracts and warranty status
 
 ---
 
-## 🧰 Equipment & Tool Preparation
+## 🛠️ Phase 2: Configuration Planning
 
-### Survey Tools Setup
-- Calibrate survey tools (Ekahau, AirMagnet, NetSpot, WiFi Explorer)
-- Load floor plans into mapping software
-- Charge devices and pack backups (batteries, adapters, network cables)
-- Verify firmware and tool compatibility
-- Test connectivity with OberaConnect Knowledge Base for real-time documentation
+### Equipment Configuration Requirements
+- **Switch Configuration**:
+  - Port assignments and VLAN tagging
+  - Trunk port configuration for inter-switch links
+  - PoE budget allocation per port
+  - QoS policies for voice/video traffic
+  - Link aggregation (LACP) where needed
+  - Spanning Tree Protocol (STP) configuration
+  
+- **Router/Firewall Configuration**:
+  - Routing protocols (OSPF, BGP, static routes)
+  - Security policies and rule sets
+  - NAT and port forwarding rules
+  - VPN configurations
+  - Interface IP addressing scheme
 
-### OberaConnect Pre-Survey Checklist
-- **Access OberaConnect Admin Dashboard**: Verify user permissions and device access
-- **NinjaOne Device Health Check**: Review existing wireless APs, switches, and controllers
-- **Document Baseline Metrics**: Capture current network performance from NinjaOne monitoring
-- **Review Existing Documentation**: Check OberaConnect Knowledge Base for previous survey reports and vendor documentation
-- **Prepare Incident Response**: Create pre-configured incident templates for common survey findings
+- **Wireless Configuration**:
+  - SSID configuration and broadcast settings
+  - Security settings (WPA3, 802.1X, RADIUS)
+  - Channel planning and RF optimization
+  - Roaming policies and fast transition
+  - Guest network isolation
+  - IoT device segmentation
 
----
-
-## 🏗️ On-Site Execution
-
-### Physical Site Assessment
-- Validate physical layout against floor plans
-- Mark AP locations, cable paths, switch access, and patch panel locations
-- Identify interference sources:
-  - Electronic: microwaves, elevators, industrial equipment
-  - Environmental: metal structures, water features, wildlife habitats
-  - Competing networks: neighboring SSIDs, mesh networks
-- Document power availability and PoE budget per switch
-
-### RF Performance Measurements
-- Measure RSSI (Received Signal Strength Indicator) across all zones
-- Capture SNR (Signal-to-Noise Ratio) and noise floor
-- Analyze channel overlap and channel utilization
-- Test roaming behavior and handoff performance
-- Validate coverage zones and identify dead spots
-- Capture spectrum data (non-Wi-Fi interference on 2.4GHz, 5GHz, 6GHz bands)
-
-### OberaConnect Real-Time Documentation
-- **Live Data Entry**: Use OberaConnect mobile interface to document findings in real-time
-- **Photo/Video Capture**: Upload site photos directly to knowledge base
-- **Incident Logging**: Create incidents for immediate issues (damaged cables, offline APs, security gaps)
-- **CI Updates**: Update Configuration Items in CMDB with accurate location and status data
-- **Integration Sync**: Sync findings with NinjaOne for asset tracking and alerting
+### Network Segmentation Design
+- Define VLAN strategy:
+  - Management VLAN (network devices)
+  - User VLANs (departments, groups)
+  - Guest VLAN (isolated internet-only access)
+  - Voice VLAN (VoIP phones and UC devices)
+  - IoT VLAN (cameras, sensors, building automation)
+  - Server VLAN (production systems)
+- Document IP addressing scheme for each segment
+- Plan security zones and firewall policies between VLANs
+- Design access control lists (ACLs) for inter-VLAN routing
 
 ---
 
-## 🔐 Security & Compliance Checks
+## 📊 Phase 3: Execution Plan Development
 
-### Physical Security Assessment
-- Identify physical security risks:
-  - Open network ports in public areas
-  - Exposed cabling and equipment
-  - Unsecured IDF/MDF rooms
-  - Accessible PoE injectors and switches
-- Document camera and surveillance coverage gaps
-- Verify physical access control systems (badge readers, locks)
+### Pre-Installation Preparation
+- **Equipment Procurement**:
+  - Verify all equipment has been received
+  - Check firmware versions and plan updates
+  - Test equipment functionality in lab environment
+  - Prepare backup configurations
+  
+- **Configuration Templates**:
+  - Create standardized configuration templates
+  - Document naming conventions for devices and interfaces
+  - Prepare staging scripts for bulk configuration
+  - Test configurations in isolated environment
 
-### Network Security & Segmentation
-- Validate network segmentation zones:
-  - Guest Wi-Fi isolation
-  - Internal employee networks
-  - HIPAA/PCI compliance zones
-  - IoT device VLANs
-  - Voice/video priority networks
-- Check for rogue access points and unauthorized devices
-- Verify encryption standards (WPA3, 802.1X, RADIUS)
-- Test NAC (Network Access Control) enforcement
+- **Documentation Requirements**:
+  - Network diagrams (physical and logical topology)
+  - IP address management (IPAM) spreadsheet
+  - VLAN and subnet allocation table
+  - Port assignments and cable labeling scheme
+  - Equipment rack elevation diagrams
+  - As-built documentation templates
 
-### OberaConnect Compliance Integration
-- **Compliance Portal Mapping**: Link survey findings to specific compliance controls
-- **Automated Clause Mapping**: Use OberaConnect AI to map findings to ISO 27001, NIST CSF, HIPAA, SOC 2 requirements
-- **Risk Register Updates**: Create or update risk entries based on security gaps
-- **Evidence Collection**: Capture screenshots and logs as compliance evidence
-- **Audit Trail**: All survey activities are logged in OberaConnect audit logs with timestamps and user attribution
+### Installation Timeline & Milestones
+- **Day 1: Physical Installation**
+  - Rack and mount equipment
+  - Run and terminate cabling
+  - Label all cables and ports
+  - Verify power and environmental conditions
+  
+- **Day 2: Base Configuration**
+  - Configure management IP addresses
+  - Apply baseline security settings
+  - Set up SNMP monitoring
+  - Integrate devices with NinjaOne
+  
+- **Day 3: Service Configuration**
+  - Configure VLANs and routing
+  - Apply security policies
+  - Configure wireless controllers and APs
+  - Implement QoS policies
+  
+- **Day 4: Testing & Validation**
+  - End-to-end connectivity testing
+  - Performance and throughput testing
+  - Security validation (port scanning, vulnerability assessment)
+  - Wireless coverage validation
+  
+- **Day 5: Cutover & Documentation**
+  - Migrate users to new network infrastructure
+  - Monitor for issues and troubleshoot
+  - Complete as-built documentation
+  - Deliver handoff to operations team
+
+### Risk Mitigation Strategies
+- **Rollback Plan**:
+  - Maintain existing network as backup during cutover
+  - Document rollback procedures for each phase
+  - Define rollback decision criteria and approval process
+  
+- **Backup & Recovery**:
+  - Schedule configuration backups before any changes
+  - Store backups in OberaConnect Knowledge Base
+  - Test configuration restoration procedures
+  
+- **Change Management**:
+  - Create change requests in OberaConnect for all major milestones
+  - Define approval workflows and stakeholder notifications
+  - Schedule maintenance windows with business units
+  - Prepare communication templates for users
 
 ---
 
-## 📊 Post-Survey Analysis & Reporting
+## 🔐 Phase 4: Security & Compliance Validation
 
-### Data Analysis & Visualization
-- Generate RF heatmaps (RSSI, SNR, channel overlap, data rate)
-- Create coverage reports with pass/fail zones against SLA thresholds
-- Analyze spectrum data for non-Wi-Fi interference
-- Compare findings to baseline and historical surveys
-- Flag remediation zones and optimization opportunities
+### Security Baseline Configuration
+- Disable unused ports and services
+- Configure strong authentication (TACACS+, RADIUS)
+- Enable logging and SIEM integration
+- Apply vendor security hardening guides
+- Configure secure management access (SSH, HTTPS only)
+- Implement network access control (NAC) where required
 
-### Remediation Planning
-- Prioritize issues by business impact and severity
-- Create AP placement recommendations with channel plans
-- Document required equipment upgrades (APs, switches, controllers)
-- Estimate project costs and timelines
-- Develop phased rollout plan for minimal disruption
+### Compliance Requirements
+- **OberaConnect Compliance Integration**:
+  - Map network configuration to compliance frameworks
+  - Document security controls for audit evidence
+  - Link configurations to ISO 27001, NIST CSF, HIPAA, SOC 2 requirements
+  - Generate compliance reports for stakeholders
 
-### OberaConnect Knowledge Base Integration
-- **Auto-Generated Reports**: Use OberaConnect AI to generate executive summaries
-- **Modular HTML Blocks**: Create embeddable dashboard widgets for real-time survey status
-- **Knowledge Articles**: Convert survey findings into searchable knowledge articles
-- **Vendor Documentation Links**: Cross-reference with vendor-specific best practices from ingested documentation
-- **Clause Mapping Engine**: Automatically link findings to compliance requirements
-- **Audit-Ready Exports**: Generate PDF/HTML exports with timestamps, evidence, and approval workflows
-
-### Stakeholder Communication
-- **Executive Dashboard**: Update executive dashboards with survey KPIs
-- **IT Team Notifications**: Send detailed technical reports to IT teams via OberaConnect
-- **Compliance Team Updates**: Notify compliance teams of any gaps or violations
-- **Change Management Integration**: Create change requests for approved remediation work
-- **Incident Management**: Convert high-priority findings into incidents with SLA tracking
+- **Audit Trail & Evidence Collection**:
+  - Capture configuration files as evidence
+  - Document approval workflows
+  - Log all configuration changes with timestamps
+  - Prepare audit-ready documentation packages
 
 ---
 
-## 🔗 OberaConnect Ecosystem Integration Summary
+## 🔗 OberaConnect Integration Summary
 
-### Pre-Survey Integration
+### Pre-Installation Integration
 - Pull device inventory from **NinjaOne**
-- Review network policies via **CIPP (Microsoft 365)**
-- Check compliance status in **Compliance Portal**
-- Review historical surveys in **Knowledge Base**
+- Review existing network policies via **CIPP (Microsoft 365)**
+- Document all CIs in **CMDB**
+- Review compliance requirements in **Compliance Portal**
 
-### During Survey Integration
-- Real-time documentation in **Knowledge Base**
-- Live incident creation in **Incident Management**
-- CI updates in **CMDB**
-- Photo/video uploads to **File Storage**
+### During Installation Integration
+- Real-time progress updates in **Knowledge Base**
+- Incident creation for any issues in **Incident Management**
+- Configuration file storage in **File Storage**
+- Change request tracking in **Change Management**
 
-### Post-Survey Integration
-- Auto-generate reports with **AI Assistant**
-- Map findings to **Compliance Frameworks**
-- Create **Change Requests** for remediation
-- Update **Risk Register**
-- Generate **Audit Evidence** packages
-- Schedule follow-up surveys in **Project Management**
+### Post-Installation Integration
+- Auto-generate as-built documentation with **AI Assistant**
+- Map configurations to **Compliance Frameworks**
+- Update **Risk Register** with residual risks
+- Generate **Audit Evidence** packages for compliance teams
+- Schedule follow-up reviews in **Project Management**
 
 ---
 
-## 📝 Checklist Completion Criteria
+## ✅ Checklist Completion Criteria
 
-✅ All areas surveyed with complete RF measurements  
-✅ Physical security gaps documented and prioritized  
-✅ Compliance violations flagged and escalated  
-✅ Remediation plan approved by stakeholders  
-✅ All findings documented in OberaConnect Knowledge Base  
-✅ Change requests created for approved work  
-✅ Executive summary delivered to leadership  
-✅ Audit-ready evidence package prepared  
-✅ Follow-up survey scheduled (6-12 months)
+✅ All existing network devices discovered and documented  
+✅ Network topology diagrams created and approved  
+✅ Configuration templates tested and validated  
+✅ VLAN and IP addressing scheme defined  
+✅ Installation timeline and milestones approved  
+✅ Risk mitigation and rollback plans documented  
+✅ All configurations stored in OberaConnect Knowledge Base  
+✅ Security baseline applied and validated  
+✅ Compliance evidence collected and mapped  
+✅ As-built documentation delivered to stakeholders  
+✅ Handoff to operations team completed
 
 ---
 
@@ -212,17 +254,17 @@ export default function UploadNetworkChecklist() {
         .from('knowledge_articles')
         .insert({
           customer_id: profile.customer_id,
-          title: 'OberaConnect Network Site Survey Checklist',
+          title: 'SOC Network Discovery & Installation Planning Checklist',
           content: checklistContent,
           article_type: 'guide',
           status: 'published',
-          tags: ['network', 'survey', 'checklist', 'infrastructure', 'compliance', 'security'],
+          tags: ['network', 'discovery', 'installation', 'checklist', 'configuration', 'planning', 'SOC'],
           created_by: user.id
         });
 
       if (insertError) throw insertError;
 
-      toast.success("Network survey checklist uploaded to Knowledge Base!");
+      toast.success("Network discovery & installation checklist uploaded to Knowledge Base!");
       navigate("/knowledge");
     } catch (error) {
       console.error("Error uploading checklist:", error);
@@ -239,15 +281,15 @@ export default function UploadNetworkChecklist() {
       <main className="container mx-auto px-4 pt-56 pb-8 max-w-2xl">
         <Card>
           <CardHeader>
-            <CardTitle>Upload Network Survey Checklist</CardTitle>
+            <CardTitle>Upload Network Discovery Checklist</CardTitle>
             <CardDescription>
-              Transform the network site survey checklist into an OberaConnect-integrated guide
+              SOC Engineer workflow for network discovery, configuration planning, and installation preparation
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="prose prose-sm dark:prose-invert">
               <p>
-                This will upload a comprehensive network site survey checklist that integrates with:
+                This will upload a comprehensive network discovery and installation planning checklist that integrates with:
               </p>
               <ul>
                 <li><strong>NinjaOne</strong> - Device inventory and monitoring</li>
