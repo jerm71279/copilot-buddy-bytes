@@ -15,6 +15,7 @@ import WorkflowDetail from "./pages/WorkflowDetail";
 import KnowledgeBase from "./pages/KnowledgeBase";
 import KnowledgeArticle from "./pages/KnowledgeArticle";
 import KnowledgeUpload from "./pages/KnowledgeUpload";
+import IngestTrainingVideos from "./pages/IngestTrainingVideos";
 import AdminDashboard from "./pages/AdminDashboard";
 import ComplianceDashboard from "./pages/ComplianceDashboard";
 import ITDashboard from "./pages/ITDashboard";
@@ -250,6 +251,11 @@ const App = () => (
           <Route path="/knowledge/upload-checklist" element={
             <ProtectedRoute>
               <UploadNetworkChecklist />
+            </ProtectedRoute>
+          } />
+          <Route path="/knowledge/analyze-training" element={
+            <ProtectedRoute>
+              <IngestTrainingVideos />
             </ProtectedRoute>
           } />
           

@@ -1,6 +1,6 @@
 import { 
   FileText, BookOpen, Lightbulb, Award, BookMarked, 
-  Sparkles, Plus, Upload, Cloud, Download, Brain 
+  Sparkles, Plus, Upload, Cloud, Download, Brain, Video 
 } from "lucide-react";
 
 /**
@@ -51,6 +51,12 @@ export const knowledgeActionButtons = [
     label: "Upload Network Checklist",
     path: "/knowledge/upload-checklist",
     icon: <FileText className="h-4 w-4" />,
+    variant: "default" as const
+  },
+  {
+    label: "AI Video Analysis",
+    path: "/knowledge/analyze-training",
+    icon: <Video className="h-4 w-4" />,
     variant: "default" as const
   },
   {

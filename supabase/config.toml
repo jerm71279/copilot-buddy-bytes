@@ -119,3 +119,6 @@ verify_jwt = true
 
 [functions.extract-api-instructions]
 verify_jwt = true
+
+[functions.analyze-training-videos]
+verify_jwt = true
