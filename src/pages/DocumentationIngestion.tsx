@@ -423,6 +423,18 @@ export default function DocumentationIngestion() {
                 Extract API Key Instructions
               </Button>
             </div>
+
+            {/* View Saved Instructions Button */}
+            {selectedVendor?.api_key_instructions && (
+              <Button 
+                onClick={() => setApiInstructions(selectedVendor.api_key_instructions)}
+                variant="secondary"
+                className="w-full"
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                View Saved Instructions for {selectedVendor.vendor_name}
+              </Button>
+            )}
           </CardContent>
         </Card>
 

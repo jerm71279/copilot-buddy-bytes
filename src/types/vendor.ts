@@ -14,6 +14,7 @@ export interface Vendor {
   contact_phone?: string | null;
   notes?: string | null;
   status: VendorStatus;
+  api_key_instructions?: any;
   created_at: string;
   created_by: string;
   updated_at?: string;
