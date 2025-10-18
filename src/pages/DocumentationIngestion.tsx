@@ -162,6 +162,46 @@ export default function DocumentationIngestion() {
     }
   };
 
+  const handleTestNinjaOne = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('test-ninjaone', {
+        body: { instanceUrl: 'https://app.ninjarmm.com' }
+      });
+
+      if (error) {
+        toast({
+          title: "Connection Failed",
+          description: error.message || "Failed to connect to NinjaOne",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data.success) {
+        toast({
+          title: "Connection Successful!",
+          description: `Connected to NinjaOne. Found ${data.organizationCount} organizations.`,
+        });
+      } else {
+        toast({
+          title: "Connection Failed",
+          description: data.error || "Failed to connect to NinjaOne",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error testing NinjaOne:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred while testing the connection",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleExtractInstructions = async () => {
     if (!selectedVendorId || !selectedVendor || !customerId) {
       toast({
@@ -435,6 +475,17 @@ export default function DocumentationIngestion() {
                 View Saved Instructions for {selectedVendor.vendor_name}
               </Button>
             )}
+
+            {/* Test NinjaOne Connection Button */}
+            <Button 
+              onClick={handleTestNinjaOne}
+              variant="outline"
+              className="w-full"
+              disabled={loading}
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Test NinjaOne Connection
+            </Button>
           </CardContent>
         </Card>
 
