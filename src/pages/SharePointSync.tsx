@@ -67,6 +67,8 @@ const SharePointSync = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [sharePointSites, setSharePointSites] = useState<any[]>([]);
   const [selectedSite, setSelectedSite] = useState<string>("");
+  const [manualSiteUrl, setManualSiteUrl] = useState<string>("");
+  const [manualSiteName, setManualSiteName] = useState<string>("");
   const [customerId, setCustomerId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -153,8 +155,15 @@ const SharePointSync = () => {
       });
 
       if (error) throw error;
+      if (data && (data as any).error) {
+        console.warn("graph-api returned error:", (data as any).error);
+        toast.error((data as any).error || "Unable to load SharePoint sites");
+        setSharePointSites([]);
+        return;
+      }
 
-      setSharePointSites(data.value || []);
+      setSharePointSites((data as any).value || []);
+
     } catch (error) {
       console.error("Error fetching SharePoint sites:", error);
       toast.error("Failed to fetch SharePoint sites");
@@ -162,28 +171,49 @@ const SharePointSync = () => {
   };
 
   const handleAddConfig = async () => {
-    if (!selectedSite || !customerId) return;
+    if (!customerId) return;
 
-    const site = sharePointSites.find((s) => s.id === selectedSite);
-    if (!site) return;
+    // If user selected a site from the list, use it; otherwise fall back to manual URL
+    if (selectedSite) {
+      const site = sharePointSites.find((s) => s.id === selectedSite);
+      if (!site) return;
 
-    const { error } = await supabase.from("sharepoint_sync_config").insert({
-      customer_id: customerId,
-      site_id: site.id,
-      site_name: site.displayName,
-      site_url: site.webUrl,
-      sync_enabled: true,
-      sync_frequency_minutes: 60,
-    });
+      const { error } = await supabase.from("sharepoint_sync_config").insert({
+        customer_id: customerId,
+        site_id: site.id,
+        site_name: site.displayName,
+        site_url: site.webUrl,
+        sync_enabled: true,
+        sync_frequency_minutes: 60,
+      });
 
-    if (error) {
-      toast.error("Failed to add sync configuration");
-      return;
+      if (error) {
+        toast.error("Failed to add sync configuration");
+        return;
+      }
+    } else if (manualSiteUrl) {
+      const { error } = await supabase.from("sharepoint_sync_config").insert({
+        customer_id: customerId,
+        site_id: null,
+        site_name: manualSiteName || manualSiteUrl,
+        site_url: manualSiteUrl,
+        sync_enabled: true,
+        sync_frequency_minutes: 60,
+      });
+
+      if (error) {
+        toast.error("Failed to add sync configuration");
+        return;
+      }
+    } else {
+      return; // nothing to add
     }
 
     toast.success("Sync configuration added successfully");
     setIsAddDialogOpen(false);
     setSelectedSite("");
+    setManualSiteUrl("");
+    setManualSiteName("");
     await fetchConfigs();
   };
 
@@ -328,13 +358,33 @@ const SharePointSync = () => {
                       <SelectValue placeholder="Select a site" />
                     </SelectTrigger>
                     <SelectContent>
-                      {sharePointSites.map((site) => (
-                        <SelectItem key={site.id} value={site.id}>
-                          {site.displayName}
-                        </SelectItem>
-                      ))}
+                      {sharePointSites.length > 0 ? (
+                        sharePointSites.map((site) => (
+                          <SelectItem key={site.id} value={site.id}>
+                            {site.displayName}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <div className="p-3 text-sm text-muted-foreground">
+                          No sites found. You can paste a site URL below.
+                        </div>
+                      )}
                     </SelectContent>
                   </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Or paste SharePoint site URL</Label>
+                  <Input
+                    placeholder="https://contoso.sharepoint.com/sites/YourSite"
+                    value={manualSiteUrl}
+                    onChange={(e) => setManualSiteUrl(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Optional: display name"
+                    value={manualSiteName}
+                    onChange={(e) => setManualSiteName(e.target.value)}
+                  />
                 </div>
               </div>
               <DialogFooter>
@@ -344,7 +394,7 @@ const SharePointSync = () => {
                 >
                   Cancel
                 </Button>
-                <Button onClick={handleAddConfig} disabled={!selectedSite}>
+                <Button onClick={handleAddConfig} disabled={!selectedSite && !manualSiteUrl}>
                   Add Site
                 </Button>
               </DialogFooter>

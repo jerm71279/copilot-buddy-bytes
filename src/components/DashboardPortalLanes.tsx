@@ -177,7 +177,7 @@ export default function DashboardPortalLanes() {
   const isMainPage = allPages.some((path) => currentPath === path);
 
   return (
-    <div ref={lanesRef} className="fixed top-0 left-0 right-0 z-[9999] w-full isolate overflow-visible bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
+    <div ref={lanesRef} className="fixed top-0 left-0 right-0 z-40 w-full isolate overflow-visible bg-background/95 backdrop-blur-sm border-b border-border shadow-md">
       {/* Row 1: Portals with dropdowns */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
