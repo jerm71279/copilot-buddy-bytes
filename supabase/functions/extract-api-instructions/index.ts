@@ -15,16 +15,15 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
-    
+
     if (!lovableApiKey) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Validate request body
     const requestData = await req.json();
-
-    // Validate input body shape
     if (!requestData || typeof requestData !== 'object') {
       return new Response(
         JSON.stringify({ error: 'Invalid request body' }),
@@ -56,18 +55,56 @@ serve(async (req) => {
       throw new Error(`Failed to fetch documentation: ${fetchError.message}`);
     }
 
-    if (!articles || articles.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'No documentation found for this vendor' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    let combinedContent = '';
 
-    // Combine all documentation content
-    const combinedContent = articles
-      .map(article => `# ${article.title}\n\n${article.content}`)
-      .join('\n\n---\n\n')
-      .slice(0, 50000); // Limit to 50k chars to stay within token limits
+    if (articles && articles.length > 0) {
+      combinedContent = articles
+        .map((article: { title: string; content: string }) => `# ${article.title}\n\n${article.content}`)
+        .join('\n\n---\n\n')
+        .slice(0, 50000); // Limit to 50k chars to stay within token limits
+    } else {
+      // Fallback: try vendor's default documentation URL or website directly
+      console.warn('No knowledge articles found; attempting vendor URL fallback');
+      const { data: vendorRow, error: vendorErr } = await supabase
+        .from('documentation_vendors')
+        .select('documentation_url, website, vendor_name')
+        .eq('id', vendorId)
+        .eq('customer_id', customerId)
+        .maybeSingle();
+
+      if (vendorErr) {
+        console.error('Error fetching vendor row:', vendorErr);
+      }
+
+      const docUrl = vendorRow?.documentation_url || vendorRow?.website || '';
+
+      if (docUrl) {
+        try {
+          const resp = await fetch(docUrl, { headers: { 'User-Agent': 'LovableBot/1.0' } });
+          if (resp.ok) {
+            const html = await resp.text();
+            const text = html
+              .replace(/<script[\s\S]*?<\/script>/gi, '')
+              .replace(/<style[\s\S]*?<\/style>/gi, '')
+              .replace(/<[^>]+>/g, ' ')
+              .replace(/\s+/g, ' ')
+              .trim();
+            combinedContent = `# ${vendorName} Documentation\n\n` + text.slice(0, 50000);
+          } else {
+            console.warn('Fallback URL fetch failed with status', resp.status);
+          }
+        } catch (e) {
+          console.error('Fallback fetch error:', e);
+        }
+      }
+
+      if (!combinedContent) {
+        return new Response(
+          JSON.stringify({ error: 'No documentation found for this vendor' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
 
     console.log('Combined content length:', combinedContent.length);
 
@@ -138,15 +175,15 @@ If you cannot find clear API key instructions, return an error message in the su
     }
 
     const aiData = await aiResponse.json();
-    const extractedContent = aiData.choices[0]?.message?.content || '';
+    const extractedContent = aiData.choices?.[0]?.message?.content || '';
 
-    console.log('AI extracted content:', extractedContent.slice(0, 500));
+    console.log('AI extracted content:', String(extractedContent).slice(0, 500));
 
     // Try to parse as JSON, if it fails, return raw content
-    let instructions;
+    let instructions: any;
     try {
       // Remove markdown code blocks if present
-      const cleanedContent = extractedContent
+      const cleanedContent = String(extractedContent)
         .replace(/```json\n?/g, '')
         .replace(/```\n?/g, '')
         .trim();
