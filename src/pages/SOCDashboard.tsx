@@ -93,18 +93,36 @@ const SOCDashboard = () => {
   const runThreatAnalysis = async () => {
     setIsAnalyzing(true);
     try {
+      // Verify user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Please sign in to run threat analysis");
+        navigate("/auth");
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('soc-threat-analysis', {
         body: { analysisType: 'comprehensive', timeframe: selectedTimeframe }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Function invocation error:', error);
+        throw error;
+      }
+
+      if (data?.error) {
+        console.error('Function response error:', data.error);
+        toast.error(data.error || "Failed to run threat analysis");
+        return;
+      }
 
       setThreatAnalysis(data);
       toast.success("Threat analysis complete");
       setActiveTab("ai-analysis");
-    } catch (error) {
+    } catch (error: any) {
       console.error('Threat analysis error:', error);
-      toast.error("Failed to run threat analysis");
+      const errorMessage = error?.message || error?.error || "Failed to run threat analysis";
+      toast.error(errorMessage);
     } finally {
       setIsAnalyzing(false);
     }
