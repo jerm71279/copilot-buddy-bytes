@@ -9,6 +9,44 @@ import Navigation from "@/components/Navigation";
 const GitHub = () => {
   const [isConnected] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Mock repositories for demo
+  const mockRepositories = [
+    { id: 1, name: "oberaconnect/frontend", type: "Repository", description: "Main frontend application", stars: 45 },
+    { id: 2, name: "oberaconnect/backend-api", type: "Repository", description: "Backend API services", stars: 32 },
+    { id: 3, name: "oberaconnect/mobile-app", type: "Repository", description: "Mobile application", stars: 28 },
+    { id: 4, name: "oberaconnect/documentation", type: "Repository", description: "Project documentation", stars: 15 },
+    { id: 5, name: "Fix login bug", type: "Pull Request", description: "Fixes authentication issues #234", repo: "frontend" },
+    { id: 6, name: "Add new API endpoint", type: "Pull Request", description: "Implements user management API", repo: "backend-api" },
+    { id: 7, name: "Initial commit", type: "Commit", description: "Project setup and configuration", repo: "frontend" },
+    { id: 8, name: "Update dependencies", type: "Commit", description: "Bump package versions", repo: "backend-api" },
+  ];
+
+  const handleSearch = () => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    // Simulate search delay
+    setTimeout(() => {
+      const results = mockRepositories.filter(item =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setSearchResults(results);
+      setIsSearching(false);
+    }, 500);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -27,19 +65,60 @@ const GitHub = () => {
         {/* Search Bar */}
         <Card className="mb-6">
           <CardContent className="pt-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search repositories, pull requests, commits..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search repositories, pull requests, commits..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="pl-10"
+                />
+              </div>
+              <Button onClick={handleSearch} disabled={isSearching || !searchQuery.trim()}>
+                {isSearching ? "Searching..." : "Search"}
+              </Button>
             </div>
-            {searchQuery && (
-              <p className="text-sm text-muted-foreground mt-2">
-                Searching for: <span className="font-medium">{searchQuery}</span>
+            
+            {/* Search Results */}
+            {searchResults.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <p className="text-sm font-medium">
+                  Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
+                </p>
+                <div className="space-y-2">
+                  {searchResults.map((result) => (
+                    <div key={result.id} className="p-3 border rounded-lg hover:bg-accent/50 transition-colors">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="outline" className="text-xs">
+                              {result.type}
+                            </Badge>
+                            <span className="font-medium">{result.name}</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{result.description}</p>
+                          {result.repo && (
+                            <p className="text-xs text-muted-foreground mt-1">in {result.repo}</p>
+                          )}
+                        </div>
+                        {result.stars && (
+                          <Badge variant="outline" className="ml-2">
+                            ⭐ {result.stars}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {searchQuery && searchResults.length === 0 && !isSearching && (
+              <p className="text-sm text-muted-foreground mt-4">
+                No results found for "{searchQuery}"
               </p>
             )}
           </CardContent>
