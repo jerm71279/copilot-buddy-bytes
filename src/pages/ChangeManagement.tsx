@@ -214,7 +214,7 @@ const ChangeManagement = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 pt-56 pb-16">
+      <div className="container mx-auto px-4 pb-16 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <DashboardNavigation
           title="Change Management"
           dashboards={[

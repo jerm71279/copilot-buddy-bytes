@@ -5,8 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, ExternalLink, Video, FileText, Sparkles } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { useKnowledgeData } from "@/hooks/useKnowledgeData";
 import { knowledgeDashboardLinks } from "@/lib/knowledgeConfig";
 
@@ -34,15 +32,9 @@ export default function KnowledgeBase() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
-        <DashboardNavigation 
-          title="Knowledge Insights"
-          dashboards={knowledgeDashboardLinks}
-        />
-        
+      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Knowledge Insights</h1>
           <p className="text-muted-foreground mb-6">
             Searchable insights from training videos and uploaded content
           </p>

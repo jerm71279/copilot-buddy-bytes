@@ -203,7 +203,7 @@ const CIPPDashboard = () => {
     <div className="min-h-screen bg-background">
       <ExternalSystemsBar />
 
-      <div className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <DashboardNavigation 
           dashboards={[
             { name: "CIPP Dashboard", path: "/cipp" },

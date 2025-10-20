@@ -234,8 +234,8 @@ const WorkflowKnowledgeIntegration = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto p-6 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

@@ -104,7 +104,8 @@ export default function DepartmentInsights() {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Department Insights</h1>
         <p className="text-muted-foreground">
@@ -300,6 +301,7 @@ export default function DepartmentInsights() {
           )}
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }

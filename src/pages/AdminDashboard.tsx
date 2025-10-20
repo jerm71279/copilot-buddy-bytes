@@ -76,7 +76,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 space-y-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
+      <main className="container mx-auto px-4 pb-8 pt-8 space-y-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">

@@ -6,8 +6,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { BarChart, DollarSign, TrendingUp, TrendingDown, FileText, Download } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 
 export default function FinancialReporting() {
   const navigate = useNavigate();
@@ -104,10 +102,7 @@ export default function FinancialReporting() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <main className="container mx-auto p-6 space-y-6">
+      <main className="container mx-auto p-6 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Financial Reporting</h1>

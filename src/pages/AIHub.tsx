@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { AILevelCard } from "@/components/ai/AILevelCard";
 import { AIIntegrationInfo } from "@/components/ai/AIIntegrationInfo";
 import { aiLevels } from "@/config/aiHubConfig";
@@ -14,17 +13,7 @@ const AIHub = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pt-56 pb-8">
-        <DashboardNavigation 
-          title="AI Hub"
-          dashboards={[
-            { name: "Knowledge Chat", path: "/intelligent-assistant" },
-            { name: "Workflow Intelligence", path: "/workflow-intelligence" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Analytics Portal", path: "/analytics" },
-          ]}
-        />
+      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
 
         {/* Header */}
         <div className="mb-8 text-center space-y-4">

@@ -17,7 +17,7 @@ export default function CompliancePortal() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
+      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         
         <div className="mb-6 flex justify-between items-center">
           <div>
