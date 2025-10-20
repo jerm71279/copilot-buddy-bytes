@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Github, GitBranch, GitCommit, GitPullRequest, ExternalLink } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Github, GitBranch, GitCommit, GitPullRequest, ExternalLink, Search } from "lucide-react";
 import Navigation from "@/components/Navigation";
 
 const GitHub = () => {
   const [isConnected] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <div className="min-h-screen bg-background">
@@ -21,6 +23,27 @@ const GitHub = () => {
             Connect your GitHub repositories to OberaConnect for seamless code management and deployment
           </p>
         </div>
+
+        {/* Search Bar */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search repositories, pull requests, commits..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            {searchQuery && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Searching for: <span className="font-medium">{searchQuery}</span>
+              </p>
+            )}
+          </CardContent>
+        </Card>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
           <Card>
