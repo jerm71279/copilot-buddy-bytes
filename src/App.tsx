@@ -93,6 +93,7 @@ import NetworkMonitoring from "./pages/NetworkMonitoring";
 import NetworkDeviceNew from "./pages/NetworkDeviceNew";
 import ProductsAdmin from "./pages/ProductsAdmin";
 import Developers from "./pages/Developers";
+import GitHub from "./pages/GitHub";
 import ArchitectureDiagram from "./pages/ArchitectureDiagram";
 import ArchitectureCanvas from "./pages/ArchitectureCanvas";
 import WorkflowIntelligence from "./pages/WorkflowIntelligence";
@@ -152,6 +153,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/integrations" element={<IntegrationsPage />} />
           <Route path="/developers" element={<Developers />} />
+          <Route path="/github" element={<GitHub />} />
           <Route path="/architecture-diagram" element={<ArchitectureDiagram />} />
           <Route path="/architecture/canvas" element={<ArchitectureCanvas />} />
           <Route path="/navigation-scaffold" element={<NavigationScaffold />} />
