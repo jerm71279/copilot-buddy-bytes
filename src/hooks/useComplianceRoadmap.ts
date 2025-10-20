@@ -16,7 +16,7 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
           .from('user_profiles')
           .select('customer_id')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
         setCustomerId(profile?.customer_id || null);
       }
     };
