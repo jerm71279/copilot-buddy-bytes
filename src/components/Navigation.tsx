@@ -241,6 +241,13 @@ const Navigation = () => {
                     Knowledge
                   </Link>
                   <Link 
+                    to="/business-knowledge"
+                    className="text-sm font-medium hover:text-accent transition-colors flex items-center gap-1"
+                  >
+                    <Brain className="h-4 w-4" />
+                    Business Docs
+                  </Link>
+                  <Link 
                     to="/compliance"
                     className="text-sm font-medium hover:text-accent transition-colors"
                   >

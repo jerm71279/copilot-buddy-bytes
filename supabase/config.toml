@@ -125,3 +125,6 @@ verify_jwt = true
 
 [functions.soc-threat-analysis]
 verify_jwt = true
+
+[functions.parse-document]
+verify_jwt = true

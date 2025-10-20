@@ -42,6 +42,8 @@ export default function BusinessKnowledge() {
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [uploadUrl, setUploadUrl] = useState("");
   const [uploadSource, setUploadSource] = useState("");
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadType, setUploadType] = useState<"url" | "file">("url");
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
@@ -131,10 +133,19 @@ export default function BusinessKnowledge() {
   };
 
   const handleUpload = async () => {
-    if (!uploadUrl || !uploadSource) {
+    if (uploadType === "url" && (!uploadUrl || !uploadSource)) {
       toast({
         title: "Missing fields",
         description: "Please provide both URL and source name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (uploadType === "file" && (!uploadFile || !uploadSource)) {
+      toast({
+        title: "Missing fields",
+        description: "Please provide both file and source name",
         variant: "destructive",
       });
       return;
@@ -153,35 +164,59 @@ export default function BusinessKnowledge() {
 
       if (!profile?.customer_id) throw new Error("No customer ID found");
 
-      const { error } = await supabase.functions.invoke('ingest-documentation', {
-        body: {
-          url: uploadUrl,
-          source: uploadSource,
-          customerId: profile.customer_id
-        }
-      });
+      if (uploadType === "url") {
+        // URL ingestion
+        const { error } = await supabase.functions.invoke('ingest-documentation', {
+          body: {
+            url: uploadUrl,
+            source: uploadSource,
+            customerId: profile.customer_id
+          }
+        });
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        // File upload
+        const filePath = `${profile.customer_id}/${Date.now()}-${uploadFile!.name}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('business-documents')
+          .upload(filePath, uploadFile!);
+
+        if (uploadError) throw uploadError;
+
+        // Parse the document
+        const { error: parseError } = await supabase.functions.invoke('parse-document', {
+          body: {
+            filePath,
+            customerId: profile.customer_id,
+            source: uploadSource
+          }
+        });
+
+        if (parseError) throw parseError;
+      }
 
       toast({
-        title: "Ingestion started",
-        description: "The content is being processed in the background",
+        title: "Upload successful",
+        description: "The content is being processed",
       });
 
       setShowUploadDialog(false);
       setUploadUrl("");
       setUploadSource("");
+      setUploadFile(null);
 
       // Reload after delay
       setTimeout(() => {
         loadKnowledgeBase();
         loadStats();
-      }, 3000);
-    } catch (error) {
+      }, 2000);
+    } catch (error: any) {
       console.error('Error uploading:', error);
       toast({
         title: "Upload failed",
-        description: error.message,
+        description: error.message || "Failed to upload content",
         variant: "destructive",
       });
     } finally {
@@ -455,36 +490,70 @@ export default function BusinessKnowledge() {
           <DialogHeader>
             <DialogTitle>Add Business Content</DialogTitle>
             <DialogDescription>
-              Add a webpage or documentation URL to ingest into the knowledge base
+              Add a webpage URL or upload a document (PDF, DOCX, TXT, etc.)
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
-              <Label htmlFor="source">Source Name *</Label>
-              <Input
-                id="source"
-                placeholder="e.g., Microsoft Azure, Cisco Documentation"
-                value={uploadSource}
-                onChange={(e) => setUploadSource(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="url">Content URL *</Label>
-              <Textarea
-                id="url"
-                placeholder="https://example.com/documentation"
-                value={uploadUrl}
-                onChange={(e) => setUploadUrl(e.target.value)}
-                rows={3}
-              />
-            </div>
+            <Tabs value={uploadType} onValueChange={(v) => setUploadType(v as "url" | "file")}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="url">URL</TabsTrigger>
+                <TabsTrigger value="file">File Upload</TabsTrigger>
+              </TabsList>
+              <TabsContent value="url" className="space-y-4">
+                <div>
+                  <Label htmlFor="source">Source Name *</Label>
+                  <Input
+                    id="source"
+                    placeholder="e.g., Microsoft Azure, Cisco Documentation"
+                    value={uploadSource}
+                    onChange={(e) => setUploadSource(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="url">Content URL *</Label>
+                  <Textarea
+                    id="url"
+                    placeholder="https://example.com/documentation"
+                    value={uploadUrl}
+                    onChange={(e) => setUploadUrl(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+              </TabsContent>
+              <TabsContent value="file" className="space-y-4">
+                <div>
+                  <Label htmlFor="file-source">Source Name *</Label>
+                  <Input
+                    id="file-source"
+                    placeholder="e.g., Company Policy, Training Manual"
+                    value={uploadSource}
+                    onChange={(e) => setUploadSource(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="file">Document File *</Label>
+                  <Input
+                    id="file"
+                    type="file"
+                    accept=".pdf,.doc,.docx,.txt,.md,.xls,.xlsx,.ppt,.pptx"
+                    onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Supported: PDF, Word, Excel, PowerPoint, Text, Markdown (Max 50MB)
+                  </p>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowUploadDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleUpload} disabled={isUploading || !uploadUrl || !uploadSource}>
-              {isUploading ? "Ingesting..." : "Ingest Content"}
+            <Button 
+              onClick={handleUpload} 
+              disabled={isUploading || (uploadType === "url" ? (!uploadUrl || !uploadSource) : (!uploadFile || !uploadSource))}
+            >
+              {isUploading ? "Processing..." : "Upload Content"}
             </Button>
           </DialogFooter>
         </DialogContent>
