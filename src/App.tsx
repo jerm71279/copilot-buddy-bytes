@@ -55,6 +55,7 @@ import ComplianceControlDetail from "./pages/ComplianceControlDetail";
 import ComplianceAuditReports from "./pages/ComplianceAuditReports";
 import ComplianceEvidenceUpload from "./pages/ComplianceEvidenceUpload";
 import ComplianceReportDetail from "./pages/ComplianceReportDetail";
+import ComplianceRoadmap from "./pages/ComplianceRoadmap";
 import WorkflowAutomation from "./pages/WorkflowAutomation";
 import WorkflowExecutionDetail from "./pages/WorkflowExecutionDetail";
 import NinjaOneIntegration from "./pages/NinjaOneIntegration";
@@ -473,6 +474,11 @@ const App = () => (
           <Route path="/compliance" element={
             <ProtectedRoute>
               <CompliancePortal />
+            </ProtectedRoute>
+          } />
+          <Route path="/compliance/roadmap" element={
+            <ProtectedRoute>
+              <ComplianceRoadmap />
             </ProtectedRoute>
           } />
           

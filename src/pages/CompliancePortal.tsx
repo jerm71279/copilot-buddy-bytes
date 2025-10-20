@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileCheck, Plus } from "lucide-react";
+import { FileCheck, Plus, Map } from "lucide-react";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
@@ -28,6 +28,10 @@ export default function CompliancePortal() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3 mb-6 overflow-x-auto">
+          <Button size="sm" onClick={() => navigate('/compliance/roadmap')}>
+            <Map className="mr-2 h-4 w-4" />
+            Compliance Roadmap
+          </Button>
           <Button size="sm" onClick={() => navigate('/compliance/audit-reports')}>
             <FileCheck className="mr-2 h-4 w-4" />
             Generate Audit Report

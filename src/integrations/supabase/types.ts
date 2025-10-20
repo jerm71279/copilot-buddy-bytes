@@ -3050,6 +3050,226 @@ export type Database = {
           },
         ]
       }
+      compliance_roadmap_milestones: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          due_date: string | null
+          evidence_required: boolean | null
+          id: string
+          linked_control_ids: string[] | null
+          milestone_description: string | null
+          milestone_name: string
+          required_actions: string[] | null
+          sequence_order: number
+          stage_id: string
+          status: string
+          success_criteria: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_id: string
+          due_date?: string | null
+          evidence_required?: boolean | null
+          id?: string
+          linked_control_ids?: string[] | null
+          milestone_description?: string | null
+          milestone_name: string
+          required_actions?: string[] | null
+          sequence_order: number
+          stage_id: string
+          status?: string
+          success_criteria?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          due_date?: string | null
+          evidence_required?: boolean | null
+          id?: string
+          linked_control_ids?: string[] | null
+          milestone_description?: string | null
+          milestone_name?: string
+          required_actions?: string[] | null
+          sequence_order?: number
+          stage_id?: string
+          status?: string
+          success_criteria?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_roadmap_milestones_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_roadmap_milestones_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "compliance_roadmap_milestones_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_roadmap_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_roadmap_resources: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          is_required: boolean | null
+          milestone_id: string | null
+          resource_description: string | null
+          resource_name: string
+          resource_type: string
+          resource_url: string | null
+          stage_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_required?: boolean | null
+          milestone_id?: string | null
+          resource_description?: string | null
+          resource_name: string
+          resource_type: string
+          resource_url?: string | null
+          stage_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_required?: boolean | null
+          milestone_id?: string | null
+          resource_description?: string | null
+          resource_name?: string
+          resource_type?: string
+          resource_url?: string | null
+          stage_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_roadmap_resources_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_roadmap_resources_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "compliance_roadmap_resources_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_roadmap_milestones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_roadmap_resources_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_roadmap_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_roadmap_stages: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          estimated_duration_days: number | null
+          framework_id: string
+          id: string
+          progress_percentage: number | null
+          stage_description: string | null
+          stage_name: string
+          stage_number: number
+          stage_type: string
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          customer_id: string
+          estimated_duration_days?: number | null
+          framework_id: string
+          id?: string
+          progress_percentage?: number | null
+          stage_description?: string | null
+          stage_name: string
+          stage_number: number
+          stage_type: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          estimated_duration_days?: number | null
+          framework_id?: string
+          id?: string
+          progress_percentage?: number | null
+          stage_description?: string | null
+          stage_name?: string
+          stage_number?: number
+          stage_type?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_roadmap_stages_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_roadmap_stages_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "compliance_roadmap_stages_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_frameworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_tags: {
         Row: {
           applicable_frameworks: string[] | null
@@ -12726,6 +12946,10 @@ export type Database = {
       increment_template_usage: {
         Args: { template_id_param: string }
         Returns: undefined
+      }
+      initialize_compliance_roadmap: {
+        Args: { _customer_id: string; _framework_id: string }
+        Returns: string
       }
       validate_array_input: {
         Args: {
