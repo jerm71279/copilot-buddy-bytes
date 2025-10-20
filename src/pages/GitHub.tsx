@@ -14,46 +14,24 @@ const GitHub = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
-  // Get user profile for customer_id
-  const { data: userProfile } = useQuery({
-    queryKey: ['userProfile'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  // Search files from database
+  // Search GitHub repositories
   const { data: searchResults, refetch: performSearch } = useQuery({
-    queryKey: ['fileSearch', searchQuery, userProfile?.customer_id],
+    queryKey: ['githubSearch', searchQuery],
     enabled: false, // Only run on manual trigger
     queryFn: async () => {
-      if (!searchQuery.trim() || !userProfile?.customer_id) return [];
+      if (!searchQuery.trim()) return { items: [] };
 
-      const { data, error } = await supabase
-        .from('file_metadata')
-        .select('id, file_name, file_path, file_type, description, tags, created_at, repository_id, file_repositories(repository_name)')
-        .eq('customer_id', userProfile.customer_id)
-        .eq('is_deleted', false)
-        .or(`file_name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,tags.cs.{${searchQuery}}`)
-        .limit(20);
+      const { data, error } = await supabase.functions.invoke('search-github', {
+        body: { query: searchQuery }
+      });
 
       if (error) {
-        console.error('Search error:', error);
-        toast.error('Failed to search files');
+        console.error('GitHub search error:', error);
+        toast.error('Failed to search GitHub: ' + error.message);
         throw error;
       }
 
-      return data || [];
+      return data;
     }
   });
 
@@ -99,7 +77,7 @@ const GitHub = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="Search repositories, pull requests, commits..."
+                  placeholder="Search code on GitHub (e.g., 'function user:owner/repo')"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -112,58 +90,46 @@ const GitHub = () => {
             </div>
             
             {/* Search Results */}
-            {searchResults && searchResults.length > 0 && (
+            {searchResults && searchResults.items && searchResults.items.length > 0 && (
               <div className="mt-4 space-y-2">
                 <p className="text-sm font-medium">
-                  Found {searchResults.length} file{searchResults.length !== 1 ? 's' : ''}
+                  Found {searchResults.total_count} result{searchResults.total_count !== 1 ? 's' : ''} ({searchResults.items.length} shown)
                 </p>
                 <div className="space-y-2">
-                  {searchResults.map((result: any) => {
-                    const repo = result.file_repositories;
-                    return (
-                      <div key={result.id} className="p-3 border rounded-lg hover:bg-accent/50 transition-colors">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <FileText className="h-4 w-4 text-muted-foreground" />
-                              <span className="font-medium">{result.file_name}</span>
+                  {searchResults.items.map((result: any) => (
+                    <div key={result.sha} className="p-3 border rounded-lg hover:bg-accent/50 transition-colors">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            <a 
+                              href={result.html_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-medium hover:underline"
+                            >
+                              {result.name}
+                            </a>
+                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                          </div>
+                          <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <Folder className="h-3 w-3" />
+                              <span>{result.repository.full_name}</span>
                             </div>
-                            {result.description && (
-                              <p className="text-sm text-muted-foreground">{result.description}</p>
-                            )}
-                            <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                              {repo && (
-                                <div className="flex items-center gap-1">
-                                  <Folder className="h-3 w-3" />
-                                  <span>{repo.repository_name}</span>
-                                </div>
-                              )}
-                              {result.file_path && (
-                                <span className="truncate max-w-xs">{result.file_path}</span>
-                              )}
-                              <span>{new Date(result.created_at).toLocaleDateString()}</span>
-                            </div>
-                            {result.tags && result.tags.length > 0 && (
-                              <div className="flex gap-1 mt-2">
-                                {result.tags.map((tag: string, idx: number) => (
-                                  <Badge key={idx} variant="outline" className="text-xs">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
+                            <span className="truncate max-w-xs">{result.path}</span>
                           </div>
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
             
-            {searchQuery && searchResults && searchResults.length === 0 && !isSearching && (
+            {searchQuery && searchResults && searchResults.items && searchResults.items.length === 0 && !isSearching && (
               <p className="text-sm text-muted-foreground mt-4">
-                No files found for "{searchQuery}". Try searching from the <a href="/files" className="text-primary underline">File Collaboration</a> page.
+                No files found on GitHub for "{searchQuery}".
               </p>
             )}
           </CardContent>
