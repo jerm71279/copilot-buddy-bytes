@@ -5782,6 +5782,209 @@ export type Database = {
           },
         ]
       }
+      file_metadata: {
+        Row: {
+          created_at: string
+          customer_id: string
+          description: string | null
+          external_file_id: string | null
+          file_name: string
+          file_path: string
+          file_size_bytes: number | null
+          file_type: string | null
+          id: string
+          is_deleted: boolean
+          metadata: Json | null
+          mime_type: string | null
+          repository_id: string | null
+          storage_path: string | null
+          tags: string[] | null
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          external_file_id?: string | null
+          file_name: string
+          file_path: string
+          file_size_bytes?: number | null
+          file_type?: string | null
+          id?: string
+          is_deleted?: boolean
+          metadata?: Json | null
+          mime_type?: string | null
+          repository_id?: string | null
+          storage_path?: string | null
+          tags?: string[] | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          external_file_id?: string | null
+          file_name?: string
+          file_path?: string
+          file_size_bytes?: number | null
+          file_type?: string | null
+          id?: string
+          is_deleted?: boolean
+          metadata?: Json | null
+          mime_type?: string | null
+          repository_id?: string | null
+          storage_path?: string | null
+          tags?: string[] | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "file_metadata_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "file_metadata_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "file_metadata_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "file_repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      file_repositories: {
+        Row: {
+          created_at: string
+          customer_id: string
+          external_id: string | null
+          id: string
+          is_active: boolean
+          last_synced_at: string | null
+          metadata: Json | null
+          repository_name: string
+          repository_type: string
+          repository_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          external_id?: string | null
+          id?: string
+          is_active?: boolean
+          last_synced_at?: string | null
+          metadata?: Json | null
+          repository_name: string
+          repository_type: string
+          repository_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          external_id?: string | null
+          id?: string
+          is_active?: boolean
+          last_synced_at?: string | null
+          metadata?: Json | null
+          repository_name?: string
+          repository_type?: string
+          repository_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "file_repositories_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "file_repositories_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
+      file_sync_history: {
+        Row: {
+          completed_at: string | null
+          customer_id: string
+          error_message: string | null
+          files_added: number | null
+          files_deleted: number | null
+          files_updated: number | null
+          id: string
+          repository_id: string | null
+          started_at: string
+          sync_status: string
+          sync_type: string
+        }
+        Insert: {
+          completed_at?: string | null
+          customer_id: string
+          error_message?: string | null
+          files_added?: number | null
+          files_deleted?: number | null
+          files_updated?: number | null
+          id?: string
+          repository_id?: string | null
+          started_at?: string
+          sync_status?: string
+          sync_type: string
+        }
+        Update: {
+          completed_at?: string | null
+          customer_id?: string
+          error_message?: string | null
+          files_added?: number | null
+          files_deleted?: number | null
+          files_updated?: number | null
+          id?: string
+          repository_id?: string | null
+          started_at?: string
+          sync_status?: string
+          sync_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "file_sync_history_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "file_sync_history_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "file_sync_history_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "file_repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       global_insights: {
         Row: {
           affected_departments: string[]

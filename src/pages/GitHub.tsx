@@ -1,45 +1,74 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Github, GitBranch, GitCommit, GitPullRequest, ExternalLink, Search } from "lucide-react";
+import { Github, GitBranch, GitCommit, GitPullRequest, ExternalLink, Search, FileText, Folder } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { toast } from "sonner";
 
 const GitHub = () => {
   const [isConnected] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Mock repositories for demo
-  const mockRepositories = [
-    { id: 1, name: "oberaconnect/frontend", type: "Repository", description: "Main frontend application", stars: 45 },
-    { id: 2, name: "oberaconnect/backend-api", type: "Repository", description: "Backend API services", stars: 32 },
-    { id: 3, name: "oberaconnect/mobile-app", type: "Repository", description: "Mobile application", stars: 28 },
-    { id: 4, name: "oberaconnect/documentation", type: "Repository", description: "Project documentation", stars: 15 },
-    { id: 5, name: "Fix login bug", type: "Pull Request", description: "Fixes authentication issues #234", repo: "frontend" },
-    { id: 6, name: "Add new API endpoint", type: "Pull Request", description: "Implements user management API", repo: "backend-api" },
-    { id: 7, name: "Initial commit", type: "Commit", description: "Project setup and configuration", repo: "frontend" },
-    { id: 8, name: "Update dependencies", type: "Commit", description: "Bump package versions", repo: "backend-api" },
-  ];
+  // Get user profile for customer_id
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
 
-  const handleSearch = () => {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('customer_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Search files from database
+  const { data: searchResults, refetch: performSearch } = useQuery({
+    queryKey: ['fileSearch', searchQuery, userProfile?.customer_id],
+    enabled: false, // Only run on manual trigger
+    queryFn: async () => {
+      if (!searchQuery.trim() || !userProfile?.customer_id) return [];
+
+      const { data, error } = await supabase
+        .from('file_metadata')
+        .select('id, file_name, file_path, file_type, description, tags, created_at, repository_id, file_repositories(repository_name)')
+        .eq('customer_id', userProfile.customer_id)
+        .eq('is_deleted', false)
+        .or(`file_name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,tags.cs.{${searchQuery}}`)
+        .limit(20);
+
+      if (error) {
+        console.error('Search error:', error);
+        toast.error('Failed to search files');
+        throw error;
+      }
+
+      return data || [];
+    }
+  });
+
+  const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      setSearchResults([]);
+      toast.error("Please enter a search query");
       return;
     }
 
     setIsSearching(true);
-    // Simulate search delay
-    setTimeout(() => {
-      const results = mockRepositories.filter(item =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setSearchResults(results);
+    try {
+      await performSearch();
+    } finally {
       setIsSearching(false);
-    }, 500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -83,42 +112,58 @@ const GitHub = () => {
             </div>
             
             {/* Search Results */}
-            {searchResults.length > 0 && (
+            {searchResults && searchResults.length > 0 && (
               <div className="mt-4 space-y-2">
                 <p className="text-sm font-medium">
-                  Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
+                  Found {searchResults.length} file{searchResults.length !== 1 ? 's' : ''}
                 </p>
                 <div className="space-y-2">
-                  {searchResults.map((result) => (
-                    <div key={result.id} className="p-3 border rounded-lg hover:bg-accent/50 transition-colors">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Badge variant="outline" className="text-xs">
-                              {result.type}
-                            </Badge>
-                            <span className="font-medium">{result.name}</span>
+                  {searchResults.map((result: any) => {
+                    const repo = result.file_repositories;
+                    return (
+                      <div key={result.id} className="p-3 border rounded-lg hover:bg-accent/50 transition-colors">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <FileText className="h-4 w-4 text-muted-foreground" />
+                              <span className="font-medium">{result.file_name}</span>
+                            </div>
+                            {result.description && (
+                              <p className="text-sm text-muted-foreground">{result.description}</p>
+                            )}
+                            <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                              {repo && (
+                                <div className="flex items-center gap-1">
+                                  <Folder className="h-3 w-3" />
+                                  <span>{repo.repository_name}</span>
+                                </div>
+                              )}
+                              {result.file_path && (
+                                <span className="truncate max-w-xs">{result.file_path}</span>
+                              )}
+                              <span>{new Date(result.created_at).toLocaleDateString()}</span>
+                            </div>
+                            {result.tags && result.tags.length > 0 && (
+                              <div className="flex gap-1 mt-2">
+                                {result.tags.map((tag: string, idx: number) => (
+                                  <Badge key={idx} variant="outline" className="text-xs">
+                                    {tag}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
                           </div>
-                          <p className="text-sm text-muted-foreground">{result.description}</p>
-                          {result.repo && (
-                            <p className="text-xs text-muted-foreground mt-1">in {result.repo}</p>
-                          )}
                         </div>
-                        {result.stars && (
-                          <Badge variant="outline" className="ml-2">
-                            ⭐ {result.stars}
-                          </Badge>
-                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
             
-            {searchQuery && searchResults.length === 0 && !isSearching && (
+            {searchQuery && searchResults && searchResults.length === 0 && !isSearching && (
               <p className="text-sm text-muted-foreground mt-4">
-                No results found for "{searchQuery}"
+                No files found for "{searchQuery}". Try searching from the <a href="/files" className="text-primary underline">File Collaboration</a> page.
               </p>
             )}
           </CardContent>
