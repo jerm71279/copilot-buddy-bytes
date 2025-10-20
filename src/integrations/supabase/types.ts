@@ -12951,6 +12951,10 @@ export type Database = {
         Args: { _customer_id: string; _framework_id: string }
         Returns: string
       }
+      strip_control_chars: {
+        Args: { input: string }
+        Returns: string
+      }
       validate_array_input: {
         Args: {
           field_name?: string

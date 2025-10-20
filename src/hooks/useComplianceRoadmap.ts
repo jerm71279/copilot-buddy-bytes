@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getUserCustomerId } from "@/lib/supabaseHelpers";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import type { 
@@ -19,12 +20,8 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
     const fetchCustomerId = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('customer_id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        setCustomerId(profile?.customer_id || null);
+        const id = await getUserCustomerId(user.id);
+        setCustomerId(id);
       }
     };
     fetchCustomerId();
