@@ -154,6 +154,7 @@ const App = () => (
           <Route path="/integrations" element={<IntegrationsPage />} />
           <Route path="/developers" element={<Developers />} />
           <Route path="/github" element={<GitHub />} />
+          <Route path="/dashboard/github" element={<GitHub />} />
           <Route path="/architecture-diagram" element={<ArchitectureDiagram />} />
           <Route path="/architecture/canvas" element={<ArchitectureCanvas />} />
           <Route path="/navigation-scaffold" element={<NavigationScaffold />} />
