@@ -255,6 +255,13 @@ const Navigation = () => {
                     AI Metrics
                   </Link>
                   <Link 
+                    to="/insight-queue"
+                    className="text-sm font-medium hover:text-accent transition-colors flex items-center gap-1"
+                  >
+                    <CheckCircle2 className="h-4 w-4" />
+                    Review Queue
+                  </Link>
+                  <Link 
                     to="/compliance"
                     className="text-sm font-medium hover:text-accent transition-colors"
                   >

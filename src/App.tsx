@@ -18,6 +18,7 @@ import KnowledgeUpload from "./pages/KnowledgeUpload";
 import IngestTrainingVideos from "./pages/IngestTrainingVideos";
 import BusinessKnowledge from "./pages/BusinessKnowledge";
 import FeedbackMetrics from "./pages/FeedbackMetrics";
+import InsightQueue from "./pages/InsightQueue";
 import AdminDashboard from "./pages/AdminDashboard";
 import ComplianceDashboard from "./pages/ComplianceDashboard";
 import ITDashboard from "./pages/ITDashboard";
@@ -271,6 +272,11 @@ const App = () => (
           <Route path="/feedback-metrics" element={
             <ProtectedRoute>
               <FeedbackMetrics />
+            </ProtectedRoute>
+          } />
+          <Route path="/insight-queue" element={
+            <ProtectedRoute>
+              <InsightQueue />
             </ProtectedRoute>
           } />
           

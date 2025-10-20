@@ -7049,47 +7049,59 @@ export type Database = {
       }
       knowledge_insights: {
         Row: {
+          auto_approved: boolean | null
           confidence_score: number | null
           created_at: string
           customer_id: string
           data_sources: Json | null
+          department: string | null
           description: string
           id: string
           insight_type: string
           related_articles: string[] | null
           related_workflows: string[] | null
+          relevance_score: number | null
           reviewed_at: string | null
           reviewed_by: string | null
+          reviewed_notes: string | null
           status: string
           title: string
         }
         Insert: {
+          auto_approved?: boolean | null
           confidence_score?: number | null
           created_at?: string
           customer_id: string
           data_sources?: Json | null
+          department?: string | null
           description: string
           id?: string
           insight_type: string
           related_articles?: string[] | null
           related_workflows?: string[] | null
+          relevance_score?: number | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          reviewed_notes?: string | null
           status?: string
           title: string
         }
         Update: {
+          auto_approved?: boolean | null
           confidence_score?: number | null
           created_at?: string
           customer_id?: string
           data_sources?: Json | null
+          department?: string | null
           description?: string
           id?: string
           insight_type?: string
           related_articles?: string[] | null
           related_workflows?: string[] | null
+          relevance_score?: number | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          reviewed_notes?: string | null
           status?: string
           title?: string
         }
