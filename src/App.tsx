@@ -16,6 +16,7 @@ import KnowledgeBase from "./pages/KnowledgeBase";
 import KnowledgeArticle from "./pages/KnowledgeArticle";
 import KnowledgeUpload from "./pages/KnowledgeUpload";
 import IngestTrainingVideos from "./pages/IngestTrainingVideos";
+import BusinessKnowledge from "./pages/BusinessKnowledge";
 import AdminDashboard from "./pages/AdminDashboard";
 import ComplianceDashboard from "./pages/ComplianceDashboard";
 import ITDashboard from "./pages/ITDashboard";
@@ -259,6 +260,11 @@ const App = () => (
           <Route path="/knowledge/analyze-training" element={
             <ProtectedRoute>
               <IngestTrainingVideos />
+            </ProtectedRoute>
+          } />
+          <Route path="/business-knowledge" element={
+            <ProtectedRoute>
+              <BusinessKnowledge />
             </ProtectedRoute>
           } />
           
