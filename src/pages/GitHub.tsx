@@ -80,7 +80,7 @@ const GitHub = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto p-6 pt-24">
+      <div className="container mx-auto p-6 pt-28">{/* Increased padding-top from pt-24 to pt-28 */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Github className="h-8 w-8 text-primary" />
