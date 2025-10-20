@@ -26,7 +26,7 @@ export function PortalsBar({
 }: PortalsBarProps) {
   return (
     <ScrollArea className="w-full">
-      <div className="flex gap-2 pb-2 min-w-max">
+      <div className="flex gap-2 pb-2 pr-8 min-w-max">
         {portals.map((portal) => {
           const isActive = currentPath === portal.path || 
             (portal.children && portal.children.some(child => currentPath.startsWith(child.path)));

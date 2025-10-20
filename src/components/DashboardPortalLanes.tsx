@@ -196,7 +196,7 @@ export default function DashboardPortalLanes() {
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-2">
           <ScrollArea className="w-full">
-            <div className="flex gap-2 pb-2 min-w-max">
+            <div className="flex gap-2 pb-2 pr-8 min-w-max">
               {filteredCategories.map((category) => {
                 const CategoryIcon = category.icon;
                 const isActive = category.dashboards.some((d) => currentPath === d.path || currentPath.startsWith(d.path + '/'));
