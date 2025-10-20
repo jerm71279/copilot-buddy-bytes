@@ -19,6 +19,7 @@ import IngestTrainingVideos from "./pages/IngestTrainingVideos";
 import BusinessKnowledge from "./pages/BusinessKnowledge";
 import FeedbackMetrics from "./pages/FeedbackMetrics";
 import InsightQueue from "./pages/InsightQueue";
+import WorkflowKnowledgeIntegration from "./pages/WorkflowKnowledgeIntegration";
 import AdminDashboard from "./pages/AdminDashboard";
 import ComplianceDashboard from "./pages/ComplianceDashboard";
 import ITDashboard from "./pages/ITDashboard";
@@ -277,6 +278,11 @@ const App = () => (
           <Route path="/insight-queue" element={
             <ProtectedRoute>
               <InsightQueue />
+            </ProtectedRoute>
+          } />
+          <Route path="/workflow-knowledge-integration" element={
+            <ProtectedRoute>
+              <WorkflowKnowledgeIntegration />
             </ProtectedRoute>
           } />
           

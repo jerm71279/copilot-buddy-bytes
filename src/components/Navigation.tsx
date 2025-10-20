@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, LogOut, Brain, Search, LayoutDashboard, Globe, User, CheckCircle2, Shield, TrendingUp } from "lucide-react";
+import { Menu, LogOut, Brain, Search, LayoutDashboard, Globe, User, CheckCircle2, Shield, TrendingUp, Zap } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -262,6 +262,13 @@ const Navigation = () => {
                     Review Queue
                   </Link>
                   <Link 
+                    to="/workflow-knowledge-integration"
+                    className="text-sm font-medium hover:text-accent transition-colors flex items-center gap-1"
+                  >
+                    <Zap className="h-4 w-4" />
+                    Workflow-KB
+                  </Link>
+                  <Link 
                     to="/compliance"
                     className="text-sm font-medium hover:text-accent transition-colors"
                   >
@@ -496,6 +503,38 @@ const Navigation = () => {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Knowledge
+                  </Link>
+                  <Link 
+                    to="/business-knowledge"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded flex items-center gap-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Brain className="h-4 w-4" />
+                    Business Docs
+                  </Link>
+                  <Link 
+                    to="/feedback-metrics"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded flex items-center gap-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                    AI Metrics
+                  </Link>
+                  <Link 
+                    to="/insight-queue"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded flex items-center gap-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <CheckCircle2 className="h-4 w-4" />
+                    Review Queue
+                  </Link>
+                  <Link 
+                    to="/workflow-knowledge-integration"
+                    className="text-sm font-medium hover:bg-accent/10 transition-colors py-3 px-4 rounded flex items-center gap-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Zap className="h-4 w-4" />
+                    Workflow-KB
                   </Link>
                   <Link 
                     to="/change-management"
