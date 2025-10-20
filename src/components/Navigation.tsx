@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, LogOut, Brain, Search, LayoutDashboard, Globe, User, CheckCircle2, Shield } from "lucide-react";
+import { Menu, LogOut, Brain, Search, LayoutDashboard, Globe, User, CheckCircle2, Shield, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -246,6 +246,13 @@ const Navigation = () => {
                   >
                     <Brain className="h-4 w-4" />
                     Business Docs
+                  </Link>
+                  <Link 
+                    to="/feedback-metrics"
+                    className="text-sm font-medium hover:text-accent transition-colors flex items-center gap-1"
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                    AI Metrics
                   </Link>
                   <Link 
                     to="/compliance"

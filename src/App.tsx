@@ -17,6 +17,7 @@ import KnowledgeArticle from "./pages/KnowledgeArticle";
 import KnowledgeUpload from "./pages/KnowledgeUpload";
 import IngestTrainingVideos from "./pages/IngestTrainingVideos";
 import BusinessKnowledge from "./pages/BusinessKnowledge";
+import FeedbackMetrics from "./pages/FeedbackMetrics";
 import AdminDashboard from "./pages/AdminDashboard";
 import ComplianceDashboard from "./pages/ComplianceDashboard";
 import ITDashboard from "./pages/ITDashboard";
@@ -265,6 +266,11 @@ const App = () => (
           <Route path="/business-knowledge" element={
             <ProtectedRoute>
               <BusinessKnowledge />
+            </ProtectedRoute>
+          } />
+          <Route path="/feedback-metrics" element={
+            <ProtectedRoute>
+              <FeedbackMetrics />
             </ProtectedRoute>
           } />
           
