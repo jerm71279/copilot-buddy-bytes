@@ -3,10 +3,11 @@ import { useComplianceRoadmap } from "@/hooks/useComplianceRoadmap";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { RoadmapTimeline } from "@/components/compliance/RoadmapTimeline";
 import { RoadmapMilestones } from "@/components/compliance/RoadmapMilestones";
+import { RoadmapStatusBadge } from "@/components/compliance/RoadmapStatusBadge";
+import { calculateOverallProgress, getStageStatistics } from "@/lib/compliance/roadmap-utils";
 import { Plus, Target, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,19 +16,14 @@ const ComplianceRoadmap = () => {
   const [selectedFramework, setSelectedFramework] = useState<string>("");
   const { stages, milestones, frameworks, isLoading, initializeRoadmap } = useComplianceRoadmap(selectedFramework);
 
-  const calculateOverallProgress = () => {
-    if (!stages || stages.length === 0) return 0;
-    const total = stages.reduce((sum, stage) => sum + (stage.progress_percentage || 0), 0);
-    return Math.round(total / stages.length);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-success';
-      case 'in_progress': return 'bg-primary';
-      case 'blocked': return 'bg-destructive';
-      default: return 'bg-muted';
-    }
+  // Use shared utility functions
+  const overallProgress = stages ? calculateOverallProgress(stages) : 0;
+  const stats = stages ? getStageStatistics(stages) : {
+    completed: 0,
+    inProgress: 0,
+    notStarted: 0,
+    blocked: 0,
+    total: 0,
   };
 
   const handleInitializeRoadmap = async () => {
@@ -123,35 +119,40 @@ const ComplianceRoadmap = () => {
                     </CardTitle>
                     <CardDescription>Your compliance journey status</CardDescription>
                   </div>
-                  <Badge variant="outline" className={getStatusColor(stages[0]?.status || 'not_started')}>
-                    {calculateOverallProgress()}% Complete
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <RoadmapStatusBadge 
+                      status={stages[0]?.status || 'not_started'} 
+                      type="roadmap"
+                      className="border-0"
+                    />
+                    <span className="text-sm font-medium">{overallProgress}% Complete</span>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <Progress value={calculateOverallProgress()} className="h-3" />
+                <Progress value={overallProgress} className="h-3" />
                 <div className="grid grid-cols-4 gap-4 mt-6">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-success">
-                      {stages.filter(s => s.status === 'completed').length}
+                      {stats.completed}
                     </div>
                     <div className="text-sm text-muted-foreground">Completed</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-primary">
-                      {stages.filter(s => s.status === 'in_progress').length}
+                      {stats.inProgress}
                     </div>
                     <div className="text-sm text-muted-foreground">In Progress</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-muted-foreground">
-                      {stages.filter(s => s.status === 'not_started').length}
+                      {stats.notStarted}
                     </div>
                     <div className="text-sm text-muted-foreground">Not Started</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-destructive">
-                      {stages.filter(s => s.status === 'blocked').length}
+                      {stats.blocked}
                     </div>
                     <div className="text-sm text-muted-foreground">Blocked</div>
                   </div>

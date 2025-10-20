@@ -2,6 +2,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
+import type { 
+  RoadmapStage, 
+  RoadmapMilestone, 
+  ComplianceFramework,
+  UpdateStageParams,
+  UpdateMilestoneParams 
+} from "@/types/compliance-roadmap";
 
 export const useComplianceRoadmap = (frameworkId?: string) => {
   const { toast } = useToast();
@@ -24,7 +31,7 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
   }, []);
 
   // Fetch active frameworks
-  const { data: frameworks } = useQuery({
+  const { data: frameworks } = useQuery<ComplianceFramework[]>({
     queryKey: ['compliance-frameworks'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -34,12 +41,12 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
         .order('framework_name');
       
       if (error) throw error;
-      return data;
+      return data as ComplianceFramework[];
     },
   });
 
   // Fetch roadmap stages
-  const { data: stages, isLoading } = useQuery({
+  const { data: stages, isLoading } = useQuery<RoadmapStage[]>({
     queryKey: ['compliance-roadmap-stages', frameworkId, customerId],
     queryFn: async () => {
       if (!frameworkId || !customerId) return [];
@@ -52,13 +59,13 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
         .order('stage_number');
       
       if (error) throw error;
-      return data;
+      return data as RoadmapStage[];
     },
     enabled: !!frameworkId && !!customerId,
   });
 
   // Fetch milestones for all stages
-  const { data: milestones } = useQuery({
+  const { data: milestones } = useQuery<RoadmapMilestone[]>({
     queryKey: ['compliance-roadmap-milestones', frameworkId, customerId],
     queryFn: async () => {
       if (!frameworkId || !customerId || !stages?.length) return [];
@@ -71,7 +78,7 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
         .order('sequence_order');
       
       if (error) throw error;
-      return data;
+      return data as RoadmapMilestone[];
     },
     enabled: !!frameworkId && !!customerId && !!stages?.length,
   });
@@ -107,11 +114,7 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
 
   // Update stage status
   const updateStageMutation = useMutation({
-    mutationFn: async ({ stageId, status, progress }: { 
-      stageId: string; 
-      status?: string; 
-      progress?: number;
-    }) => {
+    mutationFn: async ({ stageId, status, progress }: UpdateStageParams) => {
       const updates: any = { updated_at: new Date().toISOString() };
       if (status) {
         updates.status = status;
@@ -152,10 +155,7 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
 
   // Update milestone status
   const updateMilestoneMutation = useMutation({
-    mutationFn: async ({ milestoneId, status }: { 
-      milestoneId: string; 
-      status: string;
-    }) => {
+    mutationFn: async ({ milestoneId, status }: UpdateMilestoneParams) => {
       const updates: any = { status, updated_at: new Date().toISOString() };
       if (status === 'completed') {
         updates.completed_at = new Date().toISOString();

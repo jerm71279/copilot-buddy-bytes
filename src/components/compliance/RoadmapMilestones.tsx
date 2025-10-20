@@ -1,70 +1,26 @@
+/**
+ * Roadmap Milestones Component
+ * Displays detailed milestones and action items for each stage
+ * REFACTORED: Now uses shared utilities and types
+ */
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CheckCircle2, Circle, Clock, AlertCircle, ChevronRight } from "lucide-react";
-
-interface RoadmapStage {
-  id: string;
-  stage_number: number;
-  stage_name: string;
-}
-
-interface RoadmapMilestone {
-  id: string;
-  stage_id: string;
-  milestone_name: string;
-  milestone_description: string;
-  sequence_order: number;
-  status: string;
-  required_actions: string[];
-  success_criteria: string[];
-  due_date: string | null;
-  evidence_required: boolean;
-}
-
-interface RoadmapMilestonesProps {
-  stages: RoadmapStage[];
-  milestones: RoadmapMilestone[];
-}
+import { Circle, ChevronRight, CheckCircle2 } from "lucide-react";
+import { RoadmapStatusIcon } from "./RoadmapStatusIcon";
+import { RoadmapStatusBadge } from "./RoadmapStatusBadge";
+import type { RoadmapMilestonesProps, RoadmapMilestone } from "@/types/compliance-roadmap";
 
 export const RoadmapMilestones = ({ stages, milestones }: RoadmapMilestonesProps) => {
   const [selectedStage, setSelectedStage] = useState<string>(stages[0]?.id || '');
 
-  const getStageMilestones = (stageId: string) => {
+  const getStageMilestones = (stageId: string): RoadmapMilestone[] => {
     return milestones
       ?.filter(m => m.stage_id === stageId)
       .sort((a, b) => a.sequence_order - b.sequence_order) || [];
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle2 className="h-5 w-5 text-success" />;
-      case 'in_progress':
-        return <Clock className="h-5 w-5 text-primary" />;
-      case 'blocked':
-        return <AlertCircle className="h-5 w-5 text-destructive" />;
-      default:
-        return <Circle className="h-5 w-5 text-muted-foreground" />;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, string> = {
-      completed: 'bg-success/10 text-success border-success',
-      in_progress: 'bg-primary/10 text-primary border-primary',
-      blocked: 'bg-destructive/10 text-destructive border-destructive',
-      pending: 'bg-muted text-muted-foreground',
-      skipped: 'bg-muted/50 text-muted-foreground',
-    };
-    
-    return (
-      <Badge variant="outline" className={variants[status]}>
-        {status.replace('_', ' ')}
-      </Badge>
-    );
   };
 
   const currentStageMilestones = getStageMilestones(selectedStage);
@@ -93,7 +49,7 @@ export const RoadmapMilestones = ({ stages, milestones }: RoadmapMilestonesProps
           ))}
         </div>
 
-        {/* Milestones */}
+        {/* Milestones List */}
         {currentStageMilestones.length === 0 ? (
           <div className="text-center py-12">
             <Circle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -112,11 +68,11 @@ export const RoadmapMilestones = ({ stages, milestones }: RoadmapMilestonesProps
               >
                 <AccordionTrigger className="hover:no-underline">
                   <div className="flex items-center gap-3 flex-1">
-                    {getStatusIcon(milestone.status)}
+                    <RoadmapStatusIcon status={milestone.status} />
                     <div className="flex-1 text-left">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-semibold">{milestone.milestone_name}</span>
-                        {getStatusBadge(milestone.status)}
+                        <RoadmapStatusBadge status={milestone.status} type="milestone" />
                         {milestone.evidence_required && (
                           <Badge variant="outline" className="text-xs">
                             Evidence Required
@@ -131,6 +87,7 @@ export const RoadmapMilestones = ({ stages, milestones }: RoadmapMilestonesProps
                     </div>
                   </div>
                 </AccordionTrigger>
+                
                 <AccordionContent className="space-y-4 pt-4">
                   {/* Description */}
                   {milestone.milestone_description && (
@@ -142,7 +99,7 @@ export const RoadmapMilestones = ({ stages, milestones }: RoadmapMilestonesProps
                   )}
 
                   {/* Required Actions */}
-                  {milestone.required_actions?.length > 0 && (
+                  {milestone.required_actions && milestone.required_actions.length > 0 && (
                     <div>
                       <h5 className="text-sm font-semibold mb-2 flex items-center gap-2">
                         <ChevronRight className="h-4 w-4" />
@@ -159,7 +116,7 @@ export const RoadmapMilestones = ({ stages, milestones }: RoadmapMilestonesProps
                   )}
 
                   {/* Success Criteria */}
-                  {milestone.success_criteria?.length > 0 && (
+                  {milestone.success_criteria && milestone.success_criteria.length > 0 && (
                     <div>
                       <h5 className="text-sm font-semibold mb-2 flex items-center gap-2">
                         <CheckCircle2 className="h-4 w-4" />
