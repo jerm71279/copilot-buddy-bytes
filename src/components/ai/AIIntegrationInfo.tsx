@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Eye, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export const AIIntegrationInfo = () => {
   return (
@@ -50,9 +51,20 @@ export const AIIntegrationInfo = () => {
         </div>
 
         <div className="pt-4 border-t">
+          <div className="flex flex-wrap gap-2 mb-3">
+            <Badge variant="outline" className="gap-1">
+              <Eye className="h-3 w-3" />
+              Vision Analysis
+            </Badge>
+            <Badge variant="outline" className="gap-1">
+              <Zap className="h-3 w-3" />
+              Prompt Caching
+            </Badge>
+          </div>
           <p className="text-sm text-muted-foreground">
-            <strong>💡 Pro Tip:</strong> Start with Level 1 to build your knowledge base, then use Level 2 for operational insights, 
-            and access Level 3 assistants throughout your daily workflow for contextual help.
+            <strong>💡 Pro Tip:</strong> Start with Level 1 to build your knowledge base, use Level 2 for operational insights, 
+            and access Level 3 assistants throughout your workflow. Vision Analysis processes images for compliance checks, 
+            while Prompt Caching reduces costs by up to 90% on repeated AI operations.
           </p>
         </div>
       </CardContent>

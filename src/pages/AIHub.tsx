@@ -1,6 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { AILevelCard } from "@/components/ai/AILevelCard";
 import { AIIntegrationInfo } from "@/components/ai/AIIntegrationInfo";
+import { VisionAnalysisCard } from "@/components/ai/VisionAnalysisCard";
+import { CacheMetricsCard } from "@/components/ai/CacheMetricsCard";
 import { aiLevels } from "@/config/aiHubConfig";
 import {
   Brain,
@@ -46,6 +48,21 @@ const AIHub = () => {
 
         {/* Integration Info */}
         <AIIntegrationInfo />
+
+        {/* New Capabilities Section */}
+        <div className="mt-8 space-y-6">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold mb-2">Advanced AI Capabilities</h2>
+            <p className="text-muted-foreground">
+              Enhanced with Vision Analysis and Intelligent Prompt Caching
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <VisionAnalysisCard />
+            <CacheMetricsCard />
+          </div>
+        </div>
       </div>
     </div>
   );

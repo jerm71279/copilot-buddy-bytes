@@ -756,6 +756,93 @@ export type Database = {
           },
         ]
       }
+      ai_prompt_cache: {
+        Row: {
+          cache_key: string
+          cached_tokens: number
+          created_at: string
+          customer_id: string
+          expires_at: string
+          hit_count: number
+          id: string
+          last_accessed_at: string
+          model: string
+          response_data: Json
+          system_prompt: string
+          user_id: string
+        }
+        Insert: {
+          cache_key: string
+          cached_tokens?: number
+          created_at?: string
+          customer_id: string
+          expires_at?: string
+          hit_count?: number
+          id?: string
+          last_accessed_at?: string
+          model: string
+          response_data: Json
+          system_prompt: string
+          user_id: string
+        }
+        Update: {
+          cache_key?: string
+          cached_tokens?: number
+          created_at?: string
+          customer_id?: string
+          expires_at?: string
+          hit_count?: number
+          id?: string
+          last_accessed_at?: string
+          model?: string
+          response_data?: Json
+          system_prompt?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_vision_analysis: {
+        Row: {
+          analysis_type: string
+          confidence_score: number | null
+          created_at: string
+          customer_id: string
+          id: string
+          image_url: string
+          model_used: string
+          processing_time_ms: number | null
+          prompt: string
+          result: Json
+          user_id: string
+        }
+        Insert: {
+          analysis_type: string
+          confidence_score?: number | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          image_url: string
+          model_used: string
+          processing_time_ms?: number | null
+          prompt: string
+          result: Json
+          user_id: string
+        }
+        Update: {
+          analysis_type?: string
+          confidence_score?: number | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          image_url?: string
+          model_used?: string
+          processing_time_ms?: number | null
+          prompt?: string
+          result?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       anomaly_detections: {
         Row: {
           affected_user_id: string | null
@@ -1022,7 +1109,7 @@ export type Database = {
           detected_at: string
           event_details: Json
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           severity: string
           stage: string
           user_id: string | null
@@ -1035,7 +1122,7 @@ export type Database = {
           detected_at?: string
           event_details: Json
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           severity: string
           stage: string
           user_id?: string | null
@@ -1048,7 +1135,7 @@ export type Database = {
           detected_at?: string
           event_details?: Json
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           severity?: string
           stage?: string
           user_id?: string | null
@@ -3320,10 +3407,10 @@ export type Database = {
           hostname: string | null
           id: string
           integration_source: string | null
-          ip_address: unknown | null
+          ip_address: unknown
           last_audit_date: string | null
           location: string | null
-          mac_address: unknown | null
+          mac_address: unknown
           manufacturer: string | null
           model: string | null
           ninjaone_device_id: string | null
@@ -3361,10 +3448,10 @@ export type Database = {
           hostname?: string | null
           id?: string
           integration_source?: string | null
-          ip_address?: unknown | null
+          ip_address?: unknown
           last_audit_date?: string | null
           location?: string | null
-          mac_address?: unknown | null
+          mac_address?: unknown
           manufacturer?: string | null
           model?: string | null
           ninjaone_device_id?: string | null
@@ -3402,10 +3489,10 @@ export type Database = {
           hostname?: string | null
           id?: string
           integration_source?: string | null
-          ip_address?: unknown | null
+          ip_address?: unknown
           last_audit_date?: string | null
           location?: string | null
-          mac_address?: unknown | null
+          mac_address?: unknown
           manufacturer?: string | null
           model?: string | null
           ninjaone_device_id?: string | null
@@ -3571,7 +3658,7 @@ export type Database = {
           created_at: string
           customer_id: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           metadata: Json | null
           user_agent: string | null
           user_id: string | null
@@ -3582,7 +3669,7 @@ export type Database = {
           created_at?: string
           customer_id: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           user_agent?: string | null
           user_id?: string | null
@@ -3593,7 +3680,7 @@ export type Database = {
           created_at?: string
           customer_id?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           user_agent?: string | null
           user_id?: string | null
@@ -6286,7 +6373,7 @@ export type Database = {
           customer_id: string
           id: string
           incident_id: string | null
-          ip_address: unknown | null
+          ip_address: unknown
           resource_id: string
           user_id: string | null
         }
@@ -6298,7 +6385,7 @@ export type Database = {
           customer_id: string
           id?: string
           incident_id?: string | null
-          ip_address?: unknown | null
+          ip_address?: unknown
           resource_id: string
           user_id?: string | null
         }
@@ -6310,7 +6397,7 @@ export type Database = {
           customer_id?: string
           id?: string
           incident_id?: string | null
-          ip_address?: unknown | null
+          ip_address?: unknown
           resource_id?: string
           user_id?: string | null
         }
@@ -10290,7 +10377,7 @@ export type Database = {
           customer_id: string
           expires_at: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           is_valid: boolean
           policy_type: string
           policy_version: string
@@ -10305,7 +10392,7 @@ export type Database = {
           customer_id: string
           expires_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           is_valid?: boolean
           policy_type: string
           policy_version: string
@@ -10320,7 +10407,7 @@ export type Database = {
           customer_id?: string
           expires_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           is_valid?: boolean
           policy_type?: string
           policy_version?: string
@@ -11686,11 +11773,11 @@ export type Database = {
           device_type: string
           hostname: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           is_active: boolean | null
           is_saw: boolean | null
           last_seen_at: string | null
-          mac_address: unknown | null
+          mac_address: unknown
           notes: string | null
           operating_system: string | null
           registered_at: string
@@ -11709,11 +11796,11 @@ export type Database = {
           device_type: string
           hostname?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           is_active?: boolean | null
           is_saw?: boolean | null
           last_seen_at?: string | null
-          mac_address?: unknown | null
+          mac_address?: unknown
           notes?: string | null
           operating_system?: string | null
           registered_at?: string
@@ -11732,11 +11819,11 @@ export type Database = {
           device_type?: string
           hostname?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           is_active?: boolean | null
           is_saw?: boolean | null
           last_seen_at?: string | null
-          mac_address?: unknown | null
+          mac_address?: unknown
           notes?: string | null
           operating_system?: string | null
           registered_at?: string
@@ -12525,10 +12612,10 @@ export type Database = {
           id: string | null
           inbound_relationships: number | null
           integration_source: string | null
-          ip_address: unknown | null
+          ip_address: unknown
           last_audit_date: string | null
           location: string | null
-          mac_address: unknown | null
+          mac_address: unknown
           manufacturer: string | null
           model: string | null
           ninjaone_device_id: string | null
@@ -12698,7 +12785,7 @@ export type Database = {
           device_name: string | null
           device_type: string | null
           id: string | null
-          ip_address: unknown | null
+          ip_address: unknown
           last_poll_at: string | null
           last_syslog_at: string | null
           location: string | null
@@ -12732,7 +12819,7 @@ export type Database = {
           message: string | null
           monitor_type: string | null
           severity: string | null
-          source_ip: unknown | null
+          source_ip: unknown
         }
         Relationships: []
       }
@@ -12783,10 +12870,7 @@ export type Database = {
       }
     }
     Functions: {
-      calculate_ci_health: {
-        Args: { ci_id_param: string }
-        Returns: number
-      }
+      calculate_ci_health: { Args: { ci_id_param: string }; Returns: number }
       calculate_risk_score: {
         Args: {
           impact: Database["public"]["Enums"]["risk_impact"]
@@ -12794,14 +12878,12 @@ export type Database = {
         }
         Returns: number
       }
-      can_manage_roles: {
-        Args: { _user_id: string }
-        Returns: boolean
-      }
+      can_manage_roles: { Args: { _user_id: string }; Returns: boolean }
       cascade_framework_to_children: {
         Args: { _framework_id: string; _parent_customer_id: string }
         Returns: undefined
       }
+      clean_expired_cache: { Args: never; Returns: undefined }
       create_employee_onboarding_template: {
         Args: { _created_by: string; _customer_id: string }
         Returns: string
@@ -12810,82 +12892,25 @@ export type Database = {
         Args: { _customer_id: string; _feature_name: string }
         Returns: boolean
       }
-      generate_account_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_certificate_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_change_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_client_ticket_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_contract_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_control_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_employee_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_expense_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_incident_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_invoice_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_lead_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_opportunity_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_po_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_project_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_quote_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_risk_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_service_request_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_ticket_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_vendor_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_account_number: { Args: never; Returns: string }
+      generate_certificate_number: { Args: never; Returns: string }
+      generate_change_number: { Args: never; Returns: string }
+      generate_client_ticket_number: { Args: never; Returns: string }
+      generate_contract_number: { Args: never; Returns: string }
+      generate_control_id: { Args: never; Returns: string }
+      generate_employee_number: { Args: never; Returns: string }
+      generate_expense_number: { Args: never; Returns: string }
+      generate_incident_number: { Args: never; Returns: string }
+      generate_invoice_number: { Args: never; Returns: string }
+      generate_lead_number: { Args: never; Returns: string }
+      generate_opportunity_number: { Args: never; Returns: string }
+      generate_po_number: { Args: never; Returns: string }
+      generate_project_number: { Args: never; Returns: string }
+      generate_quote_number: { Args: never; Returns: string }
+      generate_risk_id: { Args: never; Returns: string }
+      generate_service_request_number: { Args: never; Returns: string }
+      generate_ticket_number: { Args: never; Returns: string }
+      generate_vendor_code: { Args: never; Returns: string }
       get_child_customers: {
         Args: { _parent_customer_id: string }
         Returns: {
@@ -12914,10 +12939,7 @@ export type Database = {
           integration_id: string
         }[]
       }
-      get_user_customer_id: {
-        Args: { _user_id: string }
-        Returns: string
-      }
+      get_user_customer_id: { Args: { _user_id: string }; Returns: string }
       has_permission: {
         Args: {
           _min_permission?: string
@@ -12951,10 +12973,7 @@ export type Database = {
         Args: { _customer_id: string; _framework_id: string }
         Returns: string
       }
-      strip_control_chars: {
-        Args: { input: string }
-        Returns: string
-      }
+      strip_control_chars: { Args: { input: string }; Returns: string }
       validate_array_input: {
         Args: {
           field_name?: string

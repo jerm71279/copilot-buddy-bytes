@@ -1,5 +1,8 @@
 project_id = "olrpexessehcijdvogxo"
 
+[functions.vision-analyzer]
+verify_jwt = true
+
 [functions.slab-sync]
 verify_jwt = true
 
