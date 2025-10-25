@@ -152,6 +152,11 @@ import DataQuality from "./pages/DataQuality";
 import CrossDomainAnalytics from "./pages/CrossDomainAnalytics";
 import DataGovernance from "./pages/DataGovernance";
 import AIInsightsHub from "./pages/AIInsightsHub";
+import RealTimeAnalytics from "./pages/RealTimeAnalytics";
+import ETLPipelineOrchestration from "./pages/ETLPipelineOrchestration";
+import PredictiveAnalyticsDashboard from "./pages/PredictiveAnalyticsDashboard";
+import ExtendedThinkingAI from "./pages/ExtendedThinkingAI";
+import CodeExecutionAI from "./pages/CodeExecutionAI";
 
 const queryClient = new QueryClient();
 
@@ -984,6 +989,31 @@ const App = () => (
           <Route path="/ai-insights" element={
             <ProtectedRoute>
               <AIInsightsHub />
+            </ProtectedRoute>
+          } />
+          <Route path="/realtime-analytics" element={
+            <ProtectedRoute>
+              <RealTimeAnalytics />
+            </ProtectedRoute>
+          } />
+          <Route path="/etl-pipelines" element={
+            <ProtectedRoute>
+              <ETLPipelineOrchestration />
+            </ProtectedRoute>
+          } />
+          <Route path="/predictive-analytics" element={
+            <ProtectedRoute>
+              <PredictiveAnalyticsDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/extended-thinking" element={
+            <ProtectedRoute>
+              <ExtendedThinkingAI />
+            </ProtectedRoute>
+          } />
+          <Route path="/code-execution" element={
+            <ProtectedRoute>
+              <CodeExecutionAI />
             </ProtectedRoute>
           } />
           
