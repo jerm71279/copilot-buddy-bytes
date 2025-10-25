@@ -117,46 +117,27 @@ try {
   console.warn('⚠️  Edge functions: Some issues found\n');
 }
 
-// ===== 6. INPUT VALIDATION COVERAGE =====
-console.log('🛡️  Checking input validation in edge functions...');
-const functionDirs = readdirSync('supabase/functions', { withFileTypes: true })
-  .filter(d => d.isDirectory())
-  .map(d => d.name);
-
-let missingValidation = [];
-for (const funcName of functionDirs) {
-  try {
-    const indexPath = join('supabase/functions', funcName, 'index.ts');
-    const content = readFileSync(indexPath, 'utf8');
-    
-    // Check if function handles POST/PUT and has validation
-    if ((content.includes('POST') || content.includes('PUT')) && 
-        content.includes('req.json()')) {
-      
-      const hasValidation = 
-        content.includes('typeof') ||
-        content.includes('Array.isArray') ||
-        content.includes('.slice(') ||
-        content.includes('z.') || // Zod validation
-        content.includes('schema');
-      
-      if (!hasValidation) {
-        missingValidation.push(funcName);
-      }
-    }
-  } catch (err) {
-    // Skip if file doesn't exist
-  }
+// ===== 6. COMPREHENSIVE INPUT SECURITY VALIDATION =====
+console.log('🛡️  Running comprehensive input security validation...');
+try {
+  execSync('node scripts/validate-input-security.js', { stdio: 'pipe' });
+  console.log('✅ Input Security: All validations passed\n');
+} catch (error) {
+  errors.push('Input security validation failed - critical issues detected');
+  console.error('❌ Input Security: Critical issues found\n');
 }
 
-if (missingValidation.length > 0) {
-  warnings.push(`${missingValidation.length} edge functions may need input validation`);
-  console.warn(`⚠️  Functions possibly missing validation: ${missingValidation.join(', ')}\n`);
-} else {
-  console.log('✅ Input validation: All edge functions validated\n');
+// ===== 7. AGGREGATION QUERY VALIDATION =====
+console.log('📊 Running aggregation query validation...');
+try {
+  execSync('node scripts/validate-aggregations.js', { stdio: 'pipe' });
+  console.log('✅ Aggregations: All queries optimized\n');
+} catch (error) {
+  warnings.push('Aggregation optimization opportunities found');
+  console.warn('⚠️  Aggregations: Performance issues detected\n');
 }
 
-// ===== 7. LAYOUT UNIFORMITY =====
+// ===== 8. LAYOUT UNIFORMITY =====
 console.log('🎨 Running Layout Uniformity Check...');
 try {
   execSync('node scripts/validate-layout-uniformity.js', { stdio: 'pipe' });
@@ -166,7 +147,7 @@ try {
   console.warn('⚠️  Layout Uniformity: Some inconsistencies found\n');
 }
 
-// ===== 8. ESLINT =====
+// ===== 9. ESLINT =====
 console.log('🔧 Running ESLint...');
 try {
   execSync('npx eslint src --ext .ts,.tsx --max-warnings 0', { stdio: 'pipe' });
@@ -176,7 +157,7 @@ try {
   console.warn('⚠️  ESLint: Some warnings found\n');
 }
 
-// ===== 9. DOCUMENTATION UPDATES =====
+// ===== 10. DOCUMENTATION UPDATES =====
 console.log('📚 Checking documentation updates...');
 try {
   const recentFixesContent = readFileSync('RECENT_FIXES_2025_10_15.md', 'utf8');
@@ -220,7 +201,9 @@ if (errors.length === 0 && warnings.length === 0) {
   console.log('   • Design System: ✅ No hardcoded colors');
   console.log('   • Security: ✅ All patterns validated');
   console.log('   • Edge Functions: ✅ All validated');
-  console.log('   • Input Validation: ✅ Coverage complete');
+  console.log('   • Input Security: ✅ Comprehensive validation passed');
+  console.log('   • Aggregations: ✅ All queries optimized');
+  console.log('   • Layout Uniformity: ✅ Consistent patterns');
   console.log('   • ESLint: ✅ No issues');
   console.log('   • Documentation: ✅ Up to date\n');
   

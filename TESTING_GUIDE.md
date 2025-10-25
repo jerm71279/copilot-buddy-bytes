@@ -41,6 +41,25 @@ OberaConnect includes comprehensive testing and validation tools to ensure syste
 - department-assistant
 - comprehensive-test-data-generator
 
+**Input Security Validation (9+ comprehensive checks)**
+- Complete input coverage for all `req.json()` extractions
+- Length limit enforcement (200/100/1000/2000 chars)
+- Array batch size limits (max 100 items)
+- SQL injection pattern blocking
+- XSS pattern blocking
+- Control character and null byte filtering
+- Validation order (before database queries)
+- Proper 400 error responses
+- Field-by-field validation coverage
+
+**Aggregation Query Validation (6+ checks)**
+- Performance optimization (WHERE, LIMIT, pagination)
+- NULL handling (COALESCE, NULLIF)
+- Index usage on grouped columns
+- Data type correctness (explicit casting)
+- Client-side aggregation efficiency
+- Query optimization opportunities
+
 **Data Integrity (1+ tests)**
 - Validates workflow execution references
 - Checks for orphaned records
@@ -48,6 +67,7 @@ OberaConnect includes comprehensive testing and validation tools to ensure syste
 **Performance (1+ tests)**
 - Query execution time
 - Response time benchmarks
+- Aggregation query performance
 
 **UI Components (4 tests)**
 - Route accessibility checks
@@ -229,6 +249,8 @@ Audit Trail → Report Generation → Verification
 
 ### Testing Frequency
 - **System Validation**: Run weekly or after major changes
+- **Input Security Validation**: Run after every edge function change
+- **Aggregation Validation**: Run after database query changes
 - **Fuzz Testing**: Run before each release
 - **Test Data Generation**: Use for development/staging only
 - **Flow Tracing**: Use when debugging data flow issues
@@ -251,8 +273,18 @@ Audit Trail → Report Generation → Verification
 
 The test dashboards can be automated through API calls to the edge functions:
 
+```bash
+# Automated validation in CI/CD
+node scripts/validate-all.js
+node scripts/validate-input-security.js
+node scripts/validate-aggregations.js
+
+# Or use npm scripts
+npm run validate
+```
+
 ```typescript
-// Example: Automated validation in CI/CD
+// Edge function testing
 const { data } = await supabase.functions.invoke('comprehensive-test-data-generator');
 const { data: fuzzResults } = await supabase.functions.invoke('input-fuzzer');
 
