@@ -45,11 +45,11 @@ const DataCatalog = () => {
 
   const getClassificationColor = (classification: string) => {
     switch (classification) {
-      case 'public': return 'bg-green-500';
-      case 'internal': return 'bg-blue-500';
-      case 'confidential': return 'bg-orange-500';
-      case 'restricted': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case 'public': return 'bg-primary';
+      case 'internal': return 'bg-secondary';
+      case 'confidential': return 'bg-accent';
+      case 'restricted': return 'bg-destructive';
+      default: return 'bg-muted';
     }
   };
 

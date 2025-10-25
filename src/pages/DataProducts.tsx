@@ -23,13 +23,13 @@ const DataProducts = () => {
 
   const getDomainColor = (domain: string) => {
     const colors: Record<string, string> = {
-      hr: 'bg-blue-500',
-      it: 'bg-purple-500',
-      finance: 'bg-green-500',
-      sales: 'bg-orange-500',
-      compliance: 'bg-red-500'
+      hr: 'bg-secondary',
+      it: 'bg-accent',
+      finance: 'bg-primary',
+      sales: 'bg-primary',
+      compliance: 'bg-destructive'
     };
-    return colors[domain] || 'bg-gray-500';
+    return colors[domain] || 'bg-muted';
   };
 
   const getFrequencyIcon = (frequency: string) => {

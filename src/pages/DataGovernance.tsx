@@ -259,48 +259,48 @@ const DataGovernance = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-primary/10 border border-primary/20 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-green-500" />
+                  <CheckCircle2 className="h-6 w-6 text-primary" />
                   <div>
                     <p className="font-semibold">Data Classification</p>
                     <p className="text-sm text-muted-foreground">All assets properly classified</p>
                   </div>
                 </div>
-                <Badge className="bg-green-500 text-white">Compliant</Badge>
+                <Badge variant="default">Compliant</Badge>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-primary/10 border border-primary/20 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-green-500" />
+                  <CheckCircle2 className="h-6 w-6 text-primary" />
                   <div>
                     <p className="font-semibold">PII Tracking</p>
                     <p className="text-sm text-muted-foreground">PII assets identified and protected</p>
                   </div>
                 </div>
-                <Badge className="bg-green-500 text-white">Compliant</Badge>
+                <Badge variant="default">Compliant</Badge>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-primary/10 border border-primary/20 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-green-500" />
+                  <CheckCircle2 className="h-6 w-6 text-primary" />
                   <div>
                     <p className="font-semibold">Access Control</p>
                     <p className="text-sm text-muted-foreground">RLS policies enforced on all tables</p>
                   </div>
                 </div>
-                <Badge className="bg-green-500 text-white">Compliant</Badge>
+                <Badge variant="default">Compliant</Badge>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-secondary/10 border border-secondary/20 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <AlertCircle className="h-6 w-6 text-yellow-500" />
+                  <AlertCircle className="h-6 w-6 text-secondary" />
                   <div>
                     <p className="font-semibold">Retention Policies</p>
                     <p className="text-sm text-muted-foreground">Some policies need review</p>
                   </div>
                 </div>
-                <Badge className="bg-yellow-500 text-white">Review Required</Badge>
+                <Badge variant="secondary">Review Required</Badge>
               </div>
             </div>
           </CardContent>

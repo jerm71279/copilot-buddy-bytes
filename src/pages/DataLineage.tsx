@@ -29,10 +29,10 @@ const DataLineage = () => {
 
   const getEntityColor = (type: string) => {
     switch (type) {
-      case 'raw': return 'bg-blue-500';
-      case 'silver': return 'bg-purple-500';
-      case 'gold': return 'bg-yellow-500';
-      default: return 'bg-gray-500';
+      case 'raw': return 'bg-secondary';
+      case 'silver': return 'bg-accent';
+      case 'gold': return 'bg-primary';
+      default: return 'bg-muted';
     }
   };
 
@@ -88,15 +88,15 @@ const DataLineage = () => {
           <CardContent>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-blue-500"></div>
+                <div className="w-4 h-4 rounded bg-secondary"></div>
                 <span className="text-sm">Bronze (Raw)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-purple-500"></div>
+                <div className="w-4 h-4 rounded bg-accent"></div>
                 <span className="text-sm">Silver (Transformed)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-yellow-500"></div>
+                <div className="w-4 h-4 rounded bg-primary"></div>
                 <span className="text-sm">Gold (Analytics)</span>
               </div>
             </div>

@@ -49,9 +49,9 @@ const DataQuality = () => {
   };
 
   const getQualityColor = (score: number) => {
-    if (score >= 90) return 'text-green-500';
-    if (score >= 75) return 'text-yellow-500';
-    return 'text-red-500';
+    if (score >= 90) return 'text-primary';
+    if (score >= 75) return 'text-secondary';
+    return 'text-destructive';
   };
 
   const avgQualityScore = qualityMetrics && qualityMetrics.length > 0
@@ -220,14 +220,14 @@ const DataQuality = () => {
                   <div className="grid grid-cols-3 gap-4 mb-3">
                     <div className="text-center">
                       <div className="flex items-center justify-center gap-1 mb-1">
-                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
                         <span className="text-sm font-medium">{metric.records_passed || 0}</span>
                       </div>
                       <p className="text-xs text-muted-foreground">Passed</p>
                     </div>
                     <div className="text-center">
                       <div className="flex items-center justify-center gap-1 mb-1">
-                        <XCircle className="h-4 w-4 text-red-500" />
+                        <XCircle className="h-4 w-4 text-destructive" />
                         <span className="text-sm font-medium">{metric.records_failed || 0}</span>
                       </div>
                       <p className="text-xs text-muted-foreground">Failed</p>

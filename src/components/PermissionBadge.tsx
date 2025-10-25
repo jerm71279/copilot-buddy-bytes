@@ -19,19 +19,19 @@ const permissionConfig = {
     label: "View Only",
     icon: Eye,
     variant: "secondary" as const,
-    className: "text-blue-600",
+    className: "text-secondary",
   },
   edit: {
     label: "Read/Write",
     icon: Edit,
     variant: "default" as const,
-    className: "text-green-600",
+    className: "text-primary",
   },
   admin: {
     label: "Full Access",
     icon: Shield,
     variant: "default" as const,
-    className: "text-purple-600",
+    className: "text-primary",
   },
 };
 
