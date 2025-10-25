@@ -143,7 +143,13 @@ import NavigationScaffold from "./pages/NavigationScaffold";
 import CMMCReadiness from "./pages/CMMCReadiness";
 import LovableCostCalculator from "./pages/LovableCostCalculator";
 import FileCollaboration from "./pages/FileCollaboration";
-import UploadNetworkChecklist from "./pages/UploadNetworkChecklist";
+import DataLakeDashboard from "./pages/DataLakeDashboard";
+import DataCatalog from "./pages/DataCatalog";
+import DataProducts from "./pages/DataProducts";
+import DataLineage from "./pages/DataLineage";
+import DataQuality from "./pages/DataQuality";
+import CrossDomainAnalytics from "./pages/CrossDomainAnalytics";
+import DataGovernance from "./pages/DataGovernance";
 
 const queryClient = new QueryClient();
 
