@@ -265,19 +265,19 @@ const DataLakeDashboard = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  <CheckCircle2 className="h-4 w-4 text-primary" />
                   <span className="text-sm">Completed</span>
                 </div>
-                <span className="text-2xl font-bold text-green-500">
+                <span className="text-2xl font-bold text-primary">
                   {pipelineStats?.completed || 0}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-red-500" />
+                  <AlertCircle className="h-4 w-4 text-destructive" />
                   <span className="text-sm">Failed</span>
                 </div>
-                <span className="text-2xl font-bold text-red-500">
+                <span className="text-2xl font-bold text-destructive">
                   {pipelineStats?.failed || 0}
                 </span>
               </div>
