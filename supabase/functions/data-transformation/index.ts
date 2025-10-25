@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getAuthContext } from "../_shared/supabaseAuth.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,11 +12,6 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'No authorization header' }), {
@@ -25,27 +20,7 @@ serve(async (req) => {
       });
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('customer_id')
-      .eq('user_id', user.id)
-      .single();
-
-    if (!profile?.customer_id) {
-      return new Response(JSON.stringify({ error: 'No customer associated with user' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    const { supabase, customerId } = await getAuthContext(authHeader);
 
     const requestData = await req.json();
     const { rawDataId, domain, entityType, transformations } = requestData;
@@ -62,7 +37,7 @@ serve(async (req) => {
       .from('data_lake_raw')
       .select('*')
       .eq('id', rawDataId)
-      .eq('customer_id', profile.customer_id)
+      .eq('customer_id', customerId)
       .single();
 
     if (fetchError || !rawData) {
@@ -108,7 +83,7 @@ serve(async (req) => {
     const { data: transformed, error: transformError } = await supabase
       .from('data_lake_silver')
       .insert({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         raw_data_id: rawDataId,
         domain: domain.slice(0, 50),
         entity_type: entityType.slice(0, 50),
@@ -134,7 +109,7 @@ serve(async (req) => {
     await supabase
       .from('data_lineage')
       .insert({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         source_entity_type: 'raw',
         source_entity_id: rawDataId,
         target_entity_type: 'silver',

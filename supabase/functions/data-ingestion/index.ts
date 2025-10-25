@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getAuthContext } from "../_shared/supabaseAuth.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,11 +12,6 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'No authorization header' }), {
@@ -25,27 +20,7 @@ serve(async (req) => {
       });
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('customer_id')
-      .eq('user_id', user.id)
-      .single();
-
-    if (!profile?.customer_id) {
-      return new Response(JSON.stringify({ error: 'No customer associated with user' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    const { supabase, userId, customerId } = await getAuthContext(authHeader);
 
     const requestData = await req.json();
     const { sourceSystem, sourceTable, sourceId, data: rawData, method = 'batch' } = requestData;
@@ -63,7 +38,7 @@ serve(async (req) => {
     const { data: ingested, error: ingestError } = await supabase
       .from('data_lake_raw')
       .insert({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         source_system: sourceSystem.slice(0, 100),
         source_table: sourceTable.slice(0, 100),
         source_id: sourceId ? String(sourceId).slice(0, 200) : null,
@@ -71,7 +46,7 @@ serve(async (req) => {
         ingestion_method: method,
         data_size_bytes: dataSize,
         metadata: {
-          ingested_by: user.id,
+          ingested_by: userId,
           ingestion_source: 'api'
         }
       })
@@ -90,7 +65,7 @@ serve(async (req) => {
     await supabase
       .from('etl_pipeline_runs')
       .insert({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         pipeline_name: `${sourceSystem}-ingestion`,
         pipeline_type: 'ingestion',
         source_system: sourceSystem,
@@ -99,7 +74,7 @@ serve(async (req) => {
         records_processed: 1,
         records_failed: 0,
         end_time: new Date().toISOString(),
-        triggered_by: user.id
+        triggered_by: userId
       });
 
     console.log('Data ingested successfully:', ingested.id);

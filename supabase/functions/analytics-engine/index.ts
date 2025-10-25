@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getAuthContext } from "../_shared/supabaseAuth.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,11 +12,6 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'No authorization header' }), {
@@ -25,27 +20,7 @@ serve(async (req) => {
       });
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('customer_id')
-      .eq('user_id', user.id)
-      .single();
-
-    if (!profile?.customer_id) {
-      return new Response(JSON.stringify({ error: 'No customer associated with user' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    const { supabase, customerId } = await getAuthContext(authHeader);
 
     const requestData = await req.json();
     const { action, domains, metricName, aggregationType, dimensions, timeRange } = requestData;
@@ -65,7 +40,7 @@ serve(async (req) => {
         const { data: silverData } = await supabase
           .from('data_lake_silver')
           .select('*')
-          .eq('customer_id', profile.customer_id)
+          .eq('customer_id', customerId)
           .eq('domain', domain)
           .eq('validation_status', 'validated')
           .order('created_at', { ascending: false })
@@ -94,7 +69,7 @@ serve(async (req) => {
       let goldQuery = supabase
         .from('data_lake_gold')
         .select('*')
-        .eq('customer_id', profile.customer_id);
+        .eq('customer_id', customerId);
 
       if (metricName) {
         goldQuery = goldQuery.eq('metric_name', metricName);
@@ -167,7 +142,7 @@ serve(async (req) => {
       const { data: products, error: productsError } = await supabase
         .from('data_products')
         .select('*')
-        .eq('customer_id', profile.customer_id)
+        .eq('customer_id', customerId)
         .eq('is_active', true)
         .order('last_updated', { ascending: false });
 

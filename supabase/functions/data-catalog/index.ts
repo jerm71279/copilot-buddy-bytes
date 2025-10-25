@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getAuthContext } from "../_shared/supabaseAuth.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,11 +12,6 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'No authorization header' }), {
@@ -25,27 +20,7 @@ serve(async (req) => {
       });
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('customer_id')
-      .eq('user_id', user.id)
-      .single();
-
-    if (!profile?.customer_id) {
-      return new Response(JSON.stringify({ error: 'No customer associated with user' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    const { supabase, userId, customerId } = await getAuthContext(authHeader);
 
     const requestData = await req.json();
     const { action, query, domain, tags } = requestData;
@@ -55,7 +30,7 @@ serve(async (req) => {
       let catalogQuery = supabase
         .from('data_catalog')
         .select('*')
-        .eq('customer_id', profile.customer_id);
+        .eq('customer_id', customerId);
 
       if (query) {
         catalogQuery = catalogQuery.or(`name.ilike.%${query}%,description.ilike.%${query}%,display_name.ilike.%${query}%`);
@@ -103,7 +78,7 @@ serve(async (req) => {
       const { data: catalogEntry, error: registerError } = await supabase
         .from('data_catalog')
         .insert({
-          customer_id: profile.customer_id,
+          customer_id: customerId,
           catalog_type: catalogType,
           name: name.slice(0, 200),
           display_name: displayName ? String(displayName).slice(0, 200) : null,
@@ -114,7 +89,7 @@ serve(async (req) => {
           contains_pii: containsPii || false,
           source_location: sourceLocation,
           schema_definition: schema || null,
-          created_by: user.id
+          created_by: userId
         })
         .select()
         .single();
@@ -141,7 +116,7 @@ serve(async (req) => {
       const { data: stats } = await supabase
         .from('data_catalog')
         .select('catalog_type, domain, data_classification, contains_pii')
-        .eq('customer_id', profile.customer_id);
+        .eq('customer_id', customerId);
 
       const summary: {
         totalEntries: number;
