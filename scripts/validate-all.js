@@ -156,7 +156,17 @@ if (missingValidation.length > 0) {
   console.log('✅ Input validation: All edge functions validated\n');
 }
 
-// ===== 7. ESLINT =====
+// ===== 7. LAYOUT UNIFORMITY =====
+console.log('🎨 Running Layout Uniformity Check...');
+try {
+  execSync('node scripts/validate-layout-uniformity.js', { stdio: 'pipe' });
+  console.log('✅ Layout Uniformity: Consistent patterns\n');
+} catch (error) {
+  warnings.push('Layout uniformity issues found');
+  console.warn('⚠️  Layout Uniformity: Some inconsistencies found\n');
+}
+
+// ===== 8. ESLINT =====
 console.log('🔧 Running ESLint...');
 try {
   execSync('npx eslint src --ext .ts,.tsx --max-warnings 0', { stdio: 'pipe' });
@@ -166,7 +176,7 @@ try {
   console.warn('⚠️  ESLint: Some warnings found\n');
 }
 
-// ===== 8. DOCUMENTATION UPDATES =====
+// ===== 9. DOCUMENTATION UPDATES =====
 console.log('📚 Checking documentation updates...');
 try {
   const recentFixesContent = readFileSync('RECENT_FIXES_2025_10_15.md', 'utf8');
