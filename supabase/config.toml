@@ -131,3 +131,15 @@ verify_jwt = true
 
 [functions.parse-document]
 verify_jwt = true
+
+[functions.data-ingestion]
+verify_jwt = true
+
+[functions.data-transformation]
+verify_jwt = true
+
+[functions.data-catalog]
+verify_jwt = true
+
+[functions.analytics-engine]
+verify_jwt = true

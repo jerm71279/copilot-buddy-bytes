@@ -843,6 +843,75 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_queries: {
+        Row: {
+          avg_execution_time_ms: number | null
+          created_at: string | null
+          created_by: string | null
+          customer_id: string
+          data_products_used: string[] | null
+          domains: string[] | null
+          id: string
+          is_scheduled: boolean | null
+          last_run: string | null
+          output_schema: Json | null
+          query_description: string | null
+          query_name: string
+          query_sql: string
+          schedule_cron: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_execution_time_ms?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          customer_id: string
+          data_products_used?: string[] | null
+          domains?: string[] | null
+          id?: string
+          is_scheduled?: boolean | null
+          last_run?: string | null
+          output_schema?: Json | null
+          query_description?: string | null
+          query_name: string
+          query_sql: string
+          schedule_cron?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_execution_time_ms?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          customer_id?: string
+          data_products_used?: string[] | null
+          domains?: string[] | null
+          id?: string
+          is_scheduled?: boolean | null
+          last_run?: string | null
+          output_schema?: Json | null
+          query_description?: string | null
+          query_name?: string
+          query_sql?: string
+          schedule_cron?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_queries_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_queries_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
       anomaly_detections: {
         Row: {
           affected_user_id: string | null
@@ -4692,6 +4761,562 @@ export type Database = {
         }
         Relationships: []
       }
+      data_catalog: {
+        Row: {
+          catalog_type: string
+          contains_pii: boolean | null
+          created_at: string | null
+          created_by: string | null
+          customer_id: string
+          data_classification: string | null
+          data_lineage: Json | null
+          description: string | null
+          display_name: string | null
+          domain: string | null
+          id: string
+          last_accessed: string | null
+          name: string
+          retention_policy: string | null
+          sample_data: Json | null
+          schema_definition: Json | null
+          source_location: string | null
+          tags: string[] | null
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          catalog_type: string
+          contains_pii?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          customer_id: string
+          data_classification?: string | null
+          data_lineage?: Json | null
+          description?: string | null
+          display_name?: string | null
+          domain?: string | null
+          id?: string
+          last_accessed?: string | null
+          name: string
+          retention_policy?: string | null
+          sample_data?: Json | null
+          schema_definition?: Json | null
+          source_location?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          catalog_type?: string
+          contains_pii?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          customer_id?: string
+          data_classification?: string | null
+          data_lineage?: Json | null
+          description?: string | null
+          display_name?: string | null
+          domain?: string | null
+          id?: string
+          last_accessed?: string | null
+          name?: string
+          retention_policy?: string | null
+          sample_data?: Json | null
+          schema_definition?: Json | null
+          source_location?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_catalog_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_catalog_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
+      data_lake_gold: {
+        Row: {
+          aggregation_type: string | null
+          business_context: string | null
+          calculation_logic: string | null
+          created_at: string | null
+          customer_id: string
+          data_product_id: string | null
+          dimensions: Json | null
+          id: string
+          metric_name: string
+          metric_unit: string | null
+          metric_value: number | null
+          silver_data_ids: string[] | null
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          aggregation_type?: string | null
+          business_context?: string | null
+          calculation_logic?: string | null
+          created_at?: string | null
+          customer_id: string
+          data_product_id?: string | null
+          dimensions?: Json | null
+          id?: string
+          metric_name: string
+          metric_unit?: string | null
+          metric_value?: number | null
+          silver_data_ids?: string[] | null
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          aggregation_type?: string | null
+          business_context?: string | null
+          calculation_logic?: string | null
+          created_at?: string | null
+          customer_id?: string
+          data_product_id?: string | null
+          dimensions?: Json | null
+          id?: string
+          metric_name?: string
+          metric_unit?: string | null
+          metric_value?: number | null
+          silver_data_ids?: string[] | null
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_lake_gold_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_lake_gold_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
+      data_lake_raw: {
+        Row: {
+          created_at: string | null
+          customer_id: string
+          data_size_bytes: number | null
+          id: string
+          ingestion_method: string | null
+          ingestion_timestamp: string
+          metadata: Json | null
+          raw_data: Json
+          source_id: string | null
+          source_system: string
+          source_table: string
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id: string
+          data_size_bytes?: number | null
+          id?: string
+          ingestion_method?: string | null
+          ingestion_timestamp?: string
+          metadata?: Json | null
+          raw_data: Json
+          source_id?: string | null
+          source_system: string
+          source_table: string
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string
+          data_size_bytes?: number | null
+          id?: string
+          ingestion_method?: string | null
+          ingestion_timestamp?: string
+          metadata?: Json | null
+          raw_data?: Json
+          source_id?: string | null
+          source_system?: string
+          source_table?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_lake_raw_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_lake_raw_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
+      data_lake_silver: {
+        Row: {
+          created_at: string | null
+          customer_id: string
+          domain: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          quality_score: number | null
+          raw_data_id: string | null
+          transformation_rules: string[] | null
+          transformed_at: string | null
+          transformed_data: Json
+          validation_errors: Json | null
+          validation_status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id: string
+          domain: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          quality_score?: number | null
+          raw_data_id?: string | null
+          transformation_rules?: string[] | null
+          transformed_at?: string | null
+          transformed_data: Json
+          validation_errors?: Json | null
+          validation_status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string
+          domain?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          quality_score?: number | null
+          raw_data_id?: string | null
+          transformation_rules?: string[] | null
+          transformed_at?: string | null
+          transformed_data?: Json
+          validation_errors?: Json | null
+          validation_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_lake_silver_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_lake_silver_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "data_lake_silver_raw_data_id_fkey"
+            columns: ["raw_data_id"]
+            isOneToOne: false
+            referencedRelation: "data_lake_raw"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      data_lineage: {
+        Row: {
+          created_at: string | null
+          customer_id: string
+          id: string
+          pipeline_run_id: string | null
+          source_entity_id: string
+          source_entity_type: string
+          target_entity_id: string
+          target_entity_type: string
+          transformation_logic: string | null
+          transformation_type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id: string
+          id?: string
+          pipeline_run_id?: string | null
+          source_entity_id: string
+          source_entity_type: string
+          target_entity_id: string
+          target_entity_type: string
+          transformation_logic?: string | null
+          transformation_type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string
+          id?: string
+          pipeline_run_id?: string | null
+          source_entity_id?: string
+          source_entity_type?: string
+          target_entity_id?: string
+          target_entity_type?: string
+          transformation_logic?: string | null
+          transformation_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_lineage_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_lineage_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "data_lineage_pipeline_run_id_fkey"
+            columns: ["pipeline_run_id"]
+            isOneToOne: false
+            referencedRelation: "etl_pipeline_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      data_products: {
+        Row: {
+          access_policy: string | null
+          consumers: string[] | null
+          created_at: string | null
+          created_by: string | null
+          customer_id: string
+          data_sources: string[] | null
+          description: string | null
+          domain: string
+          id: string
+          is_active: boolean | null
+          last_updated: string | null
+          lineage: Json | null
+          owner_department: string | null
+          owner_user_id: string | null
+          product_name: string
+          product_slug: string
+          quality_sla: number | null
+          schema_definition: Json | null
+          update_frequency: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          access_policy?: string | null
+          consumers?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          customer_id: string
+          data_sources?: string[] | null
+          description?: string | null
+          domain: string
+          id?: string
+          is_active?: boolean | null
+          last_updated?: string | null
+          lineage?: Json | null
+          owner_department?: string | null
+          owner_user_id?: string | null
+          product_name: string
+          product_slug: string
+          quality_sla?: number | null
+          schema_definition?: Json | null
+          update_frequency?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          access_policy?: string | null
+          consumers?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          customer_id?: string
+          data_sources?: string[] | null
+          description?: string | null
+          domain?: string
+          id?: string
+          is_active?: boolean | null
+          last_updated?: string | null
+          lineage?: Json | null
+          owner_department?: string | null
+          owner_user_id?: string | null
+          product_name?: string
+          product_slug?: string
+          quality_sla?: number | null
+          schema_definition?: Json | null
+          update_frequency?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_products_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_products_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
+      data_quality_metrics: {
+        Row: {
+          check_timestamp: string | null
+          created_at: string | null
+          customer_id: string
+          data_product_id: string | null
+          id: string
+          issues_found: Json | null
+          pass_rate: number | null
+          quality_score: number | null
+          records_checked: number | null
+          records_failed: number | null
+          records_passed: number | null
+          rule_id: string | null
+        }
+        Insert: {
+          check_timestamp?: string | null
+          created_at?: string | null
+          customer_id: string
+          data_product_id?: string | null
+          id?: string
+          issues_found?: Json | null
+          pass_rate?: number | null
+          quality_score?: number | null
+          records_checked?: number | null
+          records_failed?: number | null
+          records_passed?: number | null
+          rule_id?: string | null
+        }
+        Update: {
+          check_timestamp?: string | null
+          created_at?: string | null
+          customer_id?: string
+          data_product_id?: string | null
+          id?: string
+          issues_found?: Json | null
+          pass_rate?: number | null
+          quality_score?: number | null
+          records_checked?: number | null
+          records_failed?: number | null
+          records_passed?: number | null
+          rule_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_quality_metrics_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_quality_metrics_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "data_quality_metrics_data_product_id_fkey"
+            columns: ["data_product_id"]
+            isOneToOne: false
+            referencedRelation: "data_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_quality_metrics_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "data_quality_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      data_quality_rules: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          customer_id: string
+          id: string
+          is_active: boolean | null
+          rule_logic: Json
+          rule_name: string
+          rule_type: string
+          severity: string | null
+          target_column: string | null
+          target_table: string | null
+          threshold: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          customer_id: string
+          id?: string
+          is_active?: boolean | null
+          rule_logic: Json
+          rule_name: string
+          rule_type: string
+          severity?: string | null
+          target_column?: string | null
+          target_table?: string | null
+          threshold?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          customer_id?: string
+          id?: string
+          is_active?: boolean | null
+          rule_logic?: Json
+          rule_name?: string
+          rule_type?: string
+          severity?: string | null
+          target_column?: string | null
+          target_table?: string | null
+          threshold?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_quality_rules_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_quality_rules_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
       department_insights: {
         Row: {
           affected_users: number | null
@@ -5838,6 +6463,78 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "employees"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      etl_pipeline_runs: {
+        Row: {
+          created_at: string | null
+          customer_id: string
+          duration_seconds: number | null
+          end_time: string | null
+          error_message: string | null
+          execution_logs: Json | null
+          id: string
+          pipeline_name: string
+          pipeline_type: string | null
+          records_failed: number | null
+          records_processed: number | null
+          source_system: string | null
+          start_time: string | null
+          status: string | null
+          target_layer: string | null
+          triggered_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id: string
+          duration_seconds?: number | null
+          end_time?: string | null
+          error_message?: string | null
+          execution_logs?: Json | null
+          id?: string
+          pipeline_name: string
+          pipeline_type?: string | null
+          records_failed?: number | null
+          records_processed?: number | null
+          source_system?: string | null
+          start_time?: string | null
+          status?: string | null
+          target_layer?: string | null
+          triggered_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string
+          duration_seconds?: number | null
+          end_time?: string | null
+          error_message?: string | null
+          execution_logs?: Json | null
+          id?: string
+          pipeline_name?: string
+          pipeline_type?: string | null
+          records_failed?: number | null
+          records_processed?: number | null
+          source_system?: string | null
+          start_time?: string | null
+          status?: string | null
+          target_layer?: string | null
+          triggered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "etl_pipeline_runs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etl_pipeline_runs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
