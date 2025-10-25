@@ -151,6 +151,7 @@ import DataLineage from "./pages/DataLineage";
 import DataQuality from "./pages/DataQuality";
 import CrossDomainAnalytics from "./pages/CrossDomainAnalytics";
 import DataGovernance from "./pages/DataGovernance";
+import AIInsightsHub from "./pages/AIInsightsHub";
 
 const queryClient = new QueryClient();
 
@@ -941,6 +942,48 @@ const App = () => (
           <Route path="/admin/modules" element={
             <ProtectedRoute requireAdmin>
               <ModuleManagement />
+            </ProtectedRoute>
+          } />
+          
+          {/* Data Lake & AI - Protected */}
+          <Route path="/data-lake" element={
+            <ProtectedRoute>
+              <DataLakeDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/data-catalog" element={
+            <ProtectedRoute>
+              <DataCatalog />
+            </ProtectedRoute>
+          } />
+          <Route path="/data-products" element={
+            <ProtectedRoute>
+              <DataProducts />
+            </ProtectedRoute>
+          } />
+          <Route path="/data-lineage" element={
+            <ProtectedRoute>
+              <DataLineage />
+            </ProtectedRoute>
+          } />
+          <Route path="/data-quality" element={
+            <ProtectedRoute>
+              <DataQuality />
+            </ProtectedRoute>
+          } />
+          <Route path="/cross-domain-analytics" element={
+            <ProtectedRoute>
+              <CrossDomainAnalytics />
+            </ProtectedRoute>
+          } />
+          <Route path="/data-governance" element={
+            <ProtectedRoute>
+              <DataGovernance />
+            </ProtectedRoute>
+          } />
+          <Route path="/ai-insights" element={
+            <ProtectedRoute>
+              <AIInsightsHub />
             </ProtectedRoute>
           } />
           

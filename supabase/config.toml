@@ -143,3 +143,6 @@ verify_jwt = true
 
 [functions.analytics-engine]
 verify_jwt = true
+
+[functions.ai-insights]
+verify_jwt = true

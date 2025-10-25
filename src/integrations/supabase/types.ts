@@ -428,6 +428,36 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_insights: {
+        Row: {
+          context: string | null
+          created_at: string | null
+          domains: string[] | null
+          id: string
+          insight: string
+          query: string
+          user_id: string | null
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string | null
+          domains?: string[] | null
+          id?: string
+          insight: string
+          query: string
+          user_id?: string | null
+        }
+        Update: {
+          context?: string | null
+          created_at?: string | null
+          domains?: string[] | null
+          id?: string
+          insight?: string
+          query?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_interactions: {
         Row: {
           ai_response: string

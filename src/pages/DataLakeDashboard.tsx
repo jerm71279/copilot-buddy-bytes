@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Database, Layers, TrendingUp, Activity, CheckCircle2, AlertCircle } from "lucide-react";
+import { Database, Layers, TrendingUp, Activity, CheckCircle2, AlertCircle, Brain } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -235,6 +235,21 @@ const DataLakeDashboard = () => {
               </CardHeader>
               <CardContent>
                 <Button className="w-full">Governance Hub</Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/ai-insights">
+            <Card className="hover:border-primary transition-colors cursor-pointer h-full">
+              <CardHeader>
+                <Brain className="h-8 w-8 text-primary mb-2" />
+                <CardTitle>AI Insights Hub</CardTitle>
+                <CardDescription>
+                  Ask questions and get intelligent analysis of your data
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button className="w-full">Ask AI</Button>
               </CardContent>
             </Card>
           </Link>
