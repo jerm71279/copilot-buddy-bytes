@@ -159,3 +159,6 @@ verify_jwt = true
 [functions.predictive-analytics]
 verify_jwt = true
 
+[functions.calculate-learning-metrics]
+verify_jwt = false
+
