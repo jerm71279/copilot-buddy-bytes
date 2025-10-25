@@ -38,13 +38,13 @@ const DataQuality = () => {
     }
   });
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityVariant = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'bg-red-500';
-      case 'error': return 'bg-orange-500';
-      case 'warning': return 'bg-yellow-500';
-      case 'info': return 'bg-blue-500';
-      default: return 'bg-gray-500';
+      case 'critical': return 'destructive' as const;
+      case 'error': return 'destructive' as const;
+      case 'warning': return 'outline' as const;
+      case 'info': return 'default' as const;
+      default: return 'secondary' as const;
     }
   };
 
@@ -144,7 +144,7 @@ const DataQuality = () => {
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="font-semibold">{rule.rule_name}</h4>
                       <Badge variant="outline" className="capitalize">{rule.rule_type}</Badge>
-                      <Badge className={`${getSeverityColor(rule.severity)} text-white`}>
+                      <Badge variant={getSeverityVariant(rule.severity)}>
                         {rule.severity}
                       </Badge>
                     </div>

@@ -9,11 +9,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const domains = [
-  { id: 'hr', label: 'HR', color: 'bg-blue-500' },
-  { id: 'it', label: 'IT', color: 'bg-purple-500' },
-  { id: 'finance', label: 'Finance', color: 'bg-green-500' },
-  { id: 'sales', label: 'Sales', color: 'bg-orange-500' },
-  { id: 'compliance', label: 'Compliance', color: 'bg-red-500' }
+  { id: 'hr', label: 'HR', variant: 'default' as const },
+  { id: 'it', label: 'IT', variant: 'secondary' as const },
+  { id: 'finance', label: 'Finance', variant: 'default' as const },
+  { id: 'sales', label: 'Sales', variant: 'outline' as const },
+  { id: 'compliance', label: 'Compliance', variant: 'destructive' as const }
 ];
 
 const CrossDomainAnalytics = () => {
@@ -89,7 +89,7 @@ const CrossDomainAnalytics = () => {
                     onCheckedChange={() => toggleDomain(domain.id)}
                   />
                   <div className="flex items-center gap-2 flex-1">
-                    <div className={`w-3 h-3 rounded-full ${domain.color}`}></div>
+                    <div className="w-3 h-3 rounded-full bg-primary"></div>
                     <span className="font-medium">{domain.label}</span>
                   </div>
                 </div>
@@ -124,7 +124,7 @@ const CrossDomainAnalytics = () => {
                     <Card key={domain} className="border-2">
                       <CardHeader>
                         <div className="flex items-center justify-between">
-                          <Badge className={`${domains.find(d => d.id === domain)?.color || 'bg-gray-500'} text-white capitalize`}>
+                          <Badge variant={domains.find(d => d.id === domain)?.variant || 'default'} className="capitalize">
                             {domain}
                           </Badge>
                           <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -208,9 +208,9 @@ const CrossDomainAnalytics = () => {
 };
 
 const getQualityColor = (score: number) => {
-  if (score >= 90) return 'text-green-500';
-  if (score >= 75) return 'text-yellow-500';
-  return 'text-red-500';
+  if (score >= 90) return 'text-primary';
+  if (score >= 75) return 'text-secondary';
+  return 'text-destructive';
 };
 
 export default CrossDomainAnalytics;

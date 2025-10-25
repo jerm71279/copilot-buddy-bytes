@@ -66,13 +66,13 @@ const DataGovernance = () => {
     }
   });
 
-  const getClassificationColor = (classification: string) => {
+  const getClassificationVariant = (classification: string) => {
     switch (classification) {
-      case 'public': return 'bg-green-500';
-      case 'internal': return 'bg-blue-500';
-      case 'confidential': return 'bg-orange-500';
-      case 'restricted': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case 'public': return 'default' as const;
+      case 'internal': return 'secondary' as const;
+      case 'confidential': return 'outline' as const;
+      case 'restricted': return 'destructive' as const;
+      default: return 'secondary' as const;
     }
   };
 
@@ -157,7 +157,7 @@ const DataGovernance = () => {
               {catalogStats && Object.entries(catalogStats.byClassification || {}).map(([classification, count]: [string, any]) => (
                 <div key={classification} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Badge className={`${getClassificationColor(classification)} text-white capitalize`}>
+                    <Badge variant={getClassificationVariant(classification)} className="capitalize">
                       {classification}
                     </Badge>
                     <span className="text-sm text-muted-foreground">
