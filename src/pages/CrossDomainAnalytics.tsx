@@ -164,8 +164,8 @@ const CrossDomainAnalytics = () => {
                         <CardTitle className="text-base">Total Records Analyzed</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="text-3xl font-bold">
-                          {Object.values(analysisResults).reduce((sum: number, d: any) => sum + (d.recordCount || 0), 0)}
+                      <div className="text-3xl font-bold">
+                          {(Object.values(analysisResults) as any[]).reduce((sum: number, d: any) => sum + (d.recordCount || 0), 0)}
                         </div>
                       </CardContent>
                     </Card>
@@ -176,9 +176,9 @@ const CrossDomainAnalytics = () => {
                       </CardHeader>
                       <CardContent>
                         <div className={`text-3xl font-bold ${getQualityColor(
-                          Math.round(Object.values(analysisResults).reduce((sum: number, d: any) => sum + (d.avgQualityScore || 0), 0) / Object.values(analysisResults).length)
+                          Math.round((Object.values(analysisResults) as any[]).reduce((sum: number, d: any) => sum + (d.avgQualityScore || 0), 0) / (Object.values(analysisResults) as any[]).length)
                         )}`}>
-                          {Math.round(Object.values(analysisResults).reduce((sum: number, d: any) => sum + (d.avgQualityScore || 0), 0) / Object.values(analysisResults).length)}%
+                          {Math.round((Object.values(analysisResults) as any[]).reduce((sum: number, d: any) => sum + (d.avgQualityScore || 0), 0) / (Object.values(analysisResults) as any[]).length)}%
                         </div>
                       </CardContent>
                     </Card>

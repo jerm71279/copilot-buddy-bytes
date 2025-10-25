@@ -16,6 +16,7 @@ import KnowledgeBase from "./pages/KnowledgeBase";
 import KnowledgeArticle from "./pages/KnowledgeArticle";
 import KnowledgeUpload from "./pages/KnowledgeUpload";
 import IngestTrainingVideos from "./pages/IngestTrainingVideos";
+import UploadNetworkChecklist from "./pages/UploadNetworkChecklist";
 import BusinessKnowledge from "./pages/BusinessKnowledge";
 import FeedbackMetrics from "./pages/FeedbackMetrics";
 import InsightQueue from "./pages/InsightQueue";
