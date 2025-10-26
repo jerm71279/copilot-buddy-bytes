@@ -15,7 +15,8 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [customerId, setCustomerId] = useState<string | null>(null);
-
+  const [isCustomerLoading, setIsCustomerLoading] = useState(true);
+ 
   useEffect(() => {
     const fetchCustomerId = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -23,6 +24,7 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
         const id = await getUserCustomerId(user.id);
         setCustomerId(id);
       }
+      setIsCustomerLoading(false);
     };
     fetchCustomerId();
   }, []);
@@ -93,8 +95,10 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['compliance-roadmap-stages'] });
+    onSuccess: (_data, variables) => {
+      const fid = variables as string;
+      queryClient.invalidateQueries({ queryKey: ['compliance-roadmap-stages', fid, customerId] });
+      queryClient.invalidateQueries({ queryKey: ['compliance-roadmap-milestones', fid, customerId] });
       toast({
         title: "Roadmap Initialized",
         description: "Your compliance roadmap has been created successfully",
@@ -189,5 +193,7 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
     initializeRoadmap: initializeRoadmapMutation.mutateAsync,
     updateStage: updateStageMutation.mutateAsync,
     updateMilestone: updateMilestoneMutation.mutateAsync,
+    isReady: !!customerId && !isCustomerLoading,
+    isInitializing: initializeRoadmapMutation.isPending,
   };
 };

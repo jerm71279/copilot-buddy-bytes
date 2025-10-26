@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 const ComplianceRoadmap = () => {
   const navigate = useNavigate();
   const [selectedFramework, setSelectedFramework] = useState<string>("");
-  const { stages, milestones, frameworks, isLoading, initializeRoadmap } = useComplianceRoadmap(selectedFramework);
+  const { stages, milestones, frameworks, isLoading, initializeRoadmap, isReady, isInitializing } = useComplianceRoadmap(selectedFramework);
 
   // Use shared utility functions
   const overallProgress = stages ? calculateOverallProgress(stages) : 0;
@@ -85,9 +85,9 @@ const ComplianceRoadmap = () => {
                 </SelectContent>
               </Select>
               {selectedFramework && !stages?.length && (
-                <Button onClick={handleInitializeRoadmap}>
+                <Button onClick={handleInitializeRoadmap} disabled={!isReady || isInitializing} aria-disabled={!isReady || isInitializing}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Initialize Roadmap
+                  {isInitializing ? 'Initializing...' : 'Initialize Roadmap'}
                 </Button>
               )}
             </div>
@@ -178,9 +178,9 @@ const ComplianceRoadmap = () => {
               <p className="text-muted-foreground mb-4">
                 Initialize a roadmap for this framework to begin tracking your compliance journey
               </p>
-              <Button onClick={handleInitializeRoadmap}>
+              <Button onClick={handleInitializeRoadmap} disabled={!isReady || isInitializing} aria-disabled={!isReady || isInitializing}>
                 <Plus className="h-4 w-4 mr-2" />
-                Initialize Roadmap
+                {isInitializing ? 'Initializing...' : 'Initialize Roadmap'}
               </Button>
             </CardContent>
           </Card>
