@@ -6,7 +6,8 @@ import mermaid from "mermaid";
 
 const ArchitectureCanvas = () => {
   const [zoom, setZoom] = useState(1);
-  const mermaidRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState("frontend-edge");
+  const [renderKey, setRenderKey] = useState(0);
 
   useEffect(() => {
     mermaid.initialize({ 
@@ -17,10 +18,12 @@ const ArchitectureCanvas = () => {
   }, []);
 
   useEffect(() => {
-    if (mermaidRef.current) {
-      mermaid.contentLoaded();
-    }
-  }, [zoom]);
+    // Force re-render of Mermaid diagrams when tab or zoom changes
+    const timer = setTimeout(() => {
+      mermaid.run();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [activeTab, zoom, renderKey]);
 
   const frontendToEdgeDiagram = `
 graph TB
@@ -272,7 +275,7 @@ graph TB
     style AuditLogs fill:#ef4444,stroke:#dc2626,color:#fff
 `;
 
-  const renderCanvas = (diagram: string, key: string) => (
+  const renderCanvas = (diagram: string, tabKey: string) => (
     <div className="border border-border rounded-lg bg-card shadow-lg overflow-auto" style={{ height: 'calc(100vh - 280px)' }}>
       <div 
         className="p-8 transition-transform duration-200"
@@ -282,9 +285,9 @@ graph TB
           minWidth: '1200px'
         }}
       >
-        <div key={key} className="mermaid">
+        <pre className="mermaid" key={`${tabKey}-${renderKey}`}>
           {diagram}
-        </div>
+        </pre>
       </div>
     </div>
   );
@@ -323,7 +326,10 @@ graph TB
           </div>
         </div>
 
-        <Tabs defaultValue="frontend-edge" className="w-full">
+        <Tabs defaultValue="frontend-edge" className="w-full" onValueChange={(value) => {
+          setActiveTab(value);
+          setRenderKey(prev => prev + 1);
+        }}>
           <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
             <TabsTrigger value="frontend-edge">Frontend → Edge</TabsTrigger>
             <TabsTrigger value="edge-backend">Edge → Backend</TabsTrigger>
