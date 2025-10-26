@@ -59,31 +59,40 @@ const setGlobalState = (next: AuthState) => {
 
 const loadProfileGlobal = async (userId: string) => {
   try {
-    const { data: profile, error } = await supabase
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    
+    if (userError) throw userError;
+
+    const { data: profile, error: profileError } = await supabase
       .from("user_profiles")
       .select("*")
       .eq("user_id", userId)
       .maybeSingle();
 
-    if (error) throw error;
+    // Don't throw on profile error - user might not have profile yet
+    if (profileError) {
+      console.warn("Profile not found, using minimal auth state:", profileError);
+    }
 
-    const { data: userData } = await supabase.auth.getUser();
-
-    // Admin check
+    // Admin check with fallback
     let isAdmin = false;
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role_id, roles(name)")
-      .eq("user_id", userId);
+    try {
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role_id, roles(name)")
+        .eq("user_id", userId);
 
-    isAdmin = roles?.some((ur: any) => ur.roles?.name === "Super Admin" || ur.roles?.name === "Admin") || false;
+      isAdmin = roles?.some((ur: any) => ur.roles?.name === "Super Admin" || ur.roles?.name === "Admin") || false;
 
-    if (!isAdmin) {
-      const { data: rpcHasAdmin } = await supabase.rpc("has_role", {
-        _user_id: userId,
-        _role: "admin",
-      });
-      isAdmin = !!rpcHasAdmin;
+      if (!isAdmin) {
+        const { data: rpcHasAdmin } = await supabase.rpc("has_role", {
+          _user_id: userId,
+          _role: "admin",
+        });
+        isAdmin = !!rpcHasAdmin;
+      }
+    } catch (roleError) {
+      console.warn("Could not check admin status:", roleError);
     }
 
     setGlobalState({
@@ -96,7 +105,13 @@ const loadProfileGlobal = async (userId: string) => {
     });
   } catch (e) {
     console.error("Error loading profile:", e);
-    setGlobalState({ ...globalAuthState, isLoading: false });
+    // Still mark as authenticated if we have a session, even if profile loading failed
+    const isStillAuthenticated = globalAuthState.user !== null;
+    setGlobalState({ 
+      ...globalAuthState, 
+      isLoading: false,
+      isAuthenticated: isStillAuthenticated,
+    });
   }
 };
 
