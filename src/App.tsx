@@ -157,6 +157,7 @@ import ETLPipelineOrchestration from "./pages/ETLPipelineOrchestration";
 import PredictiveAnalyticsDashboard from "./pages/PredictiveAnalyticsDashboard";
 import ExtendedThinkingAI from "./pages/ExtendedThinkingAI";
 import CodeExecutionAI from "./pages/CodeExecutionAI";
+import Validator from "./pages/Validator";
 
 const queryClient = new QueryClient();
 
@@ -192,6 +193,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/client-auth" element={<ClientAuth />} />
           <Route path="/demo" element={<DemoSelector />} />
+          <Route path="/validator" element={<Validator />} />
           
           {/* File Collaboration - Protected */}
           <Route path="/files" element={
