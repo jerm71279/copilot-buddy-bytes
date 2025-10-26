@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowLeft, Shield, CheckCircle, FileText, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 export default function ComplianceFrameworkDetail() {
   const { id } = useParams();
@@ -68,32 +71,27 @@ export default function ComplianceFrameworkDetail() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-          <p>Loading framework details...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen message="Loading framework details..." />;
   }
 
   if (!framework) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-          <p>Framework not found</p>
-          <Button onClick={() => navigate('/compliance')} className="mt-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Compliance Portal
-          </Button>
-        </div>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={Shield}
+          title="Framework not found"
+          description="The requested compliance framework could not be found."
+          action={{
+            label: "Back to Compliance Portal",
+            onClick: () => navigate('/compliance'),
+          }}
+        />
+      </PageContainer>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <PageContainer>
 
         <DashboardNavigation 
           title="Framework Detail"
@@ -237,17 +235,12 @@ export default function ComplianceFrameworkDetail() {
         )}
 
         {controls.length === 0 && evidenceFiles.length === 0 && (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Shield className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No controls or evidence yet</h3>
-              <p className="text-muted-foreground">
-                This framework is configured but doesn't have controls or evidence files yet.
-              </p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Shield}
+            title="No controls or evidence yet"
+            description="This framework is configured but doesn't have controls or evidence files yet."
+          />
         )}
-      </main>
-    </div>
+    </PageContainer>
   );
 }

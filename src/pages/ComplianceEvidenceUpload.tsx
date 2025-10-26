@@ -1,16 +1,15 @@
 import DashboardNavigation from "@/components/DashboardNavigation";
-import { Button } from "@/components/ui/button";
 import { LayoutDashboard } from "lucide-react";
 import EvidenceUpload from "@/components/EvidenceUpload";
 import { LinkTray } from "@/components/LinkTray";
 import { useNavigate } from "react-router-dom";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 export default function ComplianceEvidenceUpload() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <PageContainer>
 
         <DashboardNavigation 
           title="Evidence Upload"
@@ -38,7 +37,6 @@ export default function ComplianceEvidenceUpload() {
         />
 
         <EvidenceUpload onUploadComplete={() => navigate('/compliance')} />
-      </main>
-    </div>
+    </PageContainer>
   );
 }

@@ -9,6 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, FileText, Download, Calendar, Shield, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 interface Finding {
   title?: string;
@@ -222,32 +225,27 @@ export default function ComplianceReportDetail() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-          <p>Loading report...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen message="Loading report..." />;
   }
 
   if (!report) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-          <p>Report not found</p>
-          <Button onClick={() => navigate('/compliance')} className="mt-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Compliance Portal
-          </Button>
-        </div>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={FileText}
+          title="Report not found"
+          description="The requested compliance report could not be found."
+          action={{
+            label: "Back to Compliance Portal",
+            onClick: () => navigate('/compliance'),
+          }}
+        />
+      </PageContainer>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <PageContainer>
 
         <DashboardNavigation 
           title="Report Detail"
@@ -341,7 +339,6 @@ export default function ComplianceReportDetail() {
             </Card>
           )}
         </div>
-      </main>
-    </div>
+    </PageContainer>
   );
 }

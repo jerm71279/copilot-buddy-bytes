@@ -14,8 +14,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, FileText, Calendar } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
 import { format } from "date-fns";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 export default function ComplianceFrameworkRecords() {
   const navigate = useNavigate();
@@ -208,8 +210,7 @@ export default function ComplianceFrameworkRecords() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <PageContainer>
 
         <DashboardNavigation 
           title="Framework Records"
@@ -260,13 +261,11 @@ export default function ComplianceFrameworkRecords() {
                 <p className="text-muted-foreground">Loading records...</p>
               </div>
             ) : records.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Records Found</h3>
-                <p className="text-muted-foreground">
-                  No compliance records found for this framework and data source
-                </p>
-              </div>
+              <EmptyState
+                icon={FileText}
+                title="No Records Found"
+                description="No compliance records found for this framework and data source"
+              />
             ) : (
               <div className="overflow-x-auto">
                 <Table>
@@ -297,7 +296,6 @@ export default function ComplianceFrameworkRecords() {
             )}
           </CardContent>
         </Card>
-      </main>
-    </div>
+    </PageContainer>
   );
 }

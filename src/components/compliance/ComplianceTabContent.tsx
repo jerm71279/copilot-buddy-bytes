@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Shield, FileCheck, AlertTriangle, Plus } from "lucide-react";
 import { getStatusColor } from "@/lib/complianceConfig";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 interface Framework {
   id: string;
@@ -47,19 +49,13 @@ export function ComplianceTabContent({
     return (
       <>
         {isLoading ? (
-          <Card>
-            <CardContent className="py-8 text-center">
-              Loading frameworks...
-            </CardContent>
-          </Card>
+          <LoadingSpinner message="Loading frameworks..." />
         ) : frameworks.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Shield className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No frameworks configured</h3>
-              <p className="text-muted-foreground">Contact support to enable compliance frameworks</p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Shield}
+            title="No frameworks configured"
+            description="Contact support to enable compliance frameworks"
+          />
         ) : (
           <Card>
             <CardHeader>
@@ -90,17 +86,15 @@ export function ComplianceTabContent({
     return (
       <>
         {evidenceFiles.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <FileCheck className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No evidence files uploaded</h3>
-              <p className="text-muted-foreground mb-4">Upload compliance evidence to get started</p>
-              <Button onClick={() => onNavigate('/compliance/evidence/upload')}>
-                <Plus className="mr-2 h-4 w-4" />
-                Upload Evidence
-              </Button>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={FileCheck}
+            title="No evidence files uploaded"
+            description="Upload compliance evidence to get started"
+            action={{
+              label: "Upload Evidence",
+              onClick: () => onNavigate('/compliance/evidence/upload'),
+            }}
+          />
         ) : (
           <div className="space-y-2">
             {evidenceFiles.slice(0, 10).map((file) => (
@@ -128,13 +122,11 @@ export function ComplianceTabContent({
     return (
       <>
         {reports.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <AlertTriangle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No compliance reports</h3>
-              <p className="text-muted-foreground">Generate your first compliance report</p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={AlertTriangle}
+            title="No compliance reports"
+            description="Generate your first compliance report"
+          />
         ) : (
           <div className="space-y-2">
             {reports.map((report) => (

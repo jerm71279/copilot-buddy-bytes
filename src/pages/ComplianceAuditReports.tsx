@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Download, FileText, Calendar, Shield } from "lucide-react";
-import { format, subHours, subDays, subMonths } from "date-fns";
+import { format, subHours } from "date-fns";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 interface AuditData {
   source_table: string;
@@ -232,8 +234,7 @@ export default function ComplianceAuditReports() {
   const totalRecords = auditData.reduce((sum, data) => sum + data.count, 0);
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <PageContainer>
 
         <DashboardNavigation 
           title="Compliance Audit Reports"
@@ -410,17 +411,12 @@ export default function ComplianceAuditReports() {
         )}
 
         {!reportGenerated && (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Report Generated</h3>
-              <p className="text-muted-foreground">
-                Select a framework and time range, then click "Generate Report" to begin
-              </p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={FileText}
+            title="No Report Generated"
+            description='Select a framework and time range, then click "Generate Report" to begin'
+          />
         )}
-      </main>
-    </div>
+    </PageContainer>
   );
 }

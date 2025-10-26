@@ -10,6 +10,10 @@ import { RoadmapStatusBadge } from "@/components/compliance/RoadmapStatusBadge";
 import { calculateOverallProgress, getStageStatistics } from "@/lib/compliance/roadmap-utils";
 import { Plus, Target, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 const ComplianceRoadmap = () => {
   const navigate = useNavigate();
@@ -33,31 +37,16 @@ const ComplianceRoadmap = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading compliance roadmap...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen message="Loading compliance roadmap..." />;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Compliance Roadmap</h1>
-            <p className="text-muted-foreground">
-              Track your journey from assessment to certification
-            </p>
-          </div>
-          <Button onClick={() => navigate('/compliance')}>
-            Back to Compliance
-          </Button>
-        </div>
+    <PageContainer>
+      <PageHeader
+        title="Compliance Roadmap"
+        description="Track your journey from assessment to certification"
+        backButton={{ onClick: () => navigate('/compliance') }}
+      />
 
         {/* Framework Selection */}
         <Card className="mb-6">
@@ -95,15 +84,11 @@ const ComplianceRoadmap = () => {
         </Card>
 
         {!selectedFramework && (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Target className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">Select a Framework to Begin</h3>
-              <p className="text-muted-foreground">
-                Choose a compliance framework from the dropdown above to view or create your roadmap
-              </p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Target}
+            title="Select a Framework to Begin"
+            description="Choose a compliance framework from the dropdown above to view or create your roadmap"
+          />
         )}
 
         {selectedFramework && stages && stages.length > 0 && (
@@ -171,22 +156,17 @@ const ComplianceRoadmap = () => {
         )}
 
         {selectedFramework && stages && stages.length === 0 && (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Target className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">No Roadmap Found</h3>
-              <p className="text-muted-foreground mb-4">
-                Initialize a roadmap for this framework to begin tracking your compliance journey
-              </p>
-              <Button onClick={handleInitializeRoadmap} disabled={!isReady || isInitializing} aria-disabled={!isReady || isInitializing}>
-                <Plus className="h-4 w-4 mr-2" />
-                {isInitializing ? 'Initializing...' : 'Initialize Roadmap'}
-              </Button>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Target}
+            title="No Roadmap Found"
+            description="Initialize a roadmap for this framework to begin tracking your compliance journey"
+            action={{
+              label: isInitializing ? 'Initializing...' : 'Initialize Roadmap',
+              onClick: handleInitializeRoadmap,
+            }}
+          />
         )}
-      </main>
-    </div>
+    </PageContainer>
   );
 };
 

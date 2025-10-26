@@ -6,9 +6,12 @@ import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, FileText, CheckCircle2, ArrowLeft } from "lucide-react";
+import { Shield, FileText, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { LinkTray } from "@/components/LinkTray";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 interface Control {
   id: string;
@@ -102,9 +105,9 @@ export default function ComplianceControlDetail() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-          <p className="text-center text-muted-foreground">Loading control details...</p>
-        </main>
+        <PageContainer>
+          <LoadingSpinner message="Loading control details..." />
+        </PageContainer>
       </div>
     );
   }
@@ -113,21 +116,17 @@ export default function ComplianceControlDetail() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pt-56 pb-8">
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Shield className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Control Not Found</h3>
-              <p className="text-muted-foreground mb-4">
-                The requested control could not be found.
-              </p>
-              <Button onClick={() => navigate(-1)}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Go Back
-              </Button>
-            </CardContent>
-          </Card>
-        </main>
+        <PageContainer>
+          <EmptyState
+            icon={Shield}
+            title="Control Not Found"
+            description="The requested control could not be found."
+            action={{
+              label: "Go Back",
+              onClick: () => navigate(-1),
+            }}
+          />
+        </PageContainer>
       </div>
     );
   }
@@ -136,7 +135,8 @@ export default function ComplianceControlDetail() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 py-8">
+      <PageContainer noPadding>
+        <div className="px-4 py-8">
         <DashboardNavigation 
           title="Control Detail"
           dashboards={[
@@ -295,7 +295,8 @@ export default function ComplianceControlDetail() {
             </CardContent>
           </Card>
         </div>
-      </main>
+        </div>
+      </PageContainer>
     </div>
   );
 }

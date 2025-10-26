@@ -4,28 +4,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileCheck, Plus, Map } from "lucide-react";
-import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { useComplianceData } from "@/hooks/useComplianceData";
 import { complianceStatCards } from "@/lib/complianceConfig";
 import { ComplianceTabContent } from "@/components/compliance/ComplianceTabContent";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 export default function CompliancePortal() {
   const navigate = useNavigate();
   const { frameworks, evidenceFiles, reports, isLoading, stats } = useComplianceData();
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        
-        <div className="mb-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Compliance Management</h1>
-            <p className="text-muted-foreground">Track compliance frameworks and evidence collection</p>
-          </div>
-          <DashboardSettingsMenu dashboardName="Compliance Portal" />
-        </div>
+    <PageContainer>
+      <PageHeader
+        title="Compliance Management"
+        description="Track compliance frameworks and evidence collection"
+        dashboardMenu={{ dashboardName: "Compliance Portal" }}
+      />
 
         <div className="flex flex-wrap items-center gap-3 mb-6 overflow-x-auto">
           <Button size="sm" onClick={() => navigate('/compliance/roadmap')}>
@@ -113,7 +110,6 @@ export default function CompliancePortal() {
           <DepartmentAIAssistant department="compliance" departmentLabel="Compliance" />
           <MCPServerStatus filterByServerType="compliance" />
         </div>
-      </main>
-    </div>
+    </PageContainer>
   );
 }
