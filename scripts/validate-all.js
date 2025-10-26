@@ -137,17 +137,29 @@ try {
   console.warn('⚠️  Aggregations: Performance issues detected\n');
 }
 
-// ===== 8. LAYOUT UNIFORMITY =====
+// ===== 8. CODE MODULARIZATION =====
+console.log('📦 Running Code Modularization Check...');
+try {
+  const modularizationOutput = execSync('node scripts/validate-code-modularization.js', { encoding: 'utf8' });
+  console.log(modularizationOutput); // Print full output
+  console.log('✅ Code Modularization: Check complete\n');
+} catch (error) {
+  warnings.push('Code modularization issues found');
+  console.warn('⚠️  Code Modularization: Some issues found\n');
+}
+
+// ===== 9. LAYOUT UNIFORMITY =====
 console.log('🎨 Running Layout Uniformity Check...');
 try {
-  execSync('node scripts/validate-layout-uniformity.js', { stdio: 'pipe' });
-  console.log('✅ Layout Uniformity: Consistent patterns\n');
+  const layoutOutput = execSync('node scripts/validate-layout-uniformity.js', { encoding: 'utf8' });
+  console.log(layoutOutput); // Print full output
+  console.log('✅ Layout Uniformity: Check complete\n');
 } catch (error) {
   warnings.push('Layout uniformity issues found');
   console.warn('⚠️  Layout Uniformity: Some inconsistencies found\n');
 }
 
-// ===== 9. ESLINT =====
+// ===== 10. ESLINT =====
 console.log('🔧 Running ESLint...');
 try {
   execSync('npx eslint src --ext .ts,.tsx --max-warnings 0', { stdio: 'pipe' });
@@ -157,7 +169,7 @@ try {
   console.warn('⚠️  ESLint: Some warnings found\n');
 }
 
-// ===== 10. DOCUMENTATION UPDATES =====
+// ===== 11. DOCUMENTATION UPDATES =====
 console.log('📚 Checking documentation updates...');
 try {
   const recentFixesContent = readFileSync('RECENT_FIXES_2025_10_15.md', 'utf8');
@@ -203,9 +215,24 @@ if (errors.length === 0 && warnings.length === 0) {
   console.log('   • Edge Functions: ✅ All validated');
   console.log('   • Input Security: ✅ Comprehensive validation passed');
   console.log('   • Aggregations: ✅ All queries optimized');
+  console.log('   • Code Modularization: ✅ Passed checks');
   console.log('   • Layout Uniformity: ✅ Consistent patterns');
   console.log('   • ESLint: ✅ No issues');
   console.log('   • Documentation: ✅ Up to date\n');
+  
+  // Read and display modularization score if available
+  try {
+    const modularizationData = JSON.parse(readFileSync('validation-modularization-results.json', 'utf8'));
+    console.log(`📊 Modularization Score: ${modularizationData.score}%`);
+  } catch(e) { /* ignore if file doesn't exist */ }
+  
+  // Read and display layout uniformity results if available
+  try {
+    const layoutData = JSON.parse(readFileSync('validation-layout-results.json', 'utf8'));
+    console.log(`📐 Layout Uniformity: ${layoutData.passedChecks} checks passed, ${layoutData.totalIssues} issues found`);
+  } catch(e) { /* ignore if file doesn't exist */ }
+  
+  console.log();
   
   process.exit(0);
 } else {
