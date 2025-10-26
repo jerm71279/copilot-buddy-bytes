@@ -4,13 +4,28 @@ This document describes the automated checks we run to keep the codebase modular
 
 ## How to Run
 
-Run locally at any time:
+Run individual validation scripts:
 
 ```bash
+# Code modularization check
 node scripts/validate-code-modularization.js
+
+# Layout uniformity check
+node scripts/validate-layout-uniformity.js
+
+# Full validation suite
+node scripts/validate-all.js
+
+# Comprehensive validation with auto-reporting
+node scripts/validate-all-and-report.js
 ```
 
-The script scans `src/**/*.ts(x)` and prints a summary of findings. It exits with a non‑zero code if any `error` level issues are found.
+The scripts scan `src/**/*.ts(x)` and print detailed summaries. Results are automatically exported to JSON files for documentation and tracking.
+
+**Output Files Generated**:
+- `validation-modularization-results.json` - Detailed modularization analysis
+- `validation-layout-results.json` - Layout uniformity data
+- `validation-full-results.json` - Comprehensive validation report
 
 ## Rules Checked
 

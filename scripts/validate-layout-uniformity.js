@@ -354,6 +354,37 @@ if (results.headerIssues.length > 0) {
 // Export status
 const totalIssues = results.layoutIssues.length + results.spacingIssues.length + results.headerIssues.length;
 
+// Export results to file for documentation
+const reportData = {
+  timestamp: new Date().toISOString(),
+  totalIssues,
+  layoutIssues: results.layoutIssues.length,
+  spacingIssues: results.spacingIssues.length,
+  headerIssues: results.headerIssues.length,
+  passedChecks: results.passed.length,
+  details: {
+    layoutIssues: results.layoutIssues,
+    spacingIssues: results.spacingIssues,
+    headerIssues: results.headerIssues
+  },
+  patterns: {
+    standardLayoutCount: layoutPatterns[standardLayout].length,
+    standardContainerCount: layoutPatterns[standardContainer].length,
+    standardPaddingCount: layoutPatterns[standardPadding].length,
+    consistentHeadersCount: headerPatterns.consistent.length
+  }
+};
+
+try {
+  fs.writeFileSync(
+    'validation-layout-results.json',
+    JSON.stringify(reportData, null, 2)
+  );
+  console.log('📄 Results exported to: validation-layout-results.json\n');
+} catch (err) {
+  console.error('⚠️  Could not export results file:', err.message);
+}
+
 if (totalIssues === 0) {
   console.log('✅ LAYOUT UNIFORMITY EXCELLENT\n');
   process.exit(0);

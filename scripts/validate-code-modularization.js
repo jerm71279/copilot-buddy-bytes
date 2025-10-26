@@ -305,25 +305,51 @@ componentImports.forEach((files, importPath) => {
 console.log('\n');
 
 // ========================================
-// FINAL REPORT
+// 5. FINAL REPORT
 // ========================================
 console.log('═'.repeat(80));
-console.log('\n📊 MODULARIZATION ANALYSIS SUMMARY\n');
+console.log('\n📊 CODE MODULARIZATION SUMMARY\n');
 console.log('═'.repeat(80));
 console.log('\n');
 
-console.log(`🔴 Critical Issues:     ${results.critical.length}`);
+console.log(`❗ Critical Issues:    ${results.critical.length}`);
 console.log(`⚠️  Warnings:           ${results.warnings.length}`);
 console.log(`💡 Suggestions:        ${results.suggestions.length}`);
 console.log(`✅ Passed Checks:      ${results.passed.length}`);
 console.log('\n');
 
-// Calculate scores
-const totalIssues = results.critical.length + results.warnings.length;
-const totalChecks = totalIssues + results.suggestions.length + results.passed.length;
-const modularizationScore = totalChecks > 0 ? Math.round((results.passed.length / totalChecks) * 100) : 0;
+// Calculate modularization score
+const totalIssues = results.critical.length + results.warnings.length + results.suggestions.length;
+const totalChecks = totalIssues + results.passed.length;
+const score = totalChecks > 0 ? ((results.passed.length / totalChecks) * 100).toFixed(1) : 100;
 
-console.log(`📈 Modularization Score: ${modularizationScore}%`);
+console.log(`🎯 Modularization Score: ${score}%`);
+console.log('\n');
+
+// Export results to file for documentation
+const reportData = {
+  timestamp: new Date().toISOString(),
+  score: parseFloat(score),
+  critical: results.critical.length,
+  warnings: results.warnings.length,
+  suggestions: results.suggestions.length,
+  passed: results.passed.length,
+  details: {
+    critical: results.critical,
+    warnings: results.warnings,
+    suggestions: results.suggestions
+  }
+};
+
+try {
+  fs.writeFileSync(
+    'validation-modularization-results.json',
+    JSON.stringify(reportData, null, 2)
+  );
+  console.log('📄 Results exported to: validation-modularization-results.json\n');
+} catch (err) {
+  console.error('⚠️  Could not export results file:', err.message);
+}
 console.log('\n');
 
 // Detailed findings
