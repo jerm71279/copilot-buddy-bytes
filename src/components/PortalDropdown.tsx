@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { createPortal } from "react-dom";
 
 
 interface PortalDropdownProps {
@@ -16,7 +17,7 @@ export function PortalDropdown({ items, currentPath, onClose, lanesBottom }: Por
     return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
   };
 
-  return (
+  return createPortal(
     <>
       <div 
         className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[10000]" 
@@ -44,6 +45,7 @@ export function PortalDropdown({ items, currentPath, onClose, lanesBottom }: Por
           ))}
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
