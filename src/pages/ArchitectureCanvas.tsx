@@ -1,13 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ZoomIn, ZoomOut, Maximize2, ChevronDown, ChevronUp } from "lucide-react";
 import mermaid from "mermaid";
 
 const ArchitectureCanvas = () => {
   const [zoom, setZoom] = useState(1);
-  const [activeTab, setActiveTab] = useState("frontend-edge");
-  const [renderKey, setRenderKey] = useState(0);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    "frontend-edge": true,
+    "edge-backend": false,
+    "edge-external": false,
+    "backend": false,
+    "auth": false,
+    "compliance": false,
+  });
 
   useEffect(() => {
     mermaid.initialize({ 
@@ -18,12 +25,19 @@ const ArchitectureCanvas = () => {
   }, []);
 
   useEffect(() => {
-    // Force re-render of Mermaid diagrams when tab or zoom changes
+    // Force re-render of Mermaid diagrams when sections open/close or zoom changes
     const timer = setTimeout(() => {
       mermaid.run();
     }, 100);
     return () => clearTimeout(timer);
-  }, [activeTab, zoom, renderKey]);
+  }, [openSections, zoom]);
+
+  const toggleSection = (section: string) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
 
   const frontendToEdgeDiagram = `
 graph TB
@@ -275,8 +289,17 @@ graph TB
     style AuditLogs fill:#ef4444,stroke:#dc2626,color:#fff
 `;
 
-  const renderCanvas = (diagram: string, tabKey: string) => (
-    <div className="border border-border rounded-lg bg-card shadow-lg overflow-auto" style={{ height: 'calc(100vh - 280px)' }}>
+  const canvasSections = [
+    { key: "frontend-edge", title: "Frontend → Edge Functions", diagram: frontendToEdgeDiagram },
+    { key: "edge-backend", title: "Edge Functions → Backend", diagram: edgeToBackendDiagram },
+    { key: "edge-external", title: "Edge Functions → External Systems", diagram: edgeToExternalDiagram },
+    { key: "backend", title: "Backend Relationships", diagram: backendRelationshipsDiagram },
+    { key: "auth", title: "Authentication & Security", diagram: authSecurityDiagram },
+    { key: "compliance", title: "Compliance Integration", diagram: complianceDiagram },
+  ];
+
+  const renderCanvas = (diagram: string, sectionKey: string) => (
+    <div className="border border-border rounded-lg bg-card overflow-auto" style={{ height: '500px' }}>
       <div 
         className="p-8 transition-transform duration-200"
         style={{ 
@@ -285,7 +308,7 @@ graph TB
           minWidth: '1200px'
         }}
       >
-        <pre className="mermaid" key={`${tabKey}-${renderKey}`}>
+        <pre className="mermaid" key={`${sectionKey}-${openSections[sectionKey]}`}>
           {diagram}
         </pre>
       </div>
@@ -326,43 +349,36 @@ graph TB
           </div>
         </div>
 
-        <Tabs defaultValue="frontend-edge" className="w-full" onValueChange={(value) => {
-          setActiveTab(value);
-          setRenderKey(prev => prev + 1);
-        }}>
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
-            <TabsTrigger value="frontend-edge">Frontend → Edge</TabsTrigger>
-            <TabsTrigger value="edge-backend">Edge → Backend</TabsTrigger>
-            <TabsTrigger value="edge-external">Edge → External</TabsTrigger>
-            <TabsTrigger value="backend">Backend</TabsTrigger>
-            <TabsTrigger value="auth">Auth & Security</TabsTrigger>
-            <TabsTrigger value="compliance">Compliance</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="frontend-edge" className="mt-4">
-            {renderCanvas(frontendToEdgeDiagram, 'frontend-edge')}
-          </TabsContent>
-          
-          <TabsContent value="edge-backend" className="mt-4">
-            {renderCanvas(edgeToBackendDiagram, 'edge-backend')}
-          </TabsContent>
-          
-          <TabsContent value="edge-external" className="mt-4">
-            {renderCanvas(edgeToExternalDiagram, 'edge-external')}
-          </TabsContent>
-          
-          <TabsContent value="backend" className="mt-4">
-            {renderCanvas(backendRelationshipsDiagram, 'backend')}
-          </TabsContent>
-          
-          <TabsContent value="auth" className="mt-4">
-            {renderCanvas(authSecurityDiagram, 'auth')}
-          </TabsContent>
-          
-          <TabsContent value="compliance" className="mt-4">
-            {renderCanvas(complianceDiagram, 'compliance')}
-          </TabsContent>
-        </Tabs>
+        <div className="space-y-4">
+          {canvasSections.map((section) => (
+            <Card key={section.key}>
+              <Collapsible
+                open={openSections[section.key]}
+                onOpenChange={() => toggleSection(section.key)}
+              >
+                <CardHeader className="cursor-pointer">
+                  <CollapsibleTrigger className="w-full">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-xl">{section.title}</CardTitle>
+                      <Button variant="ghost" size="sm">
+                        {openSections[section.key] ? (
+                          <ChevronUp className="h-5 w-5" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5" />
+                        )}
+                      </Button>
+                    </div>
+                  </CollapsibleTrigger>
+                </CardHeader>
+                <CollapsibleContent>
+                  <CardContent>
+                    {renderCanvas(section.diagram, section.key)}
+                  </CardContent>
+                </CollapsibleContent>
+              </Collapsible>
+            </Card>
+          ))}
+        </div>
 
         <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div className="flex items-center gap-2">
