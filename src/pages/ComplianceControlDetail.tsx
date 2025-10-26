@@ -239,10 +239,11 @@ export default function ComplianceControlDetail() {
             </CardHeader>
             <CardContent>
               {evidenceFiles.length === 0 ? (
-                <div className="text-center py-8">
-                  <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No evidence files uploaded yet</p>
-                </div>
+                <EmptyState
+                  icon={FileText}
+                  title="No evidence files uploaded yet"
+                  description="Upload evidence files to document this control's implementation"
+                />
               ) : (
                 <div className="space-y-2">
                   {evidenceFiles.map((file) => (
