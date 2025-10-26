@@ -200,7 +200,7 @@ export default function VisualWorkflowBuilder() {
   }, [setNodes]);
 
   return (
-    <div className="container mx-auto px-4 pt-56 pb-8 space-y-6">
+    <div className="container mx-auto px-4 py-8 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" onClick={() => navigate('/workflow-orchestration')}>
