@@ -231,6 +231,77 @@ dashboardPages.forEach(file => {
 console.log('\n');
 
 // ========================================
+// 5. PAGE DIMENSION UNIFORMITY CHECK
+// ========================================
+console.log('📐 5. PAGE DIMENSION UNIFORMITY CHECK\n');
+
+const dimensionPatterns = {
+  standardWidth: [],
+  customWidth: [],
+  standardMaxWidth: [],
+  fullWidth: [],
+  fixedHeight: [],
+  minHeight: []
+};
+
+const standardDimensions = {
+  containerMaxWidth: ['max-w-7xl', 'container'],
+  standardPadding: ['px-4', 'px-6'],
+  standardHeight: ['min-h-screen', 'h-screen']
+};
+
+dashboardPages.forEach(file => {
+  const content = fs.readFileSync(file, 'utf-8');
+  const fileName = file.replace(path.join(__dirname, '../src/pages/'), '');
+  
+  // Check container width patterns
+  if (content.includes('max-w-7xl') || content.includes('container mx-auto')) {
+    dimensionPatterns.standardWidth.push(fileName);
+    logResult('✅', 'DIMENSION', `${fileName} uses standard container width`, 'info');
+  } else if (content.match(/max-w-\[?(\d+)(px|rem|em)/)) {
+    dimensionPatterns.customWidth.push(fileName);
+    const customMatch = content.match(/max-w-\[?(\d+)(px|rem|em)/);
+    logResult('⚠️', 'DIMENSION', `${fileName} uses custom width: ${customMatch ? customMatch[0] : 'unknown'}`, 'warning');
+  } else if (content.includes('w-full') && !content.includes('max-w')) {
+    dimensionPatterns.fullWidth.push(fileName);
+    logResult('💡', 'DIMENSION', `${fileName} uses full width without max-width constraint`, 'info');
+  }
+  
+  // Check height patterns
+  if (content.includes('min-h-screen')) {
+    dimensionPatterns.minHeight.push(fileName);
+    logResult('✅', 'DIMENSION', `${fileName} uses min-h-screen for viewport height`, 'info');
+  } else if (content.match(/h-\[?(\d+)(px|rem|vh)/)) {
+    dimensionPatterns.fixedHeight.push(fileName);
+    const heightMatch = content.match(/h-\[?(\d+)(px|rem|vh)/);
+    logResult('⚠️', 'DIMENSION', `${fileName} uses fixed height: ${heightMatch ? heightMatch[0] : 'unknown'}`, 'warning');
+  }
+  
+  // Check for inconsistent padding
+  const paddingClasses = content.match(/p[xy]?-\d+/g);
+  if (paddingClasses) {
+    const uniquePaddings = [...new Set(paddingClasses)];
+    if (uniquePaddings.length > 3) {
+      logResult('⚠️', 'DIMENSION', `${fileName} has ${uniquePaddings.length} different padding values (recommend max 3)`, 'warning');
+    }
+  }
+  
+  // Check for hardcoded pixel dimensions
+  const hardcodedWidths = content.match(/width:\s*['"]?\d+px/g);
+  const hardcodedHeights = content.match(/height:\s*['"]?\d+px/g);
+  
+  if (hardcodedWidths && hardcodedWidths.length > 0) {
+    logResult('⚠️', 'DIMENSION', `${fileName} has ${hardcodedWidths.length} hardcoded pixel widths (use Tailwind classes)`, 'warning');
+  }
+  
+  if (hardcodedHeights && hardcodedHeights.length > 0) {
+    logResult('⚠️', 'DIMENSION', `${fileName} has ${hardcodedHeights.length} hardcoded pixel heights (use Tailwind classes)`, 'warning');
+  }
+});
+
+console.log('\n');
+
+// ========================================
 // FINAL REPORT
 // ========================================
 console.log('═'.repeat(80));

@@ -112,6 +112,92 @@ export type Database = {
           },
         ]
       }
+      ai_ab_test_results: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          customer_id: string
+          id: string
+          metadata: Json | null
+          query_text: string
+          response_text: string
+          response_time_ms: number
+          user_id: string | null
+          user_rating: number | null
+          variant_id: string
+          was_helpful: boolean | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          metadata?: Json | null
+          query_text: string
+          response_text: string
+          response_time_ms: number
+          user_id?: string | null
+          user_rating?: number | null
+          variant_id: string
+          was_helpful?: boolean | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          metadata?: Json | null
+          query_text?: string
+          response_text?: string
+          response_time_ms?: number
+          user_id?: string | null
+          user_rating?: number | null
+          variant_id?: string
+          was_helpful?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_ab_test_results_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "ai_ab_test_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_ab_test_variants: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          is_active: boolean
+          model_config: Json
+          prompt_strategy: Json
+          test_name: string
+          variant_name: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_active?: boolean
+          model_config: Json
+          prompt_strategy: Json
+          test_name: string
+          variant_name: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_active?: boolean
+          model_config?: Json
+          prompt_strategy?: Json
+          test_name?: string
+          variant_name?: string
+        }
+        Relationships: []
+      }
       ai_agent_alerts: {
         Row: {
           acknowledged_at: string | null
@@ -586,6 +672,66 @@ export type Database = {
             referencedColumns: ["customer_id"]
           },
         ]
+      }
+      ai_model_performance: {
+        Row: {
+          avg_confidence_score: number | null
+          avg_response_time_ms: number | null
+          calculated_at: string
+          cost_per_invocation: number | null
+          created_at: string
+          customer_id: string
+          id: string
+          metadata: Json | null
+          model_name: string
+          optimal_max_tokens: number | null
+          optimal_temperature: number | null
+          sample_period_end: string
+          sample_period_start: string
+          success_rate: number | null
+          total_invocations: number | null
+          use_case: string
+          user_satisfaction: number | null
+        }
+        Insert: {
+          avg_confidence_score?: number | null
+          avg_response_time_ms?: number | null
+          calculated_at?: string
+          cost_per_invocation?: number | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          metadata?: Json | null
+          model_name: string
+          optimal_max_tokens?: number | null
+          optimal_temperature?: number | null
+          sample_period_end: string
+          sample_period_start: string
+          success_rate?: number | null
+          total_invocations?: number | null
+          use_case: string
+          user_satisfaction?: number | null
+        }
+        Update: {
+          avg_confidence_score?: number | null
+          avg_response_time_ms?: number | null
+          calculated_at?: string
+          cost_per_invocation?: number | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          metadata?: Json | null
+          model_name?: string
+          optimal_max_tokens?: number | null
+          optimal_temperature?: number | null
+          sample_period_end?: string
+          sample_period_start?: string
+          success_rate?: number | null
+          total_invocations?: number | null
+          use_case?: string
+          user_satisfaction?: number | null
+        }
+        Relationships: []
       }
       ai_pattern_chains: {
         Row: {
@@ -7240,6 +7386,51 @@ export type Database = {
           status?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      insight_correlation_graph: {
+        Row: {
+          calculated_at: string
+          confidence_score: number
+          correlation_strength: number
+          correlation_type: string
+          created_at: string
+          customer_id: string
+          edge_weight: number | null
+          id: string
+          insight_a_id: string
+          insight_b_id: string
+          path_distance: number | null
+          supporting_evidence: Json | null
+        }
+        Insert: {
+          calculated_at?: string
+          confidence_score: number
+          correlation_strength: number
+          correlation_type: string
+          created_at?: string
+          customer_id: string
+          edge_weight?: number | null
+          id?: string
+          insight_a_id: string
+          insight_b_id: string
+          path_distance?: number | null
+          supporting_evidence?: Json | null
+        }
+        Update: {
+          calculated_at?: string
+          confidence_score?: number
+          correlation_strength?: number
+          correlation_type?: string
+          created_at?: string
+          customer_id?: string
+          edge_weight?: number | null
+          id?: string
+          insight_a_id?: string
+          insight_b_id?: string
+          path_distance?: number | null
+          supporting_evidence?: Json | null
         }
         Relationships: []
       }

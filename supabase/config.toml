@@ -162,3 +162,12 @@ verify_jwt = true
 [functions.calculate-learning-metrics]
 verify_jwt = false
 
+[functions.ab-test-router]
+verify_jwt = true
+
+[functions.calculate-correlation-graph]
+verify_jwt = false
+
+[functions.tune-model-performance]
+verify_jwt = false
+
