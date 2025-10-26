@@ -240,6 +240,7 @@ Deno.serve(async (req) => {
           milestones = [
             {
               stage_template_id: st.id,
+              framework_id: fw.id,
               sequence_order: 1,
               milestone_name: stripControl('Define scope and inventory', 200),
               milestone_description: stripControl('Define in-scope systems and data; inventory assets', 2000),
@@ -249,6 +250,7 @@ Deno.serve(async (req) => {
             },
             {
               stage_template_id: st.id,
+              framework_id: fw.id,
               sequence_order: 2,
               milestone_name: stripControl('Gap analysis', 200),
               milestone_description: stripControl('Analyze controls vs. framework requirements', 2000),
@@ -261,6 +263,7 @@ Deno.serve(async (req) => {
           milestones = [
             {
               stage_template_id: st.id,
+              framework_id: fw.id,
               sequence_order: 1,
               milestone_name: stripControl('Implement controls', 200),
               milestone_description: stripControl('Roll out prioritized controls and procedures', 2000),
@@ -270,6 +273,7 @@ Deno.serve(async (req) => {
             },
             {
               stage_template_id: st.id,
+              framework_id: fw.id,
               sequence_order: 2,
               milestone_name: stripControl('Document policies and SOPs', 200),
               milestone_description: stripControl('Publish and communicate policies', 2000),
@@ -282,6 +286,7 @@ Deno.serve(async (req) => {
           milestones = [
             {
               stage_template_id: st.id,
+              framework_id: fw.id,
               sequence_order: 1,
               milestone_name: stripControl('Collect evidence', 200),
               milestone_description: stripControl('Gather artifacts and screenshots', 2000),
@@ -291,6 +296,7 @@ Deno.serve(async (req) => {
             },
             {
               stage_template_id: st.id,
+              framework_id: fw.id,
               sequence_order: 2,
               milestone_name: stripControl('Internal readiness review', 200),
               milestone_description: stripControl('Run internal audit and fix gaps', 2000),
