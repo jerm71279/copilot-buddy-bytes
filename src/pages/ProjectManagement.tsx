@@ -27,6 +27,7 @@ import {
 import { FolderKanban, DollarSign, Clock, TrendingUp, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 const ProjectManagement = () => {
   const navigate = useNavigate();
@@ -153,7 +154,7 @@ const ProjectManagement = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <DashboardNavigation />
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
@@ -417,7 +418,7 @@ const ProjectManagement = () => {
           </TabsContent>
         </Tabs>
         </div>
-      </main>
+      </PageContainer>
     </div>
   );
 };

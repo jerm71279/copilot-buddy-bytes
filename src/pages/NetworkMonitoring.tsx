@@ -15,6 +15,9 @@ import {
   FileText, TrendingUp, CheckCircle2
 } from "lucide-react";
 import { toast } from "sonner";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 export default function NetworkMonitoring() {
   const navigate = useNavigate();
@@ -125,13 +128,9 @@ export default function NetworkMonitoring() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pt-56 pb-8">
-          <Card>
-            <CardContent className="py-8 text-center">
-              Loading network monitoring data...
-            </CardContent>
-          </Card>
-        </main>
+        <PageContainer>
+          <LoadingSpinner message="Loading network monitoring data..." />
+        </PageContainer>
       </div>
     );
   }
@@ -140,7 +139,7 @@ export default function NetworkMonitoring() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <DashboardNavigation 
           title="Network Monitoring"
           dashboards={[
@@ -221,17 +220,15 @@ export default function NetworkMonitoring() {
 
           <TabsContent value="devices" className="space-y-4">
             {devices.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Server className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No devices configured</h3>
-                  <p className="text-muted-foreground mb-4">Add your first network device to start monitoring</p>
-                  <Button onClick={() => navigate('/network-monitoring/devices/new')}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Device
-                  </Button>
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={Server}
+                title="No devices configured"
+                description="Add your first network device to start monitoring"
+                action={{
+                  label: "Add Device",
+                  onClick: () => navigate('/network-monitoring/devices/new'),
+                }}
+              />
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
                 {devices.map((device) => (
@@ -282,13 +279,11 @@ export default function NetworkMonitoring() {
 
           <TabsContent value="alerts" className="space-y-4">
             {alerts.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <CheckCircle2 className="mx-auto h-12 w-12 text-primary mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No active alerts</h3>
-                  <p className="text-muted-foreground">All systems operating normally</p>
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={CheckCircle2}
+                title="No active alerts"
+                description="All systems operating normally"
+              />
             ) : (
               <div className="space-y-2">
                 {alerts.map((alert) => (
@@ -343,11 +338,11 @@ export default function NetworkMonitoring() {
               <CardContent className="p-0">
                 <div className="max-h-[600px] overflow-y-auto">
                   {filteredLogs.length === 0 ? (
-                    <div className="py-12 text-center">
-                      <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">No log messages</h3>
-                      <p className="text-muted-foreground">Waiting for syslog messages...</p>
-                    </div>
+                    <EmptyState
+                      icon={FileText}
+                      title="No log messages"
+                      description="Waiting for syslog messages..."
+                    />
                   ) : (
                     <div className="divide-y">
                       {filteredLogs.map((log) => (
@@ -380,7 +375,7 @@ export default function NetworkMonitoring() {
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
+      </PageContainer>
     </div>
   );
 }

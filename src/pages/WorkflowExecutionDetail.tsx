@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ArrowLeft, CheckCircle, XCircle, Clock, AlertTriangle, Activity } from "lucide-react";
 import { toast } from "sonner";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 interface WorkflowExecution {
   id: string;
@@ -104,11 +106,11 @@ export default function WorkflowExecutionDetail() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pt-56 pb-8">
+        <PageContainer>
           <div className="flex items-center justify-center py-12">
             <Activity className="h-8 w-8 animate-spin text-primary" />
           </div>
-        </main>
+        </PageContainer>
       </div>
     );
   }
@@ -117,19 +119,17 @@ export default function WorkflowExecutionDetail() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pt-56 pb-8">
-          <Card>
-            <CardContent className="py-12 text-center">
-              <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h2 className="text-xl font-semibold mb-2">Execution Not Found</h2>
-              <p className="text-muted-foreground mb-4">The execution you're looking for doesn't exist.</p>
-              <Button onClick={() => navigate(-1)}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Go Back
-              </Button>
-            </CardContent>
-          </Card>
-        </main>
+        <PageContainer>
+          <EmptyState
+            icon={AlertTriangle}
+            title="Execution Not Found"
+            description="The execution you're looking for doesn't exist."
+            action={{
+              label: "Go Back",
+              onClick: () => navigate(-1),
+            }}
+          />
+        </PageContainer>
       </div>
     );
   }
@@ -138,7 +138,7 @@ export default function WorkflowExecutionDetail() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <Button 
           onClick={() => navigate(-1)} 
           variant="ghost" 
@@ -275,9 +275,9 @@ export default function WorkflowExecutionDetail() {
                 ))}
               </div>
             </CardContent>
-          </Card>
+        </Card>
         )}
-      </main>
+      </PageContainer>
     </div>
   );
 }

@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Building2, Users, MapPin, Package, History } from "lucide-react";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 interface CustomerAccount {
   id: string;
@@ -159,11 +161,25 @@ const CustomerAccountDetail = () => {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <PageContainer>
+          <LoadingSpinner message="Loading..." />
+        </PageContainer>
+      </div>
+    );
   }
 
   if (!account) {
-    return <div className="min-h-screen flex items-center justify-center">Account not found</div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <PageContainer>
+          <p className="text-muted-foreground text-center">Account not found</p>
+        </PageContainer>
+      </div>
+    );
   }
 
   return (
@@ -171,7 +187,7 @@ const CustomerAccountDetail = () => {
       <Navigation />
       <DashboardNavigation />
       
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <Button
           variant="ghost"
           onClick={() => navigate("/customers")}
@@ -434,7 +450,7 @@ const CustomerAccountDetail = () => {
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
+      </PageContainer>
     </div>
   );
 };

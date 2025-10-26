@@ -11,6 +11,9 @@ import { Plus, Users, Clock, CheckCircle, AlertCircle, Settings } from "lucide-r
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 interface EmployeeOnboarding {
   id: string;
@@ -145,7 +148,7 @@ export default function EmployeeOnboardingDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+      <PageContainer>
         <DashboardNavigation 
           title="Employee Onboarding"
           dashboards={[
@@ -214,19 +217,13 @@ export default function EmployeeOnboardingDashboard() {
 
         {/* Onboardings List */}
         {isLoading ? (
-          <Card>
-            <CardContent className="py-8 text-center">
-              Loading employee onboardings...
-            </CardContent>
-          </Card>
+          <LoadingSpinner message="Loading employee onboardings..." />
         ) : onboardings.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No employee onboardings yet</h3>
-              <p className="text-muted-foreground">Use the "New Employee Onboarding" button above to start onboarding your first employee</p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Users}
+            title="No employee onboardings yet"
+            description='Use the "New Employee Onboarding" button above to start onboarding your first employee'
+          />
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {onboardings.map((onboarding) => (
@@ -273,7 +270,7 @@ export default function EmployeeOnboardingDashboard() {
           <DepartmentAIAssistant department="hr" departmentLabel="HR - Employee Onboarding" />
           <MCPServerStatus filterByServerType="hr" />
         </div>
-      </main>
+      </PageContainer>
     </div>
   );
 }

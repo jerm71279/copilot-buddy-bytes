@@ -25,6 +25,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Building, Folder } from "lucide-react";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 interface Department {
   id: string;
@@ -143,7 +144,7 @@ const DepartmentManagement = () => {
       <Navigation />
       <DashboardNavigation />
       
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Department Management</h1>
@@ -300,7 +301,7 @@ const DepartmentManagement = () => {
             )}
           </CardContent>
         </Card>
-      </main>
+      </PageContainer>
     </div>
   );
 };

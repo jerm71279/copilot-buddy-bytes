@@ -13,6 +13,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Activity, Server, AlertCircle, CheckCircle2, Shield, HardDrive } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 export default function NinjaOneIntegration() {
   const navigate = useNavigate();
@@ -166,13 +169,9 @@ export default function NinjaOneIntegration() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 py-8">
-          <Card>
-            <CardContent className="py-8 text-center">
-              Loading...
-            </CardContent>
-          </Card>
-        </main>
+        <PageContainer>
+          <LoadingSpinner message="Loading..." />
+        </PageContainer>
       </div>
     );
   }
@@ -181,7 +180,7 @@ export default function NinjaOneIntegration() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pt-56 pb-8">
+        <PageContainer>
           <div className="max-w-2xl mx-auto">
             <Card>
               <CardHeader>
@@ -231,7 +230,7 @@ export default function NinjaOneIntegration() {
               </CardContent>
             </Card>
           </div>
-        </main>
+        </PageContainer>
       </div>
     );
   }
@@ -240,7 +239,7 @@ export default function NinjaOneIntegration() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <DashboardNavigation 
           title="NinjaOne Monitoring"
           dashboards={[
@@ -367,13 +366,11 @@ export default function NinjaOneIntegration() {
 
           <TabsContent value="alerts" className="space-y-4">
             {alerts.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <CheckCircle2 className="mx-auto h-12 w-12 text-primary mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No active alerts</h3>
-                  <p className="text-muted-foreground">All systems operating normally</p>
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={CheckCircle2}
+                title="No active alerts"
+                description="All systems operating normally"
+              />
             ) : (
               <div className="space-y-2">
                 {alerts.map((alert) => (
@@ -400,7 +397,7 @@ export default function NinjaOneIntegration() {
             )}
           </TabsContent>
         </Tabs>
-      </main>
+      </PageContainer>
     </div>
   );
 }

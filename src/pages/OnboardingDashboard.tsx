@@ -13,6 +13,9 @@ import { Plus, Users, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 /**
  * Onboarding Dashboard Data Flow
@@ -141,7 +144,7 @@ export default function OnboardingDashboard() {
   return (
     <div className="min-h-screen bg-background">
       
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
+      <PageContainer>
         <DashboardNavigation 
           title="Client Onboarding"
           dashboards={[
@@ -220,19 +223,13 @@ export default function OnboardingDashboard() {
 
         {/* Onboardings List */}
         {isLoading ? (
-          <Card>
-            <CardContent className="py-8 text-center">
-              Loading onboardings...
-            </CardContent>
-          </Card>
+          <LoadingSpinner message="Loading onboardings..." />
         ) : onboardings.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No client onboardings yet</h3>
-              <p className="text-muted-foreground">Use the "New Onboarding" button above to start onboarding your first client</p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Users}
+            title="No client onboardings yet"
+            description='Use the "New Onboarding" button above to start onboarding your first client'
+          />
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {onboardings.map((onboarding) => (
@@ -278,7 +275,7 @@ export default function OnboardingDashboard() {
           <DepartmentAIAssistant department="onboarding" departmentLabel="Client Onboarding" />
           <MCPServerStatus filterByServerType="onboarding" />
         </div>
-      </main>
+      </PageContainer>
     </div>
   );
 }

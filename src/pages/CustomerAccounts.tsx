@@ -33,6 +33,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Search, Building2, Users, MapPin } from "lucide-react";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 interface CustomerAccount {
   id: string;
@@ -180,7 +181,7 @@ const CustomerAccounts = () => {
       <Navigation />
       <DashboardNavigation />
       
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Customer Accounts</h1>
@@ -384,7 +385,7 @@ const CustomerAccounts = () => {
             )}
           </CardContent>
         </Card>
-      </main>
+      </PageContainer>
     </div>
   );
 };

@@ -14,6 +14,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, FileText, Edit, Trash2, Users } from "lucide-react";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 interface Template {
   id: string;
@@ -178,7 +181,7 @@ export default function OnboardingTemplates() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+      <PageContainer>
         <DashboardNavigation 
           title="Onboarding Templates"
           dashboards={[
@@ -288,29 +291,17 @@ export default function OnboardingTemplates() {
         </div>
 
         {isLoading ? (
-          <Card>
-            <CardContent className="py-8 text-center">
-              Loading templates...
-            </CardContent>
-          </Card>
+          <LoadingSpinner message="Loading templates..." />
         ) : templates.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No templates yet</h3>
-              <p className="text-muted-foreground mb-4">Create your first onboarding template or use our pre-built employee template</p>
-              <div className="flex gap-2 justify-center">
-                <Button onClick={() => setIsDialogOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Custom Template
-                </Button>
-                <Button variant="outline" onClick={handleCreateEmployeeTemplate}>
-                  <Users className="mr-2 h-4 w-4" />
-                  Add Employee Template
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={FileText}
+            title="No templates yet"
+            description="Create your first onboarding template or use our pre-built employee template"
+            action={{
+              label: "New Custom Template",
+              onClick: () => setIsDialogOpen(true),
+            }}
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {templates.map((template) => (
@@ -360,7 +351,7 @@ export default function OnboardingTemplates() {
             ))}
           </div>
         )}
-      </main>
+      </PageContainer>
     </div>
   );
 }

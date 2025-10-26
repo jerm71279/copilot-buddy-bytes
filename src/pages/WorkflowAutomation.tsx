@@ -10,6 +10,9 @@ import { dashboardLinks } from "@/lib/automationConfig";
 import { WorkflowStatsCards } from "@/components/automation/WorkflowStatsCards";
 import { WorkflowListCard } from "@/components/automation/WorkflowListCard";
 import { ExecutionListCard } from "@/components/automation/ExecutionListCard";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 /**
  * Workflow Automation Data Flow
@@ -74,7 +77,7 @@ export default function WorkflowAutomation() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <DashboardNavigation 
           title="Workflow Automation"
           dashboards={dashboardLinks}
@@ -100,23 +103,17 @@ export default function WorkflowAutomation() {
 
           <TabsContent value="workflows" className="space-y-4">
             {isLoading ? (
-              <Card>
-                <CardContent className="py-8 text-center">
-                  Loading workflows...
-                </CardContent>
-              </Card>
+              <LoadingSpinner message="Loading workflows..." />
             ) : workflows.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Zap className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No workflows yet</h3>
-                  <p className="text-muted-foreground mb-4">Create your first automation workflow</p>
-                  <Button onClick={() => navigate('/workflows/builder')}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create Workflow
-                  </Button>
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={Zap}
+                title="No workflows yet"
+                description="Create your first automation workflow"
+                action={{
+                  label: "Create Workflow",
+                  onClick: () => navigate('/workflows/builder'),
+                }}
+              />
             ) : (
               <div className="grid grid-cols-1 gap-4">
                 {workflows.map((workflow) => (
@@ -132,13 +129,11 @@ export default function WorkflowAutomation() {
 
           <TabsContent value="executions" className="space-y-4">
             {executions.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Clock className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No executions yet</h3>
-                  <p className="text-muted-foreground">Workflow executions will appear here</p>
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={Clock}
+                title="No executions yet"
+                description="Workflow executions will appear here"
+              />
             ) : (
               <div className="space-y-2">
                 {executions.map((execution) => (
@@ -152,7 +147,7 @@ export default function WorkflowAutomation() {
             )}
           </TabsContent>
         </Tabs>
-      </main>
+      </PageContainer>
     </div>
   );
 }
