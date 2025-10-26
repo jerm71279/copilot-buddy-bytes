@@ -174,6 +174,30 @@ Deno.serve(async (req) => {
     let milestonesInserted = 0;
 
     for (const fw of frameworks ?? []) {
+      // Remove any existing templates for this framework to ensure a true rebuild
+      const { data: existingStages, error: exSErr } = await supabase
+        .from('compliance_roadmap_stage_templates')
+        .select('id')
+        .eq('framework_id', fw.id);
+      if (exSErr) throw exSErr;
+
+      if ((existingStages?.length ?? 0) > 0) {
+        const stageIds = existingStages!.map((s: { id: string }) => s.id);
+        // Delete milestone templates first due to FK
+        const { error: delMErr } = await supabase
+          .from('compliance_roadmap_milestone_templates')
+          .delete()
+          .in('stage_template_id', stageIds);
+        if (delMErr) throw delMErr;
+
+        // Now delete stage templates
+        const { error: delSErr } = await supabase
+          .from('compliance_roadmap_stage_templates')
+          .delete()
+          .eq('framework_id', fw.id);
+        if (delSErr) throw delSErr;
+      }
+
       // Insert 3 standard stage templates
       const stageTemplates = [
         {
