@@ -307,9 +307,10 @@ Deno.serve(async (req) => {
           ];
         }
 
+        const milestonesWithFw = (milestones as any[]).map((m) => ({ framework_id: fw.id, ...m }));
         const { data: insM, error: insMErr } = await supabase
           .from('compliance_roadmap_milestone_templates')
-          .insert(milestones)
+          .insert(milestonesWithFw)
           .select('id');
         if (insMErr) throw insMErr;
         milestonesInserted += insM?.length ?? 0;
