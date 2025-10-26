@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { useForm } from "@/hooks/useForm";
+import { sanitizeText } from "@/utils/validation";
 
 interface RiskAssessmentDialogProps {
   open: boolean;
@@ -17,80 +18,99 @@ interface RiskAssessmentDialogProps {
 
 export function RiskAssessmentDialog({ open, onOpenChange, onSuccess }: RiskAssessmentDialogProps) {
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    risk_title: "",
-    risk_description: "",
-    category: "cybersecurity",
-    inherent_likelihood: 3,
-    inherent_impact: 3,
-    treatment_type: "mitigate",
-  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const form = useForm({
+    initialValues: {
+      risk_title: "",
+      risk_description: "",
+      category: "cybersecurity",
+      inherent_likelihood: 3,
+      inherent_impact: 3,
+      treatment_type: "mitigate",
+    },
+    validate: (values) => {
+      const errors: Record<string, string> = {};
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const sanitizedTitle = sanitizeText(values.risk_title, 200);
+      if (!sanitizedTitle) {
+        errors.risk_title = "Risk title is required";
+      } else if (sanitizedTitle.length < 3) {
+        errors.risk_title = "Risk title must be at least 3 characters";
+      }
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const sanitizedDescription = sanitizeText(values.risk_description, 1000);
+      if (!sanitizedDescription) {
+        errors.risk_description = "Risk description is required";
+      } else if (sanitizedDescription.length < 10) {
+        errors.risk_description = "Risk description must be at least 10 characters";
+      }
 
-      if (!profile?.customer_id) throw new Error("Customer ID not found");
+      if (values.inherent_likelihood < 1 || values.inherent_likelihood > 5) {
+        errors.inherent_likelihood = "Likelihood must be between 1 and 5";
+      }
 
-      // Calculate inherent score (likelihood * impact)
-      const inherentScore = formData.inherent_likelihood * formData.inherent_impact;
+      if (values.inherent_impact < 1 || values.inherent_impact > 5) {
+        errors.inherent_impact = "Impact must be between 1 and 5";
+      }
 
-      const { error } = await supabase
-        .from("risk_assessments")
-        .insert({
-          customer_id: profile.customer_id,
-          risk_title: formData.risk_title,
-          risk_description: formData.risk_description,
-          category: formData.category as any,
-          inherent_likelihood: formData.inherent_likelihood as any,
-          inherent_impact: formData.inherent_impact as any,
-          inherent_score: inherentScore,
-          treatment_type: formData.treatment_type as any,
-          status: "identified" as any,
-          created_by: user.id,
-          identified_by: user.id,
-          risk_id: crypto.randomUUID(),
+      return errors;
+    },
+    onSubmit: async (values) => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Not authenticated");
+
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("customer_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (!profile?.customer_id) throw new Error("Customer ID not found");
+
+        // Sanitize inputs
+        const sanitizedTitle = sanitizeText(values.risk_title, 200);
+        const sanitizedDescription = sanitizeText(values.risk_description, 1000);
+
+        // Calculate inherent score (likelihood * impact)
+        const inherentScore = values.inherent_likelihood * values.inherent_impact;
+
+        const { error } = await supabase
+          .from("risk_assessments")
+          .insert({
+            customer_id: profile.customer_id,
+            risk_title: sanitizedTitle,
+            risk_description: sanitizedDescription,
+            category: values.category as any,
+            inherent_likelihood: values.inherent_likelihood as any,
+            inherent_impact: values.inherent_impact as any,
+            inherent_score: inherentScore,
+            treatment_type: values.treatment_type as any,
+            status: "identified" as any,
+            created_by: user.id,
+            identified_by: user.id,
+            risk_id: crypto.randomUUID(),
+          });
+
+        if (error) throw error;
+
+        toast({
+          title: "Success",
+          description: "Risk assessment created successfully",
         });
 
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Risk assessment created successfully",
-      });
-
-      setFormData({
-        risk_title: "",
-        risk_description: "",
-        category: "cybersecurity",
-        inherent_likelihood: 3,
-        inherent_impact: 3,
-        treatment_type: "mitigate",
-      });
-
-      onOpenChange(false);
-      onSuccess();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+        onOpenChange(false);
+        onSuccess();
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    },
+    resetOnSubmit: true,
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -102,36 +122,44 @@ export function RiskAssessmentDialog({ open, onOpenChange, onSuccess }: RiskAsse
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={form.handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="risk_title">Risk Title *</Label>
             <Input
               id="risk_title"
-              value={formData.risk_title}
-              onChange={(e) => setFormData({ ...formData, risk_title: e.target.value })}
+              value={form.values.risk_title}
+              onChange={(e) => form.handleChange("risk_title", e.target.value)}
+              onBlur={() => form.handleBlur("risk_title")}
               placeholder="e.g., Unauthorized data access"
-              required
+              className={form.touched.risk_title && form.errors.risk_title ? "border-destructive" : ""}
             />
+            {form.touched.risk_title && form.errors.risk_title && (
+              <p className="text-sm text-destructive">{form.errors.risk_title}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="risk_description">Risk Description *</Label>
             <Textarea
               id="risk_description"
-              value={formData.risk_description}
-              onChange={(e) => setFormData({ ...formData, risk_description: e.target.value })}
+              value={form.values.risk_description}
+              onChange={(e) => form.handleChange("risk_description", e.target.value)}
+              onBlur={() => form.handleBlur("risk_description")}
               placeholder="Describe the risk in detail..."
               rows={4}
-              required
+              className={form.touched.risk_description && form.errors.risk_description ? "border-destructive" : ""}
             />
+            {form.touched.risk_description && form.errors.risk_description && (
+              <p className="text-sm text-destructive">{form.errors.risk_description}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
               <Select
-                value={formData.category}
-                onValueChange={(value) => setFormData({ ...formData, category: value })}
+                value={form.values.category}
+                onValueChange={(value) => form.handleChange("category", value)}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -150,8 +178,8 @@ export function RiskAssessmentDialog({ open, onOpenChange, onSuccess }: RiskAsse
             <div className="space-y-2">
               <Label htmlFor="treatment_type">Treatment Type *</Label>
               <Select
-                value={formData.treatment_type}
-                onValueChange={(value) => setFormData({ ...formData, treatment_type: value })}
+                value={form.values.treatment_type}
+                onValueChange={(value) => form.handleChange("treatment_type", value)}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -170,8 +198,8 @@ export function RiskAssessmentDialog({ open, onOpenChange, onSuccess }: RiskAsse
             <div className="space-y-2">
               <Label htmlFor="inherent_likelihood">Likelihood (1-5) *</Label>
               <Select
-                value={formData.inherent_likelihood.toString()}
-                onValueChange={(value) => setFormData({ ...formData, inherent_likelihood: parseInt(value) })}
+                value={form.values.inherent_likelihood.toString()}
+                onValueChange={(value) => form.handleChange("inherent_likelihood", parseInt(value))}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -184,13 +212,16 @@ export function RiskAssessmentDialog({ open, onOpenChange, onSuccess }: RiskAsse
                   <SelectItem value="5">5 - Almost Certain</SelectItem>
                 </SelectContent>
               </Select>
+              {form.touched.inherent_likelihood && form.errors.inherent_likelihood && (
+                <p className="text-sm text-destructive">{form.errors.inherent_likelihood}</p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="inherent_impact">Impact (1-5) *</Label>
               <Select
-                value={formData.inherent_impact.toString()}
-                onValueChange={(value) => setFormData({ ...formData, inherent_impact: parseInt(value) })}
+                value={form.values.inherent_impact.toString()}
+                onValueChange={(value) => form.handleChange("inherent_impact", parseInt(value))}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -203,6 +234,9 @@ export function RiskAssessmentDialog({ open, onOpenChange, onSuccess }: RiskAsse
                   <SelectItem value="5">5 - Catastrophic</SelectItem>
                 </SelectContent>
               </Select>
+              {form.touched.inherent_impact && form.errors.inherent_impact && (
+                <p className="text-sm text-destructive">{form.errors.inherent_impact}</p>
+              )}
             </div>
           </div>
 
@@ -211,12 +245,12 @@ export function RiskAssessmentDialog({ open, onOpenChange, onSuccess }: RiskAsse
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={loading}
+              disabled={form.isSubmitting}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" disabled={form.isSubmitting || !form.isValid}>
+              {form.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Risk Assessment
             </Button>
           </div>
