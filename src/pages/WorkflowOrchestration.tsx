@@ -20,6 +20,7 @@ import {
   TrendingUp
 } from "lucide-react";
 import { toast } from "sonner";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { useNavigate } from "react-router-dom";
 
 export default function WorkflowOrchestration() {
@@ -181,7 +182,7 @@ export default function WorkflowOrchestration() {
   const avgSuccessRate = totalExecutions > 0 ? Math.round((totalSuccesses / totalExecutions) * 100) : 0;
 
   return (
-    <div className="container mx-auto px-4 pt-56 pb-8 space-y-6">
+    <PageContainer>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Workflow Orchestration</h1>
@@ -356,6 +357,6 @@ export default function WorkflowOrchestration() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageContainer>
   );
 }

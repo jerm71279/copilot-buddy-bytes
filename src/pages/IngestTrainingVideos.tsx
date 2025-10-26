@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Video, Plus, Trash2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 interface VideoInput {
   id: string;
@@ -134,10 +136,9 @@ export default function IngestTrainingVideos() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8 max-w-4xl">
+      <PageContainer className="max-w-4xl">
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -271,7 +272,7 @@ export default function IngestTrainingVideos() {
             </div>
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </PageContainer>
+    </>
   );
 }

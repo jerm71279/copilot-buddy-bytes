@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { v4 as uuidv4 } from "uuid";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 interface Message {
   role: "user" | "assistant";
@@ -183,7 +184,7 @@ const IntelligentAssistant = () => {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <DashboardNavigation 
           title="Intelligent Assistant"
           dashboards={[
@@ -393,7 +394,7 @@ const IntelligentAssistant = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </PageContainer>
     </div>
   );
 };

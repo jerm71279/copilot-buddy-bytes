@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 export default function UploadNetworkChecklist() {
   const navigate = useNavigate();
@@ -403,10 +404,9 @@ This checklist is organized into **5 distinct phases** that can be executed sequ
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8 max-w-2xl">
+      <PageContainer className="max-w-2xl">
         <Card>
           <CardHeader>
             <CardTitle>Upload Network Discovery Checklist (Modular & Phased)</CardTitle>
@@ -456,7 +456,7 @@ This checklist is organized into **5 distinct phases** that can be executed sequ
             </div>
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </PageContainer>
+    </>
   );
 }

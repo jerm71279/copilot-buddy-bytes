@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Shield, Search, Filter, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 interface AuditLog {
   id: string;
@@ -131,24 +133,19 @@ export default function PrivilegedAccessAudit() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <>
         <Navigation />
-        <main className="container mx-auto px-4 pt-56 pb-8">
-          <Card>
-            <CardContent className="py-8 text-center">
-              Loading audit logs...
-            </CardContent>
-          </Card>
-        </main>
-      </div>
+        <PageContainer>
+          <LoadingSpinner message="Loading audit logs..." />
+        </PageContainer>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <DashboardNavigation 
           title="Privileged Access Audit"
           dashboards={[
@@ -319,7 +316,7 @@ export default function PrivilegedAccessAudit() {
             </Table>
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </PageContainer>
+    </>
   );
 }

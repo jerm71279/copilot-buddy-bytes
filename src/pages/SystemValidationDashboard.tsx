@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { 
   Play, 
   CheckCircle2, 
@@ -319,10 +320,9 @@ export default function SystemValidationDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <DashboardNavigation 
           title="System Validation Dashboard"
           dashboards={[
@@ -497,7 +497,7 @@ export default function SystemValidationDashboard() {
             )}
           </div>
         )}
-      </main>
-    </div>
+      </PageContainer>
+    </>
   );
 }

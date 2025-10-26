@@ -19,6 +19,7 @@ import {
   Copy
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { PageContainer } from '@/components/shared/PageContainer';
 
 interface RouteTest {
   path: string;
@@ -230,11 +231,10 @@ export default function LinkValidationTool() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
       <DashboardNavigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Link Validation Tool</h1>
           <p className="text-muted-foreground">
@@ -393,7 +393,7 @@ export default function LinkValidationTool() {
             </Tabs>
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </PageContainer>
+    </>
   );
 }

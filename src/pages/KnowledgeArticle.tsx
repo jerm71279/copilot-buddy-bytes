@@ -8,6 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Edit, History, Download, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 export default function KnowledgeArticle() {
   const { id } = useParams();
@@ -89,31 +91,30 @@ export default function KnowledgeArticle() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <>
         <Navigation />
-        <main className="container mx-auto px-4 pt-56 pb-8">
-          <p>Loading article...</p>
-        </main>
-      </div>
+        <PageContainer className="max-w-4xl">
+          <LoadingSpinner message="Loading article..." />
+        </PageContainer>
+      </>
     );
   }
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-background">
+      <>
         <Navigation />
-        <main className="container mx-auto px-4 pt-56 pb-8">
+        <PageContainer className="max-w-4xl">
           <p>Article not found</p>
-        </main>
-      </div>
+        </PageContainer>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8 max-w-4xl">
+      <PageContainer className="max-w-4xl">
         {/* Header */}
         <div className="mb-6">
           <Button variant="ghost" onClick={() => navigate("/knowledge")} className="mb-4">
@@ -208,7 +209,7 @@ export default function KnowledgeArticle() {
             </CardContent>
           </Card>
         )}
-      </main>
-    </div>
+      </PageContainer>
+    </>
   );
 }

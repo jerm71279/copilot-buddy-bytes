@@ -18,6 +18,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { toast } from "sonner";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 export default function PredictiveInsights() {
   const [selectedType, setSelectedType] = useState<string>("all");
@@ -159,7 +160,7 @@ export default function PredictiveInsights() {
   const highCount = activeInsights?.filter((i: any) => i.severity === 'high').length || 0;
 
   return (
-    <div className="container mx-auto px-4 pt-56 pb-8 space-y-6">
+    <PageContainer>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">AI Predictive Insights</h1>
@@ -355,6 +356,6 @@ export default function PredictiveInsights() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageContainer>
   );
 }

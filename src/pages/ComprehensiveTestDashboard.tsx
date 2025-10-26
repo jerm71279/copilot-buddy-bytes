@@ -32,6 +32,7 @@ import { useNavigate } from 'react-router-dom';
 import { DashboardSettingsMenu } from '@/components/DashboardSettingsMenu';
 import { DepartmentAIAssistant } from '@/components/DepartmentAIAssistant';
 import MCPServerStatus from '@/components/MCPServerStatus';
+import { PageContainer } from '@/components/shared/PageContainer';
 
 interface TestCase {
   id: string;
@@ -230,10 +231,9 @@ export default function ComprehensiveTestDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <DashboardNavigation 
           title="Comprehensive Testing Dashboard"
           dashboards={[
@@ -685,7 +685,7 @@ export default function ComprehensiveTestDashboard() {
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
-    </div>
+      </PageContainer>
+    </>
   );
 }

@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Play, CheckCircle, AlertCircle, LayoutDashboard, FileText, Database } from "lucide-react";
 import { LinkTray } from "@/components/LinkTray";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 export default function TestWorkflowEvidence() {
   const { toast } = useToast();
@@ -48,10 +49,9 @@ export default function TestWorkflowEvidence() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <h1 className="text-3xl font-bold mb-6">Test Workflow Evidence Generation</h1>
 
         <LinkTray
@@ -110,7 +110,7 @@ export default function TestWorkflowEvidence() {
             )}
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </PageContainer>
+    </>
   );
 }

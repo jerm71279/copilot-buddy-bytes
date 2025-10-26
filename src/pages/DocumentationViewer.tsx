@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, FileText, Download } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 import html2pdf from "html2pdf.js";
 import { useToast } from "@/hooks/use-toast";
@@ -148,10 +150,9 @@ const DocumentationViewer = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+    <>
       <Navigation />
-      
-      <div className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <div className="mb-6 flex gap-2">
           {doc ? (
             <Link to="/documentation">
@@ -201,14 +202,9 @@ const DocumentationViewer = () => {
           </CardHeader>
           
           <CardContent className="p-6">
-            {loading && (
-              <div className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-muted-foreground">Loading documentation...</p>
-                </div>
-              </div>
-            )}
+            <LoadingSpinner message="Loading documentation..." />
+
+            <LoadingSpinner message="Loading documentation..." />
 
             {error && (
               <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 text-center">
@@ -255,8 +251,8 @@ const DocumentationViewer = () => {
             )}
           </CardContent>
         </Card>
-      </div>
-    </div>
+      </PageContainer>
+    </>
   );
 };
 

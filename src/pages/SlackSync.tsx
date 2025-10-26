@@ -6,6 +6,7 @@ import { useSlackSync } from "@/hooks/useSlackSync";
 import { AddWorkspaceDialog } from "@/components/slack/AddWorkspaceDialog";
 import { WorkspaceList } from "@/components/slack/WorkspaceList";
 import { SyncActivityLog } from "@/components/slack/SyncActivityLog";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 const SlackSync = () => {
   const {
@@ -34,7 +35,7 @@ const SlackSync = () => {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <DashboardNavigation 
           title="Slack Sync"
           dashboards={[
@@ -80,7 +81,7 @@ const SlackSync = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </PageContainer>
     </div>
   );
 };

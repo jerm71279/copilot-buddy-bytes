@@ -4,14 +4,14 @@ import Navigation from "@/components/Navigation";
 import { ToolCard } from "@/components/devops/ToolCard";
 import { DocumentationCard } from "@/components/devops/DocumentationCard";
 import { testingTools, developmentTools, documentationResources } from "@/lib/devopsConfig";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 const DevOpsPortal = () => {
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+    <>
       <Navigation />
-      
-      <div className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             DevOps Portal
@@ -61,8 +61,8 @@ const DevOpsPortal = () => {
             ))}
           </CardContent>
         </Card>
-      </div>
-    </div>
+      </PageContainer>
+    </>
   );
 };
 

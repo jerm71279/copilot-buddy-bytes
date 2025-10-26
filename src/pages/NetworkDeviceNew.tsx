@@ -14,6 +14,7 @@ import { ArrowLeft, Save, Server } from "lucide-react";
 import { toast } from "sonner";
 import { networkDeviceSchema, sanitizeText } from "@/lib/validation";
 import { z } from "zod";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 const NetworkDeviceNew = () => {
   const navigate = useNavigate();
@@ -103,7 +104,7 @@ const NetworkDeviceNew = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
       <DashboardNavigation
         dashboards={[
@@ -111,8 +112,7 @@ const NetworkDeviceNew = () => {
           { name: "Network Monitoring", path: "/network-monitoring" },
         ]}
       />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <div className="flex items-center gap-4 mb-6">
           <Button
             variant="ghost"
@@ -299,8 +299,8 @@ const NetworkDeviceNew = () => {
             </div>
           </div>
         </form>
-      </main>
-    </div>
+      </PageContainer>
+    </>
   );
 };
 

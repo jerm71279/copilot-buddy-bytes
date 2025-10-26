@@ -10,6 +10,7 @@ import DashboardNavigation from "@/components/DashboardNavigation";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { MCPServerConfig } from "@/components/MCPServerConfig";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 /**
  * MCP Server Dashboard Data Flow
@@ -129,7 +130,7 @@ const MCPServerDashboard = () => {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 pt-56 pb-8 space-y-6">
+      <PageContainer>
         <DashboardNavigation 
           title="MCP Server Management"
           dashboards={[
@@ -205,7 +206,7 @@ const MCPServerDashboard = () => {
             <MCPServerConfig customerId={userCustomerId} />
           </TabsContent>
         </Tabs>
-      </div>
+      </PageContainer>
     </div>
   );
 };

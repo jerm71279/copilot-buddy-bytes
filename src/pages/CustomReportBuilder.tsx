@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -126,9 +127,9 @@ export default function CustomReportBuilder() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
-      <div className="container mx-auto px-4 pt-56 pb-8 space-y-6">
+      <PageContainer>
         <DashboardNavigation 
           title="Custom Report Builder"
           dashboards={[
@@ -323,8 +324,8 @@ export default function CustomReportBuilder() {
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
-      </div>
-    </div>
+        </Card>
+      </PageContainer>
+    </>
   );
 }

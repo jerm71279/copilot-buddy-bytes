@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Upload, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 export default function KnowledgeUpload() {
   const navigate = useNavigate();
@@ -62,10 +63,9 @@ export default function KnowledgeUpload() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8 max-w-2xl">
+      <PageContainer className="max-w-2xl">
         <Button variant="ghost" onClick={() => navigate("/knowledge")} className="mb-6">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Knowledge Base
@@ -142,7 +142,7 @@ export default function KnowledgeUpload() {
             </div>
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </PageContainer>
+    </>
   );
 }

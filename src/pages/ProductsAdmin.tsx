@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Switch } from '@/components/ui/switch';
 import { Plus, Edit, Trash2, Package, DollarSign } from 'lucide-react';
 import Navigation from '@/components/Navigation';
+import { PageContainer } from '@/components/shared/PageContainer';
 
 export default function ProductsAdmin() {
   const { products, loading, createProduct, updateProduct, deleteProduct } = useProducts();
@@ -110,9 +111,9 @@ export default function ProductsAdmin() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
-      <div className="container mx-auto pt-56 pb-8 px-4">
+      <PageContainer>
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Product Catalog</h1>
@@ -342,7 +343,7 @@ export default function ProductsAdmin() {
             )}
           </CardContent>
         </Card>
-      </div>
-    </div>
+      </PageContainer>
+    </>
   );
 }

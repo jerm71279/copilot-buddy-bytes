@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus, Trash2, Settings } from "lucide-react";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 interface WorkflowStep {
   id: string;
@@ -113,10 +114,9 @@ export default function WorkflowBuilder() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
-      
-      <main className="container mx-auto px-4 pt-56 pb-8">
+      <PageContainer>
         <DashboardNavigation 
           title="Workflow Builder"
           dashboards={[
@@ -267,8 +267,8 @@ export default function WorkflowBuilder() {
               </Button>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </Card>
+      </PageContainer>
+    </>
   );
 }
