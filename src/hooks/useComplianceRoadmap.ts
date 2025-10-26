@@ -85,14 +85,38 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
   // Initialize roadmap mutation
   const initializeRoadmapMutation = useMutation({
     mutationFn: async (frameworkId: string) => {
-      if (!customerId) throw new Error('Customer ID not found');
+      console.log('[ROADMAP-DEBUG] Starting initialization', {
+        frameworkId,
+        customerId,
+        timestamp: new Date().toISOString()
+      });
+      
+      if (!customerId) {
+        console.error('[ROADMAP-DEBUG] No customer ID found');
+        throw new Error('Customer ID not found');
+      }
+      
+      console.log('[ROADMAP-DEBUG] Calling RPC function', {
+        _framework_id: frameworkId,
+        _customer_id: customerId
+      });
       
       const { data, error } = await supabase.rpc('initialize_compliance_roadmap', {
         _framework_id: frameworkId,
         _customer_id: customerId,
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('[ROADMAP-DEBUG] RPC error', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw error;
+      }
+      
+      console.log('[ROADMAP-DEBUG] RPC success', { data });
       return data;
     },
     onSuccess: (_data, variables) => {
@@ -105,9 +129,13 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
       });
     },
     onError: (error: Error) => {
+      console.error('[ROADMAP-DEBUG] Initialization failed', {
+        message: error.message,
+        stack: error.stack
+      });
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Initialization Failed",
+        description: `${error.message}. Check console for details.`,
         variant: "destructive",
       });
     },
