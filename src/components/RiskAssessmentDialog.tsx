@@ -249,7 +249,7 @@ export function RiskAssessmentDialog({ open, onOpenChange, onSuccess }: RiskAsse
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={form.isSubmitting || !form.isValid}>
+            <Button type="submit" disabled={form.isSubmitting}>
               {form.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Risk Assessment
             </Button>
