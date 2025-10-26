@@ -3382,6 +3382,60 @@ export type Database = {
           },
         ]
       }
+      compliance_roadmap_milestone_templates: {
+        Row: {
+          created_at: string | null
+          evidence_required: boolean | null
+          framework_id: string
+          id: string
+          milestone_description: string | null
+          milestone_name: string
+          required_actions: string[] | null
+          sequence_order: number
+          stage_template_id: string
+          success_criteria: string[] | null
+        }
+        Insert: {
+          created_at?: string | null
+          evidence_required?: boolean | null
+          framework_id: string
+          id?: string
+          milestone_description?: string | null
+          milestone_name: string
+          required_actions?: string[] | null
+          sequence_order: number
+          stage_template_id: string
+          success_criteria?: string[] | null
+        }
+        Update: {
+          created_at?: string | null
+          evidence_required?: boolean | null
+          framework_id?: string
+          id?: string
+          milestone_description?: string | null
+          milestone_name?: string
+          required_actions?: string[] | null
+          sequence_order?: number
+          stage_template_id?: string
+          success_criteria?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_roadmap_milestone_templates_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_frameworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_roadmap_milestone_templates_stage_template_id_fkey"
+            columns: ["stage_template_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_roadmap_stage_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_roadmap_milestones: {
         Row: {
           assigned_to: string | null
@@ -3525,6 +3579,47 @@ export type Database = {
             columns: ["stage_id"]
             isOneToOne: false
             referencedRelation: "compliance_roadmap_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_roadmap_stage_templates: {
+        Row: {
+          created_at: string | null
+          estimated_duration_days: number
+          framework_id: string
+          id: string
+          stage_description: string | null
+          stage_name: string
+          stage_number: number
+          stage_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          estimated_duration_days?: number
+          framework_id: string
+          id?: string
+          stage_description?: string | null
+          stage_name: string
+          stage_number: number
+          stage_type: string
+        }
+        Update: {
+          created_at?: string | null
+          estimated_duration_days?: number
+          framework_id?: string
+          id?: string
+          stage_description?: string | null
+          stage_name?: string
+          stage_number?: number
+          stage_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_roadmap_stage_templates_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_frameworks"
             referencedColumns: ["id"]
           },
         ]
