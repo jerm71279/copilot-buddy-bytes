@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,22 +31,15 @@ export default function PrivilegedAccessAudit() {
   const [systemFilter, setSystemFilter] = useState<string>("all");
   const [userProfiles, setUserProfiles] = useState<Record<string, string>>({});
 
+  useRequireAuth();
+
   useEffect(() => {
-    checkAuthAndLoad();
+    loadAuditLogs();
   }, []);
 
   useEffect(() => {
     filterLogs();
   }, [logs, searchTerm, systemFilter]);
-
-  const checkAuthAndLoad = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-      return;
-    }
-    await loadAuditLogs();
-  };
 
   const loadAuditLogs = async () => {
     try {

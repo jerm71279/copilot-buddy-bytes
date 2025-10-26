@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
@@ -37,18 +38,11 @@ export default function OnboardingTemplates() {
     estimated_days: 30
   });
 
-  useEffect(() => {
-    checkAuthAndLoad();
-  }, []);
+  useRequireAuth();
 
-  const checkAuthAndLoad = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-      return;
-    }
-    await loadTemplates();
-  };
+  useEffect(() => {
+    loadTemplates();
+  }, []);
 
   const loadTemplates = async () => {
     try {

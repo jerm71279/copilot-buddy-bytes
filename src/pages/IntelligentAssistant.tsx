@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -46,10 +47,29 @@ const IntelligentAssistant = () => {
   const [metrics, setMetrics] = useState<LearningMetric | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    checkAuth();
-    loadMetrics();
-  }, []);
+  const loadUserProfile = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    
+    setUserId(user.id);
+
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("customer_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (profile?.customer_id) {
+      setCustomerId(profile.customer_id);
+    }
+  };
+
+  useRequireAuth('/auth', {
+    onAuthenticated: async () => {
+      await loadUserProfile();
+      await loadMetrics();
+    }
+  });
 
   useEffect(() => {
     scrollToBottom();
@@ -58,29 +78,6 @@ const IntelligentAssistant = () => {
   const scrollToBottom = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  };
-
-  const checkAuth = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      navigate("/auth");
-      return;
-    }
-
-    setUserId(session.user.id);
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
     }
   };
 

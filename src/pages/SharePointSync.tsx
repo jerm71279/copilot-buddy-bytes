@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -59,7 +60,13 @@ interface SyncLog {
 }
 
 const SharePointSync = () => {
-  const navigate = useNavigate();
+  const { user } = useRequireAuth('/auth', {
+    onAuthenticated: async () => {
+      await loadUserProfile();
+      await fetchConfigs();
+      await fetchLogs();
+    }
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [syncing, setSyncing] = useState<string | null>(null);
   const [configs, setConfigs] = useState<SyncConfig[]>([]);
@@ -71,33 +78,18 @@ const SharePointSync = () => {
   const [manualSiteName, setManualSiteName] = useState<string>("");
   const [customerId, setCustomerId] = useState<string | null>(null);
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      navigate("/auth");
-      return;
-    }
-
-    // Get customer ID
+  const loadUserProfile = async () => {
+    if (!user) return;
+    
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("customer_id")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .maybeSingle();
 
     if (profile?.customer_id) {
       setCustomerId(profile.customer_id);
     }
-
-    await fetchConfigs();
-    await fetchLogs();
     setIsLoading(false);
   };
 
@@ -287,7 +279,7 @@ const SharePointSync = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
+    window.location.href = "/auth";
   };
 
   if (isLoading) {

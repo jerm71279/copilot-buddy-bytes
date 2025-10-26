@@ -1,6 +1,8 @@
 export { useAuth } from "./useAuth";
 export type { UserProfile, AuthState } from "./useAuth";
 
+export { useRequireAuth } from "./useRequireAuth";
+
 export { useDatabase } from "./useDatabase";
 export type { DatabaseOptions, QueryOptions } from "./useDatabase";
 
