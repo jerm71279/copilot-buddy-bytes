@@ -141,6 +141,27 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
     },
   });
 
+  // Probe all frameworks initialization (diagnostic)
+  const probeFrameworksMutation = useMutation({
+    mutationFn: async () => {
+      if (!customerId) throw new Error('Customer ID not found');
+      const { data, error } = await supabase.rpc('probe_framework_initialization', {
+        _customer_id: customerId,
+      });
+      if (error) throw error as any;
+      return data as Array<{ framework_id: string; framework_name: string; status: string; error: string | null }>;
+    },
+    onSuccess: (data) => {
+      console.table(data);
+      const ok = data?.filter((r) => r.status === 'ok').length ?? 0;
+      const total = data?.length ?? 0;
+      toast({ title: 'Probe complete', description: `${ok}/${total} frameworks initialize`, });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Probe failed', description: error.message, variant: 'destructive', });
+    },
+  });
+
   // Update stage status
   const updateStageMutation = useMutation({
     mutationFn: async ({ stageId, status, progress }: UpdateStageParams) => {
@@ -223,5 +244,7 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
     updateMilestone: updateMilestoneMutation.mutateAsync,
     isReady: !!customerId && !isCustomerLoading,
     isInitializing: initializeRoadmapMutation.isPending,
+    probeFrameworks: probeFrameworksMutation.mutateAsync,
+    isProbing: probeFrameworksMutation.isPending,
   };
 };

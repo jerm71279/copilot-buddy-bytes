@@ -18,7 +18,7 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 const ComplianceRoadmap = () => {
   const navigate = useNavigate();
   const [selectedFramework, setSelectedFramework] = useState<string>("");
-  const { stages, milestones, frameworks, isLoading, initializeRoadmap, isReady, isInitializing } = useComplianceRoadmap(selectedFramework);
+  const { stages, milestones, frameworks, isLoading, initializeRoadmap, isReady, isInitializing, probeFrameworks, isProbing } = useComplianceRoadmap(selectedFramework);
 
   // Use shared utility functions
   const overallProgress = stages ? calculateOverallProgress(stages) : 0;
@@ -34,6 +34,10 @@ const ComplianceRoadmap = () => {
     if (selectedFramework) {
       await initializeRoadmap(selectedFramework);
     }
+  };
+
+  const handleProbe = async () => {
+    await probeFrameworks();
   };
 
   if (isLoading) {
@@ -79,6 +83,9 @@ const ComplianceRoadmap = () => {
                   {isInitializing ? 'Initializing...' : 'Initialize Roadmap'}
                 </Button>
               )}
+              <Button variant="outline" onClick={handleProbe} disabled={!isReady || isProbing} aria-disabled={!isReady || isProbing}>
+                {isProbing ? 'Probing...' : 'Probe All Frameworks'}
+              </Button>
             </div>
           </CardContent>
         </Card>
