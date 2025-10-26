@@ -128,14 +128,25 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
         description: "Your compliance roadmap has been created successfully",
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       console.error('[ROADMAP-DEBUG] Initialization failed', {
         message: error.message,
-        stack: error.stack
+        stack: error.stack,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
       });
+      
+      const errorDetails = [];
+      if (error.code) errorDetails.push(`code: ${error.code}`);
+      if (error.details) errorDetails.push(`details: ${error.details}`);
+      if (error.hint) errorDetails.push(`hint: ${error.hint}`);
+      
+      const description = error.message + (errorDetails.length > 0 ? `\n\n${errorDetails.join('\n')}` : '');
+      
       toast({
         title: "Initialization Failed",
-        description: `${error.message}. Check console for details.`,
+        description: `${description}\n\nCheck console for full details.`,
         variant: "destructive",
       });
     },

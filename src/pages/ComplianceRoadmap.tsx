@@ -22,6 +22,12 @@ const ComplianceRoadmap = () => {
   const [selectedFramework, setSelectedFramework] = useState<string>("");
   const [isRebuilding, setIsRebuilding] = useState(false);
   const [isSanitizing, setIsSanitizing] = useState(false);
+  const [lastRun, setLastRun] = useState<{
+    when: Date;
+    action: string;
+    details: string;
+    success: boolean;
+  } | null>(null);
   const { stages, milestones, frameworks, isLoading, initializeRoadmap, isReady, isInitializing, probeFrameworks, isProbing } = useComplianceRoadmap(selectedFramework);
 
   // Use shared utility functions
@@ -47,16 +53,80 @@ const ComplianceRoadmap = () => {
   const handleRebuildTemplates = async () => {
     setIsRebuilding(true);
     try {
-      const { data, error } = await supabase.functions.invoke('template-maintenance', {
-        body: { action: 'rebuild' }
+      const rebuildBody = selectedFramework 
+        ? { action: 'rebuild', frameworkIds: [selectedFramework] }
+        : { action: 'rebuild' };
+      
+      const { data: rebuildData, error: rebuildError } = await supabase.functions.invoke('template-maintenance', {
+        body: rebuildBody
       });
       
-      if (error) throw error;
+      console.log('Rebuild response:', { data: rebuildData, error: rebuildError });
       
-      toast.success(`Templates rebuilt: ${data.inserted?.stageTemplates || 0} stages, ${data.inserted?.milestoneTemplates || 0} milestones`);
-    } catch (error) {
-      console.error('Rebuild error:', error);
-      toast.error(`Failed to rebuild templates: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      if (rebuildError) {
+        const errorContext = JSON.stringify({
+          name: rebuildError.name,
+          message: rebuildError.message,
+          context: (rebuildError as any).context || 'none'
+        }, null, 2);
+        console.error('Rebuild error details:', errorContext);
+        
+        setLastRun({
+          when: new Date(),
+          action: 'Rebuild',
+          details: `Failed: ${rebuildError.message}`,
+          success: false
+        });
+        
+        toast.error(`Failed to rebuild templates: ${rebuildError.message}\n\nSee console for details.`);
+        return;
+      }
+      
+      const stageCount = rebuildData?.stageTemplates || 0;
+      const milestoneCount = rebuildData?.milestoneTemplates || 0;
+      
+      // Auto-sanitize after rebuild
+      const { data: sanitizeData, error: sanitizeError } = await supabase.functions.invoke('template-maintenance', {
+        body: { action: 'sanitize' }
+      });
+      
+      console.log('Sanitize response:', { data: sanitizeData, error: sanitizeError });
+      
+      if (sanitizeError) {
+        console.error('Sanitize error:', sanitizeError);
+        setLastRun({
+          when: new Date(),
+          action: 'Rebuild + Sanitize',
+          details: `Rebuilt: ${stageCount} stages, ${milestoneCount} milestones. Sanitize failed: ${sanitizeError.message}`,
+          success: false
+        });
+        
+        toast.error(`Rebuild succeeded, sanitize failed: ${sanitizeError.message}`);
+      } else {
+        const sanitizedStages = sanitizeData?.stageTemplatesUpdated || 0;
+        const sanitizedMilestones = sanitizeData?.milestoneTemplatesUpdated || 0;
+        
+        const details = `${stageCount} stages, ${milestoneCount} milestones inserted; ${sanitizedStages} stages, ${sanitizedMilestones} milestones sanitized`;
+        setLastRun({
+          when: new Date(),
+          action: 'Rebuild + Sanitize',
+          details,
+          success: true
+        });
+        
+        toast.success(`Templates rebuilt and sanitized\n\n${details}${selectedFramework ? '\n\nYou can now initialize the roadmap.' : ''}`);
+      }
+    } catch (err) {
+      console.error('Unexpected rebuild error:', err);
+      const errMsg = err instanceof Error ? err.message : String(err);
+      setLastRun({
+        when: new Date(),
+        action: 'Rebuild',
+        details: `Exception: ${errMsg}`,
+        success: false
+      });
+      
+      toast.error(`Failed to rebuild templates: ${errMsg}`);
     } finally {
       setIsRebuilding(false);
     }
@@ -69,12 +139,49 @@ const ComplianceRoadmap = () => {
         body: { action: 'sanitize' }
       });
       
-      if (error) throw error;
+      console.log('Sanitize response:', { data, error });
       
-      toast.success(`Templates sanitized: ${data.updated?.stageTemplates || 0} stages, ${data.updated?.milestoneTemplates || 0} milestones`);
-    } catch (error) {
-      console.error('Sanitize error:', error);
-      toast.error(`Failed to sanitize templates: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      if (error) {
+        const errorContext = JSON.stringify({
+          name: error.name,
+          message: error.message,
+          context: (error as any).context || 'none'
+        }, null, 2);
+        console.error('Sanitize error details:', errorContext);
+        
+        setLastRun({
+          when: new Date(),
+          action: 'Sanitize',
+          details: `Failed: ${error.message}`,
+          success: false
+        });
+        
+        toast.error(`Failed to sanitize templates: ${error.message}\n\nSee console for details.`);
+      } else {
+        const stageCount = data?.stageTemplatesUpdated || 0;
+        const milestoneCount = data?.milestoneTemplatesUpdated || 0;
+        const details = `${stageCount} stage templates, ${milestoneCount} milestone templates updated`;
+        
+        setLastRun({
+          when: new Date(),
+          action: 'Sanitize',
+          details,
+          success: true
+        });
+        
+        toast.success(`Templates sanitized: ${details}`);
+      }
+    } catch (err) {
+      console.error('Unexpected sanitize error:', err);
+      const errMsg = err instanceof Error ? err.message : String(err);
+      setLastRun({
+        when: new Date(),
+        action: 'Sanitize',
+        details: `Exception: ${errMsg}`,
+        success: false
+      });
+      
+      toast.error(`Failed to sanitize templates: ${errMsg}`);
     } finally {
       setIsSanitizing(false);
     }
@@ -103,7 +210,7 @@ const ComplianceRoadmap = () => {
               Rebuild or sanitize compliance roadmap templates
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="flex gap-4">
               <Button 
                 onClick={handleRebuildTemplates} 
@@ -112,7 +219,7 @@ const ComplianceRoadmap = () => {
                 className="border-amber-500 hover:bg-amber-100 dark:hover:bg-amber-900"
               >
                 <Sparkles className="h-4 w-4 mr-2" />
-                {isRebuilding ? 'Rebuilding...' : 'Rebuild All Templates'}
+                {isRebuilding ? 'Rebuilding...' : selectedFramework ? 'Rebuild Selected Framework' : 'Rebuild All Templates'}
               </Button>
               <Button 
                 onClick={handleSanitizeTemplates} 
@@ -124,6 +231,15 @@ const ComplianceRoadmap = () => {
                 {isSanitizing ? 'Sanitizing...' : 'Sanitize Templates'}
               </Button>
             </div>
+            {lastRun && (
+              <div className="text-sm text-muted-foreground pt-2 border-t">
+                <span className="font-medium">Last run:</span> {lastRun.action} at {lastRun.when.toLocaleTimeString()}
+                <br />
+                <span className={lastRun.success ? "text-green-600" : "text-destructive"}>
+                  {lastRun.details}
+                </span>
+              </div>
+            )}
           </CardContent>
         </Card>
 
