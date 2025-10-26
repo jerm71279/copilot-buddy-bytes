@@ -267,7 +267,7 @@ export default function WorkflowBuilder() {
               </Button>
             </div>
           </div>
-        </Card>
+        </div>
       </PageContainer>
     </>
   );
