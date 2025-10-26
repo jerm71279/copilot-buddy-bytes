@@ -4,7 +4,8 @@
  */
 
 import { Badge } from '@/components/ui/badge';
-import { getStatusBadgeVariant, formatStatusLabel } from '@/lib/compliance/roadmap-utils';
+import { getStatusBadgeVariant } from '@/lib/compliance/roadmap-utils';
+import { formatStatusLabel } from '@/lib/designSystemUtils';
 import type { RoadmapStatus, MilestoneStatus } from '@/types/compliance-roadmap';
 
 interface RoadmapStatusBadgeProps {
