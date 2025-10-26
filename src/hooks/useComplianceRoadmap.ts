@@ -35,7 +35,7 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('compliance_frameworks')
-        .select('*')
+        .select('id, framework_code, framework_name, version, is_active')
         .eq('is_active', true)
         .order('framework_name');
       
