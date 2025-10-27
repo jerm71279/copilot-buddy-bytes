@@ -7,9 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, AlertCircle, Plus, X, FileText, Settings } from "lucide-react";
-import Navigation from "@/components/Navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCustomerAuth } from "@/hooks/useCustomerAuth";
 import { useVendors } from "@/hooks/useVendors";
@@ -24,7 +24,7 @@ export default function DocumentationIngestion() {
   const [loading, setLoading] = useState(false);
   const [extracting, setExtracting] = useState(false);
   const [apiInstructions, setApiInstructions] = useState<any>(null);
-  const { toast } = useToast();
+  const toast = useStandardToast();
   
   // Custom hooks for auth and vendor management
   const { user, customerId, isLoading: authLoading, error: authError } = useCustomerAuth();
@@ -49,32 +49,20 @@ export default function DocumentationIngestion() {
 
   const handleAddUrl = () => {
     if (!url) {
-      toast({
-        title: "Missing URL",
-        description: "Please enter a documentation URL",
-        variant: "destructive",
-      });
+      toast.error("Please enter a documentation URL");
       return;
     }
 
     // Validate URL format
     const urlValidation = validateUrl(url);
     if (!urlValidation.valid) {
-      toast({
-        title: "Invalid URL",
-        description: urlValidation.error,
-        variant: "destructive",
-      });
+      toast.error(urlValidation.error);
       return;
     }
 
     // Check for duplicates
     if (urls.includes(urlValidation.sanitized)) {
-      toast({
-        title: "Duplicate URL",
-        description: "This URL has already been added",
-        variant: "destructive",
-      });
+      toast.error("This URL has already been added");
       return;
     }
 
@@ -96,20 +84,14 @@ export default function DocumentationIngestion() {
   const handleIngest = async () => {
     // Validate inputs
     if (!customerId) {
-      toast({
-        title: "Authentication required",
-        description: authError || "Please ensure your account is properly set up",
-        variant: "destructive",
+      toast.error(authError || "Please ensure your account is properly set up", {
+        description: "Authentication required"
       });
       return;
     }
 
     if (urls.length === 0 || !selectedVendorId) {
-      toast({
-        title: "Missing information",
-        description: "Please provide both a vendor and at least one documentation URL",
-        variant: "destructive",
-      });
+      toast.error("Please provide both a vendor and at least one documentation URL");
       return;
     }
 
@@ -139,9 +121,8 @@ export default function DocumentationIngestion() {
       }
 
       if (successCount > 0) {
-        toast({
-          title: "Documentation ingested",
-          description: `Successfully added ${successCount} documentation source(s)${failCount > 0 ? `, ${failCount} failed` : ''}`,
+        toast.success("Documentation ingested", {
+          description: `Successfully added ${successCount} documentation source(s)${failCount > 0 ? `, ${failCount} failed` : ''}`
         });
       } else {
         throw new Error('All ingestion attempts failed');
@@ -153,10 +134,8 @@ export default function DocumentationIngestion() {
       setApiInstructions(null);
     } catch (error) {
       console.error('Error ingesting documentation:', error);
-      toast({
-        title: "Ingestion failed",
-        description: error instanceof Error ? error.message : 'An error occurred',
-        variant: "destructive",
+      toast.error(error instanceof Error ? error.message : 'An error occurred', {
+        description: "Ingestion failed"
       });
     } finally {
       setLoading(false);
@@ -171,33 +150,22 @@ export default function DocumentationIngestion() {
       });
 
       if (error) {
-        toast({
-          title: "Connection Failed",
-          description: error.message || "Failed to connect to NinjaOne",
-          variant: "destructive",
-        });
+        toast.error(error.message || "Failed to connect to NinjaOne");
         return;
       }
 
       if (data.success) {
-        toast({
-          title: "Connection Successful!",
-          description: `Connected to NinjaOne. Found ${data.organizationCount} organizations.`,
+        toast.success(`Connected to NinjaOne. Found ${data.organizationCount} organizations.`, {
+          description: "Connection Successful!"
         });
       } else {
-        toast({
-          title: "Connection Failed",
-          description: data.error || "Failed to connect to NinjaOne",
-          variant: "destructive",
+        toast.error(data.error || "Failed to connect to NinjaOne", {
+          description: "Connection Failed"
         });
       }
     } catch (error) {
       console.error('Error testing NinjaOne:', error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred while testing the connection",
-        variant: "destructive",
-      });
+      toast.error("An unexpected error occurred while testing the connection");
     } finally {
       setLoading(false);
     }
@@ -205,11 +173,7 @@ export default function DocumentationIngestion() {
 
   const handleExtractInstructions = async () => {
     if (!selectedVendorId || !selectedVendor || !customerId) {
-      toast({
-        title: "Missing information",
-        description: "Please select a vendor first",
-        variant: "destructive",
-      });
+      toast.error("Please select a vendor first");
       return;
     }
 
@@ -229,8 +193,7 @@ export default function DocumentationIngestion() {
         const lower = (msg || '').toLowerCase();
           if (status === 404 || lower.includes('no documentation found')) {
             if (selectedVendor.documentation_url) {
-              toast({
-                title: "Ingesting docs",
+              toast.info("No docs found. Ingesting the vendor's default URL, then retrying...");
                 description: "No docs found. Ingesting the vendor’s default URL, then retrying...",
               });
 
@@ -245,11 +208,7 @@ export default function DocumentationIngestion() {
               });
 
               if (ingestError) {
-                toast({
-                  title: "Ingestion failed",
-                  description: "Could not ingest the default documentation URL. Please add docs and try again.",
-                  variant: "destructive",
-                });
+                toast.error("Could not ingest the default documentation URL. Please add docs and try again.");
                 return;
               }
 
@@ -265,14 +224,10 @@ export default function DocumentationIngestion() {
               if (retryError) throw retryError;
 
               setApiInstructions(retryData.instructions);
-              toast({
-                title: "Instructions extracted",
-                description: `Successfully extracted API key instructions for ${retryData.vendorName}`,
-              });
+              toast.success(`Successfully extracted API key instructions for ${retryData.vendorName}`);
               return;
             } else {
-              toast({
-                title: "No documentation found",
+              toast.error("Please ingest this vendor's docs first, then try again.");
                 description: "Please ingest this vendor’s docs first, then try again.",
                 variant: "destructive",
               });
@@ -280,16 +235,14 @@ export default function DocumentationIngestion() {
             }
           }
         if (status === 429 || lower.includes('rate limit')) {
-          toast({
-            title: "Rate limited",
+          toast.warning("Please wait a moment and try again.");
             description: "Please wait a moment and try again.",
             variant: "destructive",
           });
           return;
         }
         if (status === 402 || lower.includes('payment required')) {
-          toast({
-            title: "AI credits required",
+          toast.error("Please add credits to your workspace and retry.");
             description: "Please add credits to your workspace and retry.",
             variant: "destructive",
           });
@@ -299,18 +252,11 @@ export default function DocumentationIngestion() {
       }
 
       setApiInstructions(data.instructions);
-      toast({
-        title: "Instructions extracted",
-        description: `Successfully extracted API key instructions for ${data.vendorName}`,
-      });
+      toast.success(`Successfully extracted API key instructions for ${data.vendorName}`);
     } catch (error) {
       console.error('Error extracting instructions:', error);
       const msg = (error as any)?.message || 'An error occurred';
-      toast({
-        title: "Extraction failed",
-        description: msg,
-        variant: "destructive",
-      });
+      toast.error(msg, { description: "Extraction failed" });
     } finally {
       setExtracting(false);
     }
@@ -319,39 +265,28 @@ export default function DocumentationIngestion() {
   // Show loading state
   if (authLoading || vendorsLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <DashboardNavigation />
-        <main className="container mx-auto p-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </div>
-        </main>
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </DashboardLayout>
     );
   }
 
   // Show auth error
   if (authError && !customerId) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <DashboardNavigation />
-        <main className="container mx-auto p-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{authError}</AlertDescription>
-          </Alert>
-        </main>
-      </div>
+      <DashboardLayout>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{authError}</AlertDescription>
+        </Alert>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      <main className="container mx-auto p-8 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Documentation Ingestion</CardTitle>
@@ -578,7 +513,6 @@ export default function DocumentationIngestion() {
             </CardContent>
           </Card>
         )}
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Video, Plus, Trash2, Sparkles } from "lucide-react";
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 interface VideoInput {
@@ -21,6 +22,8 @@ interface VideoInput {
 
 export default function IngestTrainingVideos() {
   const navigate = useNavigate();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [videos, setVideos] = useState<VideoInput[]>([
     {
@@ -78,20 +81,14 @@ export default function IngestTrainingVideos() {
   const handleAnalyzeVideos = async () => {
     setIsAnalyzing(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("You must be logged in");
+      if (!customerId) {
+        toast.error("Customer profile not found");
         return;
       }
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) {
-        toast.error("Customer profile not found");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("You must be logged in");
         return;
       }
 
@@ -102,21 +99,21 @@ export default function IngestTrainingVideos() {
         return;
       }
 
-      toast.loading(`Analyzing ${validVideos.length} training videos with AI...`, { id: 'analyzing' });
+      const loadingToast = toast.loading(`Analyzing ${validVideos.length} training videos with AI...`);
 
       const { data, error } = await supabase.functions.invoke('analyze-training-videos', {
         body: {
           videos: validVideos,
-          customerId: profile.customer_id,
+          customerId,
           userId: user.id,
         },
       });
 
       if (error) throw error;
 
-      toast.dismiss('analyzing');
-      toast.success(`${data.message}`, {
-        description: 'View the insights and enhanced checklist in the Knowledge Base',
+      toast.dismiss(loadingToast);
+      toast.success(data.message, {
+        description: 'View the insights and enhanced checklist in the Knowledge Base'
       });
 
       // Navigate to the enhanced checklist
@@ -128,7 +125,6 @@ export default function IngestTrainingVideos() {
 
     } catch (error) {
       console.error("Error analyzing videos:", error);
-      toast.dismiss('analyzing');
       toast.error("Failed to analyze training videos");
     } finally {
       setIsAnalyzing(false);
@@ -136,9 +132,7 @@ export default function IngestTrainingVideos() {
   };
 
   return (
-    <>
-      <Navigation />
-      <PageContainer className="max-w-4xl">
+    <DashboardLayout className="max-w-4xl mx-auto">
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -272,7 +266,6 @@ export default function IngestTrainingVideos() {
             </div>
           </CardContent>
         </Card>
-      </PageContainer>
-    </>
+    </DashboardLayout>
   );
 }

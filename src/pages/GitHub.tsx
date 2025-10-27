@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Github, GitBranch, GitCommit, GitPullRequest, ExternalLink, Search, FileText, Folder } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import { toast } from "sonner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 const GitHub = () => {
+  const toast = useStandardToast();
   const [isConnected] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -56,9 +57,7 @@ const GitHub = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="container mx-auto p-6 pt-28">{/* Increased padding-top from pt-24 to pt-28 */}
+    <DashboardLayout>
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Github className="h-8 w-8 text-primary" />
@@ -230,8 +229,7 @@ const GitHub = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

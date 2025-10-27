@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Brain, FileText, Zap, Settings, BarChart3, ArrowUpRight } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import Navigation from "@/components/Navigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 
@@ -31,6 +32,8 @@ interface RecentInsight {
 }
 
 export default function FeedbackMetrics() {
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [metrics, setMetrics] = useState<LearningMetrics | null>(null);
   const [recentInsights, setRecentInsights] = useState<RecentInsight[]>([]);
   const [totalInteractions, setTotalInteractions] = useState(0);
@@ -41,32 +44,23 @@ export default function FeedbackMetrics() {
     insightThreshold: 0.75,
     enableLearning: true
   });
-  const { toast } = useToast();
 
   useEffect(() => {
-    loadMetrics();
-    loadRecentInsights();
-    loadTotalInteractions();
-  }, []);
+    if (customerId) {
+      loadMetrics();
+      loadRecentInsights();
+      loadTotalInteractions();
+    }
+  }, [customerId]);
 
   const loadMetrics = async () => {
+    if (!customerId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
       // Get latest metrics
       const { data, error } = await supabase
         .from('ai_learning_metrics')
         .select('*')
-        .eq('customer_id', profile.customer_id)
+        .eq('customer_id', customerId)
         .order('metric_date', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -91,22 +85,12 @@ export default function FeedbackMetrics() {
   };
 
   const loadRecentInsights = async () => {
+    if (!customerId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
       const { data, error } = await supabase
         .from('knowledge_insights')
         .select('id, title, insight_type, confidence_score, created_at, status')
-        .eq('customer_id', profile.customer_id)
+        .eq('customer_id', customerId)
         .order('created_at', { ascending: false })
         .limit(10);
 
@@ -143,10 +127,7 @@ export default function FeedbackMetrics() {
   };
 
   const saveConfig = async () => {
-    toast({
-      title: "Configuration saved",
-      description: "AI learning settings have been updated",
-    });
+    toast.success("AI learning settings have been updated");
   };
 
   const getInsightTypeColor = (type: string) => {
@@ -169,8 +150,7 @@ export default function FeedbackMetrics() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto p-8 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">AI Feedback Loop Metrics</h1>
@@ -510,7 +490,6 @@ export default function FeedbackMetrics() {
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

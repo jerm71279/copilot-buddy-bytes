@@ -3,13 +3,12 @@ import { useSearchParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, FileText, Download } from "lucide-react";
-import Navigation from "@/components/Navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-
 import html2pdf from "html2pdf.js";
-import { useToast } from "@/hooks/use-toast";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 const DocumentationViewer = () => {
   const [searchParams] = useSearchParams();
@@ -19,7 +18,7 @@ const DocumentationViewer = () => {
   const [error, setError] = useState<string>("");
   const [exporting, setExporting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+  const toast = useStandardToast();
 
   const docTitles: Record<string, string> = {
     "TESTING_GUIDE": "Testing Guide",
@@ -101,10 +100,7 @@ const DocumentationViewer = () => {
     if (!contentRef.current || !content) return;
 
     setExporting(true);
-    toast({
-      title: "Generating PDF",
-      description: "Please wait while we create your PDF...",
-    });
+    toast.info("Please wait while we create your PDF...");
 
     try {
       // Clone content to avoid ScrollArea/overflow issues and ensure white background
@@ -129,20 +125,13 @@ const DocumentationViewer = () => {
 
       await html2pdf().set(opt).from(wrapper).save();
 
-      toast({
-        title: "PDF Exported",
-        description: "Your documentation has been downloaded successfully.",
-      });
+      toast.success("Your documentation has been downloaded successfully.");
 
       // Cleanup temporary DOM
       document.body.removeChild(wrapper);
     } catch (err) {
       console.error("PDF export failed", err);
-      toast({
-        title: "Export Failed",
-        description: "Failed to generate PDF. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to generate PDF. Please try again.");
     } finally {
       setExporting(false);
     }
@@ -150,9 +139,7 @@ const DocumentationViewer = () => {
 
 
   return (
-    <>
-      <Navigation />
-      <PageContainer>
+    <DashboardLayout noPadding>
         <div className="mb-6 flex gap-2">
           {doc ? (
             <Link to="/documentation">
@@ -251,8 +238,7 @@ const DocumentationViewer = () => {
             )}
           </CardContent>
         </Card>
-      </PageContainer>
-    </>
+    </DashboardLayout>
   );
 };
 
