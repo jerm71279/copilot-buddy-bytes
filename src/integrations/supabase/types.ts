@@ -4924,6 +4924,87 @@ export type Database = {
           },
         ]
       }
+      cve_entries: {
+        Row: {
+          affected_products: string[] | null
+          created_at: string
+          cve_id: string
+          cvss_score: number | null
+          cwe_ids: string[] | null
+          description: string | null
+          id: string
+          last_modified_date: string | null
+          published_date: string | null
+          reference_urls: Json | null
+          severity: string | null
+          updated_at: string
+        }
+        Insert: {
+          affected_products?: string[] | null
+          created_at?: string
+          cve_id: string
+          cvss_score?: number | null
+          cwe_ids?: string[] | null
+          description?: string | null
+          id?: string
+          last_modified_date?: string | null
+          published_date?: string | null
+          reference_urls?: Json | null
+          severity?: string | null
+          updated_at?: string
+        }
+        Update: {
+          affected_products?: string[] | null
+          created_at?: string
+          cve_id?: string
+          cvss_score?: number | null
+          cwe_ids?: string[] | null
+          description?: string | null
+          id?: string
+          last_modified_date?: string | null
+          published_date?: string | null
+          reference_urls?: Json | null
+          severity?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cve_sync_logs: {
+        Row: {
+          created_at: string
+          cves_fetched: number | null
+          cves_new: number | null
+          cves_updated: number | null
+          error_message: string | null
+          id: string
+          status: string
+          sync_completed_at: string | null
+          sync_started_at: string
+        }
+        Insert: {
+          created_at?: string
+          cves_fetched?: number | null
+          cves_new?: number | null
+          cves_updated?: number | null
+          error_message?: string | null
+          id?: string
+          status?: string
+          sync_completed_at?: string | null
+          sync_started_at?: string
+        }
+        Update: {
+          created_at?: string
+          cves_fetched?: number | null
+          cves_new?: number | null
+          cves_updated?: number | null
+          error_message?: string | null
+          id?: string
+          status?: string
+          sync_completed_at?: string | null
+          sync_started_at?: string
+        }
+        Relationships: []
+      }
       dashboard_widgets: {
         Row: {
           created_at: string
