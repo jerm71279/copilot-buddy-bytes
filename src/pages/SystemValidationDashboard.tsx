@@ -473,7 +473,7 @@ export default function SystemValidationDashboard() {
             )}
           </div>
         )}
-      </PageContainer>
-    </>
+      </div>
+    </DashboardLayout>
   );
 }
