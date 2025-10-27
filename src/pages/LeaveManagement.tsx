@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LeaveService } from "@/services/hrService";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,9 +30,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { Plus, Calendar, Check, X, Clock } from "lucide-react";
-import { PageContainer } from "@/components/shared/PageContainer";
 
 interface LeaveRequest {
   id: string;
@@ -46,12 +45,13 @@ interface LeaveRequest {
 }
 
 const LeaveManagement = () => {
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [leaveTypes, setLeaveTypes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const { toast } = useToast();
 
   const [newLeaveRequest, setNewLeaveRequest] = useState({
     leave_type_id: "",
@@ -65,24 +65,14 @@ const LeaveManagement = () => {
   }, []);
 
   const fetchLeaveData = async () => {
+    if (!customerId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
       const [leavesData, typesData] = await Promise.all([
-        LeaveService.getLeaveByCustomer(profile.customer_id),
+        LeaveService.getLeaveByCustomer(customerId),
         supabase
           .from("leave_types")
           .select("*")
-          .eq("customer_id", profile.customer_id)
+          .eq("customer_id", customerId)
           .eq("is_active", true)
           .then(res => {
             if (res.error) throw res.error;
@@ -94,29 +84,15 @@ const LeaveManagement = () => {
       setLeaveTypes(typesData);
     } catch (error) {
       console.error("Error fetching leave data:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load leave requests",
-        variant: "destructive",
-      });
+      toast.loadFailed("leave requests");
     } finally {
       setLoading(false);
     }
   };
 
   const handleCreateLeaveRequest = async () => {
+    if (!customerId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
       // Calculate total days
       const start = new Date(newLeaveRequest.start_date);
       const end = new Date(newLeaveRequest.end_date);
@@ -124,17 +100,13 @@ const LeaveManagement = () => {
       const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
       await LeaveService.createLeave({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         employee_id: null, // Would need to link to actual employee
         ...newLeaveRequest,
         total_days: totalDays,
       });
 
-      toast({
-        title: "Success",
-        description: "Leave request submitted successfully",
-      });
-
+      toast.success("Leave request submitted successfully");
       setIsCreateDialogOpen(false);
       setNewLeaveRequest({
         leave_type_id: "",
@@ -145,11 +117,7 @@ const LeaveManagement = () => {
       fetchLeaveData();
     } catch (error) {
       console.error("Error creating leave request:", error);
-      toast({
-        title: "Error",
-        description: "Failed to submit leave request",
-        variant: "destructive",
-      });
+      toast.error("Failed to submit leave request");
     }
   };
 
@@ -175,12 +143,8 @@ const LeaveManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <PageContainer>
-        <div className="flex justify-between items-center mb-8">
+    <DashboardLayout>
+      <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Leave Management</h1>
             <p className="text-muted-foreground">Manage employee leave requests</p>
@@ -357,8 +321,7 @@ const LeaveManagement = () => {
             )}
           </CardContent>
         </Card>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 };
 

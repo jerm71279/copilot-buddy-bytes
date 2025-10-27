@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { DepartmentService } from "@/services/hrService";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,9 +22,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { Plus, Building, Folder } from "lucide-react";
-import { PageContainer } from "@/components/shared/PageContainer";
 
 interface Department {
   id: string;
@@ -38,10 +36,11 @@ interface Department {
 }
 
 const DepartmentManagement = () => {
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const { toast } = useToast();
 
   const [newDepartment, setNewDepartment] = useState({
     department_name: "",
@@ -56,56 +55,28 @@ const DepartmentManagement = () => {
   }, []);
 
   const fetchDepartments = async () => {
+    if (!customerId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
-      const data = await DepartmentService.getDepartmentsByCustomer(profile.customer_id);
+      const data = await DepartmentService.getDepartmentsByCustomer(customerId);
       setDepartments(data);
     } catch (error) {
       console.error("Error fetching departments:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load departments",
-        variant: "destructive",
-      });
+      toast.loadFailed("departments");
     } finally {
       setLoading(false);
     }
   };
 
   const handleCreateDepartment = async () => {
+    if (!customerId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
       await DepartmentService.createDepartment({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         ...newDepartment,
         budget_allocation: parseFloat(newDepartment.budget_allocation) || null,
       });
 
-      toast({
-        title: "Success",
-        description: "Department created successfully",
-      });
-
+      toast.created("Department");
       setIsCreateDialogOpen(false);
       setNewDepartment({
         department_name: "",
@@ -117,11 +88,7 @@ const DepartmentManagement = () => {
       fetchDepartments();
     } catch (error) {
       console.error("Error creating department:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create department",
-        variant: "destructive",
-      });
+      toast.error("Failed to create department");
     }
   };
 
@@ -131,12 +98,8 @@ const DepartmentManagement = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <PageContainer>
-        <div className="flex justify-between items-center mb-8">
+    <DashboardLayout>
+      <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Department Management</h1>
             <p className="text-muted-foreground">Manage organizational departments</p>
@@ -292,8 +255,7 @@ const DepartmentManagement = () => {
             )}
           </CardContent>
         </Card>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 };
 

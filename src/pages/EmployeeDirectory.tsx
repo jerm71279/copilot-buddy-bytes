@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { EmployeeService } from "@/services/hrService";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +28,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { Plus, Search, Users, UserCheck, UserX } from "lucide-react";
 
 interface Employee {
@@ -47,13 +46,13 @@ interface Employee {
 }
 
 const EmployeeDirectory = () => {
-  const navigate = useNavigate();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const { toast } = useToast();
 
   const [newEmployee, setNewEmployee] = useState({
     first_name: "",
@@ -70,56 +69,28 @@ const EmployeeDirectory = () => {
   }, []);
 
   const fetchEmployees = async () => {
+    if (!customerId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
-      const data = await EmployeeService.getEmployeesByCustomer(profile.customer_id);
+      const data = await EmployeeService.getEmployeesByCustomer(customerId);
       setEmployees(data);
     } catch (error) {
       console.error("Error fetching employees:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load employees",
-        variant: "destructive",
-      });
+      toast.loadFailed("employees");
     } finally {
       setLoading(false);
     }
   };
 
   const handleCreateEmployee = async () => {
+    if (!customerId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
       await EmployeeService.createEmployee({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         employee_number: "",
         ...newEmployee,
       });
 
-      toast({
-        title: "Success",
-        description: "Employee created successfully",
-      });
-
+      toast.created("Employee");
       setIsCreateDialogOpen(false);
       setNewEmployee({
         first_name: "",
@@ -133,11 +104,7 @@ const EmployeeDirectory = () => {
       fetchEmployees();
     } catch (error) {
       console.error("Error creating employee:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create employee",
-        variant: "destructive",
-      });
+      toast.error("Failed to create employee");
     }
   };
 
@@ -170,17 +137,8 @@ const EmployeeDirectory = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
-        <DashboardNavigation 
-          title="Employee Directory"
-          dashboards={[
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
-            { name: "Departments", path: "/departments" },
-          ]}
-        />
-        <div className="flex justify-between items-center mb-8">
+    <DashboardLayout>
+      <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Employee Directory</h1>
             <p className="text-muted-foreground">Manage employee records</p>
@@ -377,8 +335,7 @@ const EmployeeDirectory = () => {
             )}
           </CardContent>
         </Card>
-        </main>
-    </div>
+    </DashboardLayout>
   );
 };
 
