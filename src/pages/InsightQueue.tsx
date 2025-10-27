@@ -20,7 +20,6 @@ import {
   DollarSign,
   Headphones
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +29,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface Insight {
   id: string;
@@ -58,6 +60,8 @@ const DEPARTMENTS = [
 ];
 
 export default function InsightQueue() {
+  const toast = useStandardToast();
+  const { customerId } = useUserProfile();
   const [insights, setInsights] = useState<Insight[]>([]);
   const [filteredInsights, setFilteredInsights] = useState<Insight[]>([]);
   const [departmentFilter, setDepartmentFilter] = useState<string>("all");
@@ -66,34 +70,26 @@ export default function InsightQueue() {
   const [reviewNotes, setReviewNotes] = useState("");
   const [assignDepartment, setAssignDepartment] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
-    loadInsights();
-  }, []);
+    if (customerId) {
+      loadInsights();
+    }
+  }, [customerId]);
 
   useEffect(() => {
     filterInsights();
   }, [insights, departmentFilter, statusFilter]);
 
   const loadInsights = async () => {
+    if (!customerId) return;
+    
     setIsLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
       const { data, error } = await supabase
         .from('knowledge_insights')
         .select('*')
-        .eq('customer_id', profile.customer_id)
+        .eq('customer_id', customerId)
         .order('relevance_score', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false });
 
@@ -101,11 +97,7 @@ export default function InsightQueue() {
       setInsights(data || []);
     } catch (error) {
       console.error('Error loading insights:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load insights",
-        variant: "destructive",
-      });
+      toast.loadFailed("insights");
     } finally {
       setIsLoading(false);
     }
@@ -173,12 +165,9 @@ export default function InsightQueue() {
         }
       }
 
-      toast({
-        title: "Insight approved",
-        description: insight.confidence_score >= 0.8 
-          ? "High-value insight approved and article created"
-          : "Insight approved successfully",
-      });
+      toast.success("Insight approved" + (insight.confidence_score >= 0.8 
+        ? " and article created"
+        : ""));
 
       setSelectedInsight(null);
       setReviewNotes("");
@@ -186,11 +175,7 @@ export default function InsightQueue() {
       loadInsights();
     } catch (error) {
       console.error('Error approving insight:', error);
-      toast({
-        title: "Error",
-        description: "Failed to approve insight",
-        variant: "destructive",
-      });
+      toast.error("Failed to approve insight");
     }
   };
 
@@ -211,21 +196,14 @@ export default function InsightQueue() {
 
       if (error) throw error;
 
-      toast({
-        title: "Insight rejected",
-        description: "Insight has been marked as not relevant",
-      });
+      toast.success("Insight rejected");
 
       setSelectedInsight(null);
       setReviewNotes("");
       loadInsights();
     } catch (error) {
       console.error('Error rejecting insight:', error);
-      toast({
-        title: "Error",
-        description: "Failed to reject insight",
-        variant: "destructive",
-      });
+      toast.error("Failed to reject insight");
     }
   };
 
@@ -266,8 +244,8 @@ export default function InsightQueue() {
   }));
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto p-8 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout>
+      <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Insight Queue Management</h1>
@@ -500,7 +478,6 @@ export default function InsightQueue() {
             ))
           )}
         </div>
-      </main>
 
       {/* Review Dialog */}
       <Dialog open={!!selectedInsight} onOpenChange={(open) => !open && setSelectedInsight(null)}>
@@ -591,6 +568,7 @@ export default function InsightQueue() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navigation from "@/components/Navigation";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Upload, FileText, Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 export default function KnowledgeUpload() {
   const navigate = useNavigate();
+  const toast = useStandardToast();
+  useUserProfile();
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
@@ -63,8 +66,7 @@ export default function KnowledgeUpload() {
   };
 
   return (
-    <>
-      <Navigation />
+    <DashboardLayout showDashboardNavigation={false}>
       <PageContainer className="max-w-2xl">
         <Button variant="ghost" onClick={() => navigate("/knowledge")} className="mb-6">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -143,6 +145,6 @@ export default function KnowledgeUpload() {
           </CardContent>
         </Card>
       </PageContainer>
-    </>
+    </DashboardLayout>
   );
 }
