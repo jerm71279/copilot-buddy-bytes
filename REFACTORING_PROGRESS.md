@@ -85,7 +85,30 @@ Converting 19 pages from direct database queries to service layer architecture.
 - ✅ Imported BudgetService
 - ✅ Refactored `handleCreateBudget()` to use service
 - ✅ Refactored `fetchBudgets()` to use service
-- Note: No update/delete handlers exist in this file
+
+### Expense Management
+**Page:** `src/pages/ExpenseManagement.tsx`
+**Status:** ✅ Complete
+**Changes:**
+- ✅ Imported ExpenseService
+- ✅ Refactored `handleCreateExpense()` to use service
+- ✅ Refactored `fetchExpenses()` to use service
+
+### Employee Directory
+**Page:** `src/pages/EmployeeDirectory.tsx`
+**Status:** ✅ Complete
+**Changes:**
+- ✅ Imported EmployeeService
+- ✅ Refactored `handleCreateEmployee()` to use service
+- ✅ Refactored `fetchEmployees()` to use service
+
+### Department Management
+**Page:** `src/pages/DepartmentManagement.tsx`
+**Status:** ✅ Complete
+**Changes:**
+- ✅ Imported DepartmentService
+- ✅ Refactored `handleCreateDepartment()` to use service
+- ✅ Refactored `fetchDepartments()` to use service
 
 **Before:**
 ```typescript
@@ -106,7 +129,7 @@ await BudgetService.createBudget({...});
 | Category | Total | Completed | In Progress | Remaining |
 |----------|-------|-----------|-------------|-----------|
 | **Services** | 5 | 2 | 0 | 3 |
-| **Pages** | 19 | 1 | 0 | 18 |
+| **Pages** | 19 | 4 | 0 | 15 |
 
 ### Services Progress: 40% (2/5)
 - ✅ financeService.ts (Complete - all 4 services)
@@ -115,13 +138,13 @@ await BudgetService.createBudget({...});
 - ⏳ inventoryService.ts
 - ⏳ vendorService.ts
 
-### Pages Progress: 5% (1/19)
+### Pages Progress: 21% (4/19)
 - ✅ BudgetTracking.tsx (100% complete)
-- ⏳ ExpenseManagement.tsx
+- ✅ ExpenseManagement.tsx (100% complete)
+- ✅ EmployeeDirectory.tsx (100% complete)
+- ✅ DepartmentManagement.tsx (100% complete)
 - ⏳ InvoiceManagement.tsx
 - ⏳ PurchaseOrders.tsx
-- ⏳ EmployeeDirectory.tsx
-- ⏳ DepartmentManagement.tsx
 - ⏳ LeaveManagement.tsx
 - ⏳ LeadManagement.tsx
 - ⏳ SalesOpportunities.tsx
@@ -145,13 +168,15 @@ await BudgetService.createBudget({...});
 2. ✅ Refactor BudgetTracking.tsx completely
 3. ✅ Add ExpenseService, InvoiceService, POService to financeService.ts
 4. ✅ Create hrService.ts with all 3 services
-5. ⏳ Refactor ExpenseManagement.tsx
+5. ✅ Refactor ExpenseManagement.tsx
+6. ✅ Refactor EmployeeDirectory.tsx
+7. ✅ Refactor DepartmentManagement.tsx
 
 ### Short-term (Next 5-10 actions):
 - ✅ Complete all financeService methods (Expense, Invoice, PO)
-- Refactor all 4 finance-related pages (BudgetTracking ✅, Expense ⏳, Invoice ⏳, PO ⏳)
+- Refactor remaining finance pages (Invoice ⏳, PO ⏳)
 - ✅ Create hrService.ts
-- Refactor all 3 HR-related pages (Employee ⏳, Department ⏳, Leave ⏳)
+- Refactor remaining HR page (Leave ⏳)
 
 ### Medium-term (Next 10-20 actions):
 - Complete salesService.ts and inventoryService.ts
@@ -185,21 +210,21 @@ await BudgetService.createBudget({...});
 ## 🔍 Next Actions
 
 ### Immediate Next Step:
-Begin refactoring pages to use new services:
-1. ExpenseManagement.tsx → use ExpenseService
-2. EmployeeDirectory.tsx → use EmployeeService
-3. DepartmentManagement.tsx → use DepartmentService
-4. Continue with remaining pages
+Continue refactoring remaining pages:
+1. InvoiceManagement.tsx → use InvoiceService
+2. PurchaseOrders.tsx → use PurchaseOrderService
+3. LeaveManagement.tsx → use LeaveService
+4. Then create Sales & Inventory services
 
 ---
 
 ## 📈 Success Metrics
 
 ### Code Quality:
-- **Direct DB Queries in Pages:** 19 → Target: 0
-- **Service Coverage:** 0% → Target: 100%
-- **Type Safety:** Partial → Target: Full
-- **Error Handling:** Inconsistent → Target: Standardized
+- **Direct DB Queries in Pages:** 19 → 15 remaining (4 refactored)
+- **Service Coverage:** 0% → 40% (2/5 service files)
+- **Type Safety:** Partial → Improving
+- **Error Handling:** Inconsistent → Standardizing
 
 ### Maintainability:
 - **Code Duplication:** High → Target: Low

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { ExpenseService } from "@/services/financeService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -80,14 +81,8 @@ export default function ExpenseManagement() {
   const fetchExpenses = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("expenses")
-        .select("*")
-        .eq("customer_id", customerId!)
-        .order("expense_date", { ascending: false });
-
-      if (error) throw error;
-      setExpenses(data || []);
+      const data = await ExpenseService.getExpensesByCustomer(customerId!);
+      setExpenses(data);
     } catch (error) {
       console.error("Error fetching expenses:", error);
       toast.error("Failed to load expenses");
@@ -101,7 +96,7 @@ export default function ExpenseManagement() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !customerId) return;
 
-      const { error } = await supabase.from("expenses").insert([{
+      await ExpenseService.createExpense({
         customer_id: customerId,
         expense_number: '',
         category: newExpense.category,
@@ -112,9 +107,7 @@ export default function ExpenseManagement() {
         payment_method: newExpense.payment_method,
         billable: newExpense.billable,
         submitted_by: user.id,
-      }]);
-
-      if (error) throw error;
+      });
 
       toast.success("Expense created successfully");
       setIsCreateDialogOpen(false);

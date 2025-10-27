@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { EmployeeService } from "@/services/hrService";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -81,14 +82,8 @@ const EmployeeDirectory = () => {
 
       if (!profile?.customer_id) return;
 
-      const { data, error } = await supabase
-        .from("employees")
-        .select("*")
-        .eq("customer_id", profile.customer_id)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setEmployees(data || []);
+      const data = await EmployeeService.getEmployeesByCustomer(profile.customer_id);
+      setEmployees(data);
     } catch (error) {
       console.error("Error fetching employees:", error);
       toast({
@@ -114,15 +109,11 @@ const EmployeeDirectory = () => {
 
       if (!profile?.customer_id) return;
 
-      const { error } = await supabase.from("employees").insert([
-        {
-          customer_id: profile.customer_id,
-          employee_number: "",
-          ...newEmployee,
-        },
-      ]);
-
-      if (error) throw error;
+      await EmployeeService.createEmployee({
+        customer_id: profile.customer_id,
+        employee_number: "",
+        ...newEmployee,
+      });
 
       toast({
         title: "Success",

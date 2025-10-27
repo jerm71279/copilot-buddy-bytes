@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { DepartmentService } from "@/services/hrService";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,14 +68,8 @@ const DepartmentManagement = () => {
 
       if (!profile?.customer_id) return;
 
-      const { data, error } = await supabase
-        .from("departments")
-        .select("*")
-        .eq("customer_id", profile.customer_id)
-        .order("department_name");
-
-      if (error) throw error;
-      setDepartments(data || []);
+      const data = await DepartmentService.getDepartmentsByCustomer(profile.customer_id);
+      setDepartments(data);
     } catch (error) {
       console.error("Error fetching departments:", error);
       toast({
@@ -100,15 +95,11 @@ const DepartmentManagement = () => {
 
       if (!profile?.customer_id) return;
 
-      const { error } = await supabase.from("departments").insert([
-        {
-          customer_id: profile.customer_id,
-          ...newDepartment,
-          budget_allocation: parseFloat(newDepartment.budget_allocation) || null,
-        },
-      ]);
-
-      if (error) throw error;
+      await DepartmentService.createDepartment({
+        customer_id: profile.customer_id,
+        ...newDepartment,
+        budget_allocation: parseFloat(newDepartment.budget_allocation) || null,
+      });
 
       toast({
         title: "Success",
