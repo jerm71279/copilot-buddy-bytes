@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { ProjectService } from "@/services/projectService";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,12 +25,13 @@ import {
 } from "@/components/ui/select";
 import { FolderKanban, DollarSign, Clock, TrendingUp, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 const ProjectManagement = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [selectedTab, setSelectedTab] = useState("active");
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,61 +48,35 @@ const ProjectManagement = () => {
   });
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    if (customerId) {
+      fetchProjects();
+    }
+  }, [customerId]);
 
   const fetchProjects = async () => {
+    if (!customerId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
-      const data = await ProjectService.getProjectsByCustomer(profile.customer_id);
+      const data = await ProjectService.getProjectsByCustomer(customerId);
       setProjects(data);
     } catch (error) {
       console.error("Error fetching projects:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load projects",
-        variant: "destructive",
-      });
+      toast.loadFailed("projects");
     } finally {
       setLoading(false);
     }
   };
 
   const handleCreateProject = async () => {
+    if (!customerId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
       await ProjectService.createProject({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         project_number: "",
         ...newProject,
         budget_amount: parseFloat(newProject.budget_amount) || null,
       });
 
-      toast({
-        title: "Success",
-        description: "Project created successfully",
-      });
-
+      toast.created("Project");
       setIsCreateDialogOpen(false);
       setNewProject({
         project_name: "",
@@ -117,11 +90,7 @@ const ProjectManagement = () => {
       fetchProjects();
     } catch (error) {
       console.error("Error creating project:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create project",
-        variant: "destructive",
-      });
+      toast.error("Failed to create project");
     }
   };
 
@@ -142,11 +111,8 @@ const ProjectManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      <PageContainer>
-        <div className="space-y-6">
+    <DashboardLayout>
+      <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
@@ -408,9 +374,8 @@ const ProjectManagement = () => {
             )}
           </TabsContent>
         </Tabs>
-        </div>
-      </PageContainer>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 };
 

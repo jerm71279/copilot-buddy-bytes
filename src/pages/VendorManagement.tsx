@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { VendorService } from "@/services/vendorService";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,10 +12,9 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { Plus, Search, Building2, Star, AlertCircle } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 
 interface Vendor {
   id: string;
@@ -31,12 +31,13 @@ interface Vendor {
 
 export default function VendorManagement() {
   const navigate = useNavigate();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [customerId, setCustomerId] = useState<string | null>(null);
 
   const [newVendor, setNewVendor] = useState({
     vendor_name: "",
@@ -49,50 +50,30 @@ export default function VendorManagement() {
   });
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  useEffect(() => {
     if (customerId) {
       fetchVendors();
     }
   }, [customerId]);
 
-  const fetchUserProfile = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
-    }
-  };
-
   const fetchVendors = async () => {
+    if (!customerId) return;
     try {
       setLoading(true);
-      const data = await VendorService.getVendorsByCustomer(customerId!);
+      const data = await VendorService.getVendorsByCustomer(customerId);
       setVendors(data as any);
     } catch (error) {
       console.error("Error fetching vendors:", error);
-      toast.error("Failed to load vendors");
+      toast.loadFailed("vendors");
     } finally {
       setLoading(false);
     }
   };
 
   const handleCreateVendor = async () => {
+    if (!customerId) return;
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !customerId) return;
+      if (!user) return;
 
       await VendorService.createVendor(
         {
@@ -108,7 +89,7 @@ export default function VendorManagement() {
         user.id
       );
 
-      toast.success("Vendor created successfully");
+      toast.created("Vendor");
       setIsCreateDialogOpen(false);
       setNewVendor({
         vendor_name: "",
@@ -162,12 +143,8 @@ export default function VendorManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <main className="container mx-auto p-6 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="flex justify-between items-center">
+    <DashboardLayout>
+      <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold">Vendor Management</h1>
             <p className="text-muted-foreground">Manage vendor relationships and performance</p>
@@ -381,7 +358,6 @@ export default function VendorManagement() {
             </Table>
           </CardContent>
         </Card>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }
