@@ -83,9 +83,14 @@ Deno.serve(async (req) => {
   try {
     if (action === 'sanitize') {
       // Sanitize Stage Templates
-      const { data: stages, error: stErr } = await supabase
+      // Build stage templates query with optional framework filter
+      let stQuery = supabase
         .from('compliance_roadmap_stage_templates')
         .select('id, framework_id, stage_number, stage_name, stage_description, stage_type, estimated_duration_days');
+      if (frameworkIds.length) {
+        stQuery = stQuery.in('framework_id', frameworkIds);
+      }
+      const { data: stages, error: stErr } = await stQuery;
       if (stErr) throw stErr;
 
       let stageUpdated = 0;
@@ -115,9 +120,14 @@ Deno.serve(async (req) => {
       }
 
       // Sanitize Milestone Templates
-      const { data: mtemps, error: mtErr } = await supabase
+      // Build milestone templates query with optional framework filter
+      let mtQuery = supabase
         .from('compliance_roadmap_milestone_templates')
         .select('id, stage_template_id, sequence_order, milestone_name, milestone_description, required_actions, success_criteria, evidence_required');
+      if (frameworkIds.length) {
+        mtQuery = mtQuery.in('framework_id', frameworkIds);
+      }
+      const { data: mtemps, error: mtErr } = await mtQuery;
       if (mtErr) throw mtErr;
 
       let milestoneUpdated = 0;

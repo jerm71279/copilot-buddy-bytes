@@ -96,27 +96,37 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
         throw new Error('Customer ID not found');
       }
       
-      console.log('[ROADMAP-DEBUG] Calling RPC function', {
-        _framework_id: frameworkId,
-        _customer_id: customerId
+      console.log('[ROADMAP-DEBUG] Calling initialize-roadmap-safe edge function', {
+        frameworkId,
+        customerId
       });
       
-      const { data, error } = await supabase.rpc('initialize_compliance_roadmap', {
-        _framework_id: frameworkId,
-        _customer_id: customerId,
+      const { data, error } = await supabase.functions.invoke('initialize-roadmap-safe', {
+        body: { frameworkId, customerId }
       });
       
       if (error) {
-        console.error('[ROADMAP-DEBUG] RPC error', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
+        console.error('[ROADMAP-DEBUG] Edge function error', {
+          name: (error as any).name,
+          message: (error as any).message,
+          context: (error as any).context || null,
         });
-        throw error;
+        throw error as any;
       }
       
-      console.log('[ROADMAP-DEBUG] RPC success', { data });
+      if (!data?.ok) {
+        const e = data?.error || {};
+        console.error('[ROADMAP-DEBUG] Initialization failed (edge response)', {
+          message: e.message,
+          details: e.details,
+          hint: e.hint,
+          code: e.code,
+          diagnostics: data?.diagnostics
+        });
+        throw new Error(e.message || 'Initialization failed');
+      }
+      
+      console.log('[ROADMAP-DEBUG] Initialization success', { diagnostics: data?.diagnostics });
       return data;
     },
     onSuccess: (_data, variables) => {
