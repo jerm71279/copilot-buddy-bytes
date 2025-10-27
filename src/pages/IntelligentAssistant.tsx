@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { v4 as uuidv4 } from "uuid";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 interface Message {
   role: "user" | "assistant";
@@ -166,8 +166,8 @@ const IntelligentAssistant = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="border-b bg-card">
+    <DashboardLayout showNavigation={false} showDashboardNavigation={false}>
+      <nav className="border-b bg-card -mx-4 -mt-8 mb-8">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Brain className="h-6 w-6 text-primary" />
@@ -184,8 +184,7 @@ const IntelligentAssistant = () => {
         </div>
       </nav>
 
-      <PageContainer>
-        <DashboardNavigation 
+      <DashboardNavigation
           title="Intelligent Assistant"
           dashboards={[
             { name: "Admin Dashboard", path: "/admin" },
@@ -394,8 +393,7 @@ const IntelligentAssistant = () => {
             </div>
           </CardContent>
         </Card>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 };
 

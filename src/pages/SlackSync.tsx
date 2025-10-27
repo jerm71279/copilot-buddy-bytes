@@ -6,7 +6,7 @@ import { useSlackSync } from "@/hooks/useSlackSync";
 import { AddWorkspaceDialog } from "@/components/slack/AddWorkspaceDialog";
 import { WorkspaceList } from "@/components/slack/WorkspaceList";
 import { SyncActivityLog } from "@/components/slack/SyncActivityLog";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const SlackSync = () => {
   const {
@@ -21,8 +21,8 @@ const SlackSync = () => {
   } = useSlackSync();
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="border-b bg-card">
+    <DashboardLayout showNavigation={false} showDashboardNavigation={false}>
+      <nav className="border-b bg-card -mx-4 -mt-8 mb-8">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <MessageSquare className="h-6 w-6 text-primary" />
@@ -35,8 +35,7 @@ const SlackSync = () => {
         </div>
       </nav>
 
-      <PageContainer>
-        <DashboardNavigation 
+      <DashboardNavigation
           title="Slack Sync"
           dashboards={[
             { name: "Knowledge Base", path: "/knowledge" },
@@ -81,8 +80,7 @@ const SlackSync = () => {
             </CardContent>
           </Card>
         </div>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 };
 

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Edit, History, Download, Sparkles } from "lucide-react";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from "@/hooks/useStandardToast";
@@ -93,9 +92,7 @@ export default function KnowledgeArticle() {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <PageContainer className="max-w-4xl">
-          <LoadingSpinner message="Loading article..." />
-        </PageContainer>
+        <LoadingSpinner message="Loading article..." />
       </DashboardLayout>
     );
   }
@@ -103,16 +100,14 @@ export default function KnowledgeArticle() {
   if (!article) {
     return (
       <DashboardLayout>
-        <PageContainer className="max-w-4xl">
-          <p>Article not found</p>
-        </PageContainer>
+        <p>Article not found</p>
       </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout showDashboardNavigation={false}>
-      <PageContainer className="max-w-4xl">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <Button variant="ghost" onClick={() => navigate("/knowledge")} className="mb-4">
@@ -207,7 +202,7 @@ export default function KnowledgeArticle() {
             </CardContent>
           </Card>
         )}
-      </PageContainer>
+      </div>
     </DashboardLayout>
   );
 }

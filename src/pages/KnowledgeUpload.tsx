@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Upload, FileText, Loader2 } from "lucide-react";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
@@ -67,7 +66,7 @@ export default function KnowledgeUpload() {
 
   return (
     <DashboardLayout showDashboardNavigation={false}>
-      <PageContainer className="max-w-2xl">
+      <div className="max-w-2xl mx-auto">
         <Button variant="ghost" onClick={() => navigate("/knowledge")} className="mb-6">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Knowledge Base
@@ -142,9 +141,9 @@ export default function KnowledgeUpload() {
                 Cancel
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </PageContainer>
+            </CardContent>
+          </Card>
+        </div>
     </DashboardLayout>
   );
 }
