@@ -11,9 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle, Clock, CheckCircle, Shield, Users, FileText, Activity, FileWarning, Database } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface SecurityIncident {
   id: string;
@@ -45,6 +47,8 @@ interface SecurityIncident {
 
 export default function SecurityIncidents() {
   const navigate = useNavigate();
+  const toast = useStandardToast();
+  const { customerId } = useUserProfile();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<SecurityIncident | null>(null);
   const [newIncident, setNewIncident] = useState({
@@ -72,17 +76,12 @@ export default function SecurityIncidents() {
   const createIncident = useMutation({
     mutationFn: async (incident: any) => {
       const { data: user } = await supabase.auth.getUser();
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.user?.id)
-        .maybeSingle();
 
       const { error } = await supabase
         .from('security_incidents' as any)
         .insert({
           ...incident,
-          customer_id: profile?.customer_id,
+          customer_id: customerId,
           initial_detection_time: new Date().toISOString(),
           reported_by: user.user?.id
         });
@@ -98,7 +97,7 @@ export default function SecurityIncidents() {
         severity: "medium",
         description: ""
       });
-      toast({ title: "Incident created successfully" });
+      toast.success("Incident created successfully");
     }
   });
 
@@ -120,7 +119,7 @@ export default function SecurityIncidents() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['security-incidents'] });
-      toast({ title: "Status updated" });
+      toast.success("Status updated");
     }
   });
 
@@ -161,11 +160,15 @@ export default function SecurityIncidents() {
   };
 
   if (isLoading) {
-    return <div className="p-8">Loading incidents...</div>;
+    return (
+      <DashboardLayout>
+        <div>Loading incidents...</div>
+      </DashboardLayout>
+    );
   }
 
   return (
-    <div className="p-8 space-y-6">
+    <DashboardLayout>
       {/* SOC Navigation */}
       <div className="flex gap-2 mb-4">
         <Button variant="outline" size="sm" onClick={() => navigate('/dashboard/soc')}>
@@ -466,6 +469,6 @@ export default function SecurityIncidents() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </DashboardLayout>
   );
 }

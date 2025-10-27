@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Shield, Database, RefreshCw, AlertTriangle, Globe, FileCode, Activity, FileWarning, FileText } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface ThreatFeed {
   id: string;
@@ -42,44 +44,33 @@ interface ThreatIndicator {
 
 export default function ThreatIntelligence() {
   const navigate = useNavigate();
+  const toast = useStandardToast();
+  const { customerId } = useUserProfile();
   const [searchQuery, setSearchQuery] = useState("");
   const queryClient = useQueryClient();
 
   const { data: feeds = [], isLoading: feedsLoading } = useQuery<ThreatFeed[]>({
-    queryKey: ['threat-feeds'],
+    queryKey: ['threat-feeds', customerId],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser();
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.user?.id)
-        .maybeSingle();
-
       const { data, error } = await supabase
         .from('threat_intel_feeds' as any)
         .select('*')
-        .eq('customer_id', profile?.customer_id)
+        .eq('customer_id', customerId)
         .order('feed_name');
       
       if (error) throw error;
       return (data || []) as unknown as ThreatFeed[];
-    }
+    },
+    enabled: !!customerId,
   });
 
   const { data: indicators = [], isLoading: indicatorsLoading } = useQuery<ThreatIndicator[]>({
-    queryKey: ['threat-indicators', searchQuery],
+    queryKey: ['threat-indicators', customerId, searchQuery],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser();
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.user?.id)
-        .maybeSingle();
-
       let query = supabase
         .from('threat_intel_indicators' as any)
         .select('*')
-        .eq('customer_id', profile?.customer_id)
+        .eq('customer_id', customerId)
         .eq('is_active', true)
         .order('last_seen', { ascending: false })
         .limit(100);
@@ -92,7 +83,8 @@ export default function ThreatIntelligence() {
       
       if (error) throw error;
       return (data || []) as unknown as ThreatIndicator[];
-    }
+    },
+    enabled: !!customerId,
   });
 
   const syncFeed = useMutation({
@@ -107,16 +99,13 @@ export default function ThreatIntelligence() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['threat-feeds'] });
       queryClient.invalidateQueries({ queryKey: ['threat-indicators'] });
-      toast({ 
-        title: "Feed synced successfully",
+      toast.success("Feed synced successfully", {
         description: `Synced ${data.indicators_synced} indicators from ${data.feed_name}`
       });
     },
     onError: (error) => {
-      toast({
-        title: "Sync failed",
-        description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive"
+      toast.error("Sync failed", {
+        description: error instanceof Error ? error.message : "Unknown error"
       });
     }
   });
@@ -146,11 +135,15 @@ export default function ThreatIntelligence() {
   const highConfidenceIndicators = indicators.filter(i => (i.confidence_score || 0) >= 80).length;
 
   if (feedsLoading || indicatorsLoading) {
-    return <div className="p-8">Loading threat intelligence...</div>;
+    return (
+      <DashboardLayout>
+        <div>Loading threat intelligence...</div>
+      </DashboardLayout>
+    );
   }
 
   return (
-    <div className="p-8 space-y-6">
+    <DashboardLayout>
       {/* SOC Navigation */}
       <div className="flex gap-2 mb-4">
         <Button variant="outline" size="sm" onClick={() => navigate('/dashboard/soc')}>
@@ -348,6 +341,6 @@ export default function ThreatIntelligence() {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+    </DashboardLayout>
   );
 }
