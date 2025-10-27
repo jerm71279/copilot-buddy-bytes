@@ -1,11 +1,11 @@
 import { useState } from "react";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { RiskAssessmentDialog } from "@/components/RiskAssessmentDialog";
 import { useRiskData } from "@/hooks/useRiskData";
 import { 
@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 
 const RiskAssessmentPortal = () => {
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const [selectedTab, setSelectedTab] = useState("register");
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -38,25 +38,20 @@ const RiskAssessmentPortal = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <DashboardNavigation />
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <Activity className="h-8 w-8 animate-spin mx-auto mb-4" />
-              <p className="text-muted-foreground">Loading risk data...</p>
-            </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <Activity className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading risk data...</p>
           </div>
-        </main>
-      </div>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <DashboardNavigation />
-      <main className="container mx-auto px-4 py-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
-        <div className="flex justify-between items-center mb-8">
+    <DashboardLayout>
+      <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Risk Assessment Portal</h1>
             <p className="text-muted-foreground">
@@ -165,10 +160,10 @@ const RiskAssessmentPortal = () => {
                     <p className="text-muted-foreground mb-4">
                       Start by creating your first risk assessment
                     </p>
-                    <Button onClick={() => toast({ title: "Coming Soon", description: "Risk creation wizard" })}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Create First Risk
-                    </Button>
+          <Button onClick={() => toast.info("Risk creation wizard coming soon")}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create First Risk
+          </Button>
                   </div>
                 )}
               </CardContent>
@@ -384,8 +379,7 @@ const RiskAssessmentPortal = () => {
             </div>
           </TabsContent>
         </Tabs>
-      </main>
-    </div>
+      </DashboardLayout>
   );
 };
 

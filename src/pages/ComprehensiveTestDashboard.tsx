@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import Navigation from '@/components/Navigation';
-import DashboardNavigation from '@/components/DashboardNavigation';
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { useToast } from '@/hooks/use-toast';
+import { useStandardToast } from '@/hooks/useStandardToast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { 
@@ -32,7 +31,7 @@ import { useNavigate } from 'react-router-dom';
 import { DashboardSettingsMenu } from '@/components/DashboardSettingsMenu';
 import { DepartmentAIAssistant } from '@/components/DepartmentAIAssistant';
 import MCPServerStatus from '@/components/MCPServerStatus';
-import { PageContainer } from '@/components/shared/PageContainer';
+import DashboardNavigation from '@/components/DashboardNavigation';
 
 interface TestCase {
   id: string;
@@ -52,7 +51,7 @@ interface TestPhase {
 
 export default function ComprehensiveTestDashboard() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isFuzzing, setIsFuzzing] = useState(false);
   const [isTracing, setIsTracing] = useState(false);
@@ -95,16 +94,9 @@ export default function ComprehensiveTestDashboard() {
       if (error) throw error;
 
       setTestDataResult(data);
-      toast({
-        title: "Success",
-        description: `Generated ${data.summary.total_records_created} test records`,
-      });
+      toast.success(`Generated ${data.summary.total_records_created} test records`);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to generate test data",
-        variant: "destructive"
-      });
+      toast.error(error instanceof Error ? error.message : "Failed to generate test data");
     } finally {
       setIsGenerating(false);
     }
@@ -119,17 +111,13 @@ export default function ComprehensiveTestDashboard() {
       if (error) throw error;
 
       setFuzzResult(data);
-      toast({
-        title: data.summary.vulnerabilities_found === 0 ? "All Tests Passed" : "Vulnerabilities Found",
-        description: `${data.summary.passed}/${data.summary.total_tests} tests passed`,
-        variant: data.summary.vulnerabilities_found > 0 ? "destructive" : "default"
-      });
+      if (data.summary.vulnerabilities_found > 0) {
+        toast.error(`Vulnerabilities Found: ${data.summary.passed}/${data.summary.total_tests} tests passed`);
+      } else {
+        toast.success(`All Tests Passed: ${data.summary.passed}/${data.summary.total_tests}`);
+      }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to run fuzz tests",
-        variant: "destructive"
-      });
+      toast.error(error instanceof Error ? error.message : "Failed to run fuzz tests");
     } finally {
       setIsFuzzing(false);
     }
@@ -146,16 +134,9 @@ export default function ComprehensiveTestDashboard() {
       if (error) throw error;
 
       setFlowTrace(data);
-      toast({
-        title: "Flow Traced",
-        description: `Traced ${data.summary.total_operations} operations`,
-      });
+      toast.success(`Traced ${data.summary.total_operations} operations`);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to trace flow",
-        variant: "destructive"
-      });
+      toast.error(error instanceof Error ? error.message : "Failed to trace flow");
     } finally {
       setIsTracing(false);
     }
@@ -188,16 +169,9 @@ export default function ComprehensiveTestDashboard() {
       });
       if (error) throw error;
       setTestUser(data);
-      toast({
-        title: "Success",
-        description: "Test user created: test.user@obera.app",
-      });
+      toast.success("Test user created: test.user@obera.app");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create test user",
-        variant: "destructive"
-      });
+      toast.error(error instanceof Error ? error.message : "Failed to create test user");
     } finally {
       setIsManagingUser(false);
     }
@@ -211,16 +185,9 @@ export default function ComprehensiveTestDashboard() {
       });
       if (error) throw error;
       setTestUser(null);
-      toast({
-        title: "Success",
-        description: "Test user deleted successfully",
-      });
+      toast.success("Test user deleted successfully");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to delete test user",
-        variant: "destructive"
-      });
+      toast.error(error instanceof Error ? error.message : "Failed to delete test user");
     } finally {
       setIsManagingUser(false);
     }
@@ -231,28 +198,26 @@ export default function ComprehensiveTestDashboard() {
   }, []);
 
   return (
-    <>
-      <Navigation />
-      <PageContainer>
-        <DashboardNavigation 
-          title="Comprehensive Testing Dashboard"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
-        
-        <div className="mb-8 flex justify-between items-center">
+    <DashboardLayout>
+      <DashboardNavigation 
+        title="Comprehensive Testing Dashboard"
+        dashboards={[
+          { name: "Admin Dashboard", path: "/admin" },
+          { name: "Employee Portal", path: "/portal" },
+          { name: "Analytics Portal", path: "/analytics" },
+          { name: "Compliance Portal", path: "/compliance" },
+          { name: "Change Management", path: "/change-management" },
+          { name: "Executive Dashboard", path: "/dashboard/executive" },
+          { name: "Finance Dashboard", path: "/dashboard/finance" },
+          { name: "HR Dashboard", path: "/dashboard/hr" },
+          { name: "IT Dashboard", path: "/dashboard/it" },
+          { name: "Operations Dashboard", path: "/dashboard/operations" },
+          { name: "Sales Dashboard", path: "/dashboard/sales" },
+          { name: "SOC Dashboard", path: "/dashboard/soc" },
+        ]}
+      />
+      
+      <div className="mb-8 flex justify-between items-center">
           <p className="text-muted-foreground">
             Generate test data, run fuzz tests, and validate system security
           </p>
@@ -546,14 +511,14 @@ export default function ComprehensiveTestDashboard() {
                             </div>
 
                             <div className="flex gap-2">
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                onClick={() => {
-                                  navigator.clipboard.writeText(vuln.test_value);
-                                  toast({ title: "Copied", description: "Test value copied to clipboard" });
-                                }}
-                              >
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(vuln.test_value);
+                    toast.success("Test value copied to clipboard");
+                  }}
+                >
                                 <Copy className="h-3 w-3 mr-1" />
                                 Copy Test Value
                               </Button>
@@ -685,7 +650,6 @@ export default function ComprehensiveTestDashboard() {
             </Card>
           </TabsContent>
         </Tabs>
-      </PageContainer>
-    </>
+      </DashboardLayout>
   );
 }
