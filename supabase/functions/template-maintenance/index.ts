@@ -153,7 +153,13 @@ Deno.serve(async (req) => {
       }
 
       return new Response(
-        JSON.stringify({ ok: true, action, updated: { stageTemplates: stageUpdated, milestoneTemplates: milestoneUpdated } }),
+        JSON.stringify({ 
+          ok: true, 
+          action, 
+          updated: { stageTemplates: stageUpdated, milestoneTemplates: milestoneUpdated },
+          stageTemplatesUpdated: stageUpdated,
+          milestoneTemplatesUpdated: milestoneUpdated
+        }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
