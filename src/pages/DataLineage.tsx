@@ -130,8 +130,8 @@ const DataLineage = () => {
                   {/* Source */}
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge className={`${getEntityColor(lineage.source_entity_type)} text-white`}>
-                        {lineage.source_entity_type}
+                      <Badge className={getEntityColor(lineage.source_entity_type)}>
+                        <span className="text-primary-foreground">{lineage.source_entity_type}</span>
                       </Badge>
                       <Database className="h-4 w-4 text-muted-foreground" />
                     </div>
@@ -159,8 +159,8 @@ const DataLineage = () => {
                   <div className="flex-1 text-right">
                     <div className="flex items-center justify-end gap-2 mb-2">
                       <Database className="h-4 w-4 text-muted-foreground" />
-                      <Badge className={`${getEntityColor(lineage.target_entity_type)} text-white`}>
-                        {lineage.target_entity_type}
+                      <Badge className={getEntityColor(lineage.target_entity_type)}>
+                        <span className="text-primary-foreground">{lineage.target_entity_type}</span>
                       </Badge>
                     </div>
                     <p className="text-sm font-mono truncate">

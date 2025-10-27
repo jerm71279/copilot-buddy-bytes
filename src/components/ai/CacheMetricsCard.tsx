@@ -64,7 +64,7 @@ export const CacheMetricsCard = () => {
   const MetricCard = ({ icon: Icon, label, value, color }: any) => (
     <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50">
       <div className={`p-2 rounded-lg ${color}`}>
-        <Icon className="h-5 w-5 text-white" />
+        <Icon className="h-5 w-5 text-primary-foreground" />
       </div>
       <div>
         <p className="text-sm text-muted-foreground">{label}</p>

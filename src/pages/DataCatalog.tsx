@@ -206,8 +206,8 @@ const DataCatalog = () => {
                   {entry.data_classification && (
                     <div className="flex items-center gap-2">
                       <Shield className="h-4 w-4 text-muted-foreground" />
-                      <Badge className={`${getClassificationColor(entry.data_classification)} text-white`}>
-                        {entry.data_classification}
+                      <Badge className={getClassificationColor(entry.data_classification)}>
+                        <span className="text-primary-foreground">{entry.data_classification}</span>
                       </Badge>
                       {entry.contains_pii && (
                         <Badge variant="destructive" className="ml-1">PII</Badge>

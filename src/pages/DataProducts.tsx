@@ -94,8 +94,8 @@ const DataProducts = () => {
             <Card key={product.id} className="hover:border-primary transition-colors">
               <CardHeader>
                 <div className="flex items-start justify-between mb-2">
-                  <Badge className={`${getDomainColor(product.domain)} text-white`}>
-                    {product.domain.toUpperCase()}
+                  <Badge className={getDomainColor(product.domain)}>
+                    <span className="text-primary-foreground">{product.domain.toUpperCase()}</span>
                   </Badge>
                   <Badge variant={product.is_active ? "default" : "secondary"}>
                     {product.is_active ? 'Active' : 'Inactive'}

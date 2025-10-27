@@ -53,11 +53,15 @@ export class VendorService {
       .from('documentation_vendors')
       .insert(insertData)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error creating vendor:', error);
       throw new Error(`Failed to create vendor: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error('Failed to create vendor: No data returned');
     }
 
     return data as Vendor;
@@ -74,11 +78,15 @@ export class VendorService {
       .update(updateData)
       .eq('id', id)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error updating vendor:', error);
       throw new Error(`Failed to update vendor: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error('Failed to update vendor: Vendor not found');
     }
 
     return data as Vendor;

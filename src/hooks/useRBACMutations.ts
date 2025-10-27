@@ -45,9 +45,10 @@ export function useGrantPermission() {
           permission_level: params.permissionLevel,
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) throw new Error("Failed to create permission");
       return data;
     },
     onSuccess: () => {
@@ -102,9 +103,10 @@ export function useAssignRole() {
           role_id: params.roleId,
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) throw new Error("Failed to assign role");
       return data;
     },
     onSuccess: () => {
