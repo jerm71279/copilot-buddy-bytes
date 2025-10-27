@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navigation from '@/components/Navigation';
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import DashboardNavigation from '@/components/DashboardNavigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,8 +18,7 @@ import {
   FileText,
   Copy
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { PageContainer } from '@/components/shared/PageContainer';
+import { useStandardToast } from '@/hooks/useStandardToast';
 
 interface RouteTest {
   path: string;
@@ -32,7 +31,7 @@ interface RouteTest {
 
 export default function LinkValidationTool() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const [testing, setTesting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [routes, setRoutes] = useState<RouteTest[]>([
@@ -178,19 +177,16 @@ export default function LinkValidationTool() {
     setTesting(false);
     
     const failed = routes.filter(r => r.status === 'failed').length;
-    toast({
-      title: failed === 0 ? "All Tests Passed!" : "Tests Complete",
-      description: `${routes.length - failed}/${routes.length} routes validated successfully`,
-      variant: failed === 0 ? "default" : "destructive"
-    });
+    if (failed === 0) {
+      toast.success(`All Tests Passed! ${routes.length}/${routes.length} routes validated successfully`);
+    } else {
+      toast.error(`Tests Complete: ${routes.length - failed}/${routes.length} routes validated successfully`);
+    }
   };
 
   const testSingleRoute = (route: RouteTest, index: number) => {
     navigate(route.path);
-    toast({
-      title: "Navigating",
-      description: `Testing route: ${route.label}`,
-    });
+    toast.info(`Testing route: ${route.label}`);
   };
 
   const categories = ['All', 'Public', 'Protected', 'Admin', 'Testing', 'Features', 'Business', 'HR', 'System'];
@@ -224,18 +220,13 @@ export default function LinkValidationTool() {
     a.download = 'link-validation-results.json';
     a.click();
     
-    toast({
-      title: "Results Exported",
-      description: "Validation results saved to JSON file",
-    });
+    toast.success("Validation results saved to JSON file");
   };
 
   return (
-    <>
-      <Navigation />
+    <DashboardLayout>
       <DashboardNavigation />
-      <PageContainer>
-        <div className="mb-8">
+      <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Link Validation Tool</h1>
           <p className="text-muted-foreground">
             Comprehensive testing tool to validate all routes, buttons, and links in the application
@@ -393,7 +384,6 @@ export default function LinkValidationTool() {
             </Tabs>
           </CardContent>
         </Card>
-      </PageContainer>
-    </>
+      </DashboardLayout>
   );
 }

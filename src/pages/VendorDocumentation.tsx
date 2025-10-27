@@ -8,9 +8,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
-import Navigation from "@/components/Navigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import DashboardNavigation from "@/components/DashboardNavigation";
 
 interface Vendor {
@@ -39,7 +39,7 @@ const [formData, setFormData] = useState({
   contact_phone: "",
   notes: ""
 });
-  const { toast } = useToast();
+  const toast = useStandardToast();
 
   useEffect(() => {
     loadVendors();
@@ -77,11 +77,7 @@ const [formData, setFormData] = useState({
         });
         
         if (completeError) {
-          toast({
-            title: "Profile setup required",
-            description: "We couldn't auto-complete your profile. Please contact an admin.",
-            variant: "destructive",
-          });
+          toast.error("We couldn't auto-complete your profile. Please contact an admin.");
           return;
         }
         
@@ -93,11 +89,7 @@ const [formData, setFormData] = useState({
         profile = refreshed.data ?? null;
 
         if (!profile?.customer_id) {
-          toast({
-            title: "Profile setup required",
-            description: "Your account is missing an organization link.",
-            variant: "destructive",
-          });
+          toast.error("Your account is missing an organization link.");
           return;
         }
       }
@@ -119,10 +111,7 @@ const [formData, setFormData] = useState({
 
         if (error) throw error;
 
-        toast({
-          title: "Vendor updated",
-          description: "Vendor information has been updated successfully",
-        });
+        toast.success("Vendor information has been updated successfully");
       } else {
         const insertPayload = {
           vendor_name: formData.vendor_name,
@@ -142,10 +131,7 @@ const [formData, setFormData] = useState({
 
         if (error) throw error;
 
-        toast({
-          title: "Vendor added",
-          description: "New vendor has been added successfully",
-        });
+        toast.success("New vendor has been added successfully");
       }
 
       setShowDialog(false);
@@ -162,11 +148,7 @@ setFormData({
       loadVendors();
     } catch (error) {
       console.error('Error saving vendor:', error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to save vendor");
     }
   };
 
@@ -195,28 +177,19 @@ setFormData({
 
       if (error) throw error;
 
-      toast({
-        title: "Vendor deleted",
-        description: "Vendor has been removed successfully",
-      });
+      toast.success("Vendor has been removed successfully");
 
       loadVendors();
     } catch (error) {
       console.error('Error deleting vendor:', error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to delete vendor");
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
+    <DashboardLayout>
       <DashboardNavigation />
-      <main className="container mx-auto p-8 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold">Vendor Documentation Management</h1>
             <p className="text-muted-foreground">Manage vendors and their documentation sources</p>
@@ -390,7 +363,6 @@ setFormData({
           </Table>
         </CardContent>
       </Card>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

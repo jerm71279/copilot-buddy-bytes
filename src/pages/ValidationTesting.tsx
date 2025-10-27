@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Navigation from '@/components/Navigation';
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import DashboardNavigation from '@/components/DashboardNavigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,6 @@ import {
 } from '@/lib/inputValidation';
 import { AlertCircle, CheckCircle2, Play, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageContainer } from '@/components/shared/PageContainer';
 
 interface TestCase {
   name: string;
@@ -188,11 +187,9 @@ export default function ValidationTesting() {
   };
 
   return (
-    <>
-      <Navigation />
+    <DashboardLayout>
       <DashboardNavigation />
-      <PageContainer>
-        <div className="mb-8">
+      <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Input Validation Testing</h1>
           <p className="text-muted-foreground">
             Test input validation functions with various attack vectors and edge cases
@@ -384,7 +381,6 @@ export default function ValidationTesting() {
             </div>
           </TabsContent>
         </Tabs>
-      </PageContainer>
-    </>
+      </DashboardLayout>
   );
 }
