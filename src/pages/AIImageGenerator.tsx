@@ -2,22 +2,21 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Download, Image as ImageIcon } from 'lucide-react';
+import { PageContainer } from '@/components/shared/PageContainer';
+import { useStandardToast } from '@/hooks/useStandardToast';
 
 const AIImageGenerator = () => {
   const [prompt, setPrompt] = useState('');
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const { toast } = useToast();
+  const toast = useStandardToast();
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
-      toast({
-        title: "Prompt required",
+      toast.error("Prompt required", {
         description: "Please enter a description for the image you want to generate.",
-        variant: "destructive",
       });
       return;
     }
@@ -33,27 +32,20 @@ const AIImageGenerator = () => {
       if (error) throw error;
 
       if (data?.error) {
-        toast({
-          title: "Generation failed",
-          description: data.error,
-          variant: "destructive",
-        });
+        toast.error("Generation failed", { description: data.error });
         return;
       }
 
       if (data?.imageUrl) {
         setGeneratedImage(data.imageUrl);
-        toast({
-          title: "Image generated!",
+        toast.success("Image generated!", {
           description: "Your image has been created successfully.",
         });
       }
     } catch (error) {
       console.error('Error generating image:', error);
-      toast({
-        title: "Generation failed",
+      toast.error("Generation failed", {
         description: error instanceof Error ? error.message : "Failed to generate image",
-        variant: "destructive",
       });
     } finally {
       setIsGenerating(false);
@@ -72,9 +64,8 @@ const AIImageGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="max-w-6xl mx-auto">
+    <PageContainer>
+      <div className="max-w-6xl mx-auto">
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2">AI Image Generator</h1>
             <p className="text-muted-foreground">
@@ -177,9 +168,8 @@ const AIImageGenerator = () => {
             </div>
           </Card>
         </div>
-        </div>
       </div>
-    </div>
+    </PageContainer>
   );
 };
 

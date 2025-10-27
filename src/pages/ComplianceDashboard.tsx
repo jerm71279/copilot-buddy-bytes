@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { toast } from "sonner";
-import { Shield, Activity, CheckCircle, AlertTriangle, FileText, FileCheck, ChevronDown, ClipboardList, FolderOpen, Server } from "lucide-react";
+import { Shield, Activity, CheckCircle, AlertTriangle, FileText } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 
 import MCPServerStatus from "@/components/MCPServerStatus";
@@ -77,8 +78,7 @@ import {
 const ComplianceDashboard = () => {
   const navigate = useNavigate();
   const isPreviewMode = useDemoMode();
-  const [isLoading, setIsLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState<any>(null);
+  const { profile, customerId, isLoading: profileLoading } = useUserProfile(!isPreviewMode);
   const [stats, setStats] = useState({
     frameworks: 0,
     controls: 0,
@@ -89,9 +89,13 @@ const ComplianceDashboard = () => {
   const [mcpServers, setMcpServers] = useState<any[]>([]);
 
   useEffect(() => {
-    checkAccess();
+    if (isPreviewMode) {
+      fetchStats();
+    } else if (customerId) {
+      fetchStats();
+    }
     fetchMcpServers();
-  }, []);
+  }, [customerId, isPreviewMode]);
 
   const fetchMcpServers = async () => {
     const { data } = await supabase
@@ -102,34 +106,6 @@ const ComplianceDashboard = () => {
       .order("server_name");
     
     if (data) setMcpServers(data);
-  };
-
-  const checkAccess = async () => {
-    // Skip authentication in preview mode
-    if (isPreviewMode) {
-      setUserProfile({ full_name: "Demo User", department: "compliance" });
-      await fetchStats();
-      setIsLoading(false);
-      return;
-    }
-
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      navigate("/auth");
-      return;
-    }
-
-    // Get user profile
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    setUserProfile(profile);
-    await fetchStats();
-    setIsLoading(false);
   };
 
   const fetchStats = async () => {
@@ -158,15 +134,13 @@ const ComplianceDashboard = () => {
     navigate("/auth");
   };
 
-  if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (profileLoading) {
+    return <PageContainer><div className="flex items-center justify-center py-12">Loading...</div></PageContainer>;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 space-y-6" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
-
-        <div className="flex items-center justify-between">
+    <PageContainer className="space-y-6">
+      <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Compliance Dashboard</h1>
           <DashboardSettingsMenu dashboardName="Compliance" />
         </div>
@@ -326,12 +300,11 @@ const ComplianceDashboard = () => {
           </CardContent>
         </Card>
 
-        <DepartmentAIAssistant
-          department="compliance" 
-          departmentLabel="Compliance & GRC" 
-        />
-      </main>
-    </div>
+      <DepartmentAIAssistant
+        department="compliance" 
+        departmentLabel="Compliance & GRC" 
+      />
+    </PageContainer>
   );
 };
 

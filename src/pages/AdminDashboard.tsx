@@ -10,6 +10,7 @@ import { getQuickActionCards } from "@/lib/adminConfig";
 import { AdminActiveView } from "@/components/admin/AdminActiveView";
 import { AdminQuickActions } from "@/components/admin/AdminQuickActions";
 import { CustomerManagementTable } from "@/components/admin/CustomerManagementTable";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 /**
  * Admin Dashboard Data Flow
@@ -75,10 +76,8 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8 space-y-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        
-        <div className="flex items-center justify-between mb-6">
+    <PageContainer className="space-y-8">
+      <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <Users className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold">Admin Dashboard</h1>
@@ -96,11 +95,10 @@ const AdminDashboard = () => {
         
         <AdminQuickActions quickActionCards={quickActionCards} />
         
-        <CustomerManagementTable customers={customers} isLoading={isLoading} />
+      <CustomerManagementTable customers={customers} isLoading={isLoading} />
 
-        <DepartmentAIAssistant department="admin" departmentLabel="Administration" />
-      </main>
-    </div>
+      <DepartmentAIAssistant department="admin" departmentLabel="Administration" />
+    </PageContainer>
   );
 };
 

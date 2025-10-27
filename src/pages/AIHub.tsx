@@ -4,6 +4,7 @@ import { AIIntegrationInfo } from "@/components/ai/AIIntegrationInfo";
 import { VisionAnalysisCard } from "@/components/ai/VisionAnalysisCard";
 import { CacheMetricsCard } from "@/components/ai/CacheMetricsCard";
 import { aiLevels } from "@/config/aiHubConfig";
+import { PageContainer } from "@/components/shared/PageContainer";
 import {
   Brain,
   Sparkles,
@@ -12,12 +13,9 @@ import {
 } from "lucide-react";
 
 const AIHub = () => {
-
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-
-        {/* Header */}
+    <PageContainer>
+      {/* Header */}
         <div className="mb-8 text-center space-y-4">
           <div className="flex items-center justify-center gap-3">
             <Brain className="h-12 w-12 text-primary" />
@@ -63,8 +61,7 @@ const AIHub = () => {
             <CacheMetricsCard />
           </div>
         </div>
-      </div>
-    </div>
+    </PageContainer>
   );
 };
 

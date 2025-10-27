@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { BudgetService } from "@/services/financeService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,10 +10,11 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import { Plus, Search, DollarSign, TrendingUp, AlertTriangle } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Budget {
   id: string;
@@ -33,13 +32,13 @@ interface Budget {
 }
 
 export default function BudgetTracking() {
-  const navigate = useNavigate();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [customerId, setCustomerId] = useState<string | null>(null);
 
   const [newBudget, setNewBudget] = useState({
     budget_name: "",
@@ -53,32 +52,10 @@ export default function BudgetTracking() {
   });
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  useEffect(() => {
     if (customerId) {
       fetchBudgets();
     }
   }, [customerId]);
-
-  const fetchUserProfile = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
-    }
-  };
 
   const fetchBudgets = async () => {
     try {
@@ -87,7 +64,7 @@ export default function BudgetTracking() {
       setBudgets(data);
     } catch (error) {
       console.error("Error fetching budgets:", error);
-      toast.error("Failed to load budgets");
+      toast.loadFailed("budgets");
     } finally {
       setLoading(false);
     }
@@ -111,7 +88,7 @@ export default function BudgetTracking() {
         owner_id: user.id,
       });
 
-      toast.success("Budget created successfully");
+      toast.created("Budget");
       setIsCreateDialogOpen(false);
       setNewBudget({
         budget_name: "",
@@ -126,7 +103,7 @@ export default function BudgetTracking() {
       fetchBudgets();
     } catch (error) {
       console.error("Error creating budget:", error);
-      toast.error("Failed to create budget");
+      toast.saveFailed("budget");
     }
   };
 
@@ -160,12 +137,8 @@ export default function BudgetTracking() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <main className="container mx-auto px-4 pb-8 pt-8 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="flex justify-between items-center">
+    <DashboardLayout className="space-y-6">
+      <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Budget Tracking</h1>
             <p className="text-muted-foreground">Monitor and manage organizational budgets</p>
@@ -385,7 +358,6 @@ export default function BudgetTracking() {
             </Table>
           </CardContent>
         </Card>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }
