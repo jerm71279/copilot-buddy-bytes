@@ -83,14 +83,8 @@ export default function BudgetTracking() {
   const fetchBudgets = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("budgets")
-        .select("*")
-        .eq("customer_id", customerId!)
-        .order("fiscal_year", { ascending: false });
-
-      if (error) throw error;
-      setBudgets(data || []);
+      const data = await BudgetService.getBudgetsByCustomer(customerId!);
+      setBudgets(data);
     } catch (error) {
       console.error("Error fetching budgets:", error);
       toast.error("Failed to load budgets");
