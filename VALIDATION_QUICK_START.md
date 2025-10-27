@@ -81,6 +81,8 @@ Run validation to see real-time status:
 npm run validate
 ```
 
+**Pre-commit Hook Results**: When you commit, the validation runs automatically and displays results in your terminal before the commit completes.
+
 ## Integration with AI
 
 The AI assistant has these validation procedures in its knowledge base and will:
