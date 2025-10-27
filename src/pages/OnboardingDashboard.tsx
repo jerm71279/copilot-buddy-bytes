@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useRequireAuth } from "@/hooks/useRequireAuth";
-
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/hooks/use-toast";
 import { Plus, Users, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 /**
  * Onboarding Dashboard Data Flow
@@ -81,7 +80,8 @@ interface ClientOnboarding {
 
 export default function OnboardingDashboard() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
+  const { isLoading: profileLoading } = useUserProfile();
   const [onboardings, setOnboardings] = useState<ClientOnboarding[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -114,15 +114,17 @@ export default function OnboardingDashboard() {
       setStats({ total, inProgress, completed, overdue });
     } catch (error) {
       console.error('Error loading onboardings:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load client onboardings",
-        variant: "destructive"
-      });
+      toast.error("Failed to load client onboardings");
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!profileLoading) {
+      loadOnboardings();
+    }
+  }, [profileLoading]);
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -142,10 +144,8 @@ export default function OnboardingDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      
-      <PageContainer>
-        <DashboardNavigation 
+    <DashboardLayout showDashboardNavigation={false}>
+      <DashboardNavigation
           title="Client Onboarding"
           dashboards={[
             { name: "Admin Dashboard", path: "/admin" },
@@ -275,7 +275,6 @@ export default function OnboardingDashboard() {
           <DepartmentAIAssistant department="onboarding" departmentLabel="Client Onboarding" />
           <MCPServerStatus filterByServerType="onboarding" />
         </div>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 }

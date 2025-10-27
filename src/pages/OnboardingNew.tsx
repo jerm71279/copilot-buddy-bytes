@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus } from "lucide-react";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import DashboardNavigation from "@/components/DashboardNavigation";
 
 interface Template {
@@ -21,7 +23,8 @@ interface Template {
 
 export default function OnboardingNew() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
+  const { customerId, isLoading: profileLoading } = useUserProfile();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -35,8 +38,10 @@ export default function OnboardingNew() {
   });
 
   useEffect(() => {
-    loadTemplates();
-  }, []);
+    if (!profileLoading) {
+      loadTemplates();
+    }
+  }, [profileLoading]);
 
   const loadTemplates = async () => {
     try {
@@ -50,11 +55,7 @@ export default function OnboardingNew() {
       setTemplates(data || []);
     } catch (error) {
       console.error('Error loading templates:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load templates",
-        variant: "destructive"
-      });
+      toast.error("Failed to load templates");
     }
   };
 
@@ -62,11 +63,12 @@ export default function OnboardingNew() {
     e.preventDefault();
     
     if (!formData.client_name || !formData.template_id || !formData.client_contact_email) {
-      toast({
-        title: "Validation Error",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (!customerId) {
+      toast.error("No customer profile found");
       return;
     }
 
@@ -75,14 +77,6 @@ export default function OnboardingNew() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer profile found");
 
       // Create the onboarding
       const { data: onboarding, error: onboardingError } = await supabase
@@ -97,7 +91,7 @@ export default function OnboardingNew() {
           target_completion_date: formData.target_completion_date || null,
           status: 'not_started',
           completion_percentage: 0,
-          customer_id: profile.customer_id,
+          customer_id: customerId,
           created_by: user.id
         })
         .select()
@@ -105,28 +99,20 @@ export default function OnboardingNew() {
 
       if (onboardingError || !onboarding) throw onboardingError || new Error("Failed to create onboarding");
 
-      toast({
-        title: "Success",
-        description: "Client onboarding created successfully"
-      });
+      toast.success("Client onboarding created successfully");
 
       navigate(`/onboarding/${onboarding.id}`);
     } catch (error) {
       console.error('Error creating onboarding:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create onboarding",
-        variant: "destructive"
-      });
+      toast.error("Failed to create onboarding");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
-        <DashboardNavigation 
+    <DashboardLayout showDashboardNavigation={false}>
+      <DashboardNavigation
           title="New Client Onboarding"
           dashboards={[
             { name: "Onboarding Dashboard", path: "/onboarding" },
@@ -263,7 +249,6 @@ export default function OnboardingNew() {
             </form>
           </CardContent>
         </Card>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

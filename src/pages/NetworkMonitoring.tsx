@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useRequireAuth } from "@/hooks/useRequireAuth";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,13 +11,15 @@ import {
   Radio, HardDrive, Eye, Search, Plus,
   FileText, TrendingUp, CheckCircle2
 } from "lucide-react";
-import { toast } from "sonner";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 export default function NetworkMonitoring() {
   const navigate = useNavigate();
+  const toast = useStandardToast();
   const [isLoading, setIsLoading] = useState(true);
   const [devices, setDevices] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
@@ -84,6 +83,10 @@ export default function NetworkMonitoring() {
     }
   };
 
+  useEffect(() => {
+    loadData();
+  }, []);
+
   const pollDevice = async (deviceId: string) => {
     try {
       toast.info('Polling device...');
@@ -126,28 +129,22 @@ export default function NetworkMonitoring() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <PageContainer>
-          <LoadingSpinner message="Loading network monitoring data..." />
-        </PageContainer>
-      </div>
+      <DashboardLayout showDashboardNavigation={false}>
+        <LoadingSpinner message="Loading network monitoring data..." />
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <PageContainer>
-        <DashboardNavigation 
-          title="Network Monitoring"
-          dashboards={[
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-            { name: "CMDB", path: "/cmdb" },
-          ]}
-        />
+    <DashboardLayout showDashboardNavigation={false}>
+      <DashboardNavigation 
+        title="Network Monitoring"
+        dashboards={[
+          { name: "IT Dashboard", path: "/dashboard/it" },
+          { name: "SOC Dashboard", path: "/dashboard/soc" },
+          { name: "CMDB", path: "/cmdb" },
+        ]}
+      />
         
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -375,7 +372,6 @@ export default function NetworkMonitoring() {
             </Card>
           </TabsContent>
         </Tabs>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 }

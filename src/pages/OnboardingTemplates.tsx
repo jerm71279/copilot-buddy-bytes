@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useRequireAuth } from "@/hooks/useRequireAuth";
-
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,11 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import { Plus, FileText, Edit, Trash2, Users } from "lucide-react";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 interface Template {
   id: string;
@@ -30,7 +29,8 @@ interface Template {
 
 export default function OnboardingTemplates() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
+  const { customerId, isLoading: profileLoading } = useUserProfile();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -41,11 +41,11 @@ export default function OnboardingTemplates() {
     estimated_days: 30
   });
 
-  useRequireAuth();
-
   useEffect(() => {
-    loadTemplates();
-  }, []);
+    if (!profileLoading) {
+      loadTemplates();
+    }
+  }, [profileLoading]);
 
   const loadTemplates = async () => {
     try {
@@ -58,11 +58,7 @@ export default function OnboardingTemplates() {
       setTemplates(data || []);
     } catch (error) {
       console.error('Error loading templates:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load templates",
-        variant: "destructive"
-      });
+      toast.error("Failed to load templates");
     } finally {
       setIsLoading(false);
     }
@@ -70,31 +66,25 @@ export default function OnboardingTemplates() {
 
   const handleCreateTemplate = async () => {
     try {
+      if (!customerId) {
+        toast.error("No customer profile found");
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer profile found");
 
       const { error } = await supabase
         .from('onboarding_templates')
         .insert({
           ...formData,
-          customer_id: profile.customer_id,
+          customer_id: customerId,
           created_by: user.id
         });
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Template created successfully"
-      });
+      toast.success("Template created successfully");
 
       setIsDialogOpen(false);
       setFormData({
@@ -106,11 +96,7 @@ export default function OnboardingTemplates() {
       await loadTemplates();
     } catch (error) {
       console.error('Error creating template:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create template",
-        variant: "destructive"
-      });
+      toast.error("Failed to create template");
     }
   };
 
@@ -125,64 +111,46 @@ export default function OnboardingTemplates() {
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Template deleted successfully"
-      });
+      toast.success("Template deleted successfully");
 
       await loadTemplates();
     } catch (error) {
       console.error('Error deleting template:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete template",
-        variant: "destructive"
-      });
+      toast.error("Failed to delete template");
     }
   };
 
   const handleCreateEmployeeTemplate = async () => {
     try {
+      if (!customerId) {
+        toast.error("No customer profile found");
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer profile found");
 
       // Call the function to create employee onboarding template
       const { data, error } = await supabase
         .rpc('create_employee_onboarding_template', {
-          _customer_id: profile.customer_id,
+          _customer_id: customerId,
           _created_by: user.id
         });
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Employee onboarding template created with 12 pre-configured tasks"
-      });
+      toast.success("Employee onboarding template created with 12 pre-configured tasks");
 
       await loadTemplates();
     } catch (error) {
       console.error('Error creating employee template:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create employee template",
-        variant: "destructive"
-      });
+      toast.error(error instanceof Error ? error.message : "Failed to create employee template");
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <PageContainer>
-        <DashboardNavigation 
+    <DashboardLayout showDashboardNavigation={false}>
+      <DashboardNavigation
           title="Onboarding Templates"
           dashboards={[
             { name: "Admin Dashboard", path: "/admin" },
@@ -351,7 +319,6 @@ export default function OnboardingTemplates() {
             ))}
           </div>
         )}
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 }

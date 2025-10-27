@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useRequireAuth } from "@/hooks/useRequireAuth";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import { Activity, Server, AlertCircle, CheckCircle2, Shield, HardDrive } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import DashboardNavigation from "@/components/DashboardNavigation";
 
 export default function NinjaOneIntegration() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
+  const { customerId, isLoading: profileLoading } = useUserProfile();
   const { logPrivilegedAccess } = useAuditLog();
   const [isLoading, setIsLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
@@ -31,11 +31,11 @@ export default function NinjaOneIntegration() {
   const [devices, setDevices] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
 
-  useRequireAuth();
-
   useEffect(() => {
-    checkConnection();
-  }, []);
+    if (!profileLoading && customerId) {
+      checkConnection();
+    }
+  }, [profileLoading, customerId]);
 
   const checkConnection = async () => {
     try {
@@ -96,30 +96,20 @@ export default function NinjaOneIntegration() {
   const handleConnect = async () => {
     try {
       if (!credentials.apiUrl || !credentials.clientId || !credentials.clientSecret) {
-        toast({
-          title: "Validation Error",
-          description: "Please fill in all NinjaOne credentials",
-          variant: "destructive"
-        });
+        toast.error("Please fill in all NinjaOne credentials");
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer profile found");
+      if (!customerId) {
+        toast.error("No customer profile found");
+        return;
+      }
 
       // Create integration record
       const { error } = await supabase
         .from('integrations')
         .insert({
-          customer_id: profile.customer_id,
+          customer_id: customerId,
           system_name: 'NinjaOne',
           system_type: 'rmm',
           status: 'connected',
@@ -139,20 +129,13 @@ export default function NinjaOneIntegration() {
         client_id: credentials.clientId
       });
 
-      toast({
-        title: "Success",
-        description: "NinjaOne connected successfully"
-      });
+      toast.success("NinjaOne connected successfully");
 
       setIsConnected(true);
       await loadNinjaOneData();
     } catch (error) {
       console.error('Error connecting to NinjaOne:', error);
-      toast({
-        title: "Error",
-        description: "Failed to connect to NinjaOne",
-        variant: "destructive"
-      });
+      toast.error("Failed to connect to NinjaOne");
     }
   };
 
@@ -165,22 +148,17 @@ export default function NinjaOneIntegration() {
     return colors[severity] || "secondary";
   };
 
-  if (isLoading) {
+  if (isLoading || profileLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <PageContainer>
-          <LoadingSpinner message="Loading..." />
-        </PageContainer>
-      </div>
+      <DashboardLayout showDashboardNavigation={false}>
+        <LoadingSpinner message="Loading..." />
+      </DashboardLayout>
     );
   }
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <PageContainer>
+      <DashboardLayout showDashboardNavigation={false}>
           <div className="max-w-2xl mx-auto">
             <Card>
               <CardHeader>
@@ -230,17 +208,13 @@ export default function NinjaOneIntegration() {
               </CardContent>
             </Card>
           </div>
-        </PageContainer>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <PageContainer>
-        <DashboardNavigation 
+    <DashboardLayout showDashboardNavigation={false}>
+      <DashboardNavigation
           title="NinjaOne Monitoring"
           dashboards={[
             { name: "Admin Dashboard", path: "/admin" },
@@ -397,7 +371,6 @@ export default function NinjaOneIntegration() {
             )}
           </TabsContent>
         </Tabs>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 }
