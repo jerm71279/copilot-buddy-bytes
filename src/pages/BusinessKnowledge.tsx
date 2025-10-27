@@ -6,9 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, ExternalLink, RefreshCw, FileText, Globe, Github, Upload, Calendar, Eye, AlertTriangle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,7 +44,7 @@ export default function BusinessKnowledge() {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadType, setUploadType] = useState<"url" | "file">("url");
   const [isUploading, setIsUploading] = useState(false);
-  const { toast } = useToast();
+  const toast = useStandardToast();
 
   useEffect(() => {
     loadKnowledgeBase();
@@ -69,11 +68,7 @@ export default function BusinessKnowledge() {
       setArticles(data || []);
     } catch (error) {
       console.error('Error loading knowledge base:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load knowledge base",
-        variant: "destructive",
-      });
+      toast.error("Failed to load knowledge base");
     } finally {
       setIsLoading(false);
     }
@@ -134,20 +129,12 @@ export default function BusinessKnowledge() {
 
   const handleUpload = async () => {
     if (uploadType === "url" && (!uploadUrl || !uploadSource)) {
-      toast({
-        title: "Missing fields",
-        description: "Please provide both URL and source name",
-        variant: "destructive",
-      });
+      toast.error("Please provide both URL and source name");
       return;
     }
 
     if (uploadType === "file" && (!uploadFile || !uploadSource)) {
-      toast({
-        title: "Missing fields",
-        description: "Please provide both file and source name",
-        variant: "destructive",
-      });
+      toast.error("Please provide both file and source name");
       return;
     }
 
@@ -197,10 +184,7 @@ export default function BusinessKnowledge() {
         if (parseError) throw parseError;
       }
 
-      toast({
-        title: "Upload successful",
-        description: "The content is being processed",
-      });
+      toast.success("The content is being processed");
 
       setShowUploadDialog(false);
       setUploadUrl("");
@@ -214,11 +198,7 @@ export default function BusinessKnowledge() {
       }, 2000);
     } catch (error: any) {
       console.error('Error uploading:', error);
-      toast({
-        title: "Upload failed",
-        description: error.message || "Failed to upload content",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to upload content");
     } finally {
       setIsUploading(false);
     }
@@ -226,11 +206,7 @@ export default function BusinessKnowledge() {
 
   const handleReingest = async (article: KnowledgeArticle) => {
     if (!article.source_metadata?.url) {
-      toast({
-        title: "Cannot re-ingest",
-        description: "No source URL found for this article",
-        variant: "destructive",
-      });
+      toast.error("No source URL found for this article");
       return;
     }
 
@@ -264,10 +240,7 @@ export default function BusinessKnowledge() {
 
       if (error) throw error;
 
-      toast({
-        title: "Re-ingestion started",
-        description: "The page is being re-processed",
-      });
+      toast.success("The page is being re-processed");
 
       setTimeout(() => {
         loadKnowledgeBase();
@@ -275,11 +248,7 @@ export default function BusinessKnowledge() {
       }, 2000);
     } catch (error) {
       console.error('Error re-ingesting:', error);
-      toast({
-        title: "Re-ingestion failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message);
     } finally {
       setIsReingesting(null);
     }
@@ -312,10 +281,7 @@ export default function BusinessKnowledge() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      <main className="container mx-auto px-4 pb-8 pt-8 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Business Knowledge</h1>
@@ -482,7 +448,6 @@ export default function BusinessKnowledge() {
             })
           )}
         </div>
-      </main>
 
       {/* Upload Dialog */}
       <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
@@ -606,6 +571,6 @@ export default function BusinessKnowledge() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </DashboardLayout>
   );
 }

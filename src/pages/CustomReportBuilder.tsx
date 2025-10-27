@@ -1,22 +1,21 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import { Plus, Play, FileText, Clock } from "lucide-react";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 export default function CustomReportBuilder() {
   const queryClient = useQueryClient();
+  const toast = useStandardToast();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newReport, setNewReport] = useState({
     report_name: "",
@@ -127,26 +126,7 @@ export default function CustomReportBuilder() {
   });
 
   return (
-    <>
-      <Navigation />
-      <PageContainer>
-        <DashboardNavigation 
-          title="Custom Report Builder"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
+    <DashboardLayout>
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Custom Report Builder</h1>
@@ -325,7 +305,6 @@ export default function CustomReportBuilder() {
           </Table>
         </CardContent>
         </Card>
-      </PageContainer>
-    </>
+    </DashboardLayout>
   );
 }

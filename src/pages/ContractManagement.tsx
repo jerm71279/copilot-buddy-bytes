@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, AlertTriangle, CheckCircle, Calendar, DollarSign, Clock } from "lucide-react";
 import { differenceInDays, parseISO } from "date-fns";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const ContractManagement = () => {
   const [selectedTab, setSelectedTab] = useState("active");
@@ -80,7 +81,7 @@ const ContractManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <DashboardLayout>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -288,7 +289,7 @@ const ContractManagement = () => {
           </Card>
         )}
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

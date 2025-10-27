@@ -8,11 +8,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useToast } from '@/hooks/use-toast';
 import { Plus, Trash2, Save, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import Navigation from '@/components/Navigation';
-import DashboardNavigation from '@/components/DashboardNavigation';
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
+import { useStandardToast } from '@/hooks/useStandardToast';
 
 interface Application {
   id: string;
@@ -41,7 +40,7 @@ export default function ApplicationsAdmin() {
   const [loading, setLoading] = useState(true);
   const [editingApp, setEditingApp] = useState<Partial<Application> | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { toast } = useToast();
+  const toast = useStandardToast();
 
   useEffect(() => {
     loadData();
@@ -79,11 +78,7 @@ export default function ApplicationsAdmin() {
       setAccess(accessMap);
     } catch (error) {
       console.error('Error loading data:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load applications',
-        variant: 'destructive',
-      });
+      toast.error('Failed to load applications');
     } finally {
       setLoading(false);
     }
@@ -91,11 +86,7 @@ export default function ApplicationsAdmin() {
 
   const handleSaveApp = async () => {
     if (!editingApp?.name) {
-      toast({
-        title: 'Error',
-        description: 'Application name is required',
-        variant: 'destructive',
-      });
+      toast.error('Application name is required');
       return;
     }
 
@@ -115,21 +106,14 @@ export default function ApplicationsAdmin() {
         if (error) throw error;
       }
 
-      toast({
-        title: 'Success',
-        description: `Application ${editingApp.id ? 'updated' : 'created'} successfully`,
-      });
+      toast.success(`Application ${editingApp.id ? 'updated' : 'created'} successfully`);
 
       setIsDialogOpen(false);
       setEditingApp(null);
       loadData();
     } catch (error) {
       console.error('Error saving application:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to save application',
-        variant: 'destructive',
-      });
+      toast.error('Failed to save application');
     }
   };
 
@@ -144,19 +128,12 @@ export default function ApplicationsAdmin() {
 
       if (error) throw error;
 
-      toast({
-        title: 'Success',
-        description: 'Application deleted successfully',
-      });
+      toast.success('Application deleted successfully');
 
       loadData();
     } catch (error) {
       console.error('Error deleting application:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete application',
-        variant: 'destructive',
-      });
+      toast.error('Failed to delete application');
     }
   };
 
@@ -181,11 +158,7 @@ export default function ApplicationsAdmin() {
       loadData();
     } catch (error) {
       console.error('Error updating access:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update access',
-        variant: 'destructive',
-      });
+      toast.error('Failed to update access');
     }
   };
 
@@ -198,29 +171,8 @@ export default function ApplicationsAdmin() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <DashboardNavigation 
-          title="Applications Manager"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
-        
-        <div className="flex items-center justify-between mb-8">
+    <DashboardLayout>
+      <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-4xl font-bold">Applications Manager</h1>
             <p className="text-muted-foreground mt-2">
@@ -400,7 +352,6 @@ export default function ApplicationsAdmin() {
             </Card>
           ))}
         </div>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }
