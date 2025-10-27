@@ -1,5 +1,19 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import {
+  sanitizeUnicode,
+  detectPromptInjection,
+  sanitizeIndirectContent,
+  createSecureSystemPrompt,
+  addInputDelimiters,
+  filterOutput,
+  trackThreat,
+} from '../_shared/promptSecurity.ts';
+import {
+  logSecurityEvent,
+  createPromptInjectionLog,
+  createRateLimitLog,
+} from '../_shared/securityAudit.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -60,7 +74,7 @@ serve(async (req) => {
       });
     }
     
-    const analysisType = requestData.analysisType ? String(requestData.analysisType).slice(0, 50) : undefined;
+    let analysisType = requestData.analysisType ? String(requestData.analysisType).slice(0, 50) : undefined;
     const timeframe = requestData.timeframe ? String(requestData.timeframe).slice(0, 10) : '24h';
     
     if (!['1h', '24h', '7d', '30d'].includes(timeframe)) {
@@ -70,7 +84,7 @@ serve(async (req) => {
       });
     }
 
-    // Get customer_id from user profile
+    // Get customer_id from user profile FIRST
     const { data: profile } = await supabaseClient
       .from('user_profiles')
       .select('customer_id')
@@ -85,6 +99,53 @@ serve(async (req) => {
     }
 
     const customerId = profile.customer_id;
+    
+    // SECURITY: Sanitize inputs and check for injection
+    if (analysisType) {
+      analysisType = sanitizeUnicode(analysisType);
+      
+      const injectionCheck = detectPromptInjection(analysisType);
+      if (!injectionCheck.isValid) {
+        console.warn(`Prompt injection detected in SOC analysis: ${injectionCheck.threat}`);
+        
+        await logSecurityEvent(
+          supabaseClient,
+          createPromptInjectionLog(
+            'soc-threat-analysis',
+            user.id,
+            customerId,
+            injectionCheck.threat || 'unknown',
+            injectionCheck.confidence,
+            analysisType,
+            true
+          )
+        );
+        
+        const allowed = trackThreat(user.id, injectionCheck.threat || 'unknown');
+        if (!allowed) {
+          await logSecurityEvent(
+            supabaseClient,
+            createRateLimitLog('soc-threat-analysis', user.id, customerId, 5)
+          );
+          
+          return new Response(JSON.stringify({ 
+            error: 'Too many suspicious requests',
+            code: 'RATE_LIMITED'
+          }), {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        
+        return new Response(JSON.stringify({ 
+          error: 'Request contains suspicious content',
+          threat: injectionCheck.threat
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
 
     // Calculate time range
     const timeMap: Record<string, string> = {

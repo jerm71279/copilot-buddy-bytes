@@ -32,6 +32,7 @@ import ExecutiveDashboard from "./pages/ExecutiveDashboard";
 import SOCDashboard from "./pages/SOCDashboard";
 import SecurityAlerts from "./pages/SecurityAlerts";
 import SecurityIncidents from "./pages/SecurityIncidents";
+import SecurityMonitoring from "./pages/SecurityMonitoring";
 import ThreatIntelligence from "./pages/ThreatIntelligence";
 import ResponsePlaybooks from "./pages/ResponsePlaybooks";
 import SIEMDashboard from "./pages/SIEMDashboard";
@@ -362,6 +363,11 @@ const App = () => (
           <Route path="/security/incidents" element={
             <ProtectedRoute requireAdmin>
               <SecurityIncidents />
+            </ProtectedRoute>
+          } />
+          <Route path="/security/monitoring" element={
+            <ProtectedRoute requireAdmin>
+              <SecurityMonitoring />
             </ProtectedRoute>
           } />
           <Route path="/security/threat-intel" element={

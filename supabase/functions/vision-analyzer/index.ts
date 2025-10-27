@@ -1,5 +1,18 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+import {
+  sanitizeUnicode,
+  detectPromptInjection,
+  createSecureSystemPrompt,
+  addInputDelimiters,
+  filterOutput,
+  trackThreat,
+} from '../_shared/promptSecurity.ts';
+import {
+  logSecurityEvent,
+  createPromptInjectionLog,
+  createRateLimitLog,
+} from '../_shared/securityAudit.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -60,6 +73,52 @@ serve(async (req) => {
       );
     }
 
+    // SECURITY: Sanitize and validate prompt
+    let prompt = sanitizeUnicode(requestData.prompt);
+    const analysisType = sanitizeUnicode(requestData.analysisType);
+    
+    const injectionCheck = detectPromptInjection(prompt);
+    if (!injectionCheck.isValid) {
+      console.warn(`Prompt injection detected in vision analysis: ${injectionCheck.threat}`);
+      
+      await logSecurityEvent(
+        supabase,
+        createPromptInjectionLog(
+          'vision-analyzer',
+          user.id,
+          requestData.customerId,
+          injectionCheck.threat || 'unknown',
+          injectionCheck.confidence,
+          prompt,
+          true
+        )
+      );
+      
+      const allowed = trackThreat(user.id, injectionCheck.threat || 'unknown');
+      if (!allowed) {
+        await logSecurityEvent(
+          supabase,
+          createRateLimitLog('vision-analyzer', user.id, requestData.customerId, 5)
+        );
+        
+        return new Response(JSON.stringify({ 
+          error: 'Too many suspicious requests',
+          code: 'RATE_LIMITED'
+        }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+      
+      return new Response(JSON.stringify({ 
+        error: 'Request contains suspicious content',
+        threat: injectionCheck.threat
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
     if (!requestData.imageUrl && !requestData.imageBase64) {
       return new Response(
         JSON.stringify({ error: "Either imageUrl or imageBase64 is required" }),
@@ -72,11 +131,11 @@ serve(async (req) => {
       hasImage: !!requestData.imageUrl || !!requestData.imageBase64
     });
 
-    // Build the content array for the AI request
+    // Build the content array for the AI request with delimiters
     const content: any[] = [
       {
         type: "text",
-        text: requestData.prompt
+        text: addInputDelimiters(prompt)
       }
     ];
 
@@ -138,8 +197,12 @@ serve(async (req) => {
       throw new Error(`AI API error: ${aiResponse.status}`);
     }
 
-    const aiData = await aiResponse.json();
-    const analysisResult = aiData.choices[0].message.content;
+     const aiData = await aiResponse.json();
+    let analysisResult = aiData.choices[0].message.content;
+    
+    // SECURITY: Filter output to prevent data exfiltration
+    analysisResult = filterOutput(analysisResult);
+    
     const processingTime = Date.now() - startTime;
 
     // Extract confidence score if present in the response

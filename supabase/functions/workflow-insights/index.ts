@@ -1,5 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  sanitizeUnicode,
+  detectPromptInjection,
+  sanitizeIndirectContent,
+  addInputDelimiters,
+  filterOutput,
+} from '../_shared/promptSecurity.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,9 +29,14 @@ serve(async (req) => {
       );
     }
     
-    const workflowType = String(requestData.workflowType || '').slice(0, 100);
-    const metricName = String(requestData.metricName || '').slice(0, 200);
-    const department = String(requestData.department || '').slice(0, 100);
+    let workflowType = String(requestData.workflowType || '').slice(0, 100);
+    let metricName = String(requestData.metricName || '').slice(0, 200);
+    let department = String(requestData.department || '').slice(0, 100);
+    
+    // SECURITY: Sanitize all inputs
+    workflowType = sanitizeUnicode(workflowType);
+    metricName = sanitizeUnicode(metricName);
+    department = sanitizeUnicode(department);
     
     if (!workflowType || !metricName || !department) {
       return new Response(
@@ -181,7 +193,10 @@ Format your response as JSON with this structure:
     }
 
     const data = await response.json();
-    const content = data.choices[0].message.content;
+    let content = data.choices[0].message.content;
+    
+    // SECURITY: Filter output
+    content = filterOutput(content);
     
     // Parse the JSON response from the AI
     let insights;

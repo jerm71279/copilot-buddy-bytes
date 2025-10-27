@@ -3,8 +3,6 @@
  * Tracks security events for monitoring and incident response
  */
 
-import { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
-
 export type SecurityEventType = 
   | 'prompt_injection_detected'
   | 'prompt_injection_blocked'
@@ -38,7 +36,7 @@ export interface SecurityEvent {
  * Log a security event to the database
  */
 export async function logSecurityEvent(
-  supabase: SupabaseClient,
+  supabase: any, // Accept any Supabase client version
   event: SecurityEvent
 ): Promise<void> {
   try {
@@ -147,7 +145,7 @@ export function createRateLimitLog(
  * Get recent security events for monitoring
  */
 export async function getRecentSecurityEvents(
-  supabase: SupabaseClient,
+  supabase: any, // Accept any Supabase client version
   customerId?: string,
   severity?: SecuritySeverity,
   limit: number = 100
@@ -180,7 +178,7 @@ export async function getRecentSecurityEvents(
  * Get security event statistics
  */
 export async function getSecurityStatistics(
-  supabase: SupabaseClient,
+  supabase: any, // Accept any Supabase client version
   customerId?: string,
   timeWindowHours: number = 24
 ): Promise<{
@@ -213,9 +211,9 @@ export async function getSecurityStatistics(
     };
   }
 
-  const criticalEvents = data.filter(e => e.severity === 'critical').length;
-  const highEvents = data.filter(e => e.severity === 'high').length;
-  const blockedAttempts = data.filter(e => 
+  const criticalEvents = data.filter((e: any) => e.severity === 'critical').length;
+  const highEvents = data.filter((e: any) => e.severity === 'high').length;
+  const blockedAttempts = data.filter((e: any) => 
     e.event_type === 'prompt_injection_blocked' || 
     e.event_type === 'tool_call_validation_failed'
   ).length;
@@ -223,7 +221,7 @@ export async function getSecurityStatistics(
   // Count threat types
   const threatCounts: Record<string, number> = {};
   for (const event of data) {
-    const threat = event.threat_details?.injectionType || event.event_type;
+    const threat = (event as any).threat_details?.injectionType || (event as any).event_type;
     threatCounts[threat] = (threatCounts[threat] || 0) + 1;
   }
 
