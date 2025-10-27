@@ -81,13 +81,7 @@ const Portal = () => {
                 </p>
               </div>
             </div>
-            {/* Debug info - remove after testing */}
-            {!profile?.full_name && (
-              <div className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-950 px-3 py-2 rounded">
-                ⚠️ No profile found. Please sign out and sign up with security.admin@oberaconnect.com
-              </div>
-            )}
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
                 <Button 
                   variant="outline" 
                   onClick={() => setSearchOpen(true)}
@@ -213,17 +207,11 @@ const Portal = () => {
             {/* Welcome Section */}
             <div className="mb-8">
               <h2 className="text-3xl font-bold mb-2">
-                Welcome back, {profile?.full_name || "User"}
+                Welcome back{profile?.full_name ? `, ${profile.full_name}` : ''}
               </h2>
               <p className="text-muted-foreground">
                 Access your tools, knowledge, and insights all in one place
               </p>
-              {/* Debug info */}
-              <div className="mt-4 text-xs text-muted-foreground space-y-1">
-                <p>Auth Status: {isAdmin ? "✅ Admin" : "❌ Not Admin"}</p>
-                <p>Tools Loading: {toolsLoading ? "⏳ Loading..." : `✅ Done (${filteredQuickAccessTools.length} tools)`}</p>
-                <p>Admin Tools: {adminToolsLoading ? "⏳ Loading..." : `✅ Done (${filteredAdminTools.length} tools)`}</p>
-              </div>
             </div>
 
             {/* Task Detection Tester - For Validation */}
