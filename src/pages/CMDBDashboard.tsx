@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +22,8 @@ import {
   TrendingUp,
   RefreshCw,
 } from "lucide-react";
-import { toast } from "sonner";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 /**
  * CMDB Dashboard Data Flow
@@ -80,6 +80,8 @@ interface ConfigurationItem {
 
 const CMDBDashboard = () => {
   const navigate = useNavigate();
+  useUserProfile(); // Handles auth redirect
+  const toast = useStandardToast();
   const [loading, setLoading] = useState(true);
   const [cis, setCis] = useState<ConfigurationItem[]>([]);
   const [stats, setStats] = useState({
@@ -94,17 +96,8 @@ const CMDBDashboard = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
 
   useEffect(() => {
-    checkAccess();
-  }, []);
-
-  const checkAccess = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-    await loadCMDBData();
-  };
+    loadCMDBData();
+  }, [filterType, filterStatus]);
 
   const loadCMDBData = async () => {
     try {
@@ -138,7 +131,7 @@ const CMDBDashboard = () => {
       setStats({ total, critical, active, ninjaone_synced, azure_synced });
     } catch (error) {
       console.error("Error loading CMDB data:", error);
-      toast.error("Failed to load CMDB data");
+      toast.loadFailed("CMDB data");
     } finally {
       setLoading(false);
     }
@@ -205,10 +198,8 @@ const CMDBDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-
-        {/* Floating Add CI Button - Partially Hidden */}
+    <DashboardLayout>
+      {/* Floating Add CI Button - Partially Hidden */}
         <Button
           onClick={() => navigate("/cmdb/add")}
           className="fixed -right-8 hover:right-0 transition-all duration-300 rounded-l-lg rounded-r-none shadow-lg z-50 px-4 py-6 bg-primary hover:bg-primary/90"
@@ -395,8 +386,7 @@ const CMDBDashboard = () => {
             </CardContent>
           </Card>
         </div>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 };
 

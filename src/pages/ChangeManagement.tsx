@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +18,8 @@ import {
   RefreshCw,
   Database,
 } from "lucide-react";
-import { toast } from "sonner";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { AzureEventGridStatus } from "@/components/AzureEventGridStatus";
 import { ChangeRequestLinkingInfo } from "@/components/ChangeRequestLinkingInfo";
 
@@ -81,6 +81,8 @@ interface ChangeRequest {
 
 const ChangeManagement = () => {
   const navigate = useNavigate();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [loading, setLoading] = useState(true);
   const [seedingTemplates, setSeedingTemplates] = useState(false);
   const [changes, setChanges] = useState<ChangeRequest[]>([]);
@@ -94,17 +96,8 @@ const ChangeManagement = () => {
   });
 
   useEffect(() => {
-    checkAccess();
+    loadChangeData();
   }, []);
-
-  const checkAccess = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-    await loadChangeData();
-  };
 
   const loadChangeData = async () => {
     try {
@@ -130,7 +123,7 @@ const ChangeManagement = () => {
       setStats({ total, pending, approved, scheduled, completed, failed });
     } catch (error) {
       console.error("Error loading change data:", error);
-      toast.error("Failed to load change requests");
+      toast.loadFailed("change requests");
     } finally {
       setLoading(false);
     }
@@ -167,29 +160,13 @@ const ChangeManagement = () => {
   };
 
   const seedTemplates = async () => {
+    if (!customerId) return;
     try {
       setSeedingTemplates(true);
       toast.info("Initializing change request templates...");
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("You must be logged in");
-        return;
-      }
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) {
-        toast.error("User profile not found");
-        return;
-      }
-
       const { data, error } = await supabase.functions.invoke("seed-change-templates", {
-        body: { customer_id: profile.customer_id },
+        body: { customer_id: customerId },
       });
 
       if (error) throw error;
@@ -212,30 +189,8 @@ const ChangeManagement = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="container mx-auto px-4 pb-16 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <DashboardNavigation
-          title="Change Management"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "CMDB Dashboard", path: "/cmdb" },
-            { name: "Onboarding Dashboard", path: "/onboarding" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
-
-        {/* Main Content */}
+    <DashboardLayout>
+      {/* Main Content */}
         <div className="grid gap-6 mb-8">
           {/* Info Card */}
           <ChangeRequestLinkingInfo />
@@ -399,8 +354,7 @@ const ChangeManagement = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

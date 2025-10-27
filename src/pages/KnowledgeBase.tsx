@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -31,9 +32,8 @@ export default function KnowledgeBase() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="mb-8">
+    <DashboardLayout>
+      <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Knowledge Insights</h1>
           <p className="text-muted-foreground mb-6">
             Searchable insights from training videos and uploaded content
@@ -130,7 +130,6 @@ export default function KnowledgeBase() {
             })
           )}
         </div>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }
