@@ -9,6 +9,16 @@ import {
   detectOpportunities,
   detectAllPatterns 
 } from '../_shared/patternDetection.ts';
+import {
+  sanitizeUnicode,
+  detectPromptInjection,
+  sanitizeIndirectContent,
+  addInputDelimiters,
+  filterOutput,
+  validateToolCall,
+  createSecureSystemPrompt,
+  trackThreat,
+} from '../_shared/promptSecurity.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -131,7 +141,7 @@ serve(async (req) => {
     
     // Validate input
     const validatedInput = assistantRequestSchema.parse(requestBody);
-    const { 
+    let { 
       department, 
       query, 
       conversationHistory = [], 
@@ -140,12 +150,11 @@ serve(async (req) => {
     } = validatedInput;
 
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-
     if (!lovableApiKey) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Get authorization header and authenticate user
+    // Get authorization header and authenticate user FIRST
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       throw new Error("No authorization header");
@@ -153,6 +162,35 @@ serve(async (req) => {
 
     // Use shared auth module for authentication and customer context
     const { supabase, userId, customerId } = await getAuthContext(authHeader);
+
+    // SECURITY: Sanitize Unicode and detect prompt injection AFTER auth
+    query = sanitizeUnicode(query);
+    department = sanitizeUnicode(department);
+    
+    const injectionCheck = detectPromptInjection(query);
+    if (!injectionCheck.isValid) {
+      console.warn(`Prompt injection detected from user ${userId}: ${injectionCheck.threat}`);
+      
+      // Track suspicious activity
+      const allowed = trackThreat(userId, injectionCheck.threat || 'unknown');
+      if (!allowed) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Too many suspicious requests. Please contact support.',
+            code: 'RATE_LIMITED'
+          }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      return new Response(
+        JSON.stringify({ 
+          error: 'Your request contains suspicious content. Please rephrase and try again.',
+          threat: injectionCheck.threat
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     const { data: userProfile } = await supabase
       .from("user_profiles")
@@ -345,13 +383,15 @@ serve(async (req) => {
       }
     }
 
-    // Build knowledge context from articles
+    // Build knowledge context from articles - SANITIZE to prevent indirect injection
     let knowledgeContext = "";
     if (knowledgeArticles && knowledgeArticles.length > 0) {
       knowledgeContext = "\n\n## Available Knowledge Base:\n" + 
-        knowledgeArticles.map(article => 
-          `### ${article.title} (${article.knowledge_type})\n${article.content.substring(0, 500)}...\n`
-        ).join("\n");
+        knowledgeArticles.map(article => {
+          const safeTitle = sanitizeIndirectContent(article.title, 100);
+          const safeContent = sanitizeIndirectContent(article.content, 500);
+          return `### ${safeTitle} (${article.knowledge_type})\n${safeContent}...\n`;
+        }).join("\n");
     }
 
     // Get MCP server and tools for this department
@@ -401,13 +441,10 @@ serve(async (req) => {
     };
 
     // System prompt based on department configuration or fallback
-    let systemPrompt = deptConfig?.system_prompt || systemPrompts[department] || "You are a helpful AI assistant.";
+    let baseSystemPrompt = deptConfig?.system_prompt || systemPrompts[department] || "You are a helpful AI assistant.";
     
-    // Append knowledge context to system prompt
-    if (knowledgeContext) {
-      systemPrompt += knowledgeContext;
-      systemPrompt += "\n\nUse the above knowledge base to answer questions accurately. Reference specific articles when relevant.";
-    }
+    // SECURITY: Create secure system prompt with delimiters and anti-injection rules
+    let systemPrompt = createSecureSystemPrompt(baseSystemPrompt, knowledgeContext);
 
     // PHASE 4: Add global insights and feedback to system prompt
     if (globalFeedback && globalFeedback.length > 0) {
@@ -434,11 +471,12 @@ serve(async (req) => {
       systemPrompt += "When relevant to the user's query, proactively mention these insights and recommendations.\n";
     }
 
-    // Build messages array using enhanced query with context
+    // Build messages array using enhanced query with delimiters
+    const userQueryWithDelimiters = addInputDelimiters(enhancedQuery);
     const messages = [
       { role: "system", content: systemPrompt },
       ...conversationHistory,
-      { role: "user", content: enhancedQuery }
+      { role: "user", content: userQueryWithDelimiters }
     ];
 
     // Call Lovable AI with tool calling enabled
@@ -481,6 +519,33 @@ serve(async (req) => {
     const aiData = await aiResponse.json();
     const assistantMessage = aiData.choices[0].message;
 
+    // SECURITY: Validate tool calls if present
+    if (assistantMessage.tool_calls && assistantMessage.tool_calls.length > 0) {
+      for (const toolCall of assistantMessage.tool_calls) {
+        const validation = validateToolCall(
+          toolCall.function.name,
+          JSON.parse(toolCall.function.arguments || '{}'),
+          userId,
+          customerId
+        );
+        
+        if (!validation.isValid) {
+          console.error(`Tool call validation failed: ${validation.error}`);
+          return new Response(
+            JSON.stringify({ 
+              error: 'Invalid tool parameters detected',
+              details: validation.error
+            }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+    }
+
+    // SECURITY: Filter output to prevent data exfiltration
+    let responseContent = assistantMessage.content || '';
+    responseContent = filterOutput(responseContent);
+
     // Store conversation history
     let conversationIds: string[] = [];
     try {
@@ -499,7 +564,7 @@ serve(async (req) => {
           department,
           conversation_id: userId,
           role: "assistant",
-          content: assistantMessage.content || "Response generated",
+          content: responseContent, // Use filtered content
           tool_calls: assistantMessage.tool_calls,
         },
       ]).select('id');
@@ -548,14 +613,14 @@ serve(async (req) => {
       // Return response with tool execution info
       return new Response(
         JSON.stringify({
-          response: assistantMessage.content || `I've analyzed your request using ${toolName}. Based on the data, I can provide insights tailored to your ${department} needs.`,
+          response: responseContent || `I've analyzed your request using ${toolName}. Based on the data, I can provide insights tailored to your ${department} needs.`,
           toolCalled: toolName,
           toolArgs,
           contextInjected,
           conversationHistory: [
             ...conversationHistory,
             { role: "user", content: query },
-            { role: "assistant", content: assistantMessage.content || "Analysis complete." }
+            { role: "assistant", content: responseContent || "Analysis complete." }
           ]
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -565,12 +630,12 @@ serve(async (req) => {
     // Return regular response with context info
     return new Response(
       JSON.stringify({
-        response: assistantMessage.content,
+        response: responseContent,
         contextInjected,
         conversationHistory: [
           ...conversationHistory,
           { role: "user", content: query },
-          { role: "assistant", content: assistantMessage.content }
+          { role: "assistant", content: responseContent }
         ]
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }

@@ -1,5 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  sanitizeUnicode,
+  detectPromptInjection,
+  sanitizeIndirectContent,
+  addInputDelimiters,
+  filterOutput,
+  createSecureSystemPrompt,
+  trackThreat,
+} from '../_shared/promptSecurity.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,7 +36,7 @@ serve(async (req) => {
       );
     }
     
-    const query = String(requestData.query || '').slice(0, 5000);
+    let query = String(requestData.query || '').slice(0, 5000);
     const conversationId = String(requestData.conversationId || '').slice(0, 100);
     const customerId = String(requestData.customerId || '').slice(0, 100);
     const userId = String(requestData.userId || '').slice(0, 100);
@@ -35,6 +44,33 @@ serve(async (req) => {
     if (!query) {
       return new Response(
         JSON.stringify({ error: 'Query is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // SECURITY: Sanitize Unicode and detect prompt injection
+    query = sanitizeUnicode(query);
+    
+    const injectionCheck = detectPromptInjection(query);
+    if (!injectionCheck.isValid && userId) {
+      console.warn(`Prompt injection detected from user ${userId}: ${injectionCheck.threat}`);
+      
+      const allowed = trackThreat(userId, injectionCheck.threat || 'unknown');
+      if (!allowed) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Too many suspicious requests. Please contact support.',
+            code: 'RATE_LIMITED'
+          }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      return new Response(
+        JSON.stringify({ 
+          error: 'Your request contains suspicious content. Please rephrase and try again.',
+          threat: injectionCheck.threat
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -113,13 +149,15 @@ serve(async (req) => {
       .order("created_at", { ascending: true })
       .limit(10);
 
-    // Build context from knowledge base
+    // Build context from knowledge base - SANITIZE to prevent indirect injection
     let knowledgeContext = "";
     if (relevantArticles && relevantArticles.length > 0) {
       knowledgeContext = "\n\nRelevant Knowledge Base Articles:\n";
       relevantArticles.forEach((article) => {
-        knowledgeContext += `\n[${article.article_type.toUpperCase()}] ${article.title}\n`;
-        knowledgeContext += `${article.content.substring(0, 500)}...\n`;
+        const safeTitle = sanitizeIndirectContent(article.title, 100);
+        const safeContent = sanitizeIndirectContent(article.content, 500);
+        knowledgeContext += `\n[${article.article_type.toUpperCase()}] ${safeTitle}\n`;
+        knowledgeContext += `${safeContent}...\n`;
       });
     }
 
@@ -143,11 +181,8 @@ serve(async (req) => {
       }
     }
 
-    // Build conversation history
-    const messages: any[] = [
-      {
-        role: "system",
-        content: `You are an intelligent AI assistant integrated with a comprehensive knowledge base and workflow automation system. Your role is to:
+    // Build conversation history with secure system prompt
+    const basePrompt = `You are an intelligent AI assistant integrated with a comprehensive knowledge base and workflow automation system. Your role is to:
 
 1. Answer questions using the provided knowledge base context and workflow performance data
 2. Generate actionable insights based on patterns you observe in both knowledge articles and workflow executions
@@ -162,10 +197,12 @@ When generating insights:
 - Reference knowledge base articles and workflow patterns when applicable
 - Identify opportunities for process improvement and workflow automation
 - Suggest when workflow insights should become documented best practices
-- Recommend when manual processes could be automated as workflows
+- Recommend when manual processes could be automated as workflows`;
 
-${knowledgeContext}`,
-      },
+    const secureSystemPrompt = createSecureSystemPrompt(basePrompt, knowledgeContext);
+    
+    const messages: any[] = [
+      { role: "system", content: secureSystemPrompt }
     ];
 
     // Add conversation history
@@ -176,8 +213,8 @@ ${knowledgeContext}`,
       });
     }
 
-    // Add current query
-    messages.push({ role: "user", content: query });
+    // Add current query with delimiters
+    messages.push({ role: "user", content: addInputDelimiters(query) });
 
     // Step 4: Call Lovable AI with knowledge context
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -205,7 +242,10 @@ ${knowledgeContext}`,
     }
 
     const aiData = await aiResponse.json();
-    const assistantResponse = aiData.choices[0].message.content;
+    let assistantResponse = aiData.choices[0].message.content;
+    
+    // SECURITY: Filter output to prevent data exfiltration
+    assistantResponse = filterOutput(assistantResponse);
 
     // Step 5: Analyze response for insights
     const insightAnalysisResponse = await fetch(

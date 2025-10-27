@@ -196,6 +196,28 @@ export const sanitizeText = (input: string): string => {
 };
 
 /**
+ * Remove dangerous Unicode characters and control characters
+ * Prevents emoji smuggling and Unicode-based attacks
+ */
+export const sanitizeUnicode = (input: string): string => {
+  let sanitized = input;
+  
+  // Remove zero-width and directional formatting characters
+  sanitized = sanitized.replace(/[\u200B-\u200F\u202A-\u202E\u2060-\u2069]/g, '');
+  
+  // Remove soft hyphens and invisible characters
+  sanitized = sanitized.replace(/[\u00AD\u061C\u115F\u1160\u17B4\u17B5\u180E\uFEFF]/g, '');
+  
+  // Remove control characters
+  sanitized = sanitized.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+  
+  // Normalize Unicode to prevent homoglyph attacks
+  sanitized = sanitized.normalize('NFKC');
+  
+  return sanitized;
+};
+
+/**
  * Encode data for use in URL parameters
  */
 export const encodeForUrl = (data: Record<string, any>): string => {
