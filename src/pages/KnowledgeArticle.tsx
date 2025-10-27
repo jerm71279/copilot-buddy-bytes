@@ -6,14 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Edit, History, Download, Sparkles } from "lucide-react";
-import { toast } from "sonner";
-import Navigation from "@/components/Navigation";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 export default function KnowledgeArticle() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useStandardToast();
   const [article, setArticle] = useState<any>(null);
   const [versions, setVersions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +48,7 @@ export default function KnowledgeArticle() {
       }
     } catch (error) {
       console.error("Error loading article:", error);
-      toast.error("Failed to load article");
+      toast.loadFailed("article");
     } finally {
       setIsLoading(false);
     }
@@ -91,29 +92,26 @@ export default function KnowledgeArticle() {
 
   if (isLoading) {
     return (
-      <>
-        <Navigation />
+      <DashboardLayout>
         <PageContainer className="max-w-4xl">
           <LoadingSpinner message="Loading article..." />
         </PageContainer>
-      </>
+      </DashboardLayout>
     );
   }
 
   if (!article) {
     return (
-      <>
-        <Navigation />
+      <DashboardLayout>
         <PageContainer className="max-w-4xl">
           <p>Article not found</p>
         </PageContainer>
-      </>
+      </DashboardLayout>
     );
   }
 
   return (
-    <>
-      <Navigation />
+    <DashboardLayout showDashboardNavigation={false}>
       <PageContainer className="max-w-4xl">
         {/* Header */}
         <div className="mb-6">
@@ -210,6 +208,6 @@ export default function KnowledgeArticle() {
           </Card>
         )}
       </PageContainer>
-    </>
+    </DashboardLayout>
   );
 }

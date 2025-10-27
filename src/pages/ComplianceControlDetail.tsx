@@ -1,17 +1,16 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Shield, FileText, CheckCircle2 } from "lucide-react";
-import { toast } from "sonner";
 import { LinkTray } from "@/components/LinkTray";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface Control {
   id: string;
@@ -41,6 +40,7 @@ interface EvidenceFile {
 export default function ComplianceControlDetail() {
   const { frameworkId, controlId } = useParams();
   const navigate = useNavigate();
+  const toast = useStandardToast();
   const [control, setControl] = useState<Control | null>(null);
   const [framework, setFramework] = useState<Framework | null>(null);
   const [evidenceFiles, setEvidenceFiles] = useState<EvidenceFile[]>([]);
@@ -86,7 +86,7 @@ export default function ComplianceControlDetail() {
       setEvidenceFiles(evidenceData || []);
     } catch (error) {
       console.error('Error loading control details:', error);
-      toast.error('Failed to load control details');
+      toast.loadFailed('control details');
     } finally {
       setIsLoading(false);
     }
@@ -103,58 +103,31 @@ export default function ComplianceControlDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <PageContainer>
-          <LoadingSpinner message="Loading control details..." />
-        </PageContainer>
-      </div>
+      <DashboardLayout>
+        <LoadingSpinner message="Loading control details..." />
+      </DashboardLayout>
     );
   }
 
   if (!control || !framework) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <PageContainer>
-          <EmptyState
-            icon={Shield}
-            title="Control Not Found"
-            description="The requested control could not be found."
-            action={{
-              label: "Go Back",
-              onClick: () => navigate(-1),
-            }}
-          />
-        </PageContainer>
-      </div>
+      <DashboardLayout>
+        <EmptyState
+          icon={Shield}
+          title="Control Not Found"
+          description="The requested control could not be found."
+          action={{
+            label: "Go Back",
+            onClick: () => navigate(-1),
+          }}
+        />
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <PageContainer noPadding>
-        <div className="px-4 py-8">
-        <DashboardNavigation 
-          title="Control Detail"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
-        
+    <DashboardLayout noPadding>
+      <div className="px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -297,7 +270,6 @@ export default function ComplianceControlDetail() {
           </Card>
         </div>
         </div>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 }

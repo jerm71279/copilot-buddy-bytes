@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,10 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Save, Sparkles, Database, FileText } from "lucide-react";
-import { toast } from "sonner";
 import { z } from "zod";
 import { LinkTray } from "@/components/LinkTray";
 import { ChangeRequestTemplateSelector } from "@/components/ChangeRequestTemplateSelector";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 const changeRequestSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(200),
@@ -38,9 +38,10 @@ interface ConfigurationItem {
 
 const ChangeManagementNew = () => {
   const navigate = useNavigate();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [loading, setLoading] = useState(false);
   const [analyzingImpact, setAnalyzingImpact] = useState(false);
-  const [customerId, setCustomerId] = useState<string | null>(null);
   const [cis, setCis] = useState<ConfigurationItem[]>([]);
   const [formData, setFormData] = useState({
     title: "",
@@ -61,24 +62,8 @@ const ChangeManagementNew = () => {
   });
 
   useEffect(() => {
-    loadUserData();
     loadCIs();
   }, []);
-
-  const loadUserData = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
-    }
-  };
 
   const loadCIs = async () => {
     try {
@@ -154,14 +139,7 @@ const ChangeManagementNew = () => {
         return;
       }
 
-      // Get customer_id
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) {
+      if (!customerId) {
         toast.error("User profile not found");
         return;
       }
@@ -169,7 +147,7 @@ const ChangeManagementNew = () => {
       // Create change request
       const insertData: any = {
         ...validatedData,
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         requested_by: user.id,
         affected_ci_ids: formData.affected_ci_ids,
         change_status: "draft",
@@ -185,14 +163,14 @@ const ChangeManagementNew = () => {
 
       if (error || !data) throw error || new Error("Failed to create change request");
 
-      toast.success("Change request created successfully");
+      toast.created("Change request");
       navigate(`/change-management/${data.id}`);
     } catch (error) {
       console.error("Error creating change request:", error);
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else {
-        toast.error("Failed to create change request");
+        toast.saveFailed("change request");
       }
     } finally {
       setLoading(false);
@@ -238,36 +216,26 @@ const ChangeManagementNew = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <DashboardNavigation
-          title="New Change Request"
-          dashboards={[
-            { name: "Change Management", path: "/change-management" },
-            { name: "CMDB Dashboard", path: "/cmdb" },
+    <DashboardLayout>
+      <div className="flex items-center justify-between mb-6">
+        <LinkTray
+          items={[
+            { label: "Change Management", path: "/change-management", icon: FileText },
+            { label: "CMDB", path: "/cmdb", icon: Database },
           ]}
+          maxVisibleItems={2}
         />
-
-        <div className="flex items-center justify-between mb-6">
-          <LinkTray
-            items={[
-              { label: "Change Management", path: "/change-management", icon: FileText },
-              { label: "CMDB", path: "/cmdb", icon: Database },
-            ]}
-            maxVisibleItems={2}
-          />
-          {formData.title && formData.description && formData.affected_ci_ids.length > 0 && (
-            <Button
-              variant="outline"
-              onClick={analyzeImpact}
-              disabled={analyzingImpact}
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              {analyzingImpact ? "Analyzing..." : "Analyze Impact with AI"}
-            </Button>
-          )}
-        </div>
+        {formData.title && formData.description && formData.affected_ci_ids.length > 0 && (
+          <Button
+            variant="outline"
+            onClick={analyzeImpact}
+            disabled={analyzingImpact}
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            {analyzingImpact ? "Analyzing..." : "Analyze Impact with AI"}
+          </Button>
+        )}
+      </div>
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6">
@@ -474,8 +442,7 @@ const ChangeManagementNew = () => {
             </div>
           </div>
         </form>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

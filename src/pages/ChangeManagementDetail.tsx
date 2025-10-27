@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,12 +17,14 @@ import {
   FileText,
   Database,
 } from "lucide-react";
-import { toast } from "sonner";
 import { LinkTray } from "@/components/LinkTray";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 const ChangeManagementDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useStandardToast();
   const [loading, setLoading] = useState(true);
   const [change, setChange] = useState<any>(null);
   const [impactAnalysis, setImpactAnalysis] = useState<any>(null);
@@ -87,7 +87,7 @@ const ChangeManagementDetail = () => {
       }
     } catch (error) {
       console.error("Error loading change data:", error);
-      toast.error("Failed to load change request");
+      toast.loadFailed("change request");
     } finally {
       setLoading(false);
     }
@@ -106,7 +106,7 @@ const ChangeManagementDetail = () => {
       loadChangeData();
     } catch (error) {
       console.error("Error updating status:", error);
-      toast.error("Failed to update status");
+      toast.saveFailed("status update");
     }
   };
 
@@ -125,7 +125,7 @@ const ChangeManagementDetail = () => {
       if (error) throw error;
 
       if (data.success) {
-        toast.success("NinjaOne ticket created successfully");
+        toast.created("NinjaOne ticket");
         loadChangeData();
       } else {
         toast.error(data.error || "Failed to create ticket");
@@ -168,23 +168,16 @@ const ChangeManagementDetail = () => {
 
   if (loading || !change) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <RefreshCw className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <RefreshCw className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <DashboardNavigation
-          title="Change Request Details"
-          dashboards={[
-            { name: "Change Management", path: "/change-management" },
-            { name: "CMDB Dashboard", path: "/cmdb" },
-          ]}
-        />
+    <DashboardLayout>
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -632,8 +625,7 @@ const ChangeManagementDetail = () => {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,10 +13,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Building2, Users, MapPin, Package, History } from "lucide-react";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface CustomerAccount {
   id: string;
@@ -74,13 +74,14 @@ interface ServiceHistory {
 const CustomerAccountDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [loading, setLoading] = useState(true);
   const [account, setAccount] = useState<CustomerAccount | null>(null);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [serviceHistory, setServiceHistory] = useState<ServiceHistory[]>([]);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (id) {
@@ -90,23 +91,14 @@ const CustomerAccountDetail = () => {
 
   const fetchAccountDetails = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
+      if (!customerId) return;
 
       // Fetch account details
       const { data: accountData, error: accountError } = await supabase
         .from("customer_accounts")
         .select("*")
         .eq("id", id)
-        .eq("customer_id", profile.customer_id)
+        .eq("customer_id", customerId)
         .maybeSingle();
 
       if (accountError) throw accountError;
@@ -117,7 +109,7 @@ const CustomerAccountDetail = () => {
         .from("customer_contacts")
         .select("*")
         .eq("account_id", id)
-        .eq("customer_id", profile.customer_id);
+        .eq("customer_id", customerId);
 
       setContacts(contactsData || []);
 
@@ -126,7 +118,7 @@ const CustomerAccountDetail = () => {
         .from("customer_sites")
         .select("*")
         .eq("account_id", id)
-        .eq("customer_id", profile.customer_id);
+        .eq("customer_id", customerId);
 
       setSites(sitesData || []);
 
@@ -135,7 +127,7 @@ const CustomerAccountDetail = () => {
         .from("customer_assets")
         .select("*")
         .eq("account_id", id)
-        .eq("customer_id", profile.customer_id);
+        .eq("customer_id", customerId);
 
       setAssets(assetsData || []);
 
@@ -144,17 +136,13 @@ const CustomerAccountDetail = () => {
         .from("customer_service_history")
         .select("*")
         .eq("account_id", id)
-        .eq("customer_id", profile.customer_id)
+        .eq("customer_id", customerId)
         .order("service_date", { ascending: false });
 
       setServiceHistory(historyData || []);
     } catch (error) {
       console.error("Error fetching account details:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load customer account details",
-        variant: "destructive",
-      });
+      toast.loadFailed("customer account details");
     } finally {
       setLoading(false);
     }
@@ -162,32 +150,22 @@ const CustomerAccountDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <PageContainer>
-          <LoadingSpinner message="Loading..." />
-        </PageContainer>
-      </div>
+      <DashboardLayout>
+        <LoadingSpinner message="Loading..." />
+      </DashboardLayout>
     );
   }
 
   if (!account) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <PageContainer>
-          <p className="text-muted-foreground text-center">Account not found</p>
-        </PageContainer>
-      </div>
+      <DashboardLayout>
+        <p className="text-muted-foreground text-center">Account not found</p>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <PageContainer>
+    <DashboardLayout>
         <Button
           variant="ghost"
           onClick={() => navigate("/customers")}
@@ -450,8 +428,7 @@ const CustomerAccountDetail = () => {
             </Card>
           </TabsContent>
         </Tabs>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 };
 
