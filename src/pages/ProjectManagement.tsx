@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ProjectService } from "@/services/projectService";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,14 +65,8 @@ const ProjectManagement = () => {
 
       if (!profile?.customer_id) return;
 
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .eq("customer_id", profile.customer_id)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setProjects(data || []);
+      const data = await ProjectService.getProjectsByCustomer(profile.customer_id);
+      setProjects(data);
     } catch (error) {
       console.error("Error fetching projects:", error);
       toast({
@@ -97,16 +92,12 @@ const ProjectManagement = () => {
 
       if (!profile?.customer_id) return;
 
-      const { error } = await supabase.from("projects").insert([
-        {
-          customer_id: profile.customer_id,
-          project_number: "",
-          ...newProject,
-          budget_amount: parseFloat(newProject.budget_amount) || null,
-        },
-      ]);
-
-      if (error) throw error;
+      await ProjectService.createProject({
+        customer_id: profile.customer_id,
+        project_number: "",
+        ...newProject,
+        budget_amount: parseFloat(newProject.budget_amount) || null,
+      });
 
       toast({
         title: "Success",

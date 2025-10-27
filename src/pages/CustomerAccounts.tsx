@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { CustomerAccountService } from "@/services/customerAccountService";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -81,14 +82,8 @@ const CustomerAccounts = () => {
 
       if (!profile?.customer_id) return;
 
-      const { data, error } = await supabase
-        .from("customer_accounts")
-        .select("*")
-        .eq("customer_id", profile.customer_id)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setAccounts(data || []);
+      const data = await CustomerAccountService.getAccountsByCustomer(profile.customer_id);
+      setAccounts(data);
     } catch (error) {
       console.error("Error fetching accounts:", error);
       toast({
@@ -114,15 +109,11 @@ const CustomerAccounts = () => {
 
       if (!profile?.customer_id) return;
 
-      const { error } = await supabase.from("customer_accounts").insert([
-        {
-          customer_id: profile.customer_id,
-          account_number: "",
-          ...newAccount,
-        },
-      ]);
-
-      if (error) throw error;
+      await CustomerAccountService.createAccount({
+        customer_id: profile.customer_id,
+        account_number: "",
+        ...newAccount,
+      });
 
       toast({
         title: "Success",
