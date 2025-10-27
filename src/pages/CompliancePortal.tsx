@@ -9,7 +9,7 @@ import MCPServerStatus from "@/components/MCPServerStatus";
 import { useComplianceData } from "@/hooks/useComplianceData";
 import { complianceStatCards } from "@/lib/complianceConfig";
 import { ComplianceTabContent } from "@/components/compliance/ComplianceTabContent";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/shared/PageHeader";
 
 export default function CompliancePortal() {
@@ -17,7 +17,7 @@ export default function CompliancePortal() {
   const { frameworks, evidenceFiles, reports, isLoading, stats } = useComplianceData();
 
   return (
-    <PageContainer>
+    <DashboardLayout>
       <PageHeader
         title="Compliance Management"
         description="Track compliance frameworks and evidence collection"
@@ -110,6 +110,6 @@ export default function CompliancePortal() {
           <DepartmentAIAssistant department="compliance" departmentLabel="Compliance" />
           <MCPServerStatus filterByServerType="compliance" />
         </div>
-    </PageContainer>
+    </DashboardLayout>
   );
 }

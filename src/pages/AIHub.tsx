@@ -4,7 +4,7 @@ import { AIIntegrationInfo } from "@/components/ai/AIIntegrationInfo";
 import { VisionAnalysisCard } from "@/components/ai/VisionAnalysisCard";
 import { CacheMetricsCard } from "@/components/ai/CacheMetricsCard";
 import { aiLevels } from "@/config/aiHubConfig";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import {
   Brain,
   Sparkles,
@@ -14,7 +14,7 @@ import {
 
 const AIHub = () => {
   return (
-    <PageContainer>
+    <DashboardLayout>
       {/* Header */}
         <div className="mb-8 text-center space-y-4">
           <div className="flex items-center justify-center gap-3">
@@ -61,7 +61,7 @@ const AIHub = () => {
             <CacheMetricsCard />
           </div>
         </div>
-    </PageContainer>
+    </DashboardLayout>
   );
 };
 

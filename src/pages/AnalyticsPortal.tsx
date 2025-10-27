@@ -8,7 +8,7 @@ import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { useAnalyticsData } from "@/hooks/useAnalyticsData";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { 
   getAlertSeverityColor,
@@ -40,7 +40,7 @@ export default function AnalyticsPortal() {
   } = useAnalyticsData(customerId, period);
 
   return (
-    <PageContainer>
+    <DashboardLayout>
       <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-4xl font-bold">Analytics Portal</h1>
@@ -237,6 +237,6 @@ export default function AnalyticsPortal() {
           <DepartmentAIAssistant department="analytics" departmentLabel="Analytics" />
           <MCPServerStatus filterByServerType="analytics" />
         </div>
-    </PageContainer>
+    </DashboardLayout>
   );
 }
