@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import { Loader2, Sparkles, Copy, Download } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface Pattern {
   id: string;
@@ -27,7 +28,7 @@ export default function PatternLibrary() {
   const [output, setOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
-  const { toast } = useToast();
+  const toast = useStandardToast();
 
   useEffect(() => {
     fetchPatterns();
@@ -46,11 +47,7 @@ export default function PatternLibrary() {
       setPatterns(data || []);
     } catch (error) {
       console.error('Error fetching patterns:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load patterns",
-        variant: "destructive",
-      });
+      toast.error("Failed to load patterns");
     } finally {
       setIsLoading(false);
     }
@@ -58,11 +55,7 @@ export default function PatternLibrary() {
 
   const executePattern = async () => {
     if (!selectedPattern || !inputText.trim()) {
-      toast({
-        title: "Missing input",
-        description: "Please select a pattern and enter text",
-        variant: "destructive",
-      });
+      toast.error("Please select a pattern and enter text");
       return;
     }
 
@@ -80,17 +73,10 @@ export default function PatternLibrary() {
       if (error) throw error;
 
       setOutput(data.output);
-      toast({
-        title: "Pattern executed",
-        description: `Completed in ${data.executionTime}ms`,
-      });
-    } catch (error) {
+      toast.success(`Pattern executed in ${data.executionTime}ms`);
+    } catch (error: any) {
       console.error('Error executing pattern:', error);
-      toast({
-        title: "Execution failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to execute pattern");
     } finally {
       setIsExecuting(false);
     }
@@ -98,10 +84,7 @@ export default function PatternLibrary() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast({
-      title: "Copied",
-      description: "Content copied to clipboard",
-    });
+    toast.success("Content copied to clipboard");
   };
 
   const downloadOutput = () => {
@@ -143,7 +126,7 @@ export default function PatternLibrary() {
   );
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <DashboardLayout>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
@@ -321,6 +304,6 @@ export default function PatternLibrary() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

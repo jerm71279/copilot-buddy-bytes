@@ -17,58 +17,44 @@ import {
   Clock,
   RefreshCw
 } from "lucide-react";
-import { toast } from "sonner";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 export default function PredictiveInsights() {
   const [selectedType, setSelectedType] = useState<string>("all");
   const queryClient = useQueryClient();
+  const toast = useStandardToast();
+  const { customerId } = useUserProfile();
 
   // Fetch insights
   const { data: insights, isLoading } = useQuery({
-    queryKey: ["ai-insights"],
+    queryKey: ["ai-insights", customerId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer ID");
+      if (!customerId) throw new Error("No customer ID");
 
       const { data, error } = await supabase
         .from("ai_insights" as any)
         .select("*")
-        .eq("customer_id", profile.customer_id)
+        .eq("customer_id", customerId)
         .order("created_at", { ascending: false })
         .limit(50);
 
       if (error) throw error;
       return data;
     },
+    enabled: !!customerId,
   });
 
   // Generate new insights mutation
   const generateInsightsMutation = useMutation({
     mutationFn: async (analysisType: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer ID");
+      if (!customerId) throw new Error("No customer ID");
 
       const { data, error } = await supabase.functions.invoke('predictive-insights', {
         body: { 
           analysisType,
-          customerId: profile.customer_id
+          customerId
         }
       });
 
@@ -76,11 +62,11 @@ export default function PredictiveInsights() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ai-insights"] });
+      queryClient.invalidateQueries({ queryKey: ["ai-insights", customerId] });
       toast.success("AI analysis completed successfully");
     },
     onError: (error: any) => {
-      toast.error(`Analysis failed: ${error.message}`);
+      toast.error(error.message || "Analysis failed");
     },
   });
 
@@ -101,11 +87,11 @@ export default function PredictiveInsights() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ai-insights"] });
+      queryClient.invalidateQueries({ queryKey: ["ai-insights", customerId] });
       toast.success("Insight updated");
     },
     onError: (error: any) => {
-      toast.error(`Failed to update: ${error.message}`);
+      toast.error(error.message || "Failed to update");
     },
   });
 
@@ -160,7 +146,7 @@ export default function PredictiveInsights() {
   const highCount = activeInsights?.filter((i: any) => i.severity === 'high').length || 0;
 
   return (
-    <PageContainer>
+    <DashboardLayout>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">AI Predictive Insights</h1>
@@ -356,6 +342,6 @@ export default function PredictiveInsights() {
           )}
         </CardContent>
       </Card>
-    </PageContainer>
+    </DashboardLayout>
   );
 }

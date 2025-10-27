@@ -10,9 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Edit, Trash2, Package, DollarSign } from 'lucide-react';
-import Navigation from '@/components/Navigation';
-import { PageContainer } from '@/components/shared/PageContainer';
+import { Plus, Edit, Trash2, DollarSign } from 'lucide-react';
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 
 export default function ProductsAdmin() {
   const { products, loading, createProduct, updateProduct, deleteProduct } = useProducts();
@@ -111,239 +110,236 @@ export default function ProductsAdmin() {
   };
 
   return (
-    <>
-      <Navigation />
-      <PageContainer>
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Product Catalog</h1>
-            <p className="text-muted-foreground">Manage products and service offerings</p>
-          </div>
-          <Dialog open={dialogOpen} onOpenChange={(open) => {
-            setDialogOpen(open);
-            if (!open) resetForm();
-          }}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Product
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>{editingProduct ? 'Edit Product' : 'Create Product'}</DialogTitle>
-                <DialogDescription>
-                  {editingProduct ? 'Update product details' : 'Add a new product to the catalog'}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleSubmit}>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="product_code">Product Code</Label>
-                      <Input
-                        id="product_code"
-                        value={formData.product_code}
-                        onChange={(e) => setFormData({ ...formData, product_code: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="product_name">Product Name</Label>
-                      <Input
-                        id="product_name"
-                        value={formData.product_name}
-                        onChange={(e) => setFormData({ ...formData, product_name: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
+    <DashboardLayout>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-4xl font-bold mb-2">Product Catalog</h1>
+          <p className="text-muted-foreground">Manage products and service offerings</p>
+        </div>
+        <Dialog open={dialogOpen} onOpenChange={(open) => {
+          setDialogOpen(open);
+          if (!open) resetForm();
+        }}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Product
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>{editingProduct ? 'Edit Product' : 'Create Product'}</DialogTitle>
+              <DialogDescription>
+                {editingProduct ? 'Update product details' : 'Add a new product to the catalog'}
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    <Label htmlFor="product_code">Product Code</Label>
+                    <Input
+                      id="product_code"
+                      value={formData.product_code}
+                      onChange={(e) => setFormData({ ...formData, product_code: e.target.value })}
                       required
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="category">Category</Label>
-                      <Select
-                        value={formData.category}
-                        onValueChange={(value) => setFormData({ ...formData, category: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="infrastructure">Infrastructure</SelectItem>
-                          <SelectItem value="compliance">Compliance</SelectItem>
-                          <SelectItem value="security">Security</SelectItem>
-                          <SelectItem value="automation">Automation</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="service_tier">Service Tier</Label>
-                      <Select
-                        value={formData.service_tier}
-                        onValueChange={(value) => setFormData({ ...formData, service_tier: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="basic">Basic</SelectItem>
-                          <SelectItem value="professional">Professional</SelectItem>
-                          <SelectItem value="enterprise">Enterprise</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="base_price">Base Price</Label>
-                      <Input
-                        id="base_price"
-                        type="number"
-                        step="0.01"
-                        value={formData.base_price}
-                        onChange={(e) => setFormData({ ...formData, base_price: parseFloat(e.target.value) })}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="billing_frequency">Billing Frequency</Label>
-                      <Select
-                        value={formData.billing_frequency}
-                        onValueChange={(value) => setFormData({ ...formData, billing_frequency: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="monthly">Monthly</SelectItem>
-                          <SelectItem value="annual">Annual</SelectItem>
-                          <SelectItem value="one_time">One Time</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
                   <div>
-                    <Label htmlFor="enabled_features">Enabled Features (comma-separated)</Label>
+                    <Label htmlFor="product_name">Product Name</Label>
                     <Input
-                      id="enabled_features"
-                      value={formData.enabled_features}
-                      onChange={(e) => setFormData({ ...formData, enabled_features: e.target.value })}
-                      placeholder="cmdb_view, ci_tracking, auto_discovery"
+                      id="product_name"
+                      value={formData.product_name}
+                      onChange={(e) => setFormData({ ...formData, product_name: e.target.value })}
+                      required
                     />
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="is_active"
-                      checked={formData.is_active}
-                      onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-                    />
-                    <Label htmlFor="is_active">Active</Label>
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button type="submit">{editingProduct ? 'Update' : 'Create'} Product</Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="category">Category</Label>
+                    <Select
+                      value={formData.category}
+                      onValueChange={(value) => setFormData({ ...formData, category: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="infrastructure">Infrastructure</SelectItem>
+                        <SelectItem value="compliance">Compliance</SelectItem>
+                        <SelectItem value="security">Security</SelectItem>
+                        <SelectItem value="automation">Automation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="service_tier">Service Tier</Label>
+                    <Select
+                      value={formData.service_tier}
+                      onValueChange={(value) => setFormData({ ...formData, service_tier: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="basic">Basic</SelectItem>
+                        <SelectItem value="professional">Professional</SelectItem>
+                        <SelectItem value="enterprise">Enterprise</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="base_price">Base Price</Label>
+                    <Input
+                      id="base_price"
+                      type="number"
+                      step="0.01"
+                      value={formData.base_price}
+                      onChange={(e) => setFormData({ ...formData, base_price: parseFloat(e.target.value) })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="billing_frequency">Billing Frequency</Label>
+                    <Select
+                      value={formData.billing_frequency}
+                      onValueChange={(value) => setFormData({ ...formData, billing_frequency: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="annual">Annual</SelectItem>
+                        <SelectItem value="one_time">One Time</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="enabled_features">Enabled Features (comma-separated)</Label>
+                  <Input
+                    id="enabled_features"
+                    value={formData.enabled_features}
+                    onChange={(e) => setFormData({ ...formData, enabled_features: e.target.value })}
+                    placeholder="cmdb_view, ci_tracking, auto_discovery"
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="is_active"
+                    checked={formData.is_active}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                  />
+                  <Label htmlFor="is_active">Active</Label>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit">{editingProduct ? 'Update' : 'Create'} Product</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Products ({products.length})</CardTitle>
-            <CardDescription>All products in the catalog</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8">Loading products...</div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Tier</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Features</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+      <Card>
+        <CardHeader>
+          <CardTitle>Products ({products.length})</CardTitle>
+          <CardDescription>All products in the catalog</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="text-center py-8">Loading products...</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Code</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Tier</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Features</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {products.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell className="font-mono text-sm">{product.product_code}</TableCell>
+                    <TableCell className="font-medium">{product.product_name}</TableCell>
+                    <TableCell>
+                      <Badge className={getCategoryColor(product.category)}>
+                        {product.category}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getTierColor(product.service_tier)}>
+                        {product.service_tier}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <DollarSign className="h-3 w-3" />
+                        {product.base_price.toFixed(2)}
+                        <span className="text-xs text-muted-foreground">/{product.billing_frequency}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {product.enabled_features?.slice(0, 2).map((feature, idx) => (
+                          <Badge key={idx} variant="outline" className="text-xs">
+                            {feature}
+                          </Badge>
+                        ))}
+                        {product.enabled_features?.length > 2 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{product.enabled_features.length - 2}
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={product.is_active ? 'default' : 'secondary'}>
+                        {product.is_active ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(product)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(product.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {products.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell className="font-mono text-sm">{product.product_code}</TableCell>
-                      <TableCell className="font-medium">{product.product_name}</TableCell>
-                      <TableCell>
-                        <Badge className={getCategoryColor(product.category)}>
-                          {product.category}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getTierColor(product.service_tier)}>
-                          {product.service_tier}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="h-3 w-3" />
-                          {product.base_price.toFixed(2)}
-                          <span className="text-xs text-muted-foreground">/{product.billing_frequency}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {product.enabled_features?.slice(0, 2).map((feature, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
-                              {feature}
-                            </Badge>
-                          ))}
-                          {product.enabled_features?.length > 2 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{product.enabled_features.length - 2}
-                            </Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={product.is_active ? 'default' : 'secondary'}>
-                          {product.is_active ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(product)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(product.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-      </PageContainer>
-    </>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </DashboardLayout>
   );
 }
