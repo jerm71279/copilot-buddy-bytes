@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
 import { Play, CheckCircle, AlertCircle, LayoutDashboard, FileText, Database } from "lucide-react";
 import { LinkTray } from "@/components/LinkTray";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 export default function TestWorkflowEvidence() {
-  const { toast } = useToast();
+  const showToast = useStandardToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<any>(null);
 
@@ -32,16 +31,11 @@ export default function TestWorkflowEvidence() {
       console.log('Function response:', data);
       setResult(data);
 
-      toast({
-        title: "Success",
-        description: `Generated evidence for ${data.evidence_generated} workflows`,
-      });
+      showToast.success(`Generated evidence for ${data.evidence_generated} workflows`);
     } catch (error) {
       console.error('Error generating evidence:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to generate evidence",
-        variant: "destructive"
+      showToast.error("Error", { 
+        description: error instanceof Error ? error.message : "Failed to generate evidence" 
       });
     } finally {
       setIsGenerating(false);
@@ -49,10 +43,9 @@ export default function TestWorkflowEvidence() {
   };
 
   return (
-    <>
-      <Navigation />
-      <PageContainer>
-        <h1 className="text-3xl font-bold mb-6">Test Workflow Evidence Generation</h1>
+    <DashboardLayout showDashboardNavigation={false}>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Test Workflow Evidence Generation</h1>
 
         <LinkTray
           items={[
@@ -110,7 +103,7 @@ export default function TestWorkflowEvidence() {
             )}
           </CardContent>
         </Card>
-      </PageContainer>
-    </>
+      </div>
+    </DashboardLayout>
   );
 }

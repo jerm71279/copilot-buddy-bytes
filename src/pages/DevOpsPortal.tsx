@@ -1,17 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Bug, Code } from "lucide-react";
-import Navigation from "@/components/Navigation";
 import { ToolCard } from "@/components/devops/ToolCard";
 import { DocumentationCard } from "@/components/devops/DocumentationCard";
 import { testingTools, developmentTools, documentationResources } from "@/lib/devopsConfig";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const DevOpsPortal = () => {
 
   return (
-    <>
-      <Navigation />
-      <PageContainer>
+    <DashboardLayout showDashboardNavigation={false}>
+      <div className="space-y-6">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             DevOps Portal
@@ -61,8 +59,8 @@ const DevOpsPortal = () => {
             ))}
           </CardContent>
         </Card>
-      </PageContainer>
-    </>
+      </div>
+    </DashboardLayout>
   );
 };
 

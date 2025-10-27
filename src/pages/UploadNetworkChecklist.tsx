@@ -1,35 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, Upload } from "lucide-react";
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 export default function UploadNetworkChecklist() {
   const navigate = useNavigate();
+  const { customerId, isLoading: profileLoading } = useUserProfile();
+  const showToast = useStandardToast();
   const [isUploading, setIsUploading] = useState(false);
 
   const handleUploadChecklist = async () => {
+    if (!customerId) {
+      showToast.error("Customer profile not found");
+      return;
+    }
+
     setIsUploading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast.error("You must be logged in");
-        return;
-      }
-
-      // Get customer_id
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) {
-        toast.error("Customer profile not found");
+        showToast.error("You must be logged in");
         return;
       }
 
@@ -382,7 +377,7 @@ This checklist is organized into **5 distinct phases** that can be executed sequ
       const { error: insertError } = await supabase
         .from('knowledge_articles')
         .insert({
-          customer_id: profile.customer_id,
+          customer_id: customerId,
           title: 'SOC Network Discovery & Installation Planning Checklist',
           content: checklistContent,
           article_type: 'guide',
@@ -393,20 +388,23 @@ This checklist is organized into **5 distinct phases** that can be executed sequ
 
       if (insertError) throw insertError;
 
-      toast.success("Network discovery & installation checklist uploaded to Knowledge Base!");
+      showToast.success("Network discovery & installation checklist uploaded to Knowledge Base!");
       navigate("/knowledge");
     } catch (error) {
       console.error("Error uploading checklist:", error);
-      toast.error("Failed to upload checklist");
+      showToast.saveFailed("checklist");
     } finally {
       setIsUploading(false);
     }
   };
 
+  if (profileLoading) {
+    return <DashboardLayout showDashboardNavigation={false}><div className="flex items-center justify-center min-h-[400px]">Loading...</div></DashboardLayout>;
+  }
+
   return (
-    <>
-      <Navigation />
-      <PageContainer className="max-w-2xl">
+    <DashboardLayout showDashboardNavigation={false}>
+      <div className="max-w-2xl mx-auto space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Upload Network Discovery Checklist (Modular & Phased)</CardTitle>
@@ -456,7 +454,7 @@ This checklist is organized into **5 distinct phases** that can be executed sequ
             </div>
           </CardContent>
         </Card>
-      </PageContainer>
-    </>
+      </div>
+    </DashboardLayout>
   );
 }

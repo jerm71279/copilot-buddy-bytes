@@ -12,10 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { toast } from "sonner";
 import { ArrowLeft, Plus, Building2, FileText, TrendingUp, Star, Calendar } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface Vendor {
   id: string;
@@ -61,12 +61,13 @@ interface Performance {
 export default function VendorDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { customerId, isLoading: profileLoading } = useUserProfile();
+  const showToast = useStandardToast();
   const [vendor, setVendor] = useState<Vendor | null>(null);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [performance, setPerformance] = useState<Performance[]>([]);
   const [loading, setLoading] = useState(true);
   const [isContractDialogOpen, setIsContractDialogOpen] = useState(false);
-  const [customerId, setCustomerId] = useState<string | null>(null);
 
   const [newContract, setNewContract] = useState({
     contract_name: "",
@@ -81,32 +82,10 @@ export default function VendorDetail() {
   });
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  useEffect(() => {
     if (customerId && id) {
       fetchVendorDetails();
     }
   }, [customerId, id]);
-
-  const fetchUserProfile = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
-    }
-  };
 
   const fetchVendorDetails = async () => {
     try {
@@ -125,7 +104,7 @@ export default function VendorDetail() {
       setPerformance(performanceData);
     } catch (error) {
       console.error("Error fetching vendor details:", error);
-      toast.error("Failed to load vendor details");
+      showToast.loadFailed("vendor details");
     } finally {
       setLoading(false);
     }
@@ -152,7 +131,7 @@ export default function VendorDetail() {
         created_by: user.id,
       });
 
-      toast.success("Contract created successfully");
+      showToast.created("Contract");
       setIsContractDialogOpen(false);
       setNewContract({
         contract_name: "",
@@ -168,7 +147,7 @@ export default function VendorDetail() {
       fetchVendorDetails();
     } catch (error) {
       console.error("Error creating contract:", error);
-      toast.error("Failed to create contract");
+      showToast.saveFailed("contract");
     }
   };
 
@@ -184,36 +163,25 @@ export default function VendorDetail() {
     return <Badge variant={variants[status] || "default"}>{status}</Badge>;
   };
 
-  if (loading) {
+  if (profileLoading || loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <DashboardNavigation />
-        <main className="container mx-auto p-6">
-          <div className="text-center">Loading...</div>
-        </main>
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">Loading...</div>
+      </DashboardLayout>
     );
   }
 
   if (!vendor) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <DashboardNavigation />
-        <main className="container mx-auto p-6">
-          <div className="text-center">Vendor not found</div>
-        </main>
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">Vendor not found</div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <main className="container mx-auto p-6 space-y-6">
+    <DashboardLayout>
+      <div className="space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" onClick={() => navigate("/vendors")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -494,7 +462,7 @@ export default function VendorDetail() {
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
