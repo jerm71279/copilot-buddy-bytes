@@ -83,8 +83,8 @@ const ComplianceRoadmap = () => {
         return;
       }
       
-      const stageCount = rebuildData?.stageTemplates || 0;
-      const milestoneCount = rebuildData?.milestoneTemplates || 0;
+      const stageCount = rebuildData?.inserted?.stageTemplates ?? rebuildData?.stageTemplates ?? 0;
+      const milestoneCount = rebuildData?.inserted?.milestoneTemplates ?? rebuildData?.milestoneTemplates ?? 0;
       
       // Auto-sanitize after rebuild
       const { data: sanitizeData, error: sanitizeError } = await supabase.functions.invoke('template-maintenance', {

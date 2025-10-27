@@ -189,148 +189,180 @@ Deno.serve(async (req) => {
     let stagesInserted = 0;
     let milestonesInserted = 0;
 
+    const failures: Array<{ framework_id: string; phase: string; error: unknown }> = [];
+
     for (const fw of frameworks ?? []) {
-      // Remove any existing templates for this framework to ensure a true rebuild
-      const { data: existingStages, error: exSErr } = await supabase
-        .from('compliance_roadmap_stage_templates')
-        .select('id')
-        .eq('framework_id', fw.id);
-      if (exSErr) throw exSErr;
-
-      if ((existingStages?.length ?? 0) > 0) {
-        const stageIds = existingStages!.map((s: { id: string }) => s.id);
-        // Delete milestone templates first due to FK
-        const { error: delMErr } = await supabase
-          .from('compliance_roadmap_milestone_templates')
-          .delete()
-          .in('stage_template_id', stageIds);
-        if (delMErr) throw delMErr;
-
-        // Now delete stage templates
-        const { error: delSErr } = await supabase
+      try {
+        // Remove any existing templates for this framework to ensure a true rebuild
+        const { data: existingStages, error: exSErr } = await supabase
           .from('compliance_roadmap_stage_templates')
-          .delete()
+          .select('id')
           .eq('framework_id', fw.id);
-        if (delSErr) throw delSErr;
-      }
+        if (exSErr) throw { phase: 'fetch_existing_stage_templates', error: exSErr };
 
-      // Insert 3 standard stage templates
-      const stageTemplates = [
-        {
-          framework_id: fw.id,
-          stage_number: 1,
-          stage_name: stripControl('Assessment', 200),
-          stage_description: stripControl('Baseline assessment of current controls and gaps', 2000),
-          stage_type: 'assessment',
-          estimated_duration_days: 7,
-        },
-        {
-          framework_id: fw.id,
-          stage_number: 2,
-          stage_name: stripControl('Implementation', 200),
-          stage_description: stripControl('Implement required controls and processes', 2000),
-          stage_type: 'implementation',
-          estimated_duration_days: 21,
-        },
-        {
-          framework_id: fw.id,
-          stage_number: 3,
-          stage_name: stripControl('Audit Preparation', 200),
-          stage_description: stripControl('Evidence collection, testing, and final readiness', 2000),
-          stage_type: 'audit_prep',
-          estimated_duration_days: 14,
-        },
-      ];
+        if ((existingStages?.length ?? 0) > 0) {
+          const stageIds = existingStages!.map((s: { id: string }) => s.id);
+          // Delete milestone templates first due to FK
+          const { error: delMErr } = await supabase
+            .from('compliance_roadmap_milestone_templates')
+            .delete()
+            .in('stage_template_id', stageIds);
+          if (delMErr) throw { phase: 'delete_milestone_templates', error: delMErr };
 
-      const { data: insertedStages, error: insSErr } = await supabase
-        .from('compliance_roadmap_stage_templates')
-        .insert(stageTemplates)
-        .select('id, stage_number');
-      if (insSErr) throw insSErr;
-      stagesInserted += insertedStages?.length ?? 0;
-
-      // Build milestone templates for each stage
-      for (const st of insertedStages ?? []) {
-        let milestones;
-        if (st.stage_number === 1) {
-          milestones = [
-            {
-              stage_template_id: st.id,
-              framework_id: fw.id,
-              sequence_order: 1,
-              milestone_name: stripControl('Define scope and inventory', 200),
-              milestone_description: stripControl('Define in-scope systems and data; inventory assets', 2000),
-              required_actions: sanitizeTextArray(['Collect system inventory', 'Identify data flows']) ,
-              success_criteria: sanitizeTextArray(['Scope documented', 'Inventory completed']),
-              evidence_required: true,
-            },
-            {
-              stage_template_id: st.id,
-              framework_id: fw.id,
-              sequence_order: 2,
-              milestone_name: stripControl('Gap analysis', 200),
-              milestone_description: stripControl('Analyze controls vs. framework requirements', 2000),
-              required_actions: sanitizeTextArray(['Map controls to requirements']) ,
-              success_criteria: sanitizeTextArray(['Gap report produced']),
-              evidence_required: false,
-            },
-          ];
-        } else if (st.stage_number === 2) {
-          milestones = [
-            {
-              stage_template_id: st.id,
-              framework_id: fw.id,
-              sequence_order: 1,
-              milestone_name: stripControl('Implement controls', 200),
-              milestone_description: stripControl('Roll out prioritized controls and procedures', 2000),
-              required_actions: sanitizeTextArray(['Deploy MFA', 'Harden endpoints']) ,
-              success_criteria: sanitizeTextArray(['Controls operational']),
-              evidence_required: true,
-            },
-            {
-              stage_template_id: st.id,
-              framework_id: fw.id,
-              sequence_order: 2,
-              milestone_name: stripControl('Document policies and SOPs', 200),
-              milestone_description: stripControl('Publish and communicate policies', 2000),
-              required_actions: sanitizeTextArray(['Draft policies', 'Run approvals']) ,
-              success_criteria: sanitizeTextArray(['Policies published']),
-              evidence_required: true,
-            },
-          ];
-        } else {
-          milestones = [
-            {
-              stage_template_id: st.id,
-              framework_id: fw.id,
-              sequence_order: 1,
-              milestone_name: stripControl('Collect evidence', 200),
-              milestone_description: stripControl('Gather artifacts and screenshots', 2000),
-              required_actions: sanitizeTextArray(['Export logs', 'Take screenshots']) ,
-              success_criteria: sanitizeTextArray(['Evidence repository complete']),
-              evidence_required: true,
-            },
-            {
-              stage_template_id: st.id,
-              framework_id: fw.id,
-              sequence_order: 2,
-              milestone_name: stripControl('Internal readiness review', 200),
-              milestone_description: stripControl('Run internal audit and fix gaps', 2000),
-              required_actions: sanitizeTextArray(['Perform testing', 'Remediate findings']) ,
-              success_criteria: sanitizeTextArray(['All critical gaps closed']),
-              evidence_required: false,
-            },
-          ];
+          // Now delete stage templates
+          const { error: delSErr } = await supabase
+            .from('compliance_roadmap_stage_templates')
+            .delete()
+            .eq('framework_id', fw.id);
+          if (delSErr) throw { phase: 'delete_stage_templates', error: delSErr };
         }
 
-        const milestonesWithFw = (milestones as any[]).map((m) => ({ framework_id: fw.id, ...m }));
-        const { data: insM, error: insMErr } = await supabase
-          .from('compliance_roadmap_milestone_templates')
-          .insert(milestonesWithFw)
-          .select('id');
-        if (insMErr) throw insMErr;
-        milestonesInserted += insM?.length ?? 0;
+        // Insert 3 standard stage templates
+        const stageTemplates = [
+          {
+            framework_id: fw.id,
+            stage_number: 1,
+            stage_name: stripControl('Assessment', 200),
+            stage_description: stripControl('Baseline assessment of current controls and gaps', 2000),
+            stage_type: 'assessment',
+            estimated_duration_days: 7,
+          },
+          {
+            framework_id: fw.id,
+            stage_number: 2,
+            stage_name: stripControl('Implementation', 200),
+            stage_description: stripControl('Implement required controls and processes', 2000),
+            stage_type: 'implementation',
+            estimated_duration_days: 21,
+          },
+          {
+            framework_id: fw.id,
+            stage_number: 3,
+            stage_name: stripControl('Audit Preparation', 200),
+            stage_description: stripControl('Evidence collection, testing, and final readiness', 2000),
+            stage_type: 'audit_prep',
+            estimated_duration_days: 14,
+          },
+        ];
+
+        // Final defensive scrub
+        const scrubbedStages = stageTemplates.map((t) => ({
+          ...t,
+          stage_name: stripControl(t.stage_name, 200) || 'Stage',
+          stage_description: stripControl(t.stage_description, 2000),
+          stage_type: stripControl(t.stage_type, 50) || 'assessment',
+        }));
+
+        const { data: insertedStages, error: insSErr } = await supabase
+          .from('compliance_roadmap_stage_templates')
+          .insert(scrubbedStages)
+          .select('id, stage_number');
+        if (insSErr) throw { phase: 'insert_stage_templates', error: insSErr };
+        stagesInserted += insertedStages?.length ?? 0;
+
+        // Build milestone templates for each stage
+        for (const st of insertedStages ?? []) {
+          let milestones;
+          if (st.stage_number === 1) {
+            milestones = [
+              {
+                stage_template_id: st.id,
+                framework_id: fw.id,
+                sequence_order: 1,
+                milestone_name: stripControl('Define scope and inventory', 200),
+                milestone_description: stripControl('Define in-scope systems and data; inventory assets', 2000),
+                required_actions: sanitizeTextArray(['Collect system inventory', 'Identify data flows']) ,
+                success_criteria: sanitizeTextArray(['Scope documented', 'Inventory completed']),
+                evidence_required: true,
+              },
+              {
+                stage_template_id: st.id,
+                framework_id: fw.id,
+                sequence_order: 2,
+                milestone_name: stripControl('Gap analysis', 200),
+                milestone_description: stripControl('Analyze controls vs. framework requirements', 2000),
+                required_actions: sanitizeTextArray(['Map controls to requirements']) ,
+                success_criteria: sanitizeTextArray(['Gap report produced']),
+                evidence_required: false,
+              },
+            ];
+          } else if (st.stage_number === 2) {
+            milestones = [
+              {
+                stage_template_id: st.id,
+                framework_id: fw.id,
+                sequence_order: 1,
+                milestone_name: stripControl('Implement controls', 200),
+                milestone_description: stripControl('Roll out prioritized controls and procedures', 2000),
+                required_actions: sanitizeTextArray(['Deploy MFA', 'Harden endpoints']) ,
+                success_criteria: sanitizeTextArray(['Controls operational']),
+                evidence_required: true,
+              },
+              {
+                stage_template_id: st.id,
+                framework_id: fw.id,
+                sequence_order: 2,
+                milestone_name: stripControl('Document policies and SOPs', 200),
+                milestone_description: stripControl('Publish and communicate policies', 2000),
+                required_actions: sanitizeTextArray(['Draft policies', 'Run approvals']) ,
+                success_criteria: sanitizeTextArray(['Policies published']),
+                evidence_required: true,
+              },
+            ];
+          } else {
+            milestones = [
+              {
+                stage_template_id: st.id,
+                framework_id: fw.id,
+                sequence_order: 1,
+                milestone_name: stripControl('Collect evidence', 200),
+                milestone_description: stripControl('Gather artifacts and screenshots', 2000),
+                required_actions: sanitizeTextArray(['Export logs', 'Take screenshots']) ,
+                success_criteria: sanitizeTextArray(['Evidence repository complete']),
+                evidence_required: true,
+              },
+              {
+                stage_template_id: st.id,
+                framework_id: fw.id,
+                sequence_order: 2,
+                milestone_name: stripControl('Internal readiness review', 200),
+                milestone_description: stripControl('Run internal audit and fix gaps', 2000),
+                required_actions: sanitizeTextArray(['Perform testing', 'Remediate findings']) ,
+                success_criteria: sanitizeTextArray(['All critical gaps closed']),
+                evidence_required: false,
+              },
+            ];
+          }
+
+        const scrubbedMilestones = (milestones as any[]).map((m) => ({
+          framework_id: fw.id,
+          stage_template_id: m.stage_template_id,
+          sequence_order: m.sequence_order,
+          milestone_name: stripControl(m.milestone_name, 200) || 'Milestone',
+          milestone_description: stripControl(m.milestone_description, 2000),
+          required_actions: sanitizeTextArray(m.required_actions),
+          success_criteria: sanitizeTextArray(m.success_criteria),
+          evidence_required: !!m.evidence_required,
+        }));
+
+          const { data: insM, error: insMErr } = await supabase
+            .from('compliance_roadmap_milestone_templates')
+            .insert(scrubbedMilestones)
+            .select('id');
+          if (insMErr) throw { phase: 'insert_milestone_templates', error: insMErr };
+          milestonesInserted += insM?.length ?? 0;
+        }
+      } catch (err) {
+        console.error('template-maintenance rebuild failure', { framework_id: fw.id, err });
+        failures.push({ framework_id: fw.id, phase: (err as any)?.phase || 'unknown', error: (err as any)?.error || err });
       }
+    }
+
+    if (failures.length > 0) {
+      return new Response(
+        JSON.stringify({ ok: false, action, inserted: { stageTemplates: stagesInserted, milestoneTemplates: milestonesInserted }, failures }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     return new Response(
@@ -338,8 +370,17 @@ Deno.serve(async (req) => {
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('template-maintenance error:', error);
-    return new Response(JSON.stringify({ error: String(error) }), {
+    const err = error as any;
+    console.error('template-maintenance error:', err);
+    const payload = {
+      ok: false,
+      message: err?.message || String(error),
+      code: err?.code ?? err?.error?.code ?? null,
+      details: err?.details ?? err?.error?.details ?? null,
+      hint: err?.hint ?? err?.error?.hint ?? null,
+      phase: err?.phase ?? err?.error?.phase ?? null,
+    };
+    return new Response(JSON.stringify(payload), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
