@@ -11,10 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import { Plus, Search, Package, AlertTriangle, TrendingUp } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface InventoryItem {
   id: string;
@@ -31,13 +31,13 @@ interface InventoryItem {
 }
 
 export default function InventoryManagement() {
-  const navigate = useNavigate();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [customerId, setCustomerId] = useState<string | null>(null);
 
   const [newItem, setNewItem] = useState({
     sku: "",
@@ -53,32 +53,10 @@ export default function InventoryManagement() {
   });
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  useEffect(() => {
     if (customerId) {
       fetchInventory();
     }
   }, [customerId]);
-
-  const fetchUserProfile = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
-    }
-  };
 
   const fetchInventory = async () => {
     try {
@@ -164,11 +142,7 @@ export default function InventoryManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <main className="container mx-auto p-6 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Inventory Management</h1>
@@ -395,7 +369,6 @@ export default function InventoryManagement() {
             </Table>
           </CardContent>
         </Card>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

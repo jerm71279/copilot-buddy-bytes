@@ -11,13 +11,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Save, Server } from "lucide-react";
-import { toast } from "sonner";
 import { networkDeviceSchema, sanitizeText } from "@/lib/validation";
 import { z } from "zod";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 const NetworkDeviceNew = () => {
   const navigate = useNavigate();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     device_name: "",
@@ -49,21 +52,14 @@ const NetworkDeviceNew = () => {
         polling_interval: parseInt(formData.polling_interval) || undefined,
       });
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("You must be logged in");
+      if (!customerId) {
+        toast.error("User profile not found");
         return;
       }
 
-      // Get customer_id
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) {
-        toast.error("User profile not found");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("You must be logged in");
         return;
       }
 
@@ -71,7 +67,7 @@ const NetworkDeviceNew = () => {
       const { error } = await supabase
         .from("network_devices")
         .insert({
-          customer_id: profile.customer_id,
+          customer_id: customerId,
           device_name: validatedData.device_name,
           device_type: validatedData.device_type,
           ip_address: validatedData.ip_address,
@@ -104,15 +100,7 @@ const NetworkDeviceNew = () => {
   };
 
   return (
-    <>
-      <Navigation />
-      <DashboardNavigation
-        dashboards={[
-          { name: "Dashboard", path: "/portal" },
-          { name: "Network Monitoring", path: "/network-monitoring" },
-        ]}
-      />
-      <PageContainer>
+    <DashboardLayout>
         <div className="flex items-center gap-4 mb-6">
           <Button
             variant="ghost"
@@ -299,8 +287,7 @@ const NetworkDeviceNew = () => {
             </div>
           </div>
         </form>
-      </PageContainer>
-    </>
+    </DashboardLayout>
   );
 };
 

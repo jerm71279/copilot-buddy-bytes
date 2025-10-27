@@ -1,8 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import Footer from "@/components/Footer";
 import { Shield, Lock, Database, Zap, CheckCircle2, AlertCircle } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -194,29 +193,8 @@ const IntegrationsPage = () => {
     }, 100);
   };
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      
-      <main className="pt-24 pb-16">
-        <div className="container mx-auto px-4">
-          <DashboardNavigation 
-            title="Integrations"
-            dashboards={[
-              { name: "Admin Dashboard", path: "/admin" },
-              { name: "Employee Portal", path: "/portal" },
-              { name: "Analytics Portal", path: "/analytics" },
-              { name: "Compliance Portal", path: "/compliance" },
-              { name: "Change Management", path: "/change-management" },
-              { name: "Executive Dashboard", path: "/dashboard/executive" },
-              { name: "Finance Dashboard", path: "/dashboard/finance" },
-              { name: "HR Dashboard", path: "/dashboard/hr" },
-              { name: "IT Dashboard", path: "/dashboard/it" },
-              { name: "Operations Dashboard", path: "/dashboard/operations" },
-              { name: "Sales Dashboard", path: "/dashboard/sales" },
-              { name: "SOC Dashboard", path: "/dashboard/soc" },
-            ]}
-          />
-        </div>
+    <DashboardLayout>
+      <div className="pt-8">
         {/* Hero Section */}
         <section className="py-16 bg-gradient-primary text-primary-foreground">
           <div className="container mx-auto px-4">
@@ -399,10 +377,10 @@ const IntegrationsPage = () => {
             </Card>
           </div>
         </section>
-      </main>
+      </div>
 
       <Footer />
-    </div>
+    </DashboardLayout>
   );
 };
 

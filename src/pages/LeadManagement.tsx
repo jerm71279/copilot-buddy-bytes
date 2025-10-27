@@ -31,9 +31,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import { Plus, Search, TrendingUp } from "lucide-react";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface Lead {
   id: string;
@@ -50,12 +51,13 @@ interface Lead {
 }
 
 const LeadManagement = () => {
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const { toast } = useToast();
 
   const [newLead, setNewLead] = useState({
     company_name: "",
@@ -73,26 +75,12 @@ const LeadManagement = () => {
 
   const fetchLeads = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
-      const data = await LeadService.getLeadsByCustomer(profile.customer_id);
+      if (!customerId) return;
+      const data = await LeadService.getLeadsByCustomer(customerId);
       setLeads(data);
     } catch (error) {
       console.error("Error fetching leads:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load leads",
-        variant: "destructive",
-      });
+      toast.error("Failed to load leads");
     } finally {
       setLoading(false);
     }
@@ -100,28 +88,16 @@ const LeadManagement = () => {
 
   const handleCreateLead = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
+      if (!customerId) return;
 
       await LeadService.createLead({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         lead_number: "",
         ...newLead,
         estimated_value: parseFloat(newLead.estimated_value) || null,
       });
 
-      toast({
-        title: "Success",
-        description: "Lead created successfully",
-      });
+      toast.success("Lead created successfully");
 
       setIsCreateDialogOpen(false);
       setNewLead({
@@ -136,11 +112,7 @@ const LeadManagement = () => {
       fetchLeads();
     } catch (error) {
       console.error("Error creating lead:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create lead",
-        variant: "destructive",
-      });
+      toast.error("Failed to create lead");
     }
   };
 
@@ -167,11 +139,7 @@ const LeadManagement = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <PageContainer>
+    <DashboardLayout>
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Lead Management</h1>
@@ -360,8 +328,7 @@ const LeadManagement = () => {
             )}
           </CardContent>
         </Card>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 };
 

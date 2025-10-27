@@ -3,14 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 import { LogOut, Server } from "lucide-react";
 import { useDemoMode } from "@/hooks/useDemoMode";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { MCPServerConfig } from "@/components/MCPServerConfig";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PageContainer } from "@/components/shared/PageContainer";
 
 /**
  * MCP Server Dashboard Data Flow
@@ -64,39 +63,8 @@ import { PageContainer } from "@/components/shared/PageContainer";
 const MCPServerDashboard = () => {
   const navigate = useNavigate();
   const isPreviewMode = useDemoMode();
-  const [isLoading, setIsLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState<any>(null);
-  const [userCustomerId, setUserCustomerId] = useState<string>("");
+  const { profile: userProfile, customerId: userCustomerId, isLoading } = useUserProfile();
 
-  useEffect(() => {
-    checkAccess();
-  }, []);
-
-  const checkAccess = async () => {
-    if (isPreviewMode) {
-      setUserProfile({ full_name: "Demo User" });
-      setUserCustomerId("demo-customer");
-      setIsLoading(false);
-      return;
-    }
-
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      navigate("/auth");
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("*, customers(id)")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    setUserProfile(profile);
-    setUserCustomerId(profile?.customer_id || profile?.customers?.id || "");
-    setIsLoading(false);
-  };
 
   const handleSignOut = async () => {
     if (isPreviewMode) {
@@ -112,43 +80,7 @@ const MCPServerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="border-b bg-card" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Server className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold">MCP Server Management</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{userProfile?.full_name}</span>
-            {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
-            <Button onClick={handleSignOut} variant="outline" size="sm">
-              <LogOut className="h-4 w-4 mr-2" />
-              {isPreviewMode ? "Back to Demos" : "Sign Out"}
-            </Button>
-          </div>
-        </div>
-      </nav>
-
-      <PageContainer>
-        <DashboardNavigation 
-          title="MCP Server Management"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-            { name: "MCP Servers", path: "/mcp-servers" },
-          ]}
-        />
+    <DashboardLayout>
 
         <Tabs defaultValue="all" className="space-y-4">
           <div className="bg-card border-b border-border -mx-4 px-4 mb-4">
@@ -206,8 +138,7 @@ const MCPServerDashboard = () => {
             <MCPServerConfig customerId={userCustomerId} />
           </TabsContent>
         </Tabs>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 };
 
