@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Download, FileText, Calendar, Shield } from "lucide-react";
 import { format, subHours } from "date-fns";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { EmptyState } from "@/components/shared/EmptyState";
 
 interface AuditData {
@@ -234,9 +234,8 @@ export default function ComplianceAuditReports() {
   const totalRecords = auditData.reduce((sum, data) => sum + data.count, 0);
 
   return (
-    <PageContainer>
-
-        <DashboardNavigation 
+    <DashboardLayout>
+        <DashboardNavigation
           title="Compliance Audit Reports"
           dashboards={[
             { name: "Admin Dashboard", path: "/admin" },
@@ -417,6 +416,6 @@ export default function ComplianceAuditReports() {
             description='Select a framework and time range, then click "Generate Report" to begin'
           />
         )}
-    </PageContainer>
+    </DashboardLayout>
   );
 }

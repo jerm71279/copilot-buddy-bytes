@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Shield, FileText, CheckCircle2 } from "lucide-react";
 import { LinkTray } from "@/components/LinkTray";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";

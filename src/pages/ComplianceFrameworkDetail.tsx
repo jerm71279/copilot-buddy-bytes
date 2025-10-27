@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowLeft, Shield, CheckCircle, FileText, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
@@ -76,7 +76,7 @@ export default function ComplianceFrameworkDetail() {
 
   if (!framework) {
     return (
-      <PageContainer>
+      <DashboardLayout>
         <EmptyState
           icon={Shield}
           title="Framework not found"
@@ -86,14 +86,13 @@ export default function ComplianceFrameworkDetail() {
             onClick: () => navigate('/compliance'),
           }}
         />
-      </PageContainer>
+      </DashboardLayout>
     );
   }
 
   return (
-    <PageContainer>
-
-        <DashboardNavigation 
+    <DashboardLayout>
+        <DashboardNavigation
           title="Framework Detail"
           dashboards={[
             { name: "Admin Dashboard", path: "/admin" },
@@ -241,6 +240,6 @@ export default function ComplianceFrameworkDetail() {
             description="This framework is configured but doesn't have controls or evidence files yet."
           />
         )}
-    </PageContainer>
+    </DashboardLayout>
   );
 }
