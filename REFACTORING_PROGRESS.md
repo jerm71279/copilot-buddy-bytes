@@ -251,7 +251,7 @@ await BudgetService.createBudget({...});
 - ✅ projectService.ts (Complete - 1 service)
 - ✅ timeTrackingService.ts (Complete - 1 service)
 
-### Pages Progress: 74% (14/19)
+### Pages Progress: 84% (16/19)
 - ✅ BudgetTracking.tsx (100% complete)
 - ✅ ExpenseManagement.tsx (100% complete)
 - ✅ InvoiceManagement.tsx (100% complete)
@@ -266,9 +266,9 @@ await BudgetService.createBudget({...});
 - ✅ WarehouseManagement.tsx (100% complete)
 - ✅ CustomerAccounts.tsx (100% complete)
 - ✅ ProjectManagement.tsx (100% complete)
-- ⏳ VendorManagement.tsx (needs separate service - different table structure)
-- ⏳ VendorDetail.tsx (needs separate service - different table structure)
-- ⏳ TimeTracking.tsx (uses project_time_entries - needs minor adjustments)
+- ✅ VendorManagement.tsx (100% complete - fixed table name to documentation_vendors)
+- ✅ VendorDetail.tsx (100% complete - uses VendorService with contracts/performance)
+- ⏳ TimeTracking.tsx (uses project_time_entries - employee_id mapping needed)
 - ⏳ SharePointSync.tsx (external integration - may not need service)
 - ⏳ SystemValidationDashboard.tsx (aggregation page - may not need service)
 
@@ -323,24 +323,27 @@ await BudgetService.createBudget({...});
 ## 🔍 Next Actions
 
 ### Immediate Next Step:
-Refactored 14/19 pages successfully. Remaining 5 pages:
-1. VendorManagement.tsx (needs new service for 'vendors' table - different from documentation_vendors)
-2. VendorDetail.tsx (needs same 'vendors' service + vendor_contracts, vendor_performance)
-3. TimeTracking.tsx (minor adjustments needed for employee_id vs user_id mapping)
-4. SharePointSync.tsx (external integration - evaluate if service needed)
-5. SystemValidationDashboard.tsx (aggregation/reporting - evaluate if service needed)
+Refactored 16/19 pages successfully (84%). Remaining 3 pages:
+1. TimeTracking.tsx (NOTE: Uses user_id but project_time_entries table uses employee_id - needs mapping)
+2. SharePointSync.tsx (External SharePoint integration - evaluate if service layer needed)
+3. SystemValidationDashboard.tsx (Aggregation/reporting dashboard - may not need dedicated service)
+
+**Recent Fix:** VendorManagement.tsx and VendorDetail.tsx were using non-existent "vendors" table - corrected to use "documentation_vendors" via VendorService.
 
 ---
 
 ## 📈 Success Metrics
 
 ### Code Quality:
-- **Direct DB Queries in Pages:** 19 → 5 remaining (14 refactored - 74%)
-- **Service Coverage:** 0% → 100% (8/8 service files created)
+- **Direct DB Queries in Pages:** 19 → 3 remaining (16 refactored - 84%)
+- **Service Coverage:** 0% → 100% (8/8 service files created, 16 services total)
 - **Type Safety:** Partial → Strong
 - **Error Handling:** Inconsistent → Standardized
 
-**Note:** VendorManagement.tsx and VendorDetail.tsx use different 'vendors' table (not 'documentation_vendors'), need separate service.
+**Fixed Issues:**
+- VendorManagement.tsx and VendorDetail.tsx were querying non-existent "vendors" table
+- Corrected to use "documentation_vendors" table via VendorService
+- Added vendor_contracts and vendor_performance methods to VendorService
 
 ### Maintainability:
 - **Code Duplication:** High → Target: Low

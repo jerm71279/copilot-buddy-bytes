@@ -11,6 +11,10 @@ import { CreateVendorInput, Vendor } from '@/types/vendor';
 type VendorInsert = Database['public']['Tables']['documentation_vendors']['Insert'];
 type VendorUpdate = Database['public']['Tables']['documentation_vendors']['Update'];
 type VendorRow = Database['public']['Tables']['documentation_vendors']['Row'];
+type VendorContract = Database['public']['Tables']['vendor_contracts']['Row'];
+type VendorContractInsert = Database['public']['Tables']['vendor_contracts']['Insert'];
+type VendorPerformance = Database['public']['Tables']['vendor_performance']['Row'];
+type VendorPerformanceInsert = Database['public']['Tables']['vendor_performance']['Insert'];
 
 /**
  * Vendor Service
@@ -91,5 +95,71 @@ export class VendorService {
 
     if (error) throw new Error(`Failed to fetch vendor: ${error.message}`);
     return data as VendorRow | null;
+  }
+
+  // Vendor Contracts Methods
+
+  /**
+   * Create a new vendor contract
+   */
+  static async createContract(input: VendorContractInsert): Promise<VendorContract> {
+    const { data, error } = await supabase
+      .from('vendor_contracts')
+      .insert(input)
+      .select()
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to create contract: ${error.message}`);
+    if (!data) throw new Error('No data returned after creating contract');
+
+    return data;
+  }
+
+  /**
+   * Get all contracts for a vendor
+   */
+  static async getContractsByVendor(vendorId: string, customerId: string): Promise<VendorContract[]> {
+    const { data, error } = await supabase
+      .from('vendor_contracts')
+      .select('*')
+      .eq('vendor_id', vendorId)
+      .eq('customer_id', customerId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw new Error(`Failed to fetch contracts: ${error.message}`);
+    return data || [];
+  }
+
+  // Vendor Performance Methods
+
+  /**
+   * Create a vendor performance evaluation
+   */
+  static async createPerformanceEvaluation(input: VendorPerformanceInsert): Promise<VendorPerformance> {
+    const { data, error } = await supabase
+      .from('vendor_performance')
+      .insert(input)
+      .select()
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to create performance evaluation: ${error.message}`);
+    if (!data) throw new Error('No data returned after creating evaluation');
+
+    return data;
+  }
+
+  /**
+   * Get all performance evaluations for a vendor
+   */
+  static async getPerformanceByVendor(vendorId: string, customerId: string): Promise<VendorPerformance[]> {
+    const { data, error } = await supabase
+      .from('vendor_performance')
+      .select('*')
+      .eq('vendor_id', vendorId)
+      .eq('customer_id', customerId)
+      .order('evaluation_date', { ascending: false });
+
+    if (error) throw new Error(`Failed to fetch performance evaluations: ${error.message}`);
+    return data || [];
   }
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { VendorService } from "@/services/vendorService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -112,37 +113,16 @@ export default function VendorDetail() {
       setLoading(true);
 
       // Fetch vendor
-      const { data: vendorData, error: vendorError } = await supabase
-        .from("vendors" as any)
-        .select("*")
-        .eq("id", id!)
-        .eq("customer_id", customerId!)
-        .maybeSingle();
-
-      if (vendorError) throw vendorError;
+      const vendorData = await VendorService.getVendorById(id!);
       setVendor(vendorData as any);
 
       // Fetch contracts
-      const { data: contractsData, error: contractsError } = await supabase
-        .from("vendor_contracts")
-        .select("*")
-        .eq("vendor_id", id!)
-        .eq("customer_id", customerId!)
-        .order("created_at", { ascending: false });
-
-      if (contractsError) throw contractsError;
-      setContracts(contractsData || []);
+      const contractsData = await VendorService.getContractsByVendor(id!, customerId!);
+      setContracts(contractsData);
 
       // Fetch performance
-      const { data: performanceData, error: performanceError } = await supabase
-        .from("vendor_performance")
-        .select("*")
-        .eq("vendor_id", id!)
-        .eq("customer_id", customerId!)
-        .order("evaluation_date", { ascending: false });
-
-      if (performanceError) throw performanceError;
-      setPerformance(performanceData || []);
+      const performanceData = await VendorService.getPerformanceByVendor(id!, customerId!);
+      setPerformance(performanceData);
     } catch (error) {
       console.error("Error fetching vendor details:", error);
       toast.error("Failed to load vendor details");
@@ -156,7 +136,7 @@ export default function VendorDetail() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !customerId) return;
 
-      const { error } = await supabase.from("vendor_contracts").insert([{
+      await VendorService.createContract({
         customer_id: customerId,
         vendor_id: id!,
         contract_number: '',
@@ -170,9 +150,7 @@ export default function VendorDetail() {
         terms: newContract.terms,
         notes: newContract.notes,
         created_by: user.id,
-      }]);
-
-      if (error) throw error;
+      });
 
       toast.success("Contract created successfully");
       setIsContractDialogOpen(false);

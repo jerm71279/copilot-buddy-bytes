@@ -27,6 +27,10 @@ export type VendorType =
   | 'software' 
   | 'cloud' 
   | 'hardware'
+  | 'supplier'
+  | 'service_provider'
+  | 'manufacturer'
+  | 'distributor'
   | 'other';
 
 export type VendorStatus = 'active' | 'inactive';
@@ -38,6 +42,8 @@ export interface CreateVendorInput {
   documentation_url?: string;
   contact_email?: string;
   contact_phone?: string;
+  address?: string;
+  payment_terms?: string;
   notes?: string;
 }
 

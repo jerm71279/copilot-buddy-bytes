@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { VendorService } from "@/services/vendorService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -78,14 +79,8 @@ export default function VendorManagement() {
   const fetchVendors = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("vendors" as any)
-        .select("*")
-        .eq("customer_id", customerId!)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setVendors((data || []) as any);
+      const data = await VendorService.getVendorsByCustomer(customerId!);
+      setVendors(data as any);
     } catch (error) {
       console.error("Error fetching vendors:", error);
       toast.error("Failed to load vendors");
@@ -99,20 +94,19 @@ export default function VendorManagement() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !customerId) return;
 
-      const { error } = await supabase.from("vendors" as any).insert([{
-        customer_id: customerId,
-        vendor_code: '',
-        vendor_name: newVendor.vendor_name,
-        vendor_type: newVendor.vendor_type,
-        contact_email: newVendor.contact_email,
-        contact_phone: newVendor.contact_phone,
-        address: newVendor.address,
-        payment_terms: newVendor.payment_terms,
-        notes: newVendor.notes,
-        created_by: user.id,
-      }]);
-
-      if (error) throw error;
+      await VendorService.createVendor(
+        {
+          vendor_name: newVendor.vendor_name,
+          vendor_type: newVendor.vendor_type as any,
+          contact_email: newVendor.contact_email,
+          contact_phone: newVendor.contact_phone,
+          address: newVendor.address,
+          payment_terms: newVendor.payment_terms,
+          notes: newVendor.notes,
+        } as any,
+        customerId,
+        user.id
+      );
 
       toast.success("Vendor created successfully");
       setIsCreateDialogOpen(false);
