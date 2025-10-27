@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { BudgetService } from "@/services/financeService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -103,7 +104,7 @@ export default function BudgetTracking() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !customerId) return;
 
-      const { error } = await supabase.from("budgets").insert([{
+      await BudgetService.createBudget({
         customer_id: customerId,
         budget_name: newBudget.budget_name,
         budget_type: newBudget.budget_type,
@@ -114,9 +115,7 @@ export default function BudgetTracking() {
         department: newBudget.department || null,
         notes: newBudget.notes,
         owner_id: user.id,
-      }]);
-
-      if (error) throw error;
+      });
 
       toast.success("Budget created successfully");
       setIsCreateDialogOpen(false);
