@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ExpenseService } from "@/services/financeService";
 import { Button } from "@/components/ui/button";
@@ -12,10 +11,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "sonner";
 import { Plus, Search, Receipt, CreditCard, TrendingUp } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface Expense {
   id: string;
@@ -32,13 +31,13 @@ interface Expense {
 }
 
 export default function ExpenseManagement() {
-  const navigate = useNavigate();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [customerId, setCustomerId] = useState<string | null>(null);
 
   const [newExpense, setNewExpense] = useState({
     category: "",
@@ -51,32 +50,10 @@ export default function ExpenseManagement() {
   });
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  useEffect(() => {
     if (customerId) {
       fetchExpenses();
     }
   }, [customerId]);
-
-  const fetchUserProfile = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
-    }
-  };
 
   const fetchExpenses = async () => {
     try {
@@ -85,7 +62,7 @@ export default function ExpenseManagement() {
       setExpenses(data);
     } catch (error) {
       console.error("Error fetching expenses:", error);
-      toast.error("Failed to load expenses");
+      toast.loadFailed("expenses");
     } finally {
       setLoading(false);
     }
@@ -123,7 +100,7 @@ export default function ExpenseManagement() {
       fetchExpenses();
     } catch (error) {
       console.error("Error creating expense:", error);
-      toast.error("Failed to create expense");
+      toast.saveFailed("expense");
     }
   };
 
@@ -162,12 +139,8 @@ export default function ExpenseManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <main className="container mx-auto p-6 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="flex justify-between items-center">
+    <DashboardLayout className="space-y-6">
+      <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Expense Management</h1>
             <p className="text-muted-foreground">Track and manage employee expenses</p>
@@ -364,7 +337,6 @@ export default function ExpenseManagement() {
             </Table>
           </CardContent>
         </Card>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

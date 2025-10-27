@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { InvoiceService } from "@/services/financeService";
 import { Button } from "@/components/ui/button";
@@ -11,10 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import { Plus, Search, FileText, DollarSign, Calendar } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface Invoice {
   id: string;
@@ -30,13 +29,13 @@ interface Invoice {
 }
 
 export default function InvoiceManagement() {
-  const navigate = useNavigate();
+  const { customerId } = useUserProfile();
+  const toast = useStandardToast();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [customerId, setCustomerId] = useState<string | null>(null);
 
   const [newInvoice, setNewInvoice] = useState({
     client_name: "",
@@ -48,32 +47,10 @@ export default function InvoiceManagement() {
   });
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  useEffect(() => {
     if (customerId) {
       fetchInvoices();
     }
   }, [customerId]);
-
-  const fetchUserProfile = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
-    }
-  };
 
   const fetchInvoices = async () => {
     try {
@@ -82,7 +59,7 @@ export default function InvoiceManagement() {
       setInvoices(data);
     } catch (error) {
       console.error("Error fetching invoices:", error);
-      toast.error("Failed to load invoices");
+      toast.loadFailed("invoices");
     } finally {
       setLoading(false);
     }
@@ -105,7 +82,7 @@ export default function InvoiceManagement() {
         created_by: user.id,
       });
 
-      toast.success("Invoice created successfully");
+      toast.created("Invoice");
       setIsCreateDialogOpen(false);
       setNewInvoice({
         client_name: "",
@@ -118,7 +95,7 @@ export default function InvoiceManagement() {
       fetchInvoices();
     } catch (error) {
       console.error("Error creating invoice:", error);
-      toast.error("Failed to create invoice");
+      toast.saveFailed("invoice");
     }
   };
 
@@ -150,12 +127,8 @@ export default function InvoiceManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <main className="container mx-auto p-6 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="flex justify-between items-center">
+    <DashboardLayout className="space-y-6">
+      <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Invoice Management</h1>
             <p className="text-muted-foreground">Create and manage customer invoices</p>
@@ -347,7 +320,6 @@ export default function InvoiceManagement() {
             </Table>
           </CardContent>
         </Card>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

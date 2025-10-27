@@ -6,12 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Brain, Sparkles, TrendingUp, AlertCircle, Loader2, Send } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 const AIInsightsHub = () => {
   const [query, setQuery] = useState("");
   const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
   const queryClient = useQueryClient();
+  const toast = useStandardToast();
 
   const domains = [
     { id: 'hr', label: 'HR' },
@@ -59,9 +61,9 @@ const AIInsightsHub = () => {
     onError: (error: any) => {
       console.error("Insight generation error:", error);
       if (error.message?.includes("Rate limit")) {
-        toast.error("Rate limit exceeded. Please try again in a moment.");
+        toast.error("Rate limit exceeded", { description: "Please try again in a moment." });
       } else if (error.message?.includes("credits")) {
-        toast.error("AI credits exhausted. Please contact your administrator.");
+        toast.error("AI credits exhausted", { description: "Please contact your administrator." });
       } else {
         toast.error("Failed to generate insight");
       }
@@ -86,10 +88,8 @@ const AIInsightsHub = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        
-        {/* Header */}
+    <PageContainer>
+      {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Brain className="h-8 w-8 text-primary" />
@@ -235,15 +235,14 @@ const AIInsightsHub = () => {
               <CardContent className="pt-6 text-center py-12">
                 <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No Insights Yet</h3>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  Ask your first question above to get AI-powered insights about your data and operations
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </div>
-    </div>
+                 <p className="text-muted-foreground max-w-md mx-auto">
+                   Ask your first question above to get AI-powered insights about your data and operations
+                 </p>
+               </CardContent>
+             </Card>
+           )}
+         </div>
+    </PageContainer>
   );
 };
 

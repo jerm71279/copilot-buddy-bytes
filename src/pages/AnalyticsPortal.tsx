@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,8 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
-import { toast } from "sonner";
 import { useAnalyticsData } from "@/hooks/useAnalyticsData";
+import { PageContainer } from "@/components/shared/PageContainer";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { 
   getAlertSeverityColor,
   getAlertBadgeVariant,
@@ -23,25 +23,7 @@ import { MetricsTabContent } from "@/components/analytics/MetricsTabContent";
 
 export default function AnalyticsPortal() {
   const [period, setPeriod] = useState("daily");
-  const [customerId, setCustomerId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('customer_id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        
-        if (profile?.customer_id) {
-          setCustomerId(profile.customer_id);
-        }
-      }
-    };
-    fetchUser();
-  }, []);
+  const { customerId } = useUserProfile();
 
   const {
     metrics,
@@ -58,9 +40,8 @@ export default function AnalyticsPortal() {
   } = useAnalyticsData(customerId, period);
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="flex items-center justify-between mb-8">
+    <PageContainer>
+      <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-4xl font-bold">Analytics Portal</h1>
             <p className="text-muted-foreground mt-2">
@@ -256,7 +237,6 @@ export default function AnalyticsPortal() {
           <DepartmentAIAssistant department="analytics" departmentLabel="Analytics" />
           <MCPServerStatus filterByServerType="analytics" />
         </div>
-      </main>
-    </div>
+    </PageContainer>
   );
 }
