@@ -6,10 +6,11 @@ import { Progress } from "@/components/ui/progress";
 import { Play, Pause, RefreshCw, Settings, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const ETLPipelineOrchestration = () => {
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const queryClient = useQueryClient();
 
   const { data: pipelines, isLoading } = useQuery({
@@ -36,10 +37,7 @@ const ETLPipelineOrchestration = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['etl-pipelines'] });
-      toast({
-        title: "Pipeline Triggered",
-        description: "ETL pipeline started successfully",
-      });
+      toast.success("ETL pipeline started successfully");
     }
   });
 

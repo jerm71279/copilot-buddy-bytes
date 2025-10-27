@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Shield, Activity, AlertTriangle, Search, Filter, Download, FileWarning, Database, FileText } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useStandardToast } from '@/hooks/useStandardToast';
 import { useNavigate } from 'react-router-dom';
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 
 interface SecurityEvent {
   id: string;
@@ -24,7 +25,7 @@ interface SecurityEvent {
 }
 
 const SIEMDashboard = () => {
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [severityFilter, setSeverityFilter] = useState('all');

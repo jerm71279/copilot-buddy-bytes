@@ -6,12 +6,12 @@ import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { ArrowLeft, FileText, Download, Calendar, Shield, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 interface Finding {
   title?: string;
@@ -176,7 +176,7 @@ function FindingsDisplay({ findings }: { findings: any }) {
 export default function ComplianceReportDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const [report, setReport] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
