@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Save, RefreshCw } from "lucide-react";
-import { toast } from "sonner";
 import { z } from "zod";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 const ciSchema = z.object({
   ci_name: z.string().trim().min(1, "CI name is required").max(200),
@@ -35,6 +35,7 @@ const ciSchema = z.object({
 const CMDBEditItem = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useStandardToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -92,7 +93,7 @@ const CMDBEditItem = () => {
       });
     } catch (error) {
       console.error("Error loading CI:", error);
-      toast.error("Failed to load configuration item");
+      toast.loadFailed("configuration item");
       navigate("/cmdb");
     } finally {
       setLoading(false);
@@ -127,14 +128,14 @@ const CMDBEditItem = () => {
 
       if (error) throw error;
 
-      toast.success("Configuration item updated successfully");
+      toast.updated("Configuration item");
       navigate(`/cmdb/${id}`);
     } catch (error) {
       console.error("Error updating CI:", error);
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else {
-        toast.error("Failed to update configuration item");
+        toast.saveFailed("configuration item");
       }
     } finally {
       setSaving(false);
@@ -147,23 +148,19 @@ const CMDBEditItem = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <RefreshCw className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <DashboardLayout>
+        <LoadingSpinner message="Loading configuration item..." />
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <DashboardNavigation
-          title="Edit Configuration Item"
-          dashboards={[
-            { name: "CMDB Dashboard", path: "/cmdb" },
-            { name: "CI Detail", path: `/cmdb/${id}` },
-          ]}
-        />
+    <DashboardLayout showDashboardNavigation={false}>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Edit Configuration Item</h1>
+          <p className="text-muted-foreground">Update CI details</p>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6">
@@ -406,7 +403,7 @@ const CMDBEditItem = () => {
           </div>
         </form>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

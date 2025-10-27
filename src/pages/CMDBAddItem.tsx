@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Save } from "lucide-react";
-import { toast } from "sonner";
 import { z } from "zod";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 const ciSchema = z.object({
   ci_name: z.string().trim().min(1, "CI name is required").max(200),
@@ -34,6 +34,8 @@ const ciSchema = z.object({
 
 const CMDBAddItem = () => {
   const navigate = useNavigate();
+  const toast = useStandardToast();
+  const { customerId } = useUserProfile();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     ci_name: "",
@@ -63,28 +65,21 @@ const CMDBAddItem = () => {
       // Validate form data
       const validatedData = ciSchema.parse(formData);
 
+      if (!customerId) {
+        toast.error("User profile not found");
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error("You must be logged in");
         return;
       }
 
-      // Get customer_id
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) {
-        toast.error("User profile not found");
-        return;
-      }
-
       // Insert the CI
       const insertData: any = {
         ...validatedData,
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         created_by: user.id,
         updated_by: user.id,
       };
@@ -97,14 +92,14 @@ const CMDBAddItem = () => {
 
       if (error || !data) throw error || new Error("Failed to create configuration item");
 
-      toast.success("Configuration item created successfully");
+      toast.created("Configuration item");
       navigate(`/cmdb/${data.id}`);
     } catch (error) {
       console.error("Error creating CI:", error);
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else {
-        toast.error("Failed to create configuration item");
+        toast.saveFailed("configuration item");
       }
     } finally {
       setLoading(false);
@@ -116,15 +111,12 @@ const CMDBAddItem = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <DashboardNavigation
-          title="Add Configuration Item"
-          dashboards={[
-            { name: "CMDB Dashboard", path: "/cmdb" },
-          ]}
-        />
+    <DashboardLayout showDashboardNavigation={false}>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Add Configuration Item</h1>
+          <p className="text-muted-foreground">Create a new CI in the CMDB</p>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6">
@@ -367,7 +359,7 @@ const CMDBAddItem = () => {
           </div>
         </form>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   GitMerge, 
   AlertTriangle, 
@@ -15,7 +11,10 @@ import {
   Server,
   Network
 } from "lucide-react";
-import { toast } from "sonner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 interface DuplicateGroup {
   matchType: string;
@@ -34,23 +33,15 @@ interface DuplicateGroup {
 }
 
 const CMDBReconciliation = () => {
-  const navigate = useNavigate();
+  const toast = useStandardToast();
+  useUserProfile();
   const [loading, setLoading] = useState(true);
   const [duplicates, setDuplicates] = useState<DuplicateGroup[]>([]);
   const [analyzing, setAnalyzing] = useState(false);
 
   useEffect(() => {
-    checkAccess();
+    analyzeDuplicates();
   }, []);
-
-  const checkAccess = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-    await analyzeDuplicates();
-  };
 
   const analyzeDuplicates = async () => {
     try {
@@ -173,7 +164,7 @@ const CMDBReconciliation = () => {
       }
     } catch (error) {
       console.error("Error analyzing duplicates:", error);
-      toast.error("Failed to analyze duplicates");
+      toast.loadFailed("duplicates analysis");
     } finally {
       setLoading(false);
       setAnalyzing(false);
@@ -230,7 +221,7 @@ const CMDBReconciliation = () => {
       await analyzeDuplicates();
     } catch (error) {
       console.error("Error merging CIs:", error);
-      toast.error("Failed to merge CIs");
+      toast.error("Failed to merge configuration items");
     }
   };
 
@@ -247,25 +238,29 @@ const CMDBReconciliation = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <RefreshCw className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <DashboardLayout>
+        <LoadingSpinner message="Analyzing duplicates..." />
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
-      <main className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="flex justify-end mb-6">
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">CMDB Reconciliation</h1>
+            <p className="text-muted-foreground">Identify and merge duplicate configuration items</p>
+          </div>
           <Button onClick={analyzeDuplicates} disabled={analyzing}>
             <RefreshCw className={`h-4 w-4 mr-2 ${analyzing ? "animate-spin" : ""}`} />
             Re-analyze
           </Button>
         </div>
 
-        <Card className="mb-6">
+        <Card>
           <CardHeader>
-            <CardTitle>CI Reconciliation & Duplicate Detection</CardTitle>
+            <CardTitle>Duplicate Detection Summary</CardTitle>
             <CardDescription>
               Identify and merge duplicate configuration items from multiple sources
             </CardDescription>
@@ -386,8 +381,8 @@ const CMDBReconciliation = () => {
             ))}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 };
 

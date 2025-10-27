@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { BarChart, DollarSign, TrendingUp, TrendingDown, FileText, Download } from "lucide-react";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 export default function FinancialReporting() {
-  const navigate = useNavigate();
-  const [customerId, setCustomerId] = useState<string | null>(null);
+  const toast = useStandardToast();
+  const { customerId } = useUserProfile();
   const [loading, setLoading] = useState(true);
   const [reportPeriod, setReportPeriod] = useState("current_month");
   const [financialData, setFinancialData] = useState({
@@ -22,32 +23,10 @@ export default function FinancialReporting() {
   });
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  useEffect(() => {
     if (customerId) {
       fetchFinancialData();
     }
   }, [customerId, reportPeriod]);
-
-  const fetchUserProfile = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
-    }
-  };
 
   const fetchFinancialData = async () => {
     try {
@@ -90,7 +69,7 @@ export default function FinancialReporting() {
       });
     } catch (error) {
       console.error("Error fetching financial data:", error);
-      toast.error("Failed to load financial data");
+      toast.loadFailed("financial data");
     } finally {
       setLoading(false);
     }
@@ -101,8 +80,8 @@ export default function FinancialReporting() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto p-6 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout>
+      <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Financial Reporting</h1>
@@ -229,7 +208,7 @@ export default function FinancialReporting() {
             </div>
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
