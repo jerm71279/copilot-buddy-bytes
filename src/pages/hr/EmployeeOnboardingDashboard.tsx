@@ -88,11 +88,7 @@ export default function EmployeeOnboardingDashboard() {
         .maybeSingle();
 
       if (!profile?.customer_id) {
-        toast({
-          title: "Setup Required",
-          description: "Please complete your profile setup first.",
-          variant: "destructive"
-        });
+        toast.error("Please complete your profile setup first.");
         setIsLoading(false);
         return;
       }
@@ -119,11 +115,7 @@ export default function EmployeeOnboardingDashboard() {
       setStats({ total, inProgress, completed, overdue });
     } catch (error) {
       console.error('Error loading employee onboardings:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load employee onboardings",
-        variant: "destructive"
-      });
+      toast.error("Failed to load employee onboardings");
     } finally {
       setIsLoading(false);
     }
@@ -148,7 +140,7 @@ export default function EmployeeOnboardingDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PageContainer>
+      <DashboardLayout>
         <DashboardNavigation 
           title="Employee Onboarding"
           dashboards={[
@@ -270,7 +262,7 @@ export default function EmployeeOnboardingDashboard() {
           <DepartmentAIAssistant department="hr" departmentLabel="HR - Employee Onboarding" />
           <MCPServerStatus filterByServerType="hr" />
         </div>
-      </PageContainer>
+      </DashboardLayout>
     </div>
   );
 }

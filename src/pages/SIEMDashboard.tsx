@@ -157,8 +157,7 @@ const SIEMDashboard = () => {
     a.download = `siem-events-${new Date().toISOString()}.csv`;
     a.click();
     
-    toast({
-      title: 'Export Complete',
+    toast.success('Export Complete', {
       description: `Exported ${filteredEvents.length} events`,
     });
   };

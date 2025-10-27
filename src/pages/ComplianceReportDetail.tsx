@@ -194,21 +194,13 @@ export default function ComplianceReportDetail() {
 
       if (error) throw error;
       if (!data) {
-        toast({
-          title: "Error",
-          description: "Report not found",
-          variant: "destructive"
-        });
+        toast.error("Report not found");
         return;
       }
       setReport(data);
     } catch (error) {
       console.error('Error loading report:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load report details",
-        variant: "destructive"
-      });
+      toast.error("Failed to load report details");
     } finally {
       setIsLoading(false);
     }
@@ -230,7 +222,7 @@ export default function ComplianceReportDetail() {
 
   if (!report) {
     return (
-      <PageContainer>
+      <DashboardLayout>
         <EmptyState
           icon={FileText}
           title="Report not found"
@@ -240,12 +232,12 @@ export default function ComplianceReportDetail() {
             onClick: () => navigate('/compliance'),
           }}
         />
-      </PageContainer>
+      </DashboardLayout>
     );
   }
 
   return (
-    <PageContainer>
+    <DashboardLayout>
 
         <DashboardNavigation 
           title="Report Detail"
@@ -339,6 +331,6 @@ export default function ComplianceReportDetail() {
             </Card>
           )}
         </div>
-    </PageContainer>
+    </DashboardLayout>
   );
 }
