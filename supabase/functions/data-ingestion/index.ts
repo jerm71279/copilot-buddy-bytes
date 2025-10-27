@@ -51,7 +51,14 @@ serve(async (req) => {
         }
       })
       .select()
-      .single();
+      .maybeSingle();
+
+    if (!ingested) {
+      return new Response(JSON.stringify({ error: 'Failed to ingest data' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     if (ingestError) {
       console.error('Ingestion error:', ingestError);

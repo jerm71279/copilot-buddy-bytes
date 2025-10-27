@@ -222,7 +222,11 @@ ${videos.map((v, i) => `${i + 1}. [${v.title}](${v.url})`).join('\n')}
         tags: ['network', 'discovery', 'installation', 'checklist', 'AI-enhanced', 'SOC', 'training-based'],
       })
       .select()
-      .single();
+      .maybeSingle();
+
+    if (!checklistArticle) {
+      throw new Error('Failed to create enhanced checklist');
+    }
 
     if (checklistError) {
       console.error('Error creating enhanced checklist:', checklistError);

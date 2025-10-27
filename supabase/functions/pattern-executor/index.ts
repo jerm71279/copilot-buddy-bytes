@@ -60,7 +60,7 @@ serve(async (req) => {
       .from('ai_patterns')
       .select('*')
       .eq('id', patternId)
-      .single();
+      .maybeSingle();
 
     if (patternError || !pattern) {
       return new Response(

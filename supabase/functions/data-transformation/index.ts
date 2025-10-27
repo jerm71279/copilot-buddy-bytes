@@ -38,7 +38,7 @@ serve(async (req) => {
       .select('*')
       .eq('id', rawDataId)
       .eq('customer_id', customerId)
-      .single();
+      .maybeSingle();
 
     if (fetchError || !rawData) {
       return new Response(JSON.stringify({ error: 'Raw data not found' }), {
@@ -95,7 +95,14 @@ serve(async (req) => {
         validation_errors: qualityScore < 80 ? { message: 'Data quality below threshold' } : null
       })
       .select()
-      .single();
+      .maybeSingle();
+
+    if (!transformed) {
+      return new Response(JSON.stringify({ error: 'Failed to transform data' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     if (transformError) {
       console.error('Transformation error:', transformError);

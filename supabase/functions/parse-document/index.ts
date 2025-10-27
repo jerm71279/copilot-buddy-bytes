@@ -69,7 +69,14 @@ Deno.serve(async (req) => {
         tags: [fileExtension || 'document', 'upload']
       })
       .select()
-      .single();
+      .maybeSingle();
+
+    if (!article) {
+      return new Response(
+        JSON.stringify({ error: 'Failed to store document' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (insertError) {
       console.error('Insert error:', insertError);

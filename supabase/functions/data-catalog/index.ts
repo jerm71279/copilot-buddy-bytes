@@ -92,7 +92,14 @@ serve(async (req) => {
           created_by: userId
         })
         .select()
-        .single();
+        .maybeSingle();
+
+      if (!catalogEntry) {
+        return new Response(JSON.stringify({ error: 'Failed to register catalog entry' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
       if (registerError) {
         console.error('Register error:', registerError);

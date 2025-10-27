@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { verifyWebhookSignature } from '../_shared/webhookSignature.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,8 +18,33 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const payload = await req.json();
+    // Get raw request body for signature verification
+    const rawBody = await req.text();
+    const payload = JSON.parse(rawBody);
     console.log('NinjaOne webhook payload:', payload);
+
+    // Optional: Verify webhook signature if secret is configured
+    const webhookSecret = Deno.env.get('NINJAONE_WEBHOOK_SECRET');
+    if (webhookSecret) {
+      const signature = req.headers.get('x-ninjaone-signature');
+      if (!signature) {
+        console.warn('Webhook signature missing but secret is configured');
+        return new Response(
+          JSON.stringify({ error: 'Missing webhook signature' }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const isValid = await verifyWebhookSignature(rawBody, signature, webhookSecret);
+      if (!isValid) {
+        console.error('Invalid webhook signature');
+        return new Response(
+          JSON.stringify({ error: 'Invalid webhook signature' }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      console.log('Webhook signature verified successfully');
+    }
 
     // NinjaOne sends webhooks for ticket updates
     // Payload structure: { event: 'ticket.updated', ticket: {...} }

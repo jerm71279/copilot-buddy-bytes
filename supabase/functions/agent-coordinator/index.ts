@@ -78,7 +78,11 @@ async function sendCoordinationMessage(supabase: any, params: any) {
       priority
     })
     .select()
-    .single();
+    .maybeSingle();
+
+  if (!data) {
+    throw new Error('Failed to create coordination message');
+  }
 
   if (error) throw error;
 
@@ -267,7 +271,7 @@ async function escalateToMultipleDepartments(supabase: any, params: any) {
         priority
       })
       .select()
-      .single();
+      .maybeSingle();
 
     if (data) messages.push(data);
   }
