@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { BookOpen, Play, CheckCircle, Clock, AlertCircle, Shield, AlertTriangle, FileWarning, Database, FileText, Activity } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 interface Playbook {
   id: string;
@@ -39,49 +41,38 @@ interface PlaybookExecution {
 
 export default function ResponsePlaybooks() {
   const navigate = useNavigate();
+  const { customerId } = useUserProfile();
   const [selectedPlaybook, setSelectedPlaybook] = useState<Playbook | null>(null);
 
   const { data: playbooks = [], isLoading: playbooksLoading } = useQuery<Playbook[]>({
-    queryKey: ['response-playbooks'],
+    queryKey: ['response-playbooks', customerId],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser();
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.user?.id)
-        .maybeSingle();
-
       const { data, error } = await supabase
         .from('response_playbooks' as any)
         .select('*')
-        .eq('customer_id', profile?.customer_id)
+        .eq('customer_id', customerId)
         .order('playbook_name');
       
       if (error) throw error;
       return (data || []) as unknown as Playbook[];
-    }
+    },
+    enabled: !!customerId,
   });
 
   const { data: executions = [] } = useQuery<PlaybookExecution[]>({
-    queryKey: ['playbook-executions'],
+    queryKey: ['playbook-executions', customerId],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser();
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.user?.id)
-        .maybeSingle();
-
       const { data, error } = await supabase
         .from('playbook_executions' as any)
         .select('*')
-        .eq('customer_id', profile?.customer_id)
+        .eq('customer_id', customerId)
         .order('created_at', { ascending: false })
         .limit(50);
       
       if (error) throw error;
       return (data || []) as unknown as PlaybookExecution[];
-    }
+    },
+    enabled: !!customerId,
   });
 
   const getAutomationColor = (level: string): any => {
@@ -118,11 +109,15 @@ export default function ResponsePlaybooks() {
   const successfulExecutions = executions.filter(e => e.was_successful).length;
 
   if (playbooksLoading) {
-    return <div className="p-8">Loading playbooks...</div>;
+    return (
+      <DashboardLayout>
+        <div>Loading playbooks...</div>
+      </DashboardLayout>
+    );
   }
 
   return (
-    <div className="p-8 space-y-6">
+    <DashboardLayout>
       {/* SOC Navigation */}
       <div className="flex gap-2 mb-4">
         <Button variant="outline" size="sm" onClick={() => navigate('/dashboard/soc')}>
@@ -353,6 +348,6 @@ export default function ResponsePlaybooks() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </DashboardLayout>
   );
 }

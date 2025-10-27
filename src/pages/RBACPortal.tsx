@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, Users, GitBranch, Clock, FileText, Layout } from "lucide-react";
-import { toast } from "sonner";
 import RoleManagement from "@/components/rbac/RoleManagement";
 import PermissionManagement from "@/components/rbac/PermissionManagement";
 import RoleHierarchy from "@/components/rbac/RoleHierarchy";
@@ -15,10 +14,14 @@ import RoleTemplates from "@/components/rbac/RoleTemplates";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 export default function RBACPortal() {
   const [activeTab, setActiveTab] = useState("roles");
   const queryClient = useQueryClient();
+  const { profile, isLoading: profileLoading } = useUserProfile();
 
   // Check if user has admin permissions
   const { data: isAdmin, isLoading } = useQuery({
@@ -35,109 +38,103 @@ export default function RBACPortal() {
     },
   });
 
-  if (isLoading) {
+  if (isLoading || profileLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
-          <p>Loading...</p>
-        </main>
-      </div>
+      <DashboardLayout>
+        <p>Loading...</p>
+      </DashboardLayout>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-background">
-        <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Access Denied</CardTitle>
-              <CardDescription>
-                You need administrator privileges to access this page.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </main>
-      </div>
+      <DashboardLayout>
+        <Card>
+          <CardHeader>
+            <CardTitle>Access Denied</CardTitle>
+            <CardDescription>
+              You need administrator privileges to access this page.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
-        <div className="mb-8 flex justify-between items-start">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <Shield className="h-8 w-8 text-primary" />
-              <h1 className="text-4xl font-bold">Enhanced RBAC Portal</h1>
-            </div>
-            <p className="text-muted-foreground">
-              Comprehensive role-based access control management with advanced features
-            </p>
+    <DashboardLayout>
+      <div className="mb-8 flex justify-between items-start">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <Shield className="h-8 w-8 text-primary" />
+            <h1 className="text-4xl font-bold">Enhanced RBAC Portal</h1>
           </div>
-          <DashboardSettingsMenu dashboardName="RBAC Portal" />
+          <p className="text-muted-foreground">
+            Comprehensive role-based access control management with advanced features
+          </p>
+        </div>
+        <DashboardSettingsMenu dashboardName="RBAC Portal" />
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <div className="overflow-x-auto">
+          <TabsList className="inline-flex w-auto min-w-full">
+            <TabsTrigger value="roles" className="gap-2">
+              <Users className="h-4 w-4" />
+              Roles
+            </TabsTrigger>
+            <TabsTrigger value="permissions" className="gap-2">
+              <Shield className="h-4 w-4" />
+              Permissions
+            </TabsTrigger>
+            <TabsTrigger value="hierarchy" className="gap-2">
+              <GitBranch className="h-4 w-4" />
+              Hierarchy
+            </TabsTrigger>
+            <TabsTrigger value="temporary" className="gap-2">
+              <Clock className="h-4 w-4" />
+              Temporary
+            </TabsTrigger>
+            <TabsTrigger value="audit" className="gap-2">
+              <FileText className="h-4 w-4" />
+              Audit Log
+            </TabsTrigger>
+            <TabsTrigger value="templates" className="gap-2">
+              <Layout className="h-4 w-4" />
+              Templates
+            </TabsTrigger>
+          </TabsList>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <div className="overflow-x-auto">
-            <TabsList className="inline-flex w-auto min-w-full">
-              <TabsTrigger value="roles" className="gap-2">
-                <Users className="h-4 w-4" />
-                Roles
-              </TabsTrigger>
-              <TabsTrigger value="permissions" className="gap-2">
-                <Shield className="h-4 w-4" />
-                Permissions
-              </TabsTrigger>
-              <TabsTrigger value="hierarchy" className="gap-2">
-                <GitBranch className="h-4 w-4" />
-                Hierarchy
-              </TabsTrigger>
-              <TabsTrigger value="temporary" className="gap-2">
-                <Clock className="h-4 w-4" />
-                Temporary
-              </TabsTrigger>
-              <TabsTrigger value="audit" className="gap-2">
-                <FileText className="h-4 w-4" />
-                Audit Log
-              </TabsTrigger>
-              <TabsTrigger value="templates" className="gap-2">
-                <Layout className="h-4 w-4" />
-                Templates
-              </TabsTrigger>
-            </TabsList>
-          </div>
+        <TabsContent value="roles">
+          <RoleManagement />
+        </TabsContent>
 
-          <TabsContent value="roles">
-            <RoleManagement />
-          </TabsContent>
+        <TabsContent value="permissions">
+          <PermissionManagement />
+        </TabsContent>
 
-          <TabsContent value="permissions">
-            <PermissionManagement />
-          </TabsContent>
+        <TabsContent value="hierarchy">
+          <RoleHierarchy />
+        </TabsContent>
 
-          <TabsContent value="hierarchy">
-            <RoleHierarchy />
-          </TabsContent>
+        <TabsContent value="temporary">
+          <TemporaryPrivileges />
+        </TabsContent>
 
-          <TabsContent value="temporary">
-            <TemporaryPrivileges />
-          </TabsContent>
+        <TabsContent value="audit">
+          <PermissionAuditLog />
+        </TabsContent>
 
-          <TabsContent value="audit">
-            <PermissionAuditLog />
-          </TabsContent>
+        <TabsContent value="templates">
+          <RoleTemplates />
+        </TabsContent>
+      </Tabs>
 
-          <TabsContent value="templates">
-            <RoleTemplates />
-          </TabsContent>
-        </Tabs>
-
-        <div className="grid gap-6 md:grid-cols-2 mt-6">
-          <DepartmentAIAssistant department="rbac" departmentLabel="RBAC Management" />
-          <MCPServerStatus filterByServerType="rbac" />
-        </div>
-      </main>
-    </div>
+      <div className="grid gap-6 md:grid-cols-2 mt-6">
+        <DepartmentAIAssistant department="rbac" departmentLabel="RBAC Management" />
+        <MCPServerStatus filterByServerType="rbac" />
+      </div>
+    </DashboardLayout>
   );
 }

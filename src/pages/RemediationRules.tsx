@@ -11,11 +11,15 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
 import { Plus, Power, PowerOff } from "lucide-react";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 export default function RemediationRules() {
   const queryClient = useQueryClient();
+  const toast = useStandardToast();
+  const { profile, customerId } = useUserProfile();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newRule, setNewRule] = useState({
     rule_name: "",
@@ -45,12 +49,6 @@ export default function RemediationRules() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
       const { data, error } = await supabase
         .from("automated_response_rules")
         .insert({
@@ -59,7 +57,7 @@ export default function RemediationRules() {
           threshold: rule.conditions,
           actions: rule.remediation_actions,
           is_active: rule.is_active,
-          customer_id: profile?.customer_id!,
+          customer_id: customerId!,
           created_by: user.id
         })
         .select()
@@ -99,11 +97,15 @@ export default function RemediationRules() {
   });
 
   if (isLoading) {
-    return <div className="p-8">Loading remediation rules...</div>;
+    return (
+      <DashboardLayout>
+        <div>Loading remediation rules...</div>
+      </DashboardLayout>
+    );
   }
 
   return (
-    <div className="container mx-auto p-8 space-y-6">
+    <DashboardLayout>
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Remediation Rules</h1>
@@ -263,6 +265,6 @@ export default function RemediationRules() {
           </Table>
         </CardContent>
       </Card>
-    </div>
+    </DashboardLayout>
   );
 }

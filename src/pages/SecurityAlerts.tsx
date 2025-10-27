@@ -8,9 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertTriangle, Shield, CheckCircle, XCircle, Clock, TrendingUp, Activity, FileWarning, Database, FileText } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 // Manual type definitions until Supabase types regenerate
 interface SecurityAlert {
@@ -58,6 +60,8 @@ interface SOCMetrics {
 
 export default function SecurityAlerts() {
   const navigate = useNavigate();
+  const toast = useStandardToast();
+  const { customerId } = useUserProfile();
   const [selectedAlert, setSelectedAlert] = useState<SecurityAlert | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState("");
   const queryClient = useQueryClient();
@@ -76,26 +80,18 @@ export default function SecurityAlerts() {
   });
 
   const { data: metrics } = useQuery<SOCMetrics>({
-    queryKey: ['soc-metrics'],
+    queryKey: ['soc-metrics', customerId],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error('Not authenticated');
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.user.id)
-        .maybeSingle();
-
       const { data, error } = await supabase
         .from('soc_metrics_dashboard' as any)
         .select('*')
-        .eq('customer_id', profile?.customer_id)
+        .eq('customer_id', customerId)
         .maybeSingle();
       
       if (error) throw error;
       return (data || {}) as unknown as SOCMetrics;
-    }
+    },
+    enabled: !!customerId,
   });
 
   const acknowledgeAlert = useMutation({
@@ -114,7 +110,7 @@ export default function SecurityAlerts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['security-alerts'] });
-      toast({ title: "Alert acknowledged" });
+      toast.success("Alert acknowledged");
     }
   });
 
@@ -137,7 +133,7 @@ export default function SecurityAlerts() {
       queryClient.invalidateQueries({ queryKey: ['security-alerts'] });
       setSelectedAlert(null);
       setResolutionNotes("");
-      toast({ title: "Alert resolved" });
+      toast.success("Alert resolved");
     }
   });
 
@@ -179,7 +175,7 @@ export default function SecurityAlerts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['security-alerts'] });
-      toast({ title: "Alert escalated to incident" });
+      toast.success("Alert escalated to incident");
     }
   });
 
@@ -210,11 +206,15 @@ export default function SecurityAlerts() {
   };
 
   if (isLoading) {
-    return <div className="p-8">Loading alerts...</div>;
+    return (
+      <DashboardLayout>
+        <div>Loading alerts...</div>
+      </DashboardLayout>
+    );
   }
 
   return (
-    <div className="p-8 space-y-6">
+    <DashboardLayout>
       {/* SOC Navigation */}
       <div className="flex gap-2 mb-4">
         <Button variant="outline" size="sm" onClick={() => navigate('/dashboard/soc')}>
@@ -423,6 +423,6 @@ export default function SecurityAlerts() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </DashboardLayout>
   );
 }
