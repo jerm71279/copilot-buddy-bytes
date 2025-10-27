@@ -10,7 +10,7 @@ import { getQuickActionCards } from "@/lib/adminConfig";
 import { AdminActiveView } from "@/components/admin/AdminActiveView";
 import { AdminQuickActions } from "@/components/admin/AdminQuickActions";
 import { CustomerManagementTable } from "@/components/admin/CustomerManagementTable";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 /**
  * Admin Dashboard Data Flow
@@ -76,7 +76,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <PageContainer className="space-y-8">
+    <DashboardLayout className="space-y-8">
       <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <Users className="h-6 w-6 text-primary" />
@@ -98,7 +98,7 @@ const AdminDashboard = () => {
       <CustomerManagementTable customers={customers} isLoading={isLoading} />
 
       <DepartmentAIAssistant department="admin" departmentLabel="Administration" />
-    </PageContainer>
+    </DashboardLayout>
   );
 };
 

@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Shield, Activity, CheckCircle, AlertTriangle, FileText } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 
 
@@ -135,11 +135,11 @@ const ComplianceDashboard = () => {
   };
 
   if (profileLoading) {
-    return <PageContainer><div className="flex items-center justify-center py-12">Loading...</div></PageContainer>;
+    return <DashboardLayout><div className="flex items-center justify-center py-12">Loading...</div></DashboardLayout>;
   }
 
   return (
-    <PageContainer className="space-y-6">
+    <DashboardLayout className="space-y-6">
       <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Compliance Dashboard</h1>
           <DashboardSettingsMenu dashboardName="Compliance" />
@@ -304,7 +304,7 @@ const ComplianceDashboard = () => {
         department="compliance" 
         departmentLabel="Compliance & GRC" 
       />
-    </PageContainer>
+    </DashboardLayout>
   );
 };
 

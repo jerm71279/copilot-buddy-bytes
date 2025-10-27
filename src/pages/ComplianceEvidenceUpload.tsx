@@ -3,13 +3,13 @@ import { LayoutDashboard } from "lucide-react";
 import EvidenceUpload from "@/components/EvidenceUpload";
 import { LinkTray } from "@/components/LinkTray";
 import { useNavigate } from "react-router-dom";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 export default function ComplianceEvidenceUpload() {
   const navigate = useNavigate();
 
   return (
-    <PageContainer>
+    <DashboardLayout>
 
         <DashboardNavigation 
           title="Evidence Upload"
@@ -37,6 +37,6 @@ export default function ComplianceEvidenceUpload() {
         />
 
         <EvidenceUpload onUploadComplete={() => navigate('/compliance')} />
-    </PageContainer>
+    </DashboardLayout>
   );
 }
