@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useComplianceRoadmap } from "@/hooks/useComplianceRoadmap";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -10,15 +11,15 @@ import { RoadmapStatusBadge } from "@/components/compliance/RoadmapStatusBadge";
 import { calculateOverallProgress, getStageStatistics } from "@/lib/compliance/roadmap-utils";
 import { Plus, Target, TrendingUp, Wrench, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 const ComplianceRoadmap = () => {
   const navigate = useNavigate();
+  const toast = useStandardToast();
   const [selectedFramework, setSelectedFramework] = useState<string>("");
   const [isRebuilding, setIsRebuilding] = useState(false);
   const [isSanitizing, setIsSanitizing] = useState(false);
@@ -192,7 +193,7 @@ const ComplianceRoadmap = () => {
   }
 
   return (
-    <PageContainer>
+    <DashboardLayout>
       <PageHeader
         title="Compliance Roadmap"
         description="Track your journey from assessment to certification"
@@ -364,7 +365,7 @@ const ComplianceRoadmap = () => {
             }}
           />
         )}
-    </PageContainer>
+    </DashboardLayout>
   );
 };
 

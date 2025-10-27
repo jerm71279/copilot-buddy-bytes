@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,11 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Clock, Play, Square, DollarSign, Calendar, TrendingUp } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { Label } from "@/components/ui/label";
 
 const TimeTracking = () => {
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const queryClient = useQueryClient();
   const [isTracking, setIsTracking] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -101,12 +102,12 @@ const TimeTracking = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["time-entries-today"] });
       queryClient.invalidateQueries({ queryKey: ["time-stats-weekly"] });
-      toast({ title: "Time entry saved successfully" });
+      toast.success("Time entry saved successfully");
       setDescription("");
       setHours("");
     },
     onError: () => {
-      toast({ title: "Failed to save time entry", variant: "destructive" });
+      toast.error("Failed to save time entry");
     },
   });
 
@@ -127,7 +128,7 @@ const TimeTracking = () => {
 
   const handleSubmit = () => {
     if (!selectedProject || !description || !hours) {
-      toast({ title: "Please fill in all required fields", variant: "destructive" });
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -144,9 +145,8 @@ const TimeTracking = () => {
   const todayTotal = todayEntries?.reduce((sum, entry) => sum + Number(entry.hours), 0) || 0;
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
+    <DashboardLayout>
+      {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-foreground">Time Tracking</h1>
           <p className="text-muted-foreground">Log billable hours and track project time</p>
@@ -331,8 +331,7 @@ const TimeTracking = () => {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
