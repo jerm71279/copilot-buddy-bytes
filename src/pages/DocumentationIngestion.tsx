@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import { Loader2, AlertCircle, Plus, X, FileText, Settings } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
@@ -194,8 +193,6 @@ export default function DocumentationIngestion() {
           if (status === 404 || lower.includes('no documentation found')) {
             if (selectedVendor.documentation_url) {
               toast.info("No docs found. Ingesting the vendor's default URL, then retrying...");
-                description: "No docs found. Ingesting the vendor’s default URL, then retrying...",
-              });
 
               const { error: ingestError } = await supabase.functions.invoke('ingest-documentation', {
                 body: {
@@ -228,24 +225,15 @@ export default function DocumentationIngestion() {
               return;
             } else {
               toast.error("Please ingest this vendor's docs first, then try again.");
-                description: "Please ingest this vendor’s docs first, then try again.",
-                variant: "destructive",
-              });
               return;
             }
           }
         if (status === 429 || lower.includes('rate limit')) {
           toast.warning("Please wait a moment and try again.");
-            description: "Please wait a moment and try again.",
-            variant: "destructive",
-          });
           return;
         }
         if (status === 402 || lower.includes('payment required')) {
           toast.error("Please add credits to your workspace and retry.");
-            description: "Please add credits to your workspace and retry.",
-            variant: "destructive",
-          });
           return;
         }
         throw error as any;
