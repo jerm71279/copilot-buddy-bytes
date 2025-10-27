@@ -1,4 +1,26 @@
+import { useEffect, useRef } from "react";
+import mermaid from "mermaid";
+
 const ArchitectureDiagram = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "dark",
+      securityLevel: "loose",
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: "basis",
+      },
+    });
+
+    if (containerRef.current) {
+      mermaid.contentLoaded();
+    }
+  }, []);
+
   const mermaidDiagram = `graph TB
     subgraph "Frontend Layer (React + Vite)"
         Landing[Landing Page]
@@ -184,8 +206,8 @@ const ArchitectureDiagram = () => {
 
   return (
     <div className="min-h-screen w-full bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-[95vw] overflow-auto">
-        <div dangerouslySetInnerHTML={{ __html: `<lov-mermaid>${mermaidDiagram}</lov-mermaid>` }} />
+      <div className="w-full max-w-[95vw] overflow-auto" ref={containerRef}>
+        <div className="mermaid">{mermaidDiagram}</div>
       </div>
     </div>
   );
