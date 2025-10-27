@@ -14,7 +14,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowLeft, Building2, Users, MapPin, Package, History } from "lucide-react";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";

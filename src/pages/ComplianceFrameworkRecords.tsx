@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { ArrowLeft, FileText } from "lucide-react";
 import { format } from "date-fns";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { EmptyState } from "@/components/shared/EmptyState";
 
 export default function ComplianceFrameworkRecords() {
@@ -210,9 +210,8 @@ export default function ComplianceFrameworkRecords() {
   };
 
   return (
-    <PageContainer>
-
-        <DashboardNavigation 
+    <DashboardLayout>
+        <DashboardNavigation
           title="Framework Records"
           dashboards={[
             { name: "Admin Dashboard", path: "/admin" },
@@ -296,6 +295,6 @@ export default function ComplianceFrameworkRecords() {
             )}
           </CardContent>
         </Card>
-    </PageContainer>
+    </DashboardLayout>
   );
 }

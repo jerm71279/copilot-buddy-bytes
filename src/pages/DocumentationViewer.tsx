@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, FileText, Download } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import html2pdf from "html2pdf.js";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
