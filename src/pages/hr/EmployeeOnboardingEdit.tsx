@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { ArrowLeft, Save } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { useOnboardingRoles, useOnboardingUsers, useOnboardingTemplates } from "@/hooks/useOnboardingData";
@@ -16,7 +16,7 @@ import { useOnboardingTemplateTasks } from "@/hooks/useOnboardingTemplateTasks";
 export default function EmployeeOnboardingEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const { roles } = useOnboardingRoles();
   const { users } = useOnboardingUsers();
   const { templates } = useOnboardingTemplates();
@@ -93,11 +93,7 @@ export default function EmployeeOnboardingEdit() {
       });
     } catch (error) {
       console.error('Error loading onboarding:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load employee onboarding",
-        variant: "destructive"
-      });
+      toast.error("Failed to load employee onboarding");
     }
   };
 
@@ -106,11 +102,7 @@ export default function EmployeeOnboardingEdit() {
     e.preventDefault();
     
     if (!formData.employee_name || !formData.employee_email) {
-      toast({
-        title: "Validation Error",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -144,19 +136,12 @@ export default function EmployeeOnboardingEdit() {
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Employee demographics updated successfully"
-      });
+      toast.success("Employee demographics updated successfully");
 
       navigate(`/hr/employee-onboarding/${id}`);
     } catch (error) {
       console.error('Error updating onboarding:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update employee demographics",
-        variant: "destructive"
-      });
+      toast.error("Failed to update employee demographics");
     } finally {
       setIsLoading(false);
     }

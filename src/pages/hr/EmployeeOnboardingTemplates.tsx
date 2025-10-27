@@ -10,9 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { Plus, FileText, Edit, Trash2, Users, UserPlus } from "lucide-react";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
@@ -28,7 +28,7 @@ interface Template {
 
 export default function EmployeeOnboardingTemplates() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -68,11 +68,7 @@ export default function EmployeeOnboardingTemplates() {
         .maybeSingle();
 
       if (!profile?.customer_id) {
-        toast({
-          title: "Setup Required",
-          description: "Please complete your profile setup first.",
-          variant: "destructive"
-        });
+        toast.error("Please complete your profile setup first.");
         setIsLoading(false);
         return;
       }
@@ -87,11 +83,7 @@ export default function EmployeeOnboardingTemplates() {
       setTemplates(data || []);
     } catch (error) {
       console.error('Error loading templates:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load templates",
-        variant: "destructive"
-      });
+      toast.error("Failed to load templates");
     } finally {
       setIsLoading(false);
     }
@@ -120,10 +112,7 @@ export default function EmployeeOnboardingTemplates() {
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Template created successfully"
-      });
+      toast.success("Template created successfully");
 
       setIsDialogOpen(false);
       setFormData({
@@ -135,11 +124,7 @@ export default function EmployeeOnboardingTemplates() {
       await loadTemplates();
     } catch (error) {
       console.error('Error creating template:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create template",
-        variant: "destructive"
-      });
+      toast.error("Failed to create template");
     }
   };
 
@@ -154,19 +139,12 @@ export default function EmployeeOnboardingTemplates() {
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Template deleted successfully"
-      });
+      toast.success("Template deleted successfully");
 
       await loadTemplates();
     } catch (error) {
       console.error('Error deleting template:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete template",
-        variant: "destructive"
-      });
+      toast.error("Failed to delete template");
     }
   };
 
@@ -191,25 +169,18 @@ export default function EmployeeOnboardingTemplates() {
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Standard employee onboarding template created with 12 pre-configured tasks"
-      });
+      toast.success("Standard employee onboarding template created with 12 pre-configured tasks");
 
       await loadTemplates();
     } catch (error) {
       console.error('Error creating standard template:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create standard template",
-        variant: "destructive"
-      });
+      toast.error(error instanceof Error ? error.message : "Failed to create standard template");
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <PageContainer>
+      <DashboardLayout>
         <DashboardNavigation 
           title="Employee Onboarding Templates"
           dashboards={[
@@ -362,10 +333,7 @@ export default function EmployeeOnboardingTemplates() {
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        toast({
-                          title: "Coming Soon",
-                          description: "Template editing will be available in a future update"
-                        });
+                        toast.info("Template editing will be available in a future update");
                       }}
                     >
                       <Edit className="h-4 w-4" />
@@ -383,7 +351,7 @@ export default function EmployeeOnboardingTemplates() {
             ))}
           </div>
         )}
-      </PageContainer>
+      </DashboardLayout>
     </div>
   );
 }

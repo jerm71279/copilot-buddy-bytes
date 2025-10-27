@@ -7,14 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { ArrowLeft, Plus } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { useOnboardingRoles, useOnboardingUsers, useOnboardingTemplates } from "@/hooks/useOnboardingData";
 
 export default function EmployeeOnboardingNew() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const [searchParams] = useSearchParams();
   const preselectedTemplateId = searchParams.get('template');
   const { templates } = useOnboardingTemplates();
@@ -50,11 +50,7 @@ export default function EmployeeOnboardingNew() {
     e.preventDefault();
     
     if (!formData.employee_name || !formData.employee_email || !formData.template_id) {
-      toast({
-        title: "Validation Error",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -104,19 +100,12 @@ export default function EmployeeOnboardingNew() {
 
       if (onboardingError || !onboarding) throw onboardingError || new Error("Failed to create employee onboarding");
 
-      toast({
-        title: "Success",
-        description: "Employee onboarding created successfully"
-      });
+      toast.success("Employee onboarding created successfully");
 
       navigate(`/hr/employee-onboarding/${onboarding.id}`);
     } catch (error) {
       console.error('Error creating onboarding:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create employee onboarding",
-        variant: "destructive"
-      });
+      toast.error("Failed to create employee onboarding");
     } finally {
       setIsLoading(false);
     }

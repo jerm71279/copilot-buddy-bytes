@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { ArrowLeft, Mail, Phone, Calendar, Building, Briefcase, User, MapPin, Home, Pencil, CheckCircle2, Circle, Clock } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { calculateProgress, syncOnboardingProgress } from "@/hooks/useOnboardingProgress";
@@ -59,7 +59,7 @@ interface OnboardingTask {
 export default function EmployeeOnboardingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const { copyTasks } = useOnboardingTemplateTasks();
   const [onboarding, setOnboarding] = useState<Onboarding | null>(null);
   const [template, setTemplate] = useState<Template | null>(null);
@@ -139,11 +139,7 @@ export default function EmployeeOnboardingDetail() {
       }
     } catch (error) {
       console.error('Error loading onboarding:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load employee onboarding details",
-        variant: "destructive"
-      });
+      toast.error("Failed to load employee onboarding details");
     } finally {
       setIsLoading(false);
     }
@@ -173,19 +169,12 @@ export default function EmployeeOnboardingDetail() {
       );
       await syncOnboardingProgress(id, updatedTasks);
 
-      toast({
-        title: "Success",
-        description: "Task status updated"
-      });
+      toast.success("Task status updated");
 
       loadOnboarding();
     } catch (error) {
       console.error('Error updating task:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update task status",
-        variant: "destructive"
-      });
+      toast.error("Failed to update task status");
     }
   };
 
