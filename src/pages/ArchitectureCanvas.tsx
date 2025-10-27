@@ -316,8 +316,9 @@ graph TB
   );
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-[98vw] mx-auto">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+        <div className="max-w-[98vw] mx-auto">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">OberaConnect System Architecture</h1>
@@ -399,6 +400,7 @@ graph TB
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

@@ -72,12 +72,13 @@ const AIImageGenerator = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">AI Image Generator</h1>
-          <p className="text-muted-foreground">
-            Create stunning images from text descriptions using AI
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-2">AI Image Generator</h1>
+            <p className="text-muted-foreground">
+              Create stunning images from text descriptions using AI
           </p>
         </div>
 
@@ -175,6 +176,7 @@ const AIImageGenerator = () => {
               )}
             </div>
           </Card>
+        </div>
         </div>
       </div>
     </div>
