@@ -44,6 +44,8 @@ bash scripts/run-validation.sh
 
 **Best Practice**: Run `npm run validate` immediately after making code changes in Lovable to catch issues early, before committing.
 
+**Automatic CI/CD**: All validations also run automatically via GitHub Actions on every push.
+
 ## What Gets Checked
 
 From **AUTOMATIC_VALIDATION_PROCEDURES.md**:
