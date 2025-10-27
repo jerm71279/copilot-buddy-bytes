@@ -1,12 +1,8 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { 
   Play, 
   CheckCircle2, 
@@ -24,9 +20,8 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
-import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
-import MCPServerStatus from "@/components/MCPServerStatus";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface ValidationResult {
   category: string;
@@ -42,7 +37,7 @@ interface TestResult {
 }
 
 export default function SystemValidationDashboard() {
-  const { toast } = useToast();
+  const showToast = useStandardToast();
   const [isRunning, setIsRunning] = useState(false);
   const [results, setResults] = useState<ValidationResult[]>([]);
   const [overallProgress, setOverallProgress] = useState(0);
@@ -270,17 +265,15 @@ export default function SystemValidationDashboard() {
         0
       );
 
-      toast({
-        title: "Validation Complete",
-        description: `${passedTests}/${totalTests} tests passed`,
-        variant: passedTests === totalTests ? "default" : "destructive"
-      });
+      if (passedTests === totalTests) {
+        showToast.success("Validation Complete", { description: `${passedTests}/${totalTests} tests passed` });
+      } else {
+        showToast.error("Validation Complete", { description: `${passedTests}/${totalTests} tests passed` });
+      }
 
     } catch (error) {
-      toast({
-        title: "Validation Error",
-        description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive"
+      showToast.error("Validation Error", { 
+        description: error instanceof Error ? error.message : "Unknown error" 
       });
     } finally {
       setIsRunning(false);
@@ -320,32 +313,15 @@ export default function SystemValidationDashboard() {
   };
 
   return (
-    <>
-      <Navigation />
-      <PageContainer>
-        <DashboardNavigation 
-          title="System Validation Dashboard"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
-        
-        <div className="mb-8 flex justify-between items-center">
-          <p className="text-muted-foreground">
-            Comprehensive validation and testing of all system components
-          </p>
-          <DashboardSettingsMenu dashboardName="System Validation" />
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">System Validation Dashboard</h1>
+            <p className="text-muted-foreground mt-2">
+              Comprehensive validation and testing of all system components
+            </p>
+          </div>
         </div>
 
         <Card className="mb-6">

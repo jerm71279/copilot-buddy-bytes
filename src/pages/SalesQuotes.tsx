@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { QuoteService } from "@/services/salesService";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import {
   Dialog,
   DialogContent,
@@ -30,9 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
 import { Plus, Search, FileText } from "lucide-react";
-import { PageContainer } from "@/components/shared/PageContainer";
 
 interface Quote {
   id: string;
@@ -47,12 +46,13 @@ interface Quote {
 }
 
 const SalesQuotes = () => {
+  const { customerId, isLoading: profileLoading } = useUserProfile();
+  const showToast = useStandardToast();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const { toast } = useToast();
 
   const [newQuote, setNewQuote] = useState({
     quote_name: "",
@@ -64,62 +64,41 @@ const SalesQuotes = () => {
   });
 
   useEffect(() => {
-    fetchQuotes();
-  }, []);
+    if (customerId) {
+      fetchQuotes();
+    }
+  }, [customerId]);
 
   const fetchQuotes = async () => {
+    if (!customerId) return;
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
-      const data = await QuoteService.getQuotesByCustomer(profile.customer_id);
+      const data = await QuoteService.getQuotesByCustomer(customerId);
       setQuotes(data);
     } catch (error) {
       console.error("Error fetching quotes:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load quotes",
-        variant: "destructive",
-      });
+      showToast.loadFailed("quotes");
     } finally {
       setLoading(false);
     }
   };
 
   const handleCreateQuote = async () => {
+    if (!customerId) return;
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
-
       await QuoteService.createQuote({
-        customer_id: profile.customer_id,
+        customer_id: customerId,
         quote_number: "",
         created_by: user.id,
         ...newQuote,
         total_amount: parseFloat(newQuote.total_amount),
       });
 
-      toast({
-        title: "Success",
-        description: "Quote created successfully",
-      });
-
+      showToast.created("Quote");
       setIsCreateDialogOpen(false);
       setNewQuote({
         quote_name: "",
@@ -132,11 +111,7 @@ const SalesQuotes = () => {
       fetchQuotes();
     } catch (error) {
       console.error("Error creating quote:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create quote",
-        variant: "destructive",
-      });
+      showToast.saveFailed("quote");
     }
   };
 
@@ -165,12 +140,12 @@ const SalesQuotes = () => {
   const totalQuoteValue = quotes.reduce((sum, quote) => sum + (quote.total_amount || 0), 0);
   const acceptedQuotes = quotes.filter((q) => q.quote_status === "accepted");
 
+  if (profileLoading || loading) {
+    return <DashboardLayout><div className="flex items-center justify-center min-h-[400px]">Loading...</div></DashboardLayout>;
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <PageContainer>
+    <DashboardLayout>
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Sales Quotes</h1>
@@ -346,8 +321,7 @@ const SalesQuotes = () => {
             )}
           </CardContent>
         </Card>
-      </PageContainer>
-    </div>
+    </DashboardLayout>
   );
 };
 

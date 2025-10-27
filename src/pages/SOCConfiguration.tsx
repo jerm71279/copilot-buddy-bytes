@@ -1,23 +1,22 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckSquare, FileDown, ChevronDown, CheckCircle2, Circle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ReactMarkdown from "react-markdown";
 import { useCustomerAuth } from "@/hooks/useCustomerAuth";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 export default function SOCConfiguration() {
-  const { toast } = useToast();
+  const showToast = useStandardToast();
   const { customerId, isLoading: authLoading } = useCustomerAuth();
   
   const [projectName, setProjectName] = useState("");
@@ -64,20 +63,12 @@ export default function SOCConfiguration() {
 
   const handleGenerate = async () => {
     if (!projectName.trim()) {
-      toast({
-        title: "Project name required",
-        description: "Please enter a project name",
-        variant: "destructive",
-      });
+      showToast.error("Project name required", { description: "Please enter a project name" });
       return;
     }
 
     if (selectedVendors.length === 0) {
-      toast({
-        title: "Select vendors",
-        description: "Please select at least one vendor",
-        variant: "destructive",
-      });
+      showToast.error("Select vendors", { description: "Please select at least one vendor" });
       return;
     }
 
@@ -98,19 +89,16 @@ export default function SOCConfiguration() {
 
       if (data.success) {
         setChecklist(data.checklist);
-        toast({
-          title: "Checklist generated",
-          description: `Generated using ${data.vendorDocs} vendor documentation articles`,
+        showToast.success("Checklist generated", { 
+          description: `Generated using ${data.vendorDocs} vendor documentation articles` 
         });
       } else {
         throw new Error(data.error || 'Generation failed');
       }
     } catch (error: any) {
       console.error('Generation error:', error);
-      toast({
-        title: "Generation failed",
-        description: error.message || "Failed to generate checklist",
-        variant: "destructive",
+      showToast.error("Generation failed", { 
+        description: error.message || "Failed to generate checklist" 
       });
     } finally {
       setIsGenerating(false);
@@ -133,18 +121,17 @@ export default function SOCConfiguration() {
 
   if (authLoading || vendorsLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <main className="container mx-auto px-4 py-8 max-w-7xl">
+    <DashboardLayout>
+      <div className="max-w-7xl mx-auto space-y-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
             <CheckSquare className="h-8 w-8 text-primary" />
@@ -417,7 +404,7 @@ export default function SOCConfiguration() {
             </CardContent>
           </Card>
         </div>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
