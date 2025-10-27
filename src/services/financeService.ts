@@ -89,7 +89,206 @@ export class BudgetService {
   }
 }
 
+// Expense types
+type ExpenseInsert = Database['public']['Tables']['expenses']['Insert'];
+type ExpenseUpdate = Database['public']['Tables']['expenses']['Update'];
+type ExpenseRow = Database['public']['Tables']['expenses']['Row'];
+
 /**
- * TODO: Add ExpenseService, InvoiceService, PurchaseOrderService
- * Following the same pattern as BudgetService above
+ * Expense Service
  */
+export class ExpenseService {
+  static async createExpense(input: ExpenseInsert) {
+    const { data, error } = await supabase
+      .from('expenses')
+      .insert([input])
+      .select()
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to create expense: ${error.message}`);
+    if (!data) throw new Error('Failed to create expense: No data returned');
+    
+    return data as ExpenseRow;
+  }
+
+  static async updateExpense(id: string, updates: ExpenseUpdate) {
+    const { data, error } = await supabase
+      .from('expenses')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to update expense: ${error.message}`);
+    if (!data) throw new Error('Expense not found');
+    
+    return data as ExpenseRow;
+  }
+
+  static async deleteExpense(id: string) {
+    const { error } = await supabase
+      .from('expenses')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw new Error(`Failed to delete expense: ${error.message}`);
+  }
+
+  static async getExpensesByCustomer(customerId: string) {
+    const { data, error } = await supabase
+      .from('expenses')
+      .select('*')
+      .eq('customer_id', customerId)
+      .order('expense_date', { ascending: false });
+
+    if (error) throw new Error(`Failed to fetch expenses: ${error.message}`);
+    return data as ExpenseRow[];
+  }
+
+  static async getExpenseById(id: string) {
+    const { data, error } = await supabase
+      .from('expenses')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to fetch expense: ${error.message}`);
+    return data as ExpenseRow | null;
+  }
+}
+
+// Invoice types
+type InvoiceInsert = Database['public']['Tables']['invoices']['Insert'];
+type InvoiceUpdate = Database['public']['Tables']['invoices']['Update'];
+type InvoiceRow = Database['public']['Tables']['invoices']['Row'];
+
+/**
+ * Invoice Service
+ */
+export class InvoiceService {
+  static async createInvoice(input: InvoiceInsert) {
+    const { data, error } = await supabase
+      .from('invoices')
+      .insert([input])
+      .select()
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to create invoice: ${error.message}`);
+    if (!data) throw new Error('Failed to create invoice: No data returned');
+    
+    return data as InvoiceRow;
+  }
+
+  static async updateInvoice(id: string, updates: InvoiceUpdate) {
+    const { data, error } = await supabase
+      .from('invoices')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to update invoice: ${error.message}`);
+    if (!data) throw new Error('Invoice not found');
+    
+    return data as InvoiceRow;
+  }
+
+  static async deleteInvoice(id: string) {
+    const { error } = await supabase
+      .from('invoices')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw new Error(`Failed to delete invoice: ${error.message}`);
+  }
+
+  static async getInvoicesByCustomer(customerId: string) {
+    const { data, error } = await supabase
+      .from('invoices')
+      .select('*')
+      .eq('customer_id', customerId)
+      .order('issue_date', { ascending: false });
+
+    if (error) throw new Error(`Failed to fetch invoices: ${error.message}`);
+    return data as InvoiceRow[];
+  }
+
+  static async getInvoiceById(id: string) {
+    const { data, error } = await supabase
+      .from('invoices')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to fetch invoice: ${error.message}`);
+    return data as InvoiceRow | null;
+  }
+}
+
+// Purchase Order types
+type PurchaseOrderInsert = Database['public']['Tables']['purchase_orders']['Insert'];
+type PurchaseOrderUpdate = Database['public']['Tables']['purchase_orders']['Update'];
+type PurchaseOrderRow = Database['public']['Tables']['purchase_orders']['Row'];
+
+/**
+ * Purchase Order Service
+ */
+export class PurchaseOrderService {
+  static async createPurchaseOrder(input: PurchaseOrderInsert) {
+    const { data, error } = await supabase
+      .from('purchase_orders')
+      .insert([input])
+      .select()
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to create purchase order: ${error.message}`);
+    if (!data) throw new Error('Failed to create purchase order: No data returned');
+    
+    return data as PurchaseOrderRow;
+  }
+
+  static async updatePurchaseOrder(id: string, updates: PurchaseOrderUpdate) {
+    const { data, error } = await supabase
+      .from('purchase_orders')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to update purchase order: ${error.message}`);
+    if (!data) throw new Error('Purchase order not found');
+    
+    return data as PurchaseOrderRow;
+  }
+
+  static async deletePurchaseOrder(id: string) {
+    const { error } = await supabase
+      .from('purchase_orders')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw new Error(`Failed to delete purchase order: ${error.message}`);
+  }
+
+  static async getPurchaseOrdersByCustomer(customerId: string) {
+    const { data, error } = await supabase
+      .from('purchase_orders')
+      .select('*')
+      .eq('customer_id', customerId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw new Error(`Failed to fetch purchase orders: ${error.message}`);
+    return data as PurchaseOrderRow[];
+  }
+
+  static async getPurchaseOrderById(id: string) {
+    const { data, error } = await supabase
+      .from('purchase_orders')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to fetch purchase order: ${error.message}`);
+    return data as PurchaseOrderRow | null;
+  }
+}

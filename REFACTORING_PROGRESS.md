@@ -10,14 +10,62 @@ Converting 19 pages from direct database queries to service layer architecture.
 ## ✅ Services Created
 
 ### 1. Finance Service (`src/services/financeService.ts`)
-**Status:** ✅ Created
-**Exports:** BudgetService
-**Methods:**
-- `createBudget(input)` - Create new budget with proper type safety
+**Status:** ✅ Complete
+**Exports:** BudgetService, ExpenseService, InvoiceService, PurchaseOrderService
+
+#### BudgetService Methods:
+- `createBudget(input)` - Create new budget
 - `updateBudget(id, updates)` - Update existing budget
 - `deleteBudget(id)` - Delete budget
 - `getBudgetsByCustomer(customerId)` - List all budgets for customer
-- `getBudgetById(id)` - Get single budget with null handling
+- `getBudgetById(id)` - Get single budget
+
+#### ExpenseService Methods:
+- `createExpense(input)` - Create new expense
+- `updateExpense(id, updates)` - Update existing expense
+- `deleteExpense(id)` - Delete expense
+- `getExpensesByCustomer(customerId)` - List all expenses for customer
+- `getExpenseById(id)` - Get single expense
+
+#### InvoiceService Methods:
+- `createInvoice(input)` - Create new invoice
+- `updateInvoice(id, updates)` - Update existing invoice
+- `deleteInvoice(id)` - Delete invoice
+- `getInvoicesByCustomer(customerId)` - List all invoices for customer
+- `getInvoiceById(id)` - Get single invoice
+
+#### PurchaseOrderService Methods:
+- `createPurchaseOrder(input)` - Create new PO
+- `updatePurchaseOrder(id, updates)` - Update existing PO
+- `deletePurchaseOrder(id)` - Delete PO
+- `getPurchaseOrdersByCustomer(customerId)` - List all POs for customer
+- `getPurchaseOrderById(id)` - Get single PO
+
+### 2. HR Service (`src/services/hrService.ts`)
+**Status:** ✅ Complete
+**Exports:** EmployeeService, DepartmentService, LeaveService
+
+#### EmployeeService Methods:
+- `createEmployee(input)` - Create new employee
+- `updateEmployee(id, updates)` - Update existing employee
+- `deleteEmployee(id)` - Delete employee
+- `getEmployeesByCustomer(customerId)` - List all employees for customer
+- `getEmployeeById(id)` - Get single employee
+
+#### DepartmentService Methods:
+- `createDepartment(input)` - Create new department
+- `updateDepartment(id, updates)` - Update existing department
+- `deleteDepartment(id)` - Delete department
+- `getDepartmentsByCustomer(customerId)` - List all departments for customer
+- `getDepartmentById(id)` - Get single department
+
+#### LeaveService Methods:
+- `createLeave(input)` - Create new leave request
+- `updateLeave(id, updates)` - Update existing leave request
+- `deleteLeave(id)` - Delete leave request
+- `getLeaveByCustomer(customerId)` - List all leave requests for customer
+- `getLeaveByEmployee(employeeId)` - List all leave requests for employee
+- `getLeaveById(id)` - Get single leave request
 
 **Features:**
 - ✅ Uses Database types from Supabase
@@ -57,15 +105,15 @@ await BudgetService.createBudget({...});
 
 | Category | Total | Completed | In Progress | Remaining |
 |----------|-------|-----------|-------------|-----------|
-| **Services** | 5 | 1 | 0 | 4 |
-| **Pages** | 19 | 0 | 1 | 18 |
+| **Services** | 5 | 2 | 0 | 3 |
+| **Pages** | 19 | 1 | 0 | 18 |
 
-### Services Progress: 20% (1/5)
-- ✅ financeService.ts (BudgetService only)
-- ⏳ financeService.ts (ExpenseService, InvoiceService, POService)
-- ⏳ hrService.ts
+### Services Progress: 40% (2/5)
+- ✅ financeService.ts (Complete - all 4 services)
+- ✅ hrService.ts (Complete - all 3 services)
 - ⏳ salesService.ts  
 - ⏳ inventoryService.ts
+- ⏳ vendorService.ts
 
 ### Pages Progress: 5% (1/19)
 - ✅ BudgetTracking.tsx (100% complete)
@@ -94,15 +142,16 @@ await BudgetService.createBudget({...});
 
 ### Immediate (Next 1-2 actions):
 1. ✅ Create BudgetService
-2. 🔄 Refactor BudgetTracking.tsx completely
-3. ⏳ Add ExpenseService to financeService.ts
-4. ⏳ Refactor ExpenseManagement.tsx
+2. ✅ Refactor BudgetTracking.tsx completely
+3. ✅ Add ExpenseService, InvoiceService, POService to financeService.ts
+4. ✅ Create hrService.ts with all 3 services
+5. ⏳ Refactor ExpenseManagement.tsx
 
 ### Short-term (Next 5-10 actions):
-- Complete all financeService methods (Expense, Invoice, PO)
-- Refactor all 4 finance-related pages
-- Create hrService.ts
-- Refactor all 3 HR-related pages
+- ✅ Complete all financeService methods (Expense, Invoice, PO)
+- Refactor all 4 finance-related pages (BudgetTracking ✅, Expense ⏳, Invoice ⏳, PO ⏳)
+- ✅ Create hrService.ts
+- Refactor all 3 HR-related pages (Employee ⏳, Department ⏳, Leave ⏳)
 
 ### Medium-term (Next 10-20 actions):
 - Complete salesService.ts and inventoryService.ts
@@ -136,12 +185,11 @@ await BudgetService.createBudget({...});
 ## 🔍 Next Actions
 
 ### Immediate Next Step:
-✅ BudgetTracking.tsx refactoring complete!
-
-### Next Actions:
-1. Expand financeService.ts with ExpenseService
-2. Refactor ExpenseManagement.tsx
-3. Continue pattern for Invoices and POs
+Begin refactoring pages to use new services:
+1. ExpenseManagement.tsx → use ExpenseService
+2. EmployeeDirectory.tsx → use EmployeeService
+3. DepartmentManagement.tsx → use DepartmentService
+4. Continue with remaining pages
 
 ---
 
