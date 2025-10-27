@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 import { Loader2, CheckCircle2, AlertTriangle, Info, Lightbulb, ArrowLeft } from "lucide-react";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 interface FeedbackItem {
   id: string;
@@ -30,7 +31,7 @@ interface FeedbackItem {
 
 const DepartmentFeedback = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const toast = useStandardToast();
   const [feedback, setFeedback] = useState<FeedbackItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDept, setSelectedDept] = useState<string>("all");
@@ -69,11 +70,7 @@ const DepartmentFeedback = () => {
       setDepartments(depts);
     } catch (error: any) {
       console.error('Error fetching feedback:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load feedback",
-        variant: "destructive",
-      });
+      toast.error("Failed to load feedback");
     } finally {
       setLoading(false);
     }
@@ -92,19 +89,12 @@ const DepartmentFeedback = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Acknowledged",
-        description: "Feedback has been marked as acknowledged",
-      });
+      toast.success("Feedback has been marked as acknowledged");
 
       fetchFeedback();
     } catch (error: any) {
       console.error('Error acknowledging feedback:', error);
-      toast({
-        title: "Error",
-        description: "Failed to acknowledge feedback",
-        variant: "destructive",
-      });
+      toast.error("Failed to acknowledge feedback");
     }
   };
 
@@ -122,10 +112,7 @@ const DepartmentFeedback = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Applied",
-        description: "Feedback has been marked as applied",
-      });
+      toast.success("Feedback has been marked as applied");
 
       setApplicationNotes(prev => {
         const newNotes = { ...prev };
@@ -136,11 +123,7 @@ const DepartmentFeedback = () => {
       fetchFeedback();
     } catch (error: any) {
       console.error('Error applying feedback:', error);
-      toast({
-        title: "Error",
-        description: "Failed to apply feedback",
-        variant: "destructive",
-      });
+      toast.error("Failed to apply feedback");
     }
   };
 
@@ -182,7 +165,7 @@ const DepartmentFeedback = () => {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <DashboardLayout>
       <div className="flex items-center gap-4 mb-6">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -355,7 +338,7 @@ const DepartmentFeedback = () => {
           ))
         )}
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
