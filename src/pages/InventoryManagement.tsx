@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { InventoryItemService } from "@/services/inventoryService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -82,14 +83,8 @@ export default function InventoryManagement() {
   const fetchInventory = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("inventory_items")
-        .select("*")
-        .eq("customer_id", customerId!)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setInventoryItems(data || []);
+      const data = await InventoryItemService.getItemsByCustomer(customerId!);
+      setInventoryItems(data);
     } catch (error) {
       console.error("Error fetching inventory:", error);
       toast.error("Failed to load inventory");
@@ -102,7 +97,7 @@ export default function InventoryManagement() {
     try {
       if (!customerId) return;
 
-      const { error } = await supabase.from("inventory_items").insert([{
+      await InventoryItemService.createItem({
         customer_id: customerId,
         sku: newItem.sku,
         item_name: newItem.item_name,
@@ -114,9 +109,7 @@ export default function InventoryManagement() {
         unit_cost: newItem.unit_cost ? parseFloat(newItem.unit_cost) : null,
         unit_price: newItem.unit_price ? parseFloat(newItem.unit_price) : null,
         location: newItem.location,
-      }]);
-
-      if (error) throw error;
+      });
 
       toast.success("Inventory item created successfully");
       setIsCreateDialogOpen(false);

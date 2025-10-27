@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { WarehouseService } from "@/services/inventoryService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -81,14 +82,8 @@ export default function WarehouseManagement() {
   const fetchWarehouses = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("warehouses")
-        .select("*")
-        .eq("customer_id", customerId!)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setWarehouses(data || []);
+      const data = await WarehouseService.getWarehousesByCustomer(customerId!);
+      setWarehouses(data);
     } catch (error) {
       console.error("Error fetching warehouses:", error);
       toast.error("Failed to load warehouses");
@@ -101,7 +96,7 @@ export default function WarehouseManagement() {
     try {
       if (!customerId) return;
 
-      const { error } = await supabase.from("warehouses").insert([{
+      await WarehouseService.createWarehouse({
         customer_id: customerId,
         warehouse_code: newWarehouse.warehouse_code,
         warehouse_name: newWarehouse.warehouse_name,
@@ -113,9 +108,7 @@ export default function WarehouseManagement() {
         capacity_sqft: newWarehouse.capacity_sqft ? parseInt(newWarehouse.capacity_sqft) : null,
         contact_phone: newWarehouse.contact_phone,
         notes: newWarehouse.notes,
-      }]);
-
-      if (error) throw error;
+      });
 
       toast.success("Warehouse created successfully");
       setIsCreateDialogOpen(false);
