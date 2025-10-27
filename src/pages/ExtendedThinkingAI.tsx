@@ -6,12 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Brain, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 const ExtendedThinkingAI = () => {
   const [prompt, setPrompt] = useState("");
   const [thinkingProcess, setThinkingProcess] = useState<any[]>([]);
-  const { toast } = useToast();
+  const toast = useStandardToast();
 
   const deepThinking = useMutation({
     mutationFn: async (userPrompt: string) => {
@@ -23,17 +23,10 @@ const ExtendedThinkingAI = () => {
     },
     onSuccess: (data) => {
       setThinkingProcess(data.reasoning_steps || []);
-      toast({
-        title: "Analysis Complete",
-        description: "Extended thinking process finished",
-      });
+      toast.success("Extended thinking process finished");
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
+      toast.error(error.message);
     }
   });
 

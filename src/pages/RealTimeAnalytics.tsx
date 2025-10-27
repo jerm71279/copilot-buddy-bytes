@@ -4,12 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Activity, TrendingUp, Zap, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 const RealTimeAnalytics = () => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [metrics, setMetrics] = useState<any[]>([]);
-  const { toast } = useToast();
+  const toast = useStandardToast();
 
   useEffect(() => {
     // Subscribe to realtime changes
@@ -25,10 +25,7 @@ const RealTimeAnalytics = () => {
         (payload) => {
           console.log('Realtime update:', payload);
           setMetrics(prev => [payload, ...prev].slice(0, 50));
-          toast({
-            title: "New Data Event",
-            description: `${payload.eventType} on ${payload.table}`,
-          });
+          toast.info(`${payload.eventType} on ${payload.table}`);
         }
       )
       .subscribe();

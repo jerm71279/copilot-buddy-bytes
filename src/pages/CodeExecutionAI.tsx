@@ -6,12 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Code, Play, Terminal, CheckCircle2, XCircle } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 const CodeExecutionAI = () => {
   const [code, setCode] = useState("console.log('Hello from AI!');");
   const [output, setOutput] = useState<any>(null);
-  const { toast } = useToast();
+  const toast = useStandardToast();
 
   const executeCode = useMutation({
     mutationFn: async (codeToRun: string) => {
@@ -23,18 +23,11 @@ const CodeExecutionAI = () => {
     },
     onSuccess: (data) => {
       setOutput(data);
-      toast({
-        title: "Code Executed",
-        description: "Code ran successfully in sandbox",
-      });
+      toast.success("Code ran successfully in sandbox");
     },
     onError: (error: any) => {
       setOutput({ success: false, error: error.message });
-      toast({
-        title: "Execution Error",
-        description: error.message,
-        variant: "destructive"
-      });
+      toast.error(error.message);
     }
   });
 
