@@ -19,6 +19,12 @@ import {
   createSecureSystemPrompt,
   trackThreat,
 } from '../_shared/promptSecurity.ts';
+import {
+  logSecurityEvent,
+  createPromptInjectionLog,
+  createToolCallValidationLog,
+  createRateLimitLog,
+} from '../_shared/securityAudit.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -171,9 +177,28 @@ serve(async (req) => {
     if (!injectionCheck.isValid) {
       console.warn(`Prompt injection detected from user ${userId}: ${injectionCheck.threat}`);
       
+      // Log security event
+      await logSecurityEvent(
+        supabase,
+        createPromptInjectionLog(
+          'department-assistant',
+          userId,
+          customerId,
+          injectionCheck.threat || 'unknown',
+          injectionCheck.confidence,
+          query,
+          true // blocked
+        )
+      );
+      
       // Track suspicious activity
       const allowed = trackThreat(userId, injectionCheck.threat || 'unknown');
       if (!allowed) {
+        await logSecurityEvent(
+          supabase,
+          createRateLimitLog('department-assistant', userId, customerId, 5)
+        );
+        
         return new Response(
           JSON.stringify({ 
             error: 'Too many suspicious requests. Please contact support.',
@@ -531,6 +556,20 @@ serve(async (req) => {
         
         if (!validation.isValid) {
           console.error(`Tool call validation failed: ${validation.error}`);
+          
+          // Log security event
+          await logSecurityEvent(
+            supabase,
+            createToolCallValidationLog(
+              'department-assistant',
+              userId,
+              customerId,
+              toolCall.function.name,
+              validation.error || 'Unknown validation error',
+              JSON.parse(toolCall.function.arguments || '{}')
+            )
+          );
+          
           return new Response(
             JSON.stringify({ 
               error: 'Invalid tool parameters detected',

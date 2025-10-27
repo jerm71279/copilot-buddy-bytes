@@ -1,5 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { 
+  sanitizeUnicode, 
+  detectPromptInjection,
+  sanitizeIndirectContent,
+  addInputDelimiters,
+  filterOutput,
+  createSecureSystemPrompt
+} from '../_shared/promptSecurity.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -33,10 +41,29 @@ serve(async (req) => {
       );
     }
     
-    const action = String(requestData.action || '').slice(0, 100);
+    let action = String(requestData.action || '').slice(0, 100);
     const fileId = requestData.fileId ? String(requestData.fileId).slice(0, 100) : undefined;
     const workflowData = requestData.workflowData;
-    const articleContent = requestData.articleContent ? String(requestData.articleContent).slice(0, 50000) : undefined;
+    let articleContent = requestData.articleContent ? String(requestData.articleContent).slice(0, 50000) : undefined;
+    
+    // SECURITY: Sanitize inputs
+    action = sanitizeUnicode(action);
+    if (articleContent) {
+      articleContent = sanitizeUnicode(articleContent);
+      
+      // Detect prompt injection in article content
+      const injectionCheck = detectPromptInjection(articleContent);
+      if (!injectionCheck.isValid) {
+        console.warn(`Prompt injection detected in article content: ${injectionCheck.threat}`);
+        return new Response(
+          JSON.stringify({ 
+            error: 'Article content contains suspicious patterns',
+            threat: injectionCheck.threat
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
     
     if (!action) {
       return new Response(
@@ -78,7 +105,14 @@ serve(async (req) => {
           .update({ processed_status: 'processing' })
           .eq('id', fileId);
 
+        // SECURITY: Sanitize file content to prevent indirect injection
+        const sanitizedFileName = sanitizeIndirectContent(file.file_name, 200);
+        const sanitizedContent = sanitizeIndirectContent(file.extracted_content || 'No content extracted', 10000);
+
         // Generate AI summary and extract key insights
+        const basePrompt = 'You are a knowledge management AI. Extract key information, create summaries, and identify actionable insights from documents. Format your response as JSON with: summary, key_points (array), recommended_tags (array), and suggested_sop_updates (array).';
+        const secureSystemPrompt = createSecureSystemPrompt(basePrompt);
+
         const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -90,11 +124,11 @@ serve(async (req) => {
             messages: [
               {
                 role: 'system',
-                content: 'You are a knowledge management AI. Extract key information, create summaries, and identify actionable insights from documents. Format your response as JSON with: summary, key_points (array), recommended_tags (array), and suggested_sop_updates (array).'
+                content: secureSystemPrompt
               },
               {
                 role: 'user',
-                content: `Analyze this file content and extract knowledge:\n\nFile: ${file.file_name}\nType: ${file.file_type}\nContent: ${file.extracted_content || 'No content extracted'}`
+                content: addInputDelimiters(`Analyze this file content and extract knowledge:\n\nFile: ${sanitizedFileName}\nType: ${file.file_type}\nContent: ${sanitizedContent}`)
               }
             ],
             tools: [
@@ -124,6 +158,9 @@ serve(async (req) => {
         const aiData = await aiResponse.json();
         const toolCall = aiData.choices[0].message.tool_calls[0];
         const knowledge = JSON.parse(toolCall.function.arguments);
+        
+        // SECURITY: Filter extracted knowledge
+        knowledge.summary = filterOutput(knowledge.summary);
 
         // Update file with AI summary
         await supabaseClient
@@ -141,7 +178,13 @@ serve(async (req) => {
       }
 
       case 'generate_from_workflows': {
+        // SECURITY: Sanitize workflow data
+        const sanitizedWorkflowData = JSON.stringify(workflowData, null, 2).slice(0, 10000);
+        
         // Analyze workflow data and generate knowledge articles
+        const basePrompt = 'You are an expert at creating SOPs and documentation from workflow data. Generate clear, actionable standard operating procedures based on successful workflow patterns.';
+        const secureSystemPrompt = createSecureSystemPrompt(basePrompt);
+
         const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -153,18 +196,21 @@ serve(async (req) => {
             messages: [
               {
                 role: 'system',
-                content: 'You are an expert at creating SOPs and documentation from workflow data. Generate clear, actionable standard operating procedures based on successful workflow patterns.'
+                content: secureSystemPrompt
               },
               {
                 role: 'user',
-                content: `Generate SOPs and knowledge articles from these workflow patterns:\n\n${JSON.stringify(workflowData, null, 2)}`
+                content: addInputDelimiters(`Generate SOPs and knowledge articles from these workflow patterns:\n\n${sanitizedWorkflowData}`)
               }
             ],
           }),
         });
 
         const aiData = await aiResponse.json();
-        const generatedContent = aiData.choices[0].message.content;
+        let generatedContent = aiData.choices[0].message.content;
+        
+        // SECURITY: Filter output
+        generatedContent = filterOutput(generatedContent);
 
         return new Response(JSON.stringify({ content: generatedContent }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },

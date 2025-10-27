@@ -11430,6 +11430,57 @@ export type Database = {
         }
         Relationships: []
       }
+      security_audit_logs: {
+        Row: {
+          action_taken: string
+          created_at: string
+          customer_id: string | null
+          edge_function: string
+          event_type: string
+          id: string
+          severity: string
+          threat_details: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          action_taken: string
+          created_at?: string
+          customer_id?: string | null
+          edge_function: string
+          event_type: string
+          id?: string
+          severity: string
+          threat_details?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          action_taken?: string
+          created_at?: string
+          customer_id?: string | null
+          edge_function?: string
+          event_type?: string
+          id?: string
+          severity?: string
+          threat_details?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_audit_logs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "security_audit_logs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
       security_control_tests: {
         Row: {
           actual_result: string | null
