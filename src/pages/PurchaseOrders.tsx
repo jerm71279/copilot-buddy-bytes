@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { PurchaseOrderService } from "@/services/financeService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -77,14 +78,8 @@ export default function PurchaseOrders() {
   const fetchPurchaseOrders = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("purchase_orders")
-        .select("*")
-        .eq("customer_id", customerId!)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setPurchaseOrders(data || []);
+      const data = await PurchaseOrderService.getPurchaseOrdersByCustomer(customerId!);
+      setPurchaseOrders(data);
     } catch (error) {
       console.error("Error fetching purchase orders:", error);
       toast.error("Failed to load purchase orders");
@@ -98,7 +93,7 @@ export default function PurchaseOrders() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !customerId) return;
 
-      const { error } = await supabase.from("purchase_orders").insert([{
+      await PurchaseOrderService.createPurchaseOrder({
         customer_id: customerId,
         po_number: '',
         vendor_name: newPO.vendor_name,
@@ -108,9 +103,7 @@ export default function PurchaseOrders() {
         notes: newPO.notes,
         requested_by: user.id,
         status: "draft",
-      }]);
-
-      if (error) throw error;
+      });
 
       toast.success("Purchase order created successfully");
       setIsCreateDialogOpen(false);

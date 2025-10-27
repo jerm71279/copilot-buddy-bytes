@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { InvoiceService } from "@/services/financeService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -77,14 +78,8 @@ export default function InvoiceManagement() {
   const fetchInvoices = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("invoices")
-        .select("*")
-        .eq("customer_id", customerId!)
-        .order("issue_date", { ascending: false });
-
-      if (error) throw error;
-      setInvoices(data || []);
+      const data = await InvoiceService.getInvoicesByCustomer(customerId!);
+      setInvoices(data);
     } catch (error) {
       console.error("Error fetching invoices:", error);
       toast.error("Failed to load invoices");
@@ -98,7 +93,7 @@ export default function InvoiceManagement() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !customerId) return;
 
-      const { error } = await supabase.from("invoices").insert([{
+      await InvoiceService.createInvoice({
         customer_id: customerId,
         invoice_number: '',
         client_name: newInvoice.client_name,
@@ -108,9 +103,7 @@ export default function InvoiceManagement() {
         payment_terms: newInvoice.payment_terms,
         notes: newInvoice.notes,
         created_by: user.id,
-      }]);
-
-      if (error) throw error;
+      });
 
       toast.success("Invoice created successfully");
       setIsCreateDialogOpen(false);

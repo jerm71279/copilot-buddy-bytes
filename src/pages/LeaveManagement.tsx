@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { LeaveService } from "@/services/hrService";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -77,23 +78,20 @@ const LeaveManagement = () => {
       if (!profile?.customer_id) return;
 
       const [leavesData, typesData] = await Promise.all([
-        supabase
-          .from("employee_leave")
-          .select("*")
-          .eq("customer_id", profile.customer_id)
-          .order("requested_at", { ascending: false }),
+        LeaveService.getLeaveByCustomer(profile.customer_id),
         supabase
           .from("leave_types")
           .select("*")
           .eq("customer_id", profile.customer_id)
-          .eq("is_active", true),
+          .eq("is_active", true)
+          .then(res => {
+            if (res.error) throw res.error;
+            return res.data || [];
+          }),
       ]);
 
-      if (leavesData.error) throw leavesData.error;
-      if (typesData.error) throw typesData.error;
-
-      setLeaveRequests(leavesData.data || []);
-      setLeaveTypes(typesData.data || []);
+      setLeaveRequests(leavesData);
+      setLeaveTypes(typesData);
     } catch (error) {
       console.error("Error fetching leave data:", error);
       toast({
@@ -125,16 +123,12 @@ const LeaveManagement = () => {
       const diffTime = Math.abs(end.getTime() - start.getTime());
       const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-      const { error } = await supabase.from("employee_leave").insert([
-        {
-          customer_id: profile.customer_id,
-          employee_id: null, // Would need to link to actual employee
-          ...newLeaveRequest,
-          total_days: totalDays,
-        },
-      ]);
-
-      if (error) throw error;
+      await LeaveService.createLeave({
+        customer_id: profile.customer_id,
+        employee_id: null, // Would need to link to actual employee
+        ...newLeaveRequest,
+        total_days: totalDays,
+      });
 
       toast({
         title: "Success",

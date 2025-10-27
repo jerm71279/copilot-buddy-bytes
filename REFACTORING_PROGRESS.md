@@ -94,6 +94,22 @@ Converting 19 pages from direct database queries to service layer architecture.
 - ✅ Refactored `handleCreateExpense()` to use service
 - ✅ Refactored `fetchExpenses()` to use service
 
+### Invoice Management
+**Page:** `src/pages/InvoiceManagement.tsx`
+**Status:** ✅ Complete
+**Changes:**
+- ✅ Imported InvoiceService
+- ✅ Refactored `handleCreateInvoice()` to use service
+- ✅ Refactored `fetchInvoices()` to use service
+
+### Purchase Orders
+**Page:** `src/pages/PurchaseOrders.tsx`
+**Status:** ✅ Complete
+**Changes:**
+- ✅ Imported PurchaseOrderService
+- ✅ Refactored `handleCreatePO()` to use service
+- ✅ Refactored `fetchPurchaseOrders()` to use service
+
 ### Employee Directory
 **Page:** `src/pages/EmployeeDirectory.tsx`
 **Status:** ✅ Complete
@@ -109,6 +125,14 @@ Converting 19 pages from direct database queries to service layer architecture.
 - ✅ Imported DepartmentService
 - ✅ Refactored `handleCreateDepartment()` to use service
 - ✅ Refactored `fetchDepartments()` to use service
+
+### Leave Management
+**Page:** `src/pages/LeaveManagement.tsx`
+**Status:** ✅ Complete
+**Changes:**
+- ✅ Imported LeaveService
+- ✅ Refactored `handleCreateLeaveRequest()` to use service
+- ✅ Refactored fetch operations to use service
 
 **Before:**
 ```typescript
@@ -129,7 +153,7 @@ await BudgetService.createBudget({...});
 | Category | Total | Completed | In Progress | Remaining |
 |----------|-------|-----------|-------------|-----------|
 | **Services** | 5 | 2 | 0 | 3 |
-| **Pages** | 19 | 4 | 0 | 15 |
+| **Pages** | 19 | 7 | 0 | 12 |
 
 ### Services Progress: 40% (2/5)
 - ✅ financeService.ts (Complete - all 4 services)
@@ -138,12 +162,14 @@ await BudgetService.createBudget({...});
 - ⏳ inventoryService.ts
 - ⏳ vendorService.ts
 
-### Pages Progress: 21% (4/19)
+### Pages Progress: 37% (7/19)
 - ✅ BudgetTracking.tsx (100% complete)
 - ✅ ExpenseManagement.tsx (100% complete)
+- ✅ InvoiceManagement.tsx (100% complete)
+- ✅ PurchaseOrders.tsx (100% complete)
 - ✅ EmployeeDirectory.tsx (100% complete)
 - ✅ DepartmentManagement.tsx (100% complete)
-- ⏳ InvoiceManagement.tsx
+- ✅ LeaveManagement.tsx (100% complete)
 - ⏳ PurchaseOrders.tsx
 - ⏳ LeaveManagement.tsx
 - ⏳ LeadManagement.tsx
@@ -221,7 +247,7 @@ Continue refactoring remaining pages:
 ## 📈 Success Metrics
 
 ### Code Quality:
-- **Direct DB Queries in Pages:** 19 → 15 remaining (4 refactored)
+- **Direct DB Queries in Pages:** 19 → 12 remaining (7 refactored)
 - **Service Coverage:** 0% → 40% (2/5 service files)
 - **Type Safety:** Partial → Improving
 - **Error Handling:** Inconsistent → Standardizing
