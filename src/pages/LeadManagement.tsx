@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { LeadService } from "@/services/salesService";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,14 +84,8 @@ const LeadManagement = () => {
 
       if (!profile?.customer_id) return;
 
-      const { data, error } = await supabase
-        .from("sales_leads")
-        .select("*")
-        .eq("customer_id", profile.customer_id)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setLeads(data || []);
+      const data = await LeadService.getLeadsByCustomer(profile.customer_id);
+      setLeads(data);
     } catch (error) {
       console.error("Error fetching leads:", error);
       toast({
@@ -116,16 +111,12 @@ const LeadManagement = () => {
 
       if (!profile?.customer_id) return;
 
-      const { error } = await supabase.from("sales_leads").insert([
-        {
-          customer_id: profile.customer_id,
-          lead_number: "",
-          ...newLead,
-          estimated_value: parseFloat(newLead.estimated_value) || null,
-        },
-      ]);
-
-      if (error) throw error;
+      await LeadService.createLead({
+        customer_id: profile.customer_id,
+        lead_number: "",
+        ...newLead,
+        estimated_value: parseFloat(newLead.estimated_value) || null,
+      });
 
       toast({
         title: "Success",

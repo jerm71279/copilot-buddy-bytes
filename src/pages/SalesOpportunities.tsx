@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { OpportunityService } from "@/services/salesService";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -79,14 +80,8 @@ const SalesOpportunities = () => {
 
       if (!profile?.customer_id) return;
 
-      const { data, error } = await supabase
-        .from("sales_opportunities")
-        .select("*")
-        .eq("customer_id", profile.customer_id)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setOpportunities(data || []);
+      const data = await OpportunityService.getOpportunitiesByCustomer(profile.customer_id);
+      setOpportunities(data);
     } catch (error) {
       console.error("Error fetching opportunities:", error);
       toast({
@@ -112,16 +107,12 @@ const SalesOpportunities = () => {
 
       if (!profile?.customer_id) return;
 
-      const { error } = await supabase.from("sales_opportunities").insert([
-        {
-          customer_id: profile.customer_id,
-          opportunity_number: "",
-          ...newOpportunity,
-          amount: parseFloat(newOpportunity.amount),
-        },
-      ]);
-
-      if (error) throw error;
+      await OpportunityService.createOpportunity({
+        customer_id: profile.customer_id,
+        opportunity_number: "",
+        ...newOpportunity,
+        amount: parseFloat(newOpportunity.amount),
+      });
 
       toast({
         title: "Success",

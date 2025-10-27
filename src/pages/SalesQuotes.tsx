@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { QuoteService } from "@/services/salesService";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -79,14 +80,8 @@ const SalesQuotes = () => {
 
       if (!profile?.customer_id) return;
 
-      const { data, error } = await supabase
-        .from("sales_quotes")
-        .select("*")
-        .eq("customer_id", profile.customer_id)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setQuotes(data || []);
+      const data = await QuoteService.getQuotesByCustomer(profile.customer_id);
+      setQuotes(data);
     } catch (error) {
       console.error("Error fetching quotes:", error);
       toast({
@@ -112,17 +107,13 @@ const SalesQuotes = () => {
 
       if (!profile?.customer_id) return;
 
-      const { error } = await supabase.from("sales_quotes").insert([
-        {
-          customer_id: profile.customer_id,
-          quote_number: "",
-          created_by: user.id,
-          ...newQuote,
-          total_amount: parseFloat(newQuote.total_amount),
-        },
-      ]);
-
-      if (error) throw error;
+      await QuoteService.createQuote({
+        customer_id: profile.customer_id,
+        quote_number: "",
+        created_by: user.id,
+        ...newQuote,
+        total_amount: parseFloat(newQuote.total_amount),
+      });
 
       toast({
         title: "Success",
