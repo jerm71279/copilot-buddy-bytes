@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Brain, Sparkles, TrendingUp, AlertCircle, Loader2, Send } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from "@/hooks/useStandardToast";
 
 const AIInsightsHub = () => {
@@ -88,7 +88,7 @@ const AIInsightsHub = () => {
   };
 
   return (
-    <PageContainer>
+    <DashboardLayout>
       {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
@@ -242,7 +242,7 @@ const AIInsightsHub = () => {
              </Card>
            )}
          </div>
-    </PageContainer>
+    </DashboardLayout>
   );
 };
 

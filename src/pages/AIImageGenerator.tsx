@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Download, Image as ImageIcon } from 'lucide-react';
-import { PageContainer } from '@/components/shared/PageContainer';
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from '@/hooks/useStandardToast';
 
 const AIImageGenerator = () => {
@@ -64,7 +64,7 @@ const AIImageGenerator = () => {
   };
 
   return (
-    <PageContainer>
+    <DashboardLayout>
       <div className="max-w-6xl mx-auto">
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2">AI Image Generator</h1>
@@ -169,7 +169,7 @@ const AIImageGenerator = () => {
           </Card>
         </div>
       </div>
-    </PageContainer>
+    </DashboardLayout>
   );
 };
 
