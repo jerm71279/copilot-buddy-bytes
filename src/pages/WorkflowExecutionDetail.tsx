@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ArrowLeft, CheckCircle, XCircle, Clock, AlertTriangle, Activity } from "lucide-react";
-import { toast } from "sonner";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface WorkflowExecution {
   id: string;
@@ -31,6 +30,7 @@ interface WorkflowExecution {
 export default function WorkflowExecutionDetail() {
   const { executionId } = useParams();
   const navigate = useNavigate();
+  const showToast = useStandardToast();
   const [execution, setExecution] = useState<WorkflowExecution | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -53,7 +53,7 @@ export default function WorkflowExecutionDetail() {
       setExecution(data as any);
     } catch (error) {
       console.error("Error loading execution detail:", error);
-      toast.error("Failed to load execution details");
+      showToast.loadFailed("execution details");
     } finally {
       setIsLoading(false);
     }
@@ -104,41 +104,33 @@ export default function WorkflowExecutionDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <PageContainer>
-          <div className="flex items-center justify-center py-12">
-            <Activity className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        </PageContainer>
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Activity className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
     );
   }
 
   if (!execution) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <PageContainer>
-          <EmptyState
-            icon={AlertTriangle}
-            title="Execution Not Found"
-            description="The execution you're looking for doesn't exist."
-            action={{
-              label: "Go Back",
-              onClick: () => navigate(-1),
-            }}
-          />
-        </PageContainer>
-      </div>
+      <DashboardLayout>
+        <EmptyState
+          icon={AlertTriangle}
+          title="Execution Not Found"
+          description="The execution you're looking for doesn't exist."
+          action={{
+            label: "Go Back",
+            onClick: () => navigate(-1),
+          }}
+        />
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <PageContainer>
+    <DashboardLayout>
+      <div className="space-y-6">
         <Button 
           onClick={() => navigate(-1)} 
           variant="ghost" 
@@ -277,7 +269,7 @@ export default function WorkflowExecutionDetail() {
             </CardContent>
         </Card>
         )}
-      </PageContainer>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

@@ -1,17 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus, Trash2, Settings } from "lucide-react";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface WorkflowStep {
   id: string;
@@ -22,7 +20,7 @@ interface WorkflowStep {
 
 export default function WorkflowBuilder() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const showToast = useStandardToast();
   const [workflowName, setWorkflowName] = useState("");
   const [description, setDescription] = useState("");
   const [workflowType, setWorkflowType] = useState("custom");
@@ -48,11 +46,7 @@ export default function WorkflowBuilder() {
 
   const handleSave = async () => {
     if (!workflowName.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Please enter a workflow name",
-        variant: "destructive"
-      });
+      showToast.error("Validation Error", { description: "Please enter a workflow name" });
       return;
     }
 
@@ -82,20 +76,12 @@ export default function WorkflowBuilder() {
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Workflow created successfully"
-      });
-
+      showToast.created("Workflow");
       navigate('/workflows');
     } catch (error) {
       console.error('Error saving workflow:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save workflow",
-        variant: "destructive"
-      });
-    } finally {
+      showToast.saveFailed("workflow");
+    } finally{
       setIsSaving(false);
     }
   };
@@ -114,28 +100,8 @@ export default function WorkflowBuilder() {
   ];
 
   return (
-    <>
-      <Navigation />
-      <PageContainer>
-        <DashboardNavigation 
-          title="Workflow Builder"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
-        
-        <div className="max-w-4xl mx-auto">
+    <DashboardLayout>
+      <div className="max-w-4xl mx-auto space-y-6">
           <div className="flex items-center gap-4 mb-6">
             <Button variant="ghost" size="sm" onClick={() => navigate('/workflows')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -268,7 +234,6 @@ export default function WorkflowBuilder() {
             </div>
           </div>
         </div>
-      </PageContainer>
-    </>
-  );
-}
+      </DashboardLayout>
+    );
+  }

@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { WarehouseService } from "@/services/inventoryService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,10 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import { Plus, Search, Warehouse, MapPin } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface WarehouseType {
   id: string;
@@ -31,12 +29,12 @@ interface WarehouseType {
 }
 
 export default function WarehouseManagement() {
-  const navigate = useNavigate();
+  const { customerId, isLoading: profileLoading } = useUserProfile();
+  const showToast = useStandardToast();
   const [warehouses, setWarehouses] = useState<WarehouseType[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [customerId, setCustomerId] = useState<string | null>(null);
 
   const [newWarehouse, setNewWarehouse] = useState({
     warehouse_code: "",
@@ -52,32 +50,10 @@ export default function WarehouseManagement() {
   });
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  useEffect(() => {
     if (customerId) {
       fetchWarehouses();
     }
   }, [customerId]);
-
-  const fetchUserProfile = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
-    }
-  };
 
   const fetchWarehouses = async () => {
     try {
@@ -86,7 +62,7 @@ export default function WarehouseManagement() {
       setWarehouses(data);
     } catch (error) {
       console.error("Error fetching warehouses:", error);
-      toast.error("Failed to load warehouses");
+      showToast.loadFailed("warehouses");
     } finally {
       setLoading(false);
     }
@@ -110,7 +86,7 @@ export default function WarehouseManagement() {
         notes: newWarehouse.notes,
       });
 
-      toast.success("Warehouse created successfully");
+      showToast.created("Warehouse");
       setIsCreateDialogOpen(false);
       setNewWarehouse({
         warehouse_code: "",
@@ -127,7 +103,7 @@ export default function WarehouseManagement() {
       fetchWarehouses();
     } catch (error) {
       console.error("Error creating warehouse:", error);
-      toast.error("Failed to create warehouse");
+      showToast.saveFailed("warehouse");
     }
   };
 
@@ -153,12 +129,13 @@ export default function WarehouseManagement() {
     totalCapacity: warehouses.reduce((sum, w) => sum + (w.capacity_sqft || 0), 0),
   };
 
+  if (profileLoading || loading) {
+    return <DashboardLayout><div className="flex items-center justify-center min-h-[400px]">Loading...</div></DashboardLayout>;
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <DashboardNavigation />
-      
-      <main className="container mx-auto p-6 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout>
+      <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Warehouse Management</h1>
@@ -359,7 +336,7 @@ export default function WarehouseManagement() {
             </Table>
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

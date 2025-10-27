@@ -1,18 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import Navigation from "@/components/Navigation";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Zap, Plus, Clock } from "lucide-react";
 import { useAutomationData } from "@/hooks/useAutomationData";
-import { dashboardLinks } from "@/lib/automationConfig";
 import { WorkflowStatsCards } from "@/components/automation/WorkflowStatsCards";
 import { WorkflowListCard } from "@/components/automation/WorkflowListCard";
 import { ExecutionListCard } from "@/components/automation/ExecutionListCard";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 /**
  * Workflow Automation Data Flow
@@ -74,17 +70,11 @@ export default function WorkflowAutomation() {
   const { workflows, executions, isLoading, stats, toggleWorkflowStatus } = useAutomationData();
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <PageContainer>
-        <DashboardNavigation 
-          title="Workflow Automation"
-          dashboards={dashboardLinks}
-        />
-        
-        <div className="flex justify-between items-center mb-6">
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
           <div>
+            <h1 className="text-3xl font-bold">Workflow Automation</h1>
             <p className="text-muted-foreground">Automate repetitive tasks and connect systems</p>
           </div>
           <Button onClick={() => navigate('/workflows/builder')}>
@@ -147,7 +137,7 @@ export default function WorkflowAutomation() {
             )}
           </TabsContent>
         </Tabs>
-      </PageContainer>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
