@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useRequireAuth } from "@/hooks/useAuth";
 import { Plus, FileText, Edit, Trash2, Users, UserPlus } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { EmptyState } from "@/components/shared/EmptyState";

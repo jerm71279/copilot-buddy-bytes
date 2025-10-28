@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useRequireAuth } from "./useAuth";
 import { toast } from "sonner";
 
 export interface SlackConfig {
@@ -23,15 +23,22 @@ export interface SlackSyncLog {
   error_message: string | null;
 }
 
-export const useSlackSync = () => {
-  const navigate = useNavigate();
+export function useSlackSync() {
+  const { checkSession, getCustomerId } = useRequireAuth();
+  const [customerId, setCustomerId] = useState<string | null>(null);
   const [configs, setConfigs] = useState<SlackConfig[]>([]);
   const [syncLogs, setSyncLogs] = useState<SlackSyncLog[]>([]);
-  const [customerId, setCustomerId] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
-    checkAuth();
+    const initAuth = async () => {
+      const session = await checkSession();
+      if (session) {
+        const custId = await getCustomerId();
+        setCustomerId(custId);
+      }
+    };
+    initAuth();
   }, []);
 
   useEffect(() => {
@@ -40,24 +47,6 @@ export const useSlackSync = () => {
       loadSyncLogs();
     }
   }, [customerId]);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("customer_id")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    if (profile?.customer_id) {
-      setCustomerId(profile.customer_id);
-    }
-  };
 
   const loadConfigs = async () => {
     if (!customerId) return;
@@ -182,7 +171,7 @@ export const useSlackSync = () => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
+    // Navigation handled by auth state change
   };
 
   return {

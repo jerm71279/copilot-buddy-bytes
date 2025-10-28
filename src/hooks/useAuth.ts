@@ -200,3 +200,67 @@ function useAuthSingleton() {
 
   return { ...state, requireAuth, requireCustomer, signOut, refresh };
 }
+
+/**
+ * useRequireAuth Hook
+ * Consolidates duplicate auth-check-and-load patterns across the codebase
+ * 
+ * ELIMINATES: 6 duplicate auth functions in various components
+ * 
+ * Usage:
+ * const { checkSession, checkSessionAndLoad } = useRequireAuth();
+ * 
+ * useEffect(() => {
+ *   checkSessionAndLoad(loadMyData);
+ * }, []);
+ */
+export function useRequireAuth() {
+  const navigate = useNavigate();
+  
+  /**
+   * Check for valid session, redirect to auth if none found
+   * @returns session object or null
+   */
+  const checkSession = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate('/auth');
+      return null;
+    }
+    return session;
+  };
+  
+  /**
+   * Check session AND execute a data loading function
+   * @param loadDataFn - async function to call after auth check passes
+   */
+  const checkSessionAndLoad = async (loadDataFn: () => Promise<void>) => {
+    const session = await checkSession();
+    if (session) {
+      await loadDataFn();
+    }
+  };
+
+  /**
+   * Get customer_id from user profile with auth check
+   * @returns customer_id or null
+   */
+  const getCustomerId = async () => {
+    const session = await checkSession();
+    if (!session) return null;
+
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('customer_id')
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+
+    return profile?.customer_id || null;
+  };
+
+  return { 
+    checkSession, 
+    checkSessionAndLoad,
+    getCustomerId 
+  };
+}

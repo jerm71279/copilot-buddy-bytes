@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useRequireAuth } from "./useAuth";
 
 export interface Framework {
   id: string;
@@ -36,7 +36,7 @@ export interface ComplianceStats {
 }
 
 export function useComplianceData() {
-  const navigate = useNavigate();
+  const { checkSessionAndLoad } = useRequireAuth();
   const { toast } = useToast();
   const [frameworks, setFrameworks] = useState<Framework[]>([]);
   const [evidenceFiles, setEvidenceFiles] = useState<EvidenceFile[]>([]);
@@ -48,15 +48,6 @@ export function useComplianceData() {
     reports: 0,
     complianceScore: 0
   });
-
-  const checkAuthAndLoad = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-      return;
-    }
-    await loadComplianceData();
-  };
 
   const loadComplianceData = async () => {
     try {
@@ -93,7 +84,7 @@ export function useComplianceData() {
   };
 
   useEffect(() => {
-    checkAuthAndLoad();
+    checkSessionAndLoad(loadComplianceData);
   }, []);
 
   return {

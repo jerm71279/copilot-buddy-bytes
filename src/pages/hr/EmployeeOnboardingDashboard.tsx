@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useRequireAuth } from "@/hooks/useAuth";
 import { Plus, Users, Clock, CheckCircle, AlertCircle, Settings } from "lucide-react";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";

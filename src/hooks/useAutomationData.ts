@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useRequireAuth } from './useAuth';
 
 interface Workflow {
   id: string;
@@ -30,7 +30,7 @@ interface WorkflowStats {
 }
 
 export const useAutomationData = () => {
-  const navigate = useNavigate();
+  const { checkSessionAndLoad } = useRequireAuth();
   const { toast } = useToast();
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [executions, setExecutions] = useState<WorkflowExecution[]>([]);
@@ -43,17 +43,8 @@ export const useAutomationData = () => {
   });
 
   useEffect(() => {
-    checkAuthAndLoad();
+    checkSessionAndLoad(loadWorkflows);
   }, []);
-
-  const checkAuthAndLoad = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-      return;
-    }
-    await loadWorkflows();
-  };
 
   const loadWorkflows = async () => {
     try {
