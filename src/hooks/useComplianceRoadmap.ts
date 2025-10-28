@@ -101,8 +101,17 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
         customerId
       });
       
+      // Get user session for authentication
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('No active session found');
+      }
+      
       const { data, error } = await supabase.functions.invoke('initialize-roadmap-safe', {
-        body: { frameworkId, customerId }
+        body: { frameworkId, customerId },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
       
       if (error) {
