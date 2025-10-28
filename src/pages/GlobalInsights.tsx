@@ -79,15 +79,35 @@ export default function GlobalInsights() {
   const runProcessor = async () => {
     setProcessing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('central-mml-processor');
-      
-      if (error) throw error;
-      
-      toast.success(`Generated ${data.insightsGenerated} new global insights`);
+      const { data, error } = await supabase.functions.invoke('central-mml-processor', {
+        // Some backends expect a JSON body to parse
+        body: {}
+      });
+
+      if (error) throw error as any;
+
+      const count =
+        (typeof data === 'number' ? data : undefined) ??
+        (data as any)?.insightsGenerated ??
+        (data as any)?.count ??
+        (data as any)?.generated ??
+        (Array.isArray(data) ? data.length : undefined);
+
+      toast.success(
+        count !== undefined
+          ? `Generated ${count} new global insights`
+          : 'Generated new global insights'
+      );
       await fetchGlobalInsights();
-    } catch (error) {
-      console.error('Error running processor:', error);
-      toast.error('Failed to run MML processor');
+    } catch (err: any) {
+      console.error('Error running processor (full):', err);
+
+      const status = err?.context?.response?.status ?? err?.status ?? err?.context?.status;
+      const message = err?.message ?? err?.context?.response?.statusText ?? 'Edge Function returned a non-2xx status code';
+
+      toast.error(status ? `Initialization Failed (${status})` : 'Initialization Failed', {
+        description: message || 'Check console for full details',
+      });
     } finally {
       setProcessing(false);
     }
