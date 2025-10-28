@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useComplianceData } from "@/hooks/useComplianceData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -108,7 +109,23 @@ const ComplianceDashboard = () => {
     if (data) setMcpServers(data);
   };
 
+  // Now using useComplianceData hook
+  const { stats: complianceHookStats, isLoading: complianceHookLoading } = useComplianceData();
+  
+  useEffect(() => {
+    if (complianceHookStats) {
+      setStats({
+        frameworks: complianceHookStats.frameworks,
+        controls: 0, // Not provided by hook yet
+        reports: complianceHookStats.reports,
+        evidenceFiles: complianceHookStats.evidenceFiles,
+        complianceScore: complianceHookStats.complianceScore
+      });
+    }
+  }, [complianceHookStats]);
+
   const fetchStats = async () => {
+    // Keeping for backwards compatibility, but hook handles the fetch
     const [frameworks, controls, reports, evidence] = await Promise.all([
       supabase.from("compliance_frameworks").select("*", { count: "exact", head: true }),
       supabase.from("compliance_controls").select("*", { count: "exact", head: true }),

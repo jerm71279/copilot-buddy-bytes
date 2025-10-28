@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useExecutiveData } from "@/hooks/useExecutiveData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -106,7 +107,7 @@ const ExecutiveDashboard = () => {
   const checkAccess = async () => {
     if (isPreviewMode) {
       setUserProfile({ full_name: "Demo User", department: "executive" });
-      await fetchStats();
+      // Stats loaded by hook
       setIsLoading(false);
       return;
     }
@@ -126,25 +127,18 @@ const ExecutiveDashboard = () => {
       .maybeSingle();
 
     setUserProfile(profile);
-    await fetchStats();
+    // Stats loaded by hook
     setIsLoading(false);
   };
 
-  const fetchStats = async () => {
-    const [customers, insights, anomalies] = await Promise.all([
-      supabase.from("customers").select("*", { count: "exact", head: true }),
-      supabase.from("ml_insights").select("*", { count: "exact", head: true }),
-      supabase.from("anomaly_detections").select("*", { count: "exact", head: true })
-    ]);
-
-    setStats({
-      customers: customers.count || 0,
-      complianceScore: 92,
-      workflowEfficiency: 87,
-      mlInsights: insights.count || 0,
-      anomalies: anomalies.count || 0
-    });
-  };
+  // Now using useExecutiveData hook instead of inline queries
+  const { stats: executiveStats, isLoading: statsLoading } = useExecutiveData();
+  
+  useEffect(() => {
+    if (executiveStats) {
+      setStats(executiveStats);
+    }
+  }, [executiveStats]);
 
   const handleSignOut = async () => {
     if (isPreviewMode) {

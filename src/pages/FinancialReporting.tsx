@@ -1,16 +1,21 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useFinancialReports } from "@/hooks/useFinancialReports";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { BarChart, DollarSign, TrendingUp, TrendingDown, FileText, Download } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
 
 export default function FinancialReporting() {
   const toast = useStandardToast();
   const { customerId } = useUserProfile();
+  
+  // Now using useFinancialReports hook
+  const { metrics, isLoading: hookLoading } = useFinancialReports(customerId);
+  
   const [loading, setLoading] = useState(true);
   const [reportPeriod, setReportPeriod] = useState("current_month");
   const [financialData, setFinancialData] = useState({
@@ -21,12 +26,28 @@ export default function FinancialReporting() {
     budgetUtilization: 0,
     profitMargin: 0,
   });
+  
+  // Update local state when hook data changes
+  useEffect(() => {
+    if (metrics) {
+      setFinancialData({
+        totalRevenue: metrics.totalRevenue,
+        totalExpenses: metrics.totalExpenses,
+        totalPOs: metrics.totalPOs,
+        totalInvoices: 0, // Not in hook yet
+        budgetUtilization: metrics.budgetUtilization,
+        profitMargin: metrics.profitMargin,
+      });
+      setLoading(false);
+    }
+  }, [metrics]);
 
   useEffect(() => {
-    if (customerId) {
-      fetchFinancialData();
+    if (customerId && !metrics) {
+      // Hook handles fetching, just manage loading state
+      setLoading(hookLoading);
     }
-  }, [customerId, reportPeriod]);
+  }, [customerId, reportPeriod, metrics, hookLoading]);
 
   const fetchFinancialData = async () => {
     try {
