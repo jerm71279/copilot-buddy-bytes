@@ -86,18 +86,9 @@ export default function GlobalInsights() {
 
       if (error) throw error as any;
 
-      const count =
-        (typeof data === 'number' ? data : undefined) ??
-        (data as any)?.insightsGenerated ??
-        (data as any)?.count ??
-        (data as any)?.generated ??
-        (Array.isArray(data) ? data.length : undefined);
+      const count = (data as any)?.globalInsightsGenerated ?? 0;
 
-      toast.success(
-        count !== undefined
-          ? `Generated ${count} new global insights`
-          : 'Generated new global insights'
-      );
+      toast.success(`Generated ${count} new global insights`);
       await fetchGlobalInsights();
     } catch (err: any) {
       console.error('Error running processor (full):', err);
