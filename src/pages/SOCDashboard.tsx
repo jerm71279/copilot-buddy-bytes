@@ -91,6 +91,12 @@ const SOCDashboard = () => {
   };
 
   const runThreatAnalysis = async () => {
+    // Don't allow in preview mode
+    if (isPreviewMode) {
+      toast.error("Threat analysis requires authentication. Please sign in.");
+      return;
+    }
+
     setIsAnalyzing(true);
     try {
       // Verify user is authenticated
@@ -102,7 +108,10 @@ const SOCDashboard = () => {
       }
 
       const { data, error } = await supabase.functions.invoke('soc-threat-analysis', {
-        body: { analysisType: 'comprehensive', timeframe: selectedTimeframe }
+        body: { analysisType: 'comprehensive', timeframe: selectedTimeframe },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
       });
 
       if (error) {
