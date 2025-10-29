@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { WarehouseService } from "@/services/inventoryService";
+// TODO: Re-enable after creating inventoryService
+// import { WarehouseService } from "@/services/inventoryService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
