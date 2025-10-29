@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useRequireAuth } from "./useAuth";
+import { ComplianceService } from "@/services/complianceService";
 
 export interface Framework {
   id: string;
@@ -51,24 +51,20 @@ export function useComplianceData() {
 
   const loadComplianceData = async () => {
     try {
-      const [frameworksRes, evidenceRes, reportsRes] = await Promise.all([
-        supabase.from('compliance_frameworks').select('*').eq('is_active', true),
-        supabase.from('evidence_files').select('*'),
-        supabase.from('compliance_reports').select('*').order('generated_at', { ascending: false }).limit(10)
+      const [frameworksData, evidenceData, reportsData] = await Promise.all([
+        ComplianceService.getActiveFrameworks(),
+        ComplianceService.getAllEvidenceFiles(),
+        ComplianceService.getRecentReports(10)
       ]);
 
-      if (frameworksRes.error) throw frameworksRes.error;
-      if (evidenceRes.error) throw evidenceRes.error;
-      if (reportsRes.error) throw reportsRes.error;
-
-      setFrameworks(frameworksRes.data || []);
-      setEvidenceFiles(evidenceRes.data || []);
-      setReports(reportsRes.data || []);
+      setFrameworks(frameworksData);
+      setEvidenceFiles(evidenceData);
+      setReports(reportsData);
 
       setStats({
-        frameworks: frameworksRes.data?.length || 0,
-        evidenceFiles: evidenceRes.data?.length || 0,
-        reports: reportsRes.data?.length || 0,
+        frameworks: frameworksData.length,
+        evidenceFiles: evidenceData.length,
+        reports: reportsData.length,
         complianceScore: 85 // Calculate based on controls/evidence
       });
     } catch (error) {

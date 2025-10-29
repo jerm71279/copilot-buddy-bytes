@@ -191,4 +191,58 @@ export class ComplianceService {
     if (error) throw error;
     return true;
   }
+
+  /**
+   * Get active compliance frameworks
+   */
+  static async getActiveFrameworks() {
+    const { data, error } = await supabase
+      .from('compliance_frameworks')
+      .select('*')
+      .eq('is_active', true);
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  /**
+   * Get all evidence files
+   */
+  static async getAllEvidenceFiles() {
+    const { data, error } = await supabase
+      .from('evidence_files')
+      .select('*');
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  /**
+   * Get recent compliance reports
+   */
+  static async getRecentReports(limit: number = 10) {
+    const { data, error } = await supabase
+      .from('compliance_reports')
+      .select('*')
+      .order('generated_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  /**
+   * Get active MCP servers for compliance
+   */
+  static async getMcpServers() {
+    const { data, error } = await supabase
+      .from("mcp_servers")
+      .select("id, server_name, server_type")
+      .eq("server_type", "compliance")
+      .eq("status", "active")
+      .order("server_name");
+
+    if (error) throw error;
+    return data || [];
+  }
 }

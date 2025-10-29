@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useComplianceData } from "@/hooks/useComplianceData";
 import { ComplianceService } from "@/services/complianceService";
 import { Button } from "@/components/ui/button";
@@ -100,14 +99,12 @@ const ComplianceDashboard = () => {
   }, [customerId, isPreviewMode]);
 
   const fetchMcpServers = async () => {
-    const { data } = await supabase
-      .from("mcp_servers")
-      .select("id, server_name, server_type")
-      .eq("server_type", "compliance")
-      .eq("status", "active")
-      .order("server_name");
-    
-    if (data) setMcpServers(data);
+    try {
+      const data = await ComplianceService.getMcpServers();
+      setMcpServers(data);
+    } catch (error) {
+      console.error('Error fetching MCP servers:', error);
+    }
   };
 
   // Now using useComplianceData hook
@@ -140,10 +137,9 @@ const ComplianceDashboard = () => {
   const handleSignOut = async () => {
     if (isPreviewMode) {
       navigate("/demo");
-      return;
+    } else {
+      navigate("/auth");
     }
-    await supabase.auth.signOut();
-    navigate("/auth");
   };
 
   if (profileLoading) {
