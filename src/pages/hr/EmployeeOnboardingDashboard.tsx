@@ -140,8 +140,7 @@ export default function EmployeeOnboardingDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <DashboardLayout>
+    <DashboardLayout>
         <DashboardNavigation 
           title="Employee Onboarding"
           dashboards={[
@@ -263,7 +262,6 @@ export default function EmployeeOnboardingDashboard() {
           <DepartmentAIAssistant department="hr" departmentLabel="HR - Employee Onboarding" />
           <MCPServerStatus filterByServerType="hr" />
         </div>
-      </DashboardLayout>
-    </div>
+    </DashboardLayout>
   );
 }

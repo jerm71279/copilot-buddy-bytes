@@ -180,8 +180,7 @@ export default function EmployeeOnboardingTemplates() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <DashboardLayout>
+    <DashboardLayout>
         <DashboardNavigation 
           title="Employee Onboarding Templates"
           dashboards={[
@@ -352,7 +351,6 @@ export default function EmployeeOnboardingTemplates() {
             ))}
           </div>
         )}
-      </DashboardLayout>
-    </div>
+    </DashboardLayout>
   );
 }

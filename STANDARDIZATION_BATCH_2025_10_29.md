@@ -51,10 +51,15 @@
 - [ ] hr/EmployeeOnboardingNew.tsx
 - [ ] hr/EmployeeOnboardingTemplates.tsx
 
+### Additional Pages Found - COMPLETED
+- [x] ETLPipelineOrchestration.tsx
+- [x] hr/EmployeeOnboardingDashboard.tsx (removed duplicate wrapper)
+- [x] hr/EmployeeOnboardingTemplates.tsx (removed duplicate wrapper)
+
 ## Total Progress
-- **Completed:** 45 pages (100% ✅)
+- **Completed:** 48 pages (100% ✅)
 - **Remaining:** 0 pages
-- **Total to Standardize:** 45 pages
+- **Total to Standardize:** 48 pages
 
 ## 🎉 STANDARDIZATION COMPLETE
 
