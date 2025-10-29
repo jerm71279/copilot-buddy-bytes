@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { InternalOperationsService } from "@/services/internalOperationsService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -9,52 +9,21 @@ import { Users, Award, TrendingUp, CheckCircle, AlertTriangle, Activity, Clock, 
 const InternalOperationsDashboard = () => {
   const { data: metrics, isLoading: metricsLoading } = useQuery({
     queryKey: ["internal-operations-metrics"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("internal_operations_metrics")
-        .select("*")
-        .order("metric_date", { ascending: false })
-        .limit(30);
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => InternalOperationsService.getMetrics(),
   });
 
   const { data: champions } = useQuery({
     queryKey: ["employee-champions"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("employee_champions")
-        .select("*")
-        .eq("is_active", true);
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => InternalOperationsService.getActiveChampions(),
   });
 
   const { data: recentFeedback } = useQuery({
     queryKey: ["recent-feedback"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("employee_feedback")
-        .select("*")
-        .order("submitted_at", { ascending: false })
-        .limit(10);
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => InternalOperationsService.getRecentFeedback(),
   });
 
   const latestMetrics = metrics?.[0];
   const previousMetrics = metrics?.[1];
-
-  const getMetricChange = (current?: number, previous?: number) => {
-    if (!current || !previous) return 0;
-    return ((current - previous) / previous) * 100;
-  };
 
   if (metricsLoading) {
     return <div className="p-8">Loading...</div>;
@@ -82,8 +51,8 @@ const InternalOperationsDashboard = () => {
             <div className="text-2xl font-bold">{latestMetrics?.active_employees || 0}</div>
             {previousMetrics && (
               <p className="text-xs text-muted-foreground">
-                {getMetricChange(latestMetrics?.active_employees, previousMetrics.active_employees) > 0 ? "+" : ""}
-                {getMetricChange(latestMetrics?.active_employees, previousMetrics.active_employees).toFixed(1)}% from yesterday
+                {InternalOperationsService.getMetricChange(latestMetrics?.active_employees, previousMetrics.active_employees) > 0 ? "+" : ""}
+                {InternalOperationsService.getMetricChange(latestMetrics?.active_employees, previousMetrics.active_employees).toFixed(1)}% from yesterday
               </p>
             )}
           </CardContent>
