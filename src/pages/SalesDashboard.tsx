@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { TrendingUp, Users, DollarSign, Target, ArrowUpRight, Calendar, AlertCircle, CheckCircle, Clock, ChevronDown, FileText, BarChart, Server } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
@@ -134,17 +135,15 @@ const SalesDashboard = () => {
   };
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <DashboardLayout><div className="flex items-center justify-center py-12">Loading...</div></DashboardLayout>;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 space-y-6" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
-
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Sales Dashboard</h1>
-          <DashboardSettingsMenu dashboardName="Sales" />
-        </div>
+    <DashboardLayout className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Sales Dashboard</h1>
+        <DashboardSettingsMenu dashboardName="Sales" />
+      </div>
         
         
         <div className="mb-8">
@@ -465,10 +464,9 @@ const SalesDashboard = () => {
           </CardContent>
         </Card>
 
-        
-        <DepartmentAIAssistant department="sales" departmentLabel="Sales" />
-      </main>
-    </div>
+      
+      <DepartmentAIAssistant department="sales" departmentLabel="Sales" />
+    </DashboardLayout>
   );
 };
 

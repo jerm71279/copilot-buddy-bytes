@@ -22,6 +22,7 @@ import {
   getSeverityColor,
   getStatusColor
 } from "@/lib/securityConfig";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const SOCDashboard = () => {
   const navigate = useNavigate();
@@ -114,29 +115,27 @@ const SOCDashboard = () => {
   };
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <DashboardLayout><div className="flex items-center justify-center py-12">Loading...</div></DashboardLayout>;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 space-y-6" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Security Operations Center</h1>
-            <p className="text-sm text-muted-foreground">Advanced threat detection & response</p>
-          </div>
-          <div className="flex gap-2">
-            <Button 
-              onClick={runThreatAnalysis} 
-              disabled={isAnalyzing}
-              variant="outline"
-            >
-              {isAnalyzing ? "Analyzing..." : "🤖 AI Threat Analysis"}
-            </Button>
-            <DashboardSettingsMenu dashboardName="SOC" />
-          </div>
+    <DashboardLayout className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Security Operations Center</h1>
+          <p className="text-sm text-muted-foreground">Advanced threat detection & response</p>
         </div>
+        <div className="flex gap-2">
+          <Button 
+            onClick={runThreatAnalysis} 
+            disabled={isAnalyzing}
+            variant="outline"
+          >
+            {isAnalyzing ? "Analyzing..." : "🤖 AI Threat Analysis"}
+          </Button>
+          <DashboardSettingsMenu dashboardName="SOC" />
+        </div>
+      </div>
         
         {/* Primary Metrics */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -297,11 +296,10 @@ const SOCDashboard = () => {
 
         {/* Additional Components */}
         <div className="grid gap-6 md:grid-cols-2">
-          <DepartmentAIAssistant department="security" departmentLabel="Security Operations" />
-          <MCPServerStatus filterByServerType="security" />
-        </div>
-      </main>
-    </div>
+        <DepartmentAIAssistant department="security" departmentLabel="Security Operations" />
+        <MCPServerStatus filterByServerType="security" />
+      </div>
+    </DashboardLayout>
   );
 };
 

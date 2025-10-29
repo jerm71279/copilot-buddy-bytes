@@ -3,6 +3,7 @@ import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { useITData } from "@/hooks/useITData";
 import { ITMetricCards } from "@/components/it/ITMetricCards";
 import { SecurityOperationsCard } from "@/components/it/SecurityOperationsCard";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 /**
  * IT Dashboard Data Flow
@@ -54,28 +55,25 @@ const ITDashboard = () => {
   const { isLoading, stats } = useITData();
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <DashboardLayout><div className="flex items-center justify-center py-12">Loading...</div></DashboardLayout>;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 space-y-6" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
+    <DashboardLayout className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">IT Dashboard</h1>
+        <DashboardSettingsMenu dashboardName="IT" />
+      </div>
+      
+      <ITMetricCards stats={stats} />
 
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">IT Dashboard</h1>
-          <DashboardSettingsMenu dashboardName="IT" />
-        </div>
-        
-        <ITMetricCards stats={stats} />
+      <SecurityOperationsCard />
 
-        <SecurityOperationsCard />
-
-        <DepartmentAIAssistant 
-          department="it" 
-          departmentLabel="IT & Security" 
-        />
-      </main>
-    </div>
+      <DepartmentAIAssistant 
+        department="it" 
+        departmentLabel="IT & Security" 
+      />
+    </DashboardLayout>
   );
 };
 
