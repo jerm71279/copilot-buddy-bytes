@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useComplianceData } from "@/hooks/useComplianceData";
+import { ComplianceService } from "@/services/complianceService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -125,21 +126,15 @@ const ComplianceDashboard = () => {
   }, [complianceHookStats]);
 
   const fetchStats = async () => {
-    // Keeping for backwards compatibility, but hook handles the fetch
-    const [frameworks, controls, reports, evidence] = await Promise.all([
-      supabase.from("compliance_frameworks").select("*", { count: "exact", head: true }),
-      supabase.from("compliance_controls").select("*", { count: "exact", head: true }),
-      supabase.from("compliance_reports").select("*", { count: "exact", head: true }),
-      supabase.from("evidence_files").select("*", { count: "exact", head: true })
-    ]);
-
-    setStats({
-      frameworks: frameworks.count || 0,
-      controls: controls.count || 0,
-      reports: reports.count || 0,
-      evidenceFiles: evidence.count || 0,
-      complianceScore: 92
-    });
+    try {
+      const counts = await ComplianceService.getComplianceCounts();
+      setStats({
+        ...counts,
+        complianceScore: 92
+      });
+    } catch (error) {
+      console.error('Error fetching compliance stats:', error);
+    }
   };
 
   const handleSignOut = async () => {
