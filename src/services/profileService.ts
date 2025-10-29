@@ -99,4 +99,55 @@ export class ProfileService {
     if (error) throw error;
     return data as UserProfile[];
   }
+
+  /**
+   * Get customer customizations
+   * @param customerId - Customer's unique identifier
+   * @returns Customer customization settings
+   * @throws Error if database query fails
+   */
+  static async getCustomerCustomizations(customerId: string): Promise<{
+    enabled_portals: string[];
+    enabled_modules: Record<string, boolean>;
+  } | null> {
+    const { data, error } = await supabase
+      .from("customer_customizations")
+      .select("enabled_portals, enabled_modules")
+      .eq("customer_id", customerId)
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to fetch customer customizations: ${error.message}`);
+    
+    if (!data) return null;
+
+    return {
+      enabled_portals: data.enabled_portals 
+        ? (data.enabled_portals as unknown[]).filter((p): p is string => typeof p === 'string')
+        : [],
+      enabled_modules: data.enabled_modules && typeof data.enabled_modules === 'object'
+        ? data.enabled_modules as Record<string, boolean>
+        : {}
+    };
+  }
+
+  /**
+   * Get all user profiles for selection (e.g., temporary privileges)
+   * @returns Array of user profiles with user_id and full_name
+   * @throws Error if database query fails
+   */
+  static async getUserProfilesForSelection(): Promise<Array<{
+    user_id: string;
+    full_name: string | null;
+  }>> {
+    const { data, error } = await supabase
+      .from("user_profiles")
+      .select("user_id, full_name")
+      .order("full_name");
+    
+    if (error) throw new Error(`Failed to fetch user profiles: ${error.message}`);
+    return (data || []) as Array<{
+      user_id: string;
+      full_name: string | null;
+    }>;
+  }
 }

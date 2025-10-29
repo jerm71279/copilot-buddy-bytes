@@ -5,10 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { useForm } from "@/hooks/useForm";
 import { sanitizeText } from "@/utils/validation";
+import { RiskService } from "@/services/riskService";
+import { AuthService } from "@/services/authService";
 
 interface RiskAssessmentDialogProps {
   open: boolean;
@@ -57,15 +58,10 @@ export function RiskAssessmentDialog({ open, onOpenChange, onSuccess }: RiskAsse
     },
     onSubmit: async (values) => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await AuthService.getCurrentUser();
         if (!user) throw new Error("Not authenticated");
 
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("customer_id")
-          .eq("user_id", user.id)
-          .maybeSingle();
-
+        const profile = await AuthService.getUserProfile(user.id);
         if (!profile?.customer_id) throw new Error("Customer ID not found");
 
         // Sanitize inputs
@@ -75,24 +71,20 @@ export function RiskAssessmentDialog({ open, onOpenChange, onSuccess }: RiskAsse
         // Calculate inherent score (likelihood * impact)
         const inherentScore = values.inherent_likelihood * values.inherent_impact;
 
-        const { error } = await supabase
-          .from("risk_assessments")
-          .insert({
-            customer_id: profile.customer_id,
-            risk_title: sanitizedTitle,
-            risk_description: sanitizedDescription,
-            category: values.category as any,
-            inherent_likelihood: values.inherent_likelihood as any,
-            inherent_impact: values.inherent_impact as any,
-            inherent_score: inherentScore,
-            treatment_type: values.treatment_type as any,
-            status: "identified" as any,
-            created_by: user.id,
-            identified_by: user.id,
-            risk_id: crypto.randomUUID(),
-          });
-
-        if (error) throw error;
+        await RiskService.createRiskAssessment({
+          customer_id: profile.customer_id,
+          risk_title: sanitizedTitle,
+          risk_description: sanitizedDescription,
+          category: values.category,
+          inherent_likelihood: values.inherent_likelihood,
+          inherent_impact: values.inherent_impact,
+          inherent_score: inherentScore,
+          treatment_type: values.treatment_type,
+          status: "identified",
+          created_by: user.id,
+          identified_by: user.id,
+          risk_id: crypto.randomUUID(),
+        });
 
         toast({
           title: "Success",

@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Layout, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { RBACService } from "@/services/rbacService";
-import { supabase } from "@/integrations/supabase/client";
 
 export default function RoleTemplates() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -23,14 +22,7 @@ export default function RoleTemplates() {
   // Fetch templates
   const { data: templates, isLoading } = useQuery({
     queryKey: ["role-templates"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("role_templates" as any)
-        .select("*")
-        .order("template_name");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => RBACService.getRoleTemplates(),
   });
 
   // Fetch roles
@@ -41,29 +33,8 @@ export default function RoleTemplates() {
 
   // Apply template mutation
   const applyTemplateMutation = useMutation({
-    mutationFn: async (data: { roleId: string; permissions: any[] }) => {
-      // Delete existing permissions for the role
-      const { error: deleteError } = await supabase
-        .from("role_permissions")
-        .delete()
-        .eq("role_id", data.roleId);
-      
-      if (deleteError) throw deleteError;
-
-      // Insert new permissions from template
-      const permissionsToInsert = data.permissions.map((perm: any) => ({
-        role_id: data.roleId,
-        resource_type: perm.resource_type,
-        resource_name: perm.resource_name,
-        permission_level: perm.permission_level,
-      }));
-
-      const { error: insertError } = await supabase
-        .from("role_permissions")
-        .insert(permissionsToInsert);
-      
-      if (insertError) throw insertError;
-    },
+    mutationFn: (data: { roleId: string; permissions: any[] }) =>
+      RBACService.applyRoleTemplate(data.roleId, data.permissions),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["role-permissions"] });
       toast.success("Template applied successfully");

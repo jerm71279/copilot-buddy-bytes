@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Network, ShieldAlert, Shield, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { SAWService } from "@/services/sawService";
-import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 
 export default function IPAllowlistManager() {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -27,17 +27,13 @@ export default function IPAllowlistManager() {
   const { data: userProfile } = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
       
-      const { data, error } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const profile = await AuthService.getUserProfile(user.id);
+      if (!profile) throw new Error("Profile not found");
       
-      if (error) throw error;
-      return data;
+      return profile;
     },
   });
 
@@ -50,7 +46,7 @@ export default function IPAllowlistManager() {
   // Add IP range mutation
   const addIPMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
       return SAWService.addIPToAllowlist({

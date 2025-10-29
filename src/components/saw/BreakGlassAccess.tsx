@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Key, AlertTriangle, CheckCircle, XCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { SAWService } from "@/services/sawService";
-import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 
 export default function BreakGlassAccess() {
   const [isRequestOpen, setIsRequestOpen] = useState(false);
@@ -25,17 +25,16 @@ export default function BreakGlassAccess() {
   const { data: currentUser } = useQuery({
     queryKey: ["current-user"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
       
-      const { data, error } = await supabase
-        .from("user_profiles")
-        .select("customer_id, full_name")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const profile = await AuthService.getUserProfile(user.id);
+      if (!profile) throw new Error("Profile not found");
       
-      if (error) throw error;
-      return { ...data, user_id: user.id };
+      return { 
+        ...profile, 
+        user_id: user.id 
+      };
     },
   });
 

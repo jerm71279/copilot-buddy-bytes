@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { AuditService } from "@/services/auditService";
 import {
   Dialog,
   DialogContent,
@@ -32,22 +32,10 @@ export const AccessHistoryDialog = ({ open, onOpenChange }: AccessHistoryDialogP
   const { data: auditLogs, isLoading } = useQuery({
     queryKey: ['audit-logs', customerId, filterType],
     enabled: !!customerId && open,
-    queryFn: async () => {
-      let query = supabase
-        .from('audit_logs')
-        .select('*')
-        .eq('customer_id', customerId)
-        .order('timestamp', { ascending: false })
-        .limit(100);
-
-      if (filterType !== 'all') {
-        query = query.eq('action_type', filterType);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => AuditService.getAuditLogs(customerId!, {
+      actionType: filterType,
+      limit: 100
+    }),
   });
 
   const filteredLogs = auditLogs?.filter(log => {

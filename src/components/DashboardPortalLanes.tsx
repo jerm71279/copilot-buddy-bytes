@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { useEffect, useState, useRef, useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { usePortalPermissions } from "@/hooks/useNavigationPermissions";
@@ -17,6 +16,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { portals, categories, portalSlugMap, categorySlugMap, Portal, Category } from "@/config/portals";
 import { PortalsBar } from "./PortalsBar";
 import { PortalDropdown } from "./PortalDropdown";
+import { AuthService } from "@/services/authService";
+import { ProfileService } from "@/services/profileService";
 
 export default function DashboardPortalLanes() {
   const location = useLocation();
@@ -39,33 +40,16 @@ export default function DashboardPortalLanes() {
 
   useEffect(() => {
     const loadSettings = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      const user = await AuthService.getCurrentUser();
+      if (!user) return;
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-
+      const profile = await AuthService.getUserProfile(user.id);
       if (!profile?.customer_id) return;
 
-      const { data: customization } = await supabase
-        .from("customer_customizations")
-        .select("enabled_portals, enabled_modules")
-        .eq("customer_id", profile.customer_id)
-        .maybeSingle();
-
+      const customization = await ProfileService.getCustomerCustomizations(profile.customer_id);
       if (customization) {
-        const portals = customization.enabled_portals 
-          ? (customization.enabled_portals as any[]).filter((p): p is string => typeof p === 'string')
-          : [];
-        const modules = customization.enabled_modules && typeof customization.enabled_modules === 'object'
-          ? customization.enabled_modules as Record<string, boolean>
-          : {};
-        
-        setEnabledPortals(portals);
-        setEnabledModules(modules);
+        setEnabledPortals(customization.enabled_portals);
+        setEnabledModules(customization.enabled_modules);
       }
     };
 

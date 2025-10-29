@@ -269,4 +269,142 @@ export class RBACService {
     if (error) throw new Error(`Failed to fetch audit logs: ${error.message}`);
     return (data || []) as PermissionAuditLog[];
   }
+
+  /**
+   * Get role templates
+   * @returns Array of role templates
+   * @throws Error if database query fails
+   */
+  static async getRoleTemplates(): Promise<Array<{
+    id: string;
+    template_name: string;
+    description: string;
+    template_permissions: unknown[];
+  }>> {
+    const { data, error } = await supabase
+      .from("role_templates" as never)
+      .select("*")
+      .order("template_name");
+    
+    if (error) throw new Error(`Failed to fetch role templates: ${error.message}`);
+    return (data || []) as Array<{
+      id: string;
+      template_name: string;
+      description: string;
+      template_permissions: unknown[];
+    }>;
+  }
+
+  /**
+   * Apply role template to a role
+   * @param roleId - The role's unique identifier
+   * @param permissions - Array of permissions from the template
+   * @throws Error if operation fails
+   */
+  static async applyRoleTemplate(roleId: string, permissions: Array<{
+    resource_type: string;
+    resource_name: string;
+    permission_level: string;
+  }>): Promise<void> {
+    // Delete existing permissions for the role
+    const { error: deleteError } = await supabase
+      .from("role_permissions")
+      .delete()
+      .eq("role_id", roleId);
+    
+    if (deleteError) throw new Error(`Failed to delete existing permissions: ${deleteError.message}`);
+
+    // Insert new permissions from template
+    const permissionsToInsert = permissions.map(perm => ({
+      role_id: roleId,
+      resource_type: perm.resource_type,
+      resource_name: perm.resource_name,
+      permission_level: perm.permission_level,
+    }));
+
+    const { error: insertError } = await supabase
+      .from("role_permissions")
+      .insert(permissionsToInsert);
+    
+    if (insertError) throw new Error(`Failed to insert template permissions: ${insertError.message}`);
+  }
+
+  /**
+   * Get temporary privileges
+   * @returns Array of temporary privileges with user and role information
+   * @throws Error if database query fails
+   */
+  static async getTemporaryPrivileges(): Promise<Array<{
+    id: string;
+    user_id: string;
+    role_id: string;
+    granted_by: string;
+    reason: string;
+    valid_until: string;
+    is_active: boolean;
+    created_at: string;
+    role: { name: string };
+    user: { full_name: string };
+    granted_by_user: { full_name: string };
+  }>> {
+    const { data, error } = await supabase
+      .from("temporary_privileges" as never)
+      .select(`
+        *,
+        role:roles(name),
+        user:user_profiles!temporary_privileges_user_id_fkey(full_name),
+        granted_by_user:user_profiles!temporary_privileges_granted_by_fkey(full_name)
+      `)
+      .order("created_at", { ascending: false });
+    
+    if (error) throw new Error(`Failed to fetch temporary privileges: ${error.message}`);
+    return (data || []) as never;
+  }
+
+  /**
+   * Grant temporary privilege to a user
+   * @param data - Temporary privilege data
+   * @throws Error if operation fails
+   */
+  static async grantTemporaryPrivilege(data: {
+    userId: string;
+    roleId: string;
+    grantedBy: string;
+    reason: string;
+    validHours: number;
+  }): Promise<void> {
+    const validUntil = new Date();
+    validUntil.setHours(validUntil.getHours() + data.validHours);
+
+    const { error } = await supabase
+      .from("temporary_privileges" as never)
+      .insert({
+        user_id: data.userId,
+        role_id: data.roleId,
+        granted_by: data.grantedBy,
+        reason: data.reason,
+        valid_until: validUntil.toISOString(),
+      } as never);
+    
+    if (error) throw new Error(`Failed to grant temporary privilege: ${error.message}`);
+  }
+
+  /**
+   * Revoke temporary privilege
+   * @param privilegeId - The privilege's unique identifier
+   * @param revokedBy - User ID of the person revoking the privilege
+   * @throws Error if operation fails
+   */
+  static async revokeTemporaryPrivilege(privilegeId: string, revokedBy: string): Promise<void> {
+    const { error } = await supabase
+      .from("temporary_privileges" as never)
+      .update({
+        is_active: false,
+        revoked_at: new Date().toISOString(),
+        revoked_by: revokedBy,
+      } as never)
+      .eq("id", privilegeId);
+    
+    if (error) throw new Error(`Failed to revoke temporary privilege: ${error.message}`);
+  }
 }

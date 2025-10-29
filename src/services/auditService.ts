@@ -55,11 +55,14 @@ export class AuditService {
 
   /**
    * Log privileged access
+   * @param system - System name where access occurred
+   * @param action - Action performed
+   * @param details - Additional details about the action
    */
   static async logPrivilegedAccess(
     system: string,
     action: string,
-    details: Record<string, any>
+    details: Record<string, unknown>
   ): Promise<void> {
     await AuditService.logAction({
       action_type: `privileged_${action}`,
@@ -71,5 +74,55 @@ export class AuditService {
       },
       compliance_tags: ['privileged_access', 'rmm', system.toLowerCase()]
     });
+  }
+
+  /**
+   * Get audit logs for a customer
+   * @param customerId - Customer's unique identifier
+   * @param options - Query options (actionType filter, limit)
+   * @returns Array of audit log entries
+   * @throws Error if database query fails
+   */
+  static async getAuditLogs(
+    customerId: string,
+    options?: {
+      actionType?: string;
+      limit?: number;
+    }
+  ): Promise<Array<{
+    id: string;
+    timestamp: string;
+    system_name: string;
+    action_type: string;
+    action_details: Record<string, unknown>;
+    compliance_tags: string[];
+  }>> {
+    let query = supabase
+      .from('audit_logs')
+      .select('*')
+      .eq('customer_id', customerId)
+      .order('timestamp', { ascending: false });
+
+    if (options?.actionType && options.actionType !== 'all') {
+      query = query.eq('action_type', options.actionType);
+    }
+
+    if (options?.limit) {
+      query = query.limit(options.limit);
+    } else {
+      query = query.limit(100);
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw new Error(`Failed to fetch audit logs: ${error.message}`);
+    return (data || []) as Array<{
+      id: string;
+      timestamp: string;
+      system_name: string;
+      action_type: string;
+      action_details: Record<string, unknown>;
+      compliance_tags: string[];
+    }>;
   }
 }

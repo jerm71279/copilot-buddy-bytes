@@ -11,8 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Plus, Clock, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { RBACService } from "@/services/rbacService";
+import { AuthService } from "@/services/authService";
 
 export default function TemporaryPrivileges() {
   const [isGrantOpen, setIsGrantOpen] = useState(false);
@@ -25,14 +25,7 @@ export default function TemporaryPrivileges() {
   // Fetch users
   const { data: users } = useQuery({
     queryKey: ["users-for-temp-privileges"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("user_profiles")
-        .select("user_id, full_name")
-        .order("full_name");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => ProfileService.getUserProfilesForSelection(),
   });
 
   // Fetch roles
@@ -44,40 +37,22 @@ export default function TemporaryPrivileges() {
   // Fetch temporary privileges
   const { data: privileges, isLoading } = useQuery({
     queryKey: ["temporary-privileges"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("temporary_privileges" as any)
-        .select(`
-          *,
-          role:roles(name),
-          user:user_profiles!temporary_privileges_user_id_fkey(full_name),
-          granted_by_user:user_profiles!temporary_privileges_granted_by_fkey(full_name)
-        `)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => RBACService.getTemporaryPrivileges(),
   });
 
   // Grant privilege mutation
   const grantPrivilegeMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const validUntil = new Date();
-      validUntil.setHours(validUntil.getHours() + parseInt(data.validHours));
-
-      const { error } = await supabase
-        .from("temporary_privileges" as any)
-        .insert({
-          user_id: data.userId,
-          role_id: data.roleId,
-          granted_by: user.id,
-          reason: data.reason,
-          valid_until: validUntil.toISOString(),
-        });
-      if (error) throw error;
+      await RBACService.grantTemporaryPrivilege({
+        userId: data.userId,
+        roleId: data.roleId,
+        grantedBy: user.id,
+        reason: data.reason,
+        validHours: parseInt(data.validHours)
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["temporary-privileges"] });
@@ -96,18 +71,10 @@ export default function TemporaryPrivileges() {
   // Revoke privilege mutation
   const revokePrivilegeMutation = useMutation({
     mutationFn: async (privilegeId: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase
-        .from("temporary_privileges" as any)
-        .update({
-          is_active: false,
-          revoked_at: new Date().toISOString(),
-          revoked_by: user.id,
-        })
-        .eq("id", privilegeId);
-      if (error) throw error;
+      await RBACService.revokeTemporaryPrivilege(privilegeId, user.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["temporary-privileges"] });
