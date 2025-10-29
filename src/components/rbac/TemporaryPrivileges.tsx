@@ -13,6 +13,7 @@ import { Plus, Clock, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { RBACService } from "@/services/rbacService";
 import { AuthService } from "@/services/authService";
+import { ProfileService } from "@/services/profileService";
 
 export default function TemporaryPrivileges() {
   const [isGrantOpen, setIsGrantOpen] = useState(false);
