@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,6 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Plus, Clock, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { RBACService } from "@/services/rbacService";
 
 export default function TemporaryPrivileges() {
   const [isGrantOpen, setIsGrantOpen] = useState(false);
@@ -37,14 +38,7 @@ export default function TemporaryPrivileges() {
   // Fetch roles
   const { data: roles } = useQuery({
     queryKey: ["roles"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("roles")
-        .select("*")
-        .order("name");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => RBACService.getRoles(),
   });
 
   // Fetch temporary privileges

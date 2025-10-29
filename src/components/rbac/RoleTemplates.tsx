@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Layout, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { RBACService } from "@/services/rbacService";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function RoleTemplates() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -35,14 +36,7 @@ export default function RoleTemplates() {
   // Fetch roles
   const { data: roles } = useQuery({
     queryKey: ["roles"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("roles")
-        .select("*")
-        .order("name");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => RBACService.getRoles(),
   });
 
   // Apply template mutation

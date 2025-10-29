@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +12,8 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Network, ShieldAlert, Shield, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { SAWService } from "@/services/sawService";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function IPAllowlistManager() {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -43,18 +44,7 @@ export default function IPAllowlistManager() {
   // Fetch IP allowlist
   const { data: allowlist, isLoading } = useQuery({
     queryKey: ["ip-allowlist"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("ip_allowlist")
-        .select(`
-          *,
-          created_by_profile:user_profiles!ip_allowlist_created_by_fkey(full_name)
-        `)
-        .order("created_at", { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => SAWService.getIPAllowlist(),
   });
 
   // Add IP range mutation
@@ -63,18 +53,14 @@ export default function IPAllowlistManager() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase
-        .from("ip_allowlist")
-        .insert({
-          customer_id: userProfile?.customer_id,
-          ip_range: data.ipRange,
-          description: data.description,
-          allowlist_type: data.allowlistType,
-          expires_at: data.expiresAt || null,
-          created_by: user.id
-        });
-      
-      if (error) throw error;
+      return SAWService.addIPToAllowlist({
+        customer_id: userProfile?.customer_id,
+        ip_range: data.ipRange,
+        description: data.description,
+        allowlist_type: data.allowlistType,
+        expires_at: data.expiresAt || null,
+        created_by: user.id
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ip-allowlist"] });
@@ -89,14 +75,8 @@ export default function IPAllowlistManager() {
 
   // Toggle IP status
   const toggleIPMutation = useMutation({
-    mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
-      const { error } = await supabase
-        .from("ip_allowlist")
-        .update({ is_active: !isActive })
-        .eq("id", id);
-      
-      if (error) throw error;
-    },
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
+      SAWService.toggleIPStatus(id, isActive),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ip-allowlist"] });
       toast.success("IP allowlist status updated");

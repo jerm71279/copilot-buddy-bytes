@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +12,8 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Shield, ShieldCheck, ShieldAlert, Laptop, Monitor, Smartphone, Server } from "lucide-react";
 import { toast } from "sonner";
+import { SAWService } from "@/services/sawService";
+import { supabase } from "@/integrations/supabase/client";
 
 // Generate device fingerprint from browser/system information
 const generateDeviceFingerprint = () => {
@@ -128,14 +129,8 @@ export default function TrustedDevicesManager() {
 
   // Toggle device status
   const toggleDeviceMutation = useMutation({
-    mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
-      const { error } = await supabase
-        .from("trusted_devices")
-        .update({ is_active: !isActive })
-        .eq("id", id);
-      
-      if (error) throw error;
-    },
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
+      SAWService.toggleDevice(id, isActive),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trusted-devices"] });
       toast.success("Device status updated");

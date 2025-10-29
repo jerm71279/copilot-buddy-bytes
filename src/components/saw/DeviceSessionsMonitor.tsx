@@ -1,28 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Activity, AlertTriangle, Shield, Clock } from "lucide-react";
+import { SAWService } from "@/services/sawService";
 
 export default function DeviceSessionsMonitor() {
   // Fetch active sessions
   const { data: sessions, isLoading } = useQuery({
     queryKey: ["device-sessions"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("device_sessions")
-        .select(`
-          *,
-          user:user_profiles!device_sessions_user_id_fkey(full_name),
-          device:trusted_devices(device_name, device_type, is_saw)
-        `)
-        .eq("is_active", true)
-        .order("session_start", { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => SAWService.getActiveSessions(),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 

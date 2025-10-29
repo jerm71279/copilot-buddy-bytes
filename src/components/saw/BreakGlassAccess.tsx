@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Key, AlertTriangle, CheckCircle, XCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
+import { SAWService } from "@/services/sawService";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function BreakGlassAccess() {
   const [isRequestOpen, setIsRequestOpen] = useState(false);
@@ -41,43 +42,23 @@ export default function BreakGlassAccess() {
   // Fetch break glass requests
   const { data: requests, isLoading } = useQuery({
     queryKey: ["break-glass-requests"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("break_glass_access")
-        .select(`
-          *,
-          requested_by_user:user_profiles!break_glass_access_requested_by_fkey(full_name),
-          approved_by_user:user_profiles!break_glass_access_approved_by_fkey(full_name),
-          user:user_profiles!break_glass_access_user_id_fkey(full_name),
-          device:trusted_devices(device_name, is_saw)
-        `)
-        .order("requested_at", { ascending: false })
-        .limit(50);
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => SAWService.getBreakGlassRequests(50),
   });
 
   // Request break glass access
   const requestAccessMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: (data: any) => {
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + parseInt(data.durationHours));
 
-      const { error } = await supabase
-        .from("break_glass_access")
-        .insert({
-          customer_id: currentUser?.customer_id,
-          user_id: currentUser?.user_id,
-          requested_by: currentUser?.user_id,
-          reason: data.reason,
-          access_type: data.accessType,
-          expires_at: expiresAt.toISOString(),
-          status: "pending"
-        });
-      
-      if (error) throw error;
+      return SAWService.requestBreakGlassAccess({
+        customer_id: currentUser?.customer_id,
+        user_id: currentUser?.user_id,
+        requested_by: currentUser?.user_id,
+        reason: data.reason,
+        access_type: data.accessType,
+        expires_at: expiresAt.toISOString(),
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["break-glass-requests"] });
@@ -92,19 +73,8 @@ export default function BreakGlassAccess() {
 
   // Approve/Deny request
   const approveRequestMutation = useMutation({
-    mutationFn: async ({ id, approve }: { id: string; approve: boolean }) => {
-      const { error } = await supabase
-        .from("break_glass_access")
-        .update({
-          status: approve ? "approved" : "denied",
-          approved_at: approve ? new Date().toISOString() : null,
-          approved_by: currentUser?.user_id,
-          access_granted: approve
-        })
-        .eq("id", id);
-      
-      if (error) throw error;
-    },
+    mutationFn: ({ id, approve }: { id: string; approve: boolean }) =>
+      SAWService.respondToBreakGlassRequest(id, approve, currentUser?.user_id),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["break-glass-requests"] });
       toast.success(variables.approve ? "Access granted" : "Access denied");
