@@ -3,18 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Brain, BarChart3, AlertTriangle, Target } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { PredictiveAnalyticsService } from "@/services/predictiveAnalyticsService";
 
 const PredictiveAnalyticsDashboard = () => {
   const { data: predictions, isLoading } = useQuery({
     queryKey: ['predictive-analytics'],
-    queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke('predictive-analytics', {
-        body: { action: 'forecast', period: '30days' }
-      });
-      if (error) throw error;
-      return data;
-    }
+    queryFn: () => PredictiveAnalyticsService.getForecast('30days')
   });
 
   const forecastCards = [
