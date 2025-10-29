@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { SalesService, SalesStats } from "@/services/salesService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -76,7 +76,7 @@ const SalesDashboard = () => {
   const isPreviewMode = useDemoMode();
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<SalesStats>({
     totalRevenue: 1250000,
     activeDeals: 24,
     customerCount: 187,
@@ -91,14 +91,12 @@ const SalesDashboard = () => {
   }, []);
 
   const fetchMcpServers = async () => {
-    const { data } = await supabase
-      .from("mcp_servers")
-      .select("id, server_name, server_type")
-      .eq("server_type", "sales")
-      .eq("status", "active")
-      .order("server_name");
-    
-    if (data) setMcpServers(data);
+    try {
+      const data = await SalesService.getSalesMCPServers();
+      setMcpServers(data);
+    } catch (error) {
+      console.error("Error fetching MCP servers:", error);
+    }
   };
 
   const checkAccess = async () => {
@@ -108,22 +106,21 @@ const SalesDashboard = () => {
       return;
     }
 
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
+    try {
+      const { hasAccess, profile } = await SalesService.checkSalesAccess();
+      
+      if (!hasAccess) {
+        navigate("/auth");
+        return;
+      }
+
+      setUserProfile(profile);
+    } catch (error) {
+      console.error("Error checking access:", error);
       navigate("/auth");
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    // Get user profile
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    setUserProfile(profile);
-    setIsLoading(false);
   };
 
   const handleSignOut = async () => {
@@ -131,6 +128,7 @@ const SalesDashboard = () => {
       navigate("/demo");
       return;
     }
+    const { supabase } = await import("@/integrations/supabase/client");
     await supabase.auth.signOut();
     navigate("/auth");
   };
