@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { CMDBService, ConfigurationItem, CMDBStats } from "@/services/cmdbService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -64,27 +64,13 @@ import { useUserProfile } from "@/hooks/useUserProfile";
  * ```
  */
 
-interface ConfigurationItem {
-  id: string;
-  ci_name: string;
-  ci_type: string;
-  ci_status: string;
-  criticality: string;
-  ip_address?: unknown;
-  operating_system?: string;
-  department?: string;
-  ninjaone_device_id?: string;
-  azure_resource_id?: string;
-  created_at: string;
-}
-
 const CMDBDashboard = () => {
   const navigate = useNavigate();
   useUserProfile(); // Handles auth redirect
   const toast = useStandardToast();
   const [loading, setLoading] = useState(true);
   const [cis, setCis] = useState<ConfigurationItem[]>([]);
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<CMDBStats>({
     total: 0,
     critical: 0,
     active: 0,
@@ -103,32 +89,17 @@ const CMDBDashboard = () => {
     try {
       setLoading(true);
 
-      // Fetch configuration items
-      let query = supabase
-        .from("configuration_items")
-        .select("*")
-        .order("created_at", { ascending: false });
+      // Fetch configuration items using service
+      const cisData = await CMDBService.getConfigurationItems({
+        type: filterType,
+        status: filterStatus,
+      });
 
-      if (filterType !== "all") {
-        query = query.eq("ci_type", filterType as any);
-      }
-      if (filterStatus !== "all") {
-        query = query.eq("ci_status", filterStatus as any);
-      }
+      setCis(cisData);
 
-      const { data: cisData, error: cisError } = await query;
-      if (cisError) throw cisError;
-
-      setCis((cisData || []) as any);
-
-      // Calculate stats
-      const total = cisData?.length || 0;
-      const critical = cisData?.filter(ci => ci.criticality === "critical").length || 0;
-      const active = cisData?.filter(ci => ci.ci_status === "active").length || 0;
-      const ninjaone_synced = cisData?.filter(ci => ci.ninjaone_device_id).length || 0;
-      const azure_synced = cisData?.filter(ci => ci.azure_resource_id).length || 0;
-
-      setStats({ total, critical, active, ninjaone_synced, azure_synced });
+      // Calculate stats using service
+      const statsData = await CMDBService.getCMDBStats();
+      setStats(statsData);
     } catch (error) {
       console.error("Error loading CMDB data:", error);
       toast.loadFailed("CMDB data");
@@ -142,9 +113,7 @@ const CMDBDashboard = () => {
       setLoading(true);
       toast.info('Starting NinjaOne sync...');
       
-      const { data, error } = await supabase.functions.invoke('ninjaone-sync');
-      
-      if (error) throw error;
+      const data = await CMDBService.syncNinjaOneDevices();
       
       if (data.success) {
         toast.success(data.message);
