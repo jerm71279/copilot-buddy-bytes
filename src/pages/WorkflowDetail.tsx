@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, TrendingUp, AlertTriangle, Lightbulb, Activity, CheckCircle, XCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 interface WorkflowExecution {
   id: string;
@@ -136,26 +137,22 @@ const WorkflowDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate(-1)}
-            className="mb-2"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Button>
-          <div className="flex items-center gap-2">
-            <Activity className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">{metricName} Workflow Details</h1>
-            <Badge variant="outline" className="ml-2">{department}</Badge>
-          </div>
+    <DashboardLayout showNavigation={false} showDashboardNavigation={false}>
+      <div className="mb-6">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate(-1)}
+          className="mb-2"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Dashboard
+        </Button>
+        <div className="flex items-center gap-2">
+          <Activity className="h-6 w-6 text-primary" />
+          <h1 className="text-2xl font-bold">{metricName} Workflow Details</h1>
+          <Badge variant="outline" className="ml-2">{department}</Badge>
         </div>
-      </nav>
-
-      <div className="container mx-auto px-4 py-8 space-y-6">
+      </div>
         {/* Key Metrics */}
         <div className="grid gap-4 md:grid-cols-4">
           <Card>
@@ -406,8 +403,7 @@ const WorkflowDetail = () => {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

@@ -37,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 interface SyncConfig {
   id: string;
@@ -287,9 +288,9 @@ const SharePointSync = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <DashboardLayout showNavigation={false}>
+      <nav className="border-b bg-card -mx-4 -mt-8 px-4 py-4 mb-6">
+        <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Cloud className="h-6 w-6 text-primary" />
             <h1 className="text-xl font-bold">SharePoint Sync</h1>
@@ -301,24 +302,23 @@ const SharePointSync = () => {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8 space-y-6 mt-32">
-        <DashboardNavigation 
-          title="SharePoint Sync"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
+      <DashboardNavigation 
+        title="SharePoint Sync"
+        dashboards={[
+          { name: "Admin Dashboard", path: "/admin" },
+          { name: "Employee Portal", path: "/portal" },
+          { name: "Analytics Portal", path: "/analytics" },
+          { name: "Compliance Portal", path: "/compliance" },
+          { name: "Change Management", path: "/change-management" },
+          { name: "Executive Dashboard", path: "/dashboard/executive" },
+          { name: "Finance Dashboard", path: "/dashboard/finance" },
+          { name: "HR Dashboard", path: "/dashboard/hr" },
+          { name: "IT Dashboard", path: "/dashboard/it" },
+          { name: "Operations Dashboard", path: "/dashboard/operations" },
+          { name: "Sales Dashboard", path: "/dashboard/sales" },
+          { name: "SOC Dashboard", path: "/dashboard/soc" },
+        ]}
+      />
 
         {/* Header with Add Button */}
         <div className="flex justify-between items-center relative z-20">
@@ -538,8 +538,7 @@ const SharePointSync = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

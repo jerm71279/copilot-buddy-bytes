@@ -17,6 +17,7 @@ import {
   Zap
 } from "lucide-react";
 import { toast } from "sonner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 interface WorkflowMetrics {
   total_executions: number;
@@ -234,8 +235,8 @@ const WorkflowKnowledgeIntegration = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto p-6 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout className="max-w-7xl">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -596,7 +597,7 @@ const WorkflowKnowledgeIntegration = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

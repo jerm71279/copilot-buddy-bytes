@@ -11,6 +11,7 @@ import { useStandardToast } from "@/hooks/useStandardToast";
 import { ArrowLeft, Plus } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { useOnboardingRoles, useOnboardingUsers, useOnboardingTemplates } from "@/hooks/useOnboardingData";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 export default function EmployeeOnboardingNew() {
   const navigate = useNavigate();
@@ -112,36 +113,35 @@ export default function EmployeeOnboardingNew() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
-        <DashboardNavigation 
-          title="New Employee Onboarding"
-          dashboards={[
-            { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
-            { name: "Templates", path: "/hr/employee-onboarding/templates" },
-          ]}
-        />
+    <DashboardLayout>
+      <DashboardNavigation 
+        title="New Employee Onboarding"
+        dashboards={[
+          { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
+          { name: "Templates", path: "/hr/employee-onboarding/templates" },
+        ]}
+      />
 
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/hr/employee-onboarding')}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
-          
-          <h1 className="text-4xl font-bold mb-2">Create New Employee Onboarding</h1>
-          <p className="text-muted-foreground">Set up onboarding for a new employee</p>
-        </div>
+      <div className="mb-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/hr/employee-onboarding')}
+          className="mb-4"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard
+        </Button>
+        
+        <h1 className="text-4xl font-bold mb-2">Create New Employee Onboarding</h1>
+        <p className="text-muted-foreground">Set up onboarding for a new employee</p>
+      </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Employee Information</CardTitle>
-            <CardDescription>Enter the new employee's details and select an onboarding template</CardDescription>
-          </CardHeader>
-          <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle>Employee Information</CardTitle>
+          <CardDescription>Enter the new employee's details and select an onboarding template</CardDescription>
+        </CardHeader>
+        <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -415,7 +415,6 @@ export default function EmployeeOnboardingNew() {
             </form>
           </CardContent>
         </Card>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

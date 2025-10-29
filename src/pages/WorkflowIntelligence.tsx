@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Brain, TrendingUp, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
 import { useAIStream } from "@/hooks/useAIStream";
 import { toast } from "sonner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const WorkflowIntelligence = () => {
   const [query, setQuery] = useState("");
@@ -68,8 +69,8 @@ const WorkflowIntelligence = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <DashboardLayout className="max-w-7xl" noPadding>
+      <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-2">
@@ -197,7 +198,7 @@ const WorkflowIntelligence = () => {
           </ul>
         </Card>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

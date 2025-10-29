@@ -12,6 +12,7 @@ import { ArrowLeft, Save } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { useOnboardingRoles, useOnboardingUsers, useOnboardingTemplates } from "@/hooks/useOnboardingData";
 import { useOnboardingTemplateTasks } from "@/hooks/useOnboardingTemplateTasks";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 export default function EmployeeOnboardingEdit() {
   const { id } = useParams();
@@ -148,36 +149,35 @@ export default function EmployeeOnboardingEdit() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
-        <DashboardNavigation 
-          title="Edit Employee Demographics"
-          dashboards={[
-            { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
-            { name: "Templates", path: "/hr/employee-onboarding/templates" },
-          ]}
-        />
+    <DashboardLayout>
+      <DashboardNavigation 
+        title="Edit Employee Demographics"
+        dashboards={[
+          { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
+          { name: "Templates", path: "/hr/employee-onboarding/templates" },
+        ]}
+      />
 
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(`/hr/employee-onboarding/${id}`)}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Details
-          </Button>
-          
-          <h1 className="text-4xl font-bold mb-2">Edit Employee Demographics</h1>
-          <p className="text-muted-foreground">Update employee information</p>
-        </div>
+      <div className="mb-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(`/hr/employee-onboarding/${id}`)}
+          className="mb-4"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Details
+        </Button>
+        
+        <h1 className="text-4xl font-bold mb-2">Edit Employee Demographics</h1>
+        <p className="text-muted-foreground">Update employee information</p>
+      </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Employee Information</CardTitle>
-            <CardDescription>Update the employee's details</CardDescription>
-          </CardHeader>
-          <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle>Employee Information</CardTitle>
+          <CardDescription>Update the employee's details</CardDescription>
+        </CardHeader>
+        <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -456,7 +456,6 @@ export default function EmployeeOnboardingEdit() {
             </form>
           </CardContent>
         </Card>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

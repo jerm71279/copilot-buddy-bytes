@@ -11,6 +11,7 @@ import { ArrowLeft, Mail, Phone, Calendar, Building, Briefcase, User, MapPin, Ho
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { calculateProgress, syncOnboardingProgress } from "@/hooks/useOnboardingProgress";
 import { useOnboardingTemplateTasks } from "@/hooks/useOnboardingTemplateTasks";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 interface Onboarding {
   id: string;
@@ -211,39 +212,34 @@ export default function EmployeeOnboardingDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
-          <div className="text-center py-12">Loading...</div>
-        </main>
-      </div>
+      <DashboardLayout>
+        <div className="text-center py-12">Loading...</div>
+      </DashboardLayout>
     );
   }
 
   if (!onboarding) {
     return (
-      <div className="min-h-screen bg-background">
-        <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
-          <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4">Employee onboarding not found</p>
-            <Button onClick={() => navigate('/hr/employee-onboarding')}>
-              Back to Dashboard
-            </Button>
-          </div>
-        </main>
-      </div>
+      <DashboardLayout>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-4">Employee onboarding not found</p>
+          <Button onClick={() => navigate('/hr/employee-onboarding')}>
+            Back to Dashboard
+          </Button>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-height, 200px) + 1rem)' }}>
-        <DashboardNavigation 
-          title="Employee Onboarding Details"
-          dashboards={[
-            { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
-            { name: "Templates", path: "/hr/employee-onboarding/templates" },
-          ]}
-        />
+    <DashboardLayout>
+      <DashboardNavigation 
+        title="Employee Onboarding Details"
+        dashboards={[
+          { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
+          { name: "Templates", path: "/hr/employee-onboarding/templates" },
+        ]}
+      />
 
         <div className="mb-6">
           <Button
@@ -486,7 +482,6 @@ export default function EmployeeOnboardingDetail() {
             </CardContent>
           </Card>
         )}
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }
