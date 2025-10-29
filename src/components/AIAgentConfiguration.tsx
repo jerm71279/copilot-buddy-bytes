@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { AIAgentService, AgentState, AgentTask } from "@/services/aiAgentService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,25 +15,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Settings, Plus, Save, Trash2, Bot, Clock } from "lucide-react";
 import { toast } from "sonner";
 
-interface AgentState {
-  id: string;
-  department: string;
-  agent_name: string;
-  status: string;
-  configuration: any;
-}
-
-interface AgentTask {
-  id: string;
-  department: string;
-  task_type: string;
-  task_name: string;
-  task_config: any;
-  schedule_cron: string | null;
-  is_active: boolean;
-  priority: number;
-}
-
 const DEPARTMENTS = [
   'HR', 'IT', 'Finance', 'Sales', 'Operations', 'Security', 'Compliance', 'Customer Support'
 ];
@@ -42,6 +24,7 @@ const TASK_TYPES = [
 ];
 
 export const AIAgentConfiguration = () => {
+  const { profile, isLoading: profileLoading } = useUserProfile();
   const [agents, setAgents] = useState<AgentState[]>([]);
   const [tasks, setTasks] = useState<AgentTask[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,37 +34,23 @@ export const AIAgentConfiguration = () => {
   const [isNewTask, setIsNewTask] = useState(false);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (!profileLoading && profile?.customer_id) {
+      loadData();
+    }
+  }, [profileLoading, profile?.customer_id]);
 
   const loadData = async () => {
+    if (!profile?.customer_id) return;
+
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const [agentData, taskData] = await Promise.all([
+        AIAgentService.getAgentStates(profile.customer_id),
+        AIAgentService.getAgentTasks(profile.customer_id)
+      ]);
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile) return;
-
-      const { data: agentData } = await supabase
-        .from('ai_agent_state')
-        .select('*')
-        .eq('customer_id', profile.customer_id)
-        .order('department');
-
-      const { data: taskData } = await supabase
-        .from('ai_agent_tasks')
-        .select('*')
-        .eq('customer_id', profile.customer_id)
-        .order('department');
-
-      setAgents(agentData || []);
-      setTasks(taskData || []);
+      setAgents(agentData);
+      setTasks(taskData);
     } catch (error) {
       console.error('Failed to load data:', error);
       toast.error('Failed to load configuration');
@@ -91,43 +60,14 @@ export const AIAgentConfiguration = () => {
   };
 
   const saveAgent = async (agentData: Partial<AgentState>) => {
+    if (!profile?.customer_id) {
+      toast.error('Profile not found');
+      return;
+    }
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile) throw new Error('Profile not found');
-
-      if (agentData.id) {
-        // Update existing
-        const { error } = await supabase
-          .from('ai_agent_state')
-          .update(agentData)
-          .eq('id', agentData.id);
-        
-        if (error) throw error;
-        toast.success('Agent updated successfully');
-      } else {
-        // Create new
-        const { error } = await supabase
-          .from('ai_agent_state')
-          .insert([{
-            agent_name: agentData.agent_name || '',
-            department: agentData.department || '',
-            configuration: agentData.configuration || {},
-            customer_id: profile.customer_id,
-            status: 'active'
-          }]);
-        
-        if (error) throw error;
-        toast.success('Agent created successfully');
-      }
-
+      await AIAgentService.saveAgent(profile.customer_id, agentData as AgentState);
+      toast.success(agentData.id ? 'Agent updated successfully' : 'Agent created successfully');
       loadData();
       setSelectedAgent(null);
       setIsNewAgent(false);
@@ -138,46 +78,14 @@ export const AIAgentConfiguration = () => {
   };
 
   const saveTask = async (taskData: Partial<AgentTask>) => {
+    if (!profile?.customer_id) {
+      toast.error('Profile not found');
+      return;
+    }
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile) throw new Error('Profile not found');
-
-      if (taskData.id) {
-        // Update existing
-        const { error } = await supabase
-          .from('ai_agent_tasks')
-          .update(taskData)
-          .eq('id', taskData.id);
-        
-        if (error) throw error;
-        toast.success('Task updated successfully');
-      } else {
-        // Create new
-        const { error } = await supabase
-          .from('ai_agent_tasks')
-          .insert([{
-            task_name: taskData.task_name || '',
-            department: taskData.department || '',
-            task_type: taskData.task_type || '',
-            task_config: taskData.task_config || {},
-            schedule_cron: taskData.schedule_cron,
-            is_active: taskData.is_active ?? true,
-            priority: taskData.priority || 5,
-            customer_id: profile.customer_id
-          }]);
-        
-        if (error) throw error;
-        toast.success('Task created successfully');
-      }
-
+      await AIAgentService.saveTask(profile.customer_id, taskData as AgentTask);
+      toast.success(taskData.id ? 'Task updated successfully' : 'Task created successfully');
       loadData();
       setEditingTask(null);
       setIsNewTask(false);
@@ -191,12 +99,7 @@ export const AIAgentConfiguration = () => {
     if (!confirm('Are you sure you want to delete this task?')) return;
 
     try {
-      const { error } = await supabase
-        .from('ai_agent_tasks')
-        .delete()
-        .eq('id', taskId);
-      
-      if (error) throw error;
+      await AIAgentService.deleteTask(taskId);
       toast.success('Task deleted');
       loadData();
     } catch (error) {
@@ -205,7 +108,7 @@ export const AIAgentConfiguration = () => {
     }
   };
 
-  if (loading) {
+  if (loading || profileLoading) {
     return <Card><CardContent className="p-6">Loading configuration...</CardContent></Card>;
   }
 
@@ -369,7 +272,7 @@ export const AIAgentConfiguration = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => deleteTask(task.id)}
+                              onClick={() => deleteTask(task.id!)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -498,27 +401,6 @@ const TaskForm = ({
         </div>
 
         <div className="space-y-2">
-          <Label>Department</Label>
-          <Select
-            value={formData.department}
-            onValueChange={(value) => setFormData({ ...formData, department: value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select department" />
-            </SelectTrigger>
-            <SelectContent>
-              {DEPARTMENTS.map((dept) => (
-                <SelectItem key={dept} value={dept}>
-                  {dept}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
           <Label>Task Type</Label>
           <Select
             value={formData.task_type}
@@ -530,46 +412,64 @@ const TaskForm = ({
             <SelectContent>
               {TASK_TYPES.map((type) => (
                 <SelectItem key={type} value={type}>
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                  {type}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
+      </div>
 
-        <div className="space-y-2">
-          <Label>Priority (1-10)</Label>
+      <div className="space-y-2">
+        <Label>Department</Label>
+        <Select
+          value={formData.department}
+          onValueChange={(value) => setFormData({ ...formData, department: value })}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select department" />
+          </SelectTrigger>
+          <SelectContent>
+            {DEPARTMENTS.map((dept) => (
+              <SelectItem key={dept} value={dept}>
+                {dept}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Schedule (Cron)</Label>
+        <Input
+          value={formData.schedule_cron}
+          onChange={(e) => setFormData({ ...formData, schedule_cron: e.target.value })}
+          placeholder="e.g., 0 */4 * * *"
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={formData.is_active}
+            onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+          />
+          <Label>Active</Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <Label>Priority:</Label>
           <Input
             type="number"
             min="1"
             max="10"
             value={formData.priority}
             onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) })}
+            className="w-20"
           />
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label>Schedule (Cron Expression)</Label>
-        <Input
-          value={formData.schedule_cron}
-          onChange={(e) => setFormData({ ...formData, schedule_cron: e.target.value })}
-          placeholder="e.g., */15 * * * * (every 15 minutes)"
-        />
-        <p className="text-xs text-muted-foreground">
-          Use cron syntax: minute hour day month weekday
-        </p>
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <Switch
-          checked={formData.is_active}
-          onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-        />
-        <Label>Active</Label>
-      </div>
-
-      <div className="flex gap-2 justify-end">
+      <div className="flex gap-2 justify-end pt-4">
         <Button variant="outline" onClick={onCancel}>Cancel</Button>
         <Button onClick={() => onSave({ ...task, ...formData })}>
           <Save className="h-4 w-4 mr-2" />

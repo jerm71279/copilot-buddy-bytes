@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { CIService, CIHealthMetric } from "@/services/ciService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -15,23 +15,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-interface HealthMetric {
-  health_score: number;
-  uptime_percentage?: number;
-  alert_count?: number;
-  critical_alerts?: number;
-  relationship_health?: number;
-  compliance_score?: number;
-  calculated_at: string;
-}
-
 interface CIHealthScoreProps {
   ciId: string;
   customerId: string;
 }
 
 const CIHealthScore = ({ ciId, customerId }: CIHealthScoreProps) => {
-  const [health, setHealth] = useState<HealthMetric | null>(null);
+  const [health, setHealth] = useState<CIHealthMetric | null>(null);
   const [loading, setLoading] = useState(true);
   const [calculating, setCalculating] = useState(false);
 
@@ -41,15 +31,7 @@ const CIHealthScore = ({ ciId, customerId }: CIHealthScoreProps) => {
 
   const loadHealthMetrics = async () => {
     try {
-      const { data, error } = await supabase
-        .from("ci_health_metrics")
-        .select("*")
-        .eq("ci_id", ciId)
-        .order("calculated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) throw error;
+      const data = await CIService.getHealthMetrics(ciId);
       
       if (data) {
         setHealth(data);
@@ -68,27 +50,7 @@ const CIHealthScore = ({ ciId, customerId }: CIHealthScoreProps) => {
   const calculateHealth = async () => {
     try {
       setCalculating(true);
-      
-      // Call the health calculation function
-      const { data: healthScore, error: funcError } = await supabase
-        .rpc("calculate_ci_health", { ci_id_param: ciId });
-
-      if (funcError) throw funcError;
-
-      // Insert new health metric
-      const { data: newMetric, error: insertError } = await supabase
-        .from("ci_health_metrics")
-        .insert({
-          ci_id: ciId,
-          customer_id: customerId,
-          health_score: healthScore,
-          calculated_at: new Date().toISOString(),
-        })
-        .select()
-        .maybeSingle();
-
-      if (insertError || !newMetric) throw insertError || new Error("Failed to insert health metric");
-
+      const newMetric = await CIService.calculateHealth(ciId, customerId);
       setHealth(newMetric);
       toast.success("Health score calculated");
     } catch (error) {

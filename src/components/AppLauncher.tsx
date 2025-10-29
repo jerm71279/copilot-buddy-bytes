@@ -1,20 +1,10 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { ApplicationService, Application } from '@/services/applicationService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ExternalLink } from 'lucide-react';
 import * as Icons from 'lucide-react';
-
-interface Application {
-  id: string;
-  name: string;
-  description: string | null;
-  icon_name: string;
-  app_url: string | null;
-  category: string;
-  auth_type: string;
-}
 
 interface AppLauncherProps {
   userDepartment?: string | null;
@@ -33,30 +23,12 @@ export const AppLauncher = ({ userDepartment }: AppLauncherProps) => {
     try {
       setLoading(true);
 
-      // Get all active applications
-      const { data: allApps, error: appsError } = await supabase
-        .from('applications')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order');
+      // Get applications filtered by department if applicable
+      const apps = userDepartment 
+        ? await ApplicationService.getApplicationsByDepartment(userDepartment)
+        : await ApplicationService.getActiveApplications();
 
-      if (appsError) throw appsError;
-
-      // Filter by department access if user has a department
-      if (userDepartment && allApps) {
-        const { data: accessData, error: accessError } = await supabase
-          .from('application_access')
-          .select('application_id')
-          .eq('department', userDepartment);
-
-        if (accessError) throw accessError;
-
-        const accessibleAppIds = new Set(accessData?.map(a => a.application_id) || []);
-        const filteredApps = allApps.filter(app => accessibleAppIds.has(app.id));
-        setApps(filteredApps);
-      } else {
-        setApps(allApps || []);
-      }
+      setApps(apps);
     } catch (error) {
       console.error('Error loading applications:', error);
       toast({

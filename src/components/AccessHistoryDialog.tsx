@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useCustomerId } from "@/hooks/usePortalData";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import {
   Dialog,
   DialogContent,
@@ -26,9 +26,8 @@ interface AccessHistoryDialogProps {
 export const AccessHistoryDialog = ({ open, onOpenChange }: AccessHistoryDialogProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
-  
-  // Use modularized customer ID hook
-  const { customerId } = useCustomerId();
+  const { profile } = useUserProfile();
+  const customerId = profile?.customer_id;
 
   const { data: auditLogs, isLoading } = useQuery({
     queryKey: ['audit-logs', customerId, filterType],

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { CIService } from "@/services/ciService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,43 +47,7 @@ const CIRelationshipMap = ({ ciId, ciName }: CIRelationshipMapProps) => {
     try {
       setLoading(true);
 
-      // Get outbound relationships
-      const { data: outbound, error: outboundError } = await supabase
-        .from("ci_relationships")
-        .select(`
-          id,
-          relationship_type,
-          target_ci_id,
-          is_critical,
-          target:configuration_items!ci_relationships_target_ci_id_fkey(id, ci_name, ci_type, criticality)
-        `)
-        .eq("source_ci_id", ciId);
-
-      if (outboundError) throw outboundError;
-
-      // Get inbound relationships
-      const { data: inbound, error: inboundError } = await supabase
-        .from("ci_relationships")
-        .select(`
-          id,
-          relationship_type,
-          source_ci_id,
-          is_critical,
-          source:configuration_items!ci_relationships_source_ci_id_fkey(id, ci_name, ci_type, criticality)
-        `)
-        .eq("target_ci_id", ciId);
-
-      if (inboundError) throw inboundError;
-
-      // Get current CI details
-      const { data: currentCI, error: ciError } = await supabase
-        .from("configuration_items")
-        .select("ci_name, ci_type, criticality")
-        .eq("id", ciId)
-        .maybeSingle();
-
-      if (ciError) throw ciError;
-      if (!currentCI) throw new Error("Configuration item not found");
+      const { currentCI, outbound, inbound } = await CIService.getRelationshipMap(ciId);
 
       // Build nodes
       const nodeMap = new Map<string, RelationshipNode>();

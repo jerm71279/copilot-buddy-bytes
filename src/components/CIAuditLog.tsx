@@ -1,29 +1,18 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { CIService } from "@/services/ciService";
+import type { CIAuditLog as CIAuditLogType } from "@/services/ciService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileEdit, Plus, Trash2, GitBranch, AlertCircle, User, Clock } from "lucide-react";
 import { toast } from "sonner";
 
-interface AuditLogEntry {
-  id: string;
-  change_type: string;
-  field_name?: string;
-  old_value?: any;
-  new_value?: any;
-  change_reason?: string;
-  source: string;
-  created_at: string;
-  changed_by: string;
-}
-
 interface CIAuditLogProps {
   ciId: string;
 }
 
 const CIAuditLog = ({ ciId }: CIAuditLogProps) => {
-  const [logs, setLogs] = useState<AuditLogEntry[]>([]);
+  const [logs, setLogs] = useState<CIAuditLogType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,15 +21,8 @@ const CIAuditLog = ({ ciId }: CIAuditLogProps) => {
 
   const loadAuditLogs = async () => {
     try {
-      const { data, error } = await supabase
-        .from("ci_audit_log")
-        .select("*")
-        .eq("ci_id", ciId)
-        .order("created_at", { ascending: false })
-        .limit(50);
-
-      if (error) throw error;
-      setLogs(data || []);
+      const data = await CIService.getAuditLogs(ciId, 50);
+      setLogs(data);
     } catch (error) {
       console.error("Error loading audit logs:", error);
       toast.error("Failed to load audit history");

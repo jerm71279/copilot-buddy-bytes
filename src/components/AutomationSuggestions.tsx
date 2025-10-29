@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
+import { AIAgentService } from "@/services/aiAgentService";
+import { AuthService } from "@/services/authService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -59,19 +61,11 @@ export default function AutomationSuggestions() {
 
   const loadSuggestions = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from('task_repetition_analysis')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('status', 'suggested')
-        .order('repetition_count', { ascending: false });
-
-      if (error) throw error;
-
-      setSuggestions(data || []);
+      const data = await AIAgentService.getAutomationSuggestions(user.id);
+      setSuggestions(data);
     } catch (error) {
       console.error('Error loading suggestions:', error);
     } finally {
@@ -81,12 +75,7 @@ export default function AutomationSuggestions() {
 
   const dismissSuggestion = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('task_repetition_analysis')
-        .update({ status: 'dismissed' })
-        .eq('id', id);
-
-      if (error) throw error;
+      await AIAgentService.dismissSuggestion(id);
 
       toast({
         title: "Suggestion dismissed",

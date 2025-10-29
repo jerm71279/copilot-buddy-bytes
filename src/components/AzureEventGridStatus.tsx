@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
+import { CIService } from "@/services/ciService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Copy, CheckCircle2, Activity, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 export const AzureEventGridStatus = () => {
   const [webhookUrl, setWebhookUrl] = useState("");
@@ -20,17 +20,8 @@ export const AzureEventGridStatus = () => {
 
   const loadRecentAutoChanges = async () => {
     try {
-      // Count automatic change requests created in last 24 hours
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-
-      const { count } = await supabase
-        .from('change_requests')
-        .select('*', { count: 'exact', head: true })
-        .contains('compliance_tags', ['automated'])
-        .gte('created_at', yesterday.toISOString());
-
-      setRecentChanges(count || 0);
+      const count = await CIService.countRecentAutomatedChanges(24);
+      setRecentChanges(count);
     } catch (error) {
       console.error('Error loading recent changes:', error);
     }

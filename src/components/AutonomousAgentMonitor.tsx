@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { AIAgentService, AgentState, AgentTask, AgentAlert } from "@/services/aiAgentService";
+import { AuthService } from "@/services/authService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,126 +11,62 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Activity, Bot, AlertCircle, CheckCircle, Clock, Zap } from "lucide-react";
 import { toast } from "sonner";
 
-interface AgentState {
-  id: string;
-  department: string;
-  agent_name: string;
-  status: string;
-  current_task: string | null;
-  last_action_at: string;
-  metrics: any;
-  error_count: number;
-  success_count: number;
-}
-
-interface AgentAlert {
-  id: string;
-  department: string;
-  alert_type: string;
-  severity: string;
-  title: string;
-  description: string;
-  status: string;
-  created_at: string;
-  recommended_actions: string[];
-}
-
-interface AgentTask {
-  id: string;
-  department: string;
-  task_type: string;
-  task_name: string;
-  is_active: boolean;
-  last_executed_at: string | null;
-  next_execution_at: string | null;
-  execution_count: number;
-  success_count: number;
-  failure_count: number;
-}
-
 export const AutonomousAgentMonitor = () => {
+  const { profile, isLoading: profileLoading } = useUserProfile();
   const [agentStates, setAgentStates] = useState<AgentState[]>([]);
   const [agentAlerts, setAgentAlerts] = useState<AgentAlert[]>([]);
   const [agentTasks, setAgentTasks] = useState<AgentTask[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadAgentData();
-    
-    // Set up real-time subscriptions
-    const stateChannel = supabase
-      .channel('agent-state-changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'ai_agent_state'
-      }, () => loadAgentData())
-      .subscribe();
+    if (!profileLoading && profile?.customer_id) {
+      loadAgentData();
+      
+      // Set up real-time subscriptions
+      const stateChannel = supabase
+        .channel('agent-state-changes')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'ai_agent_state'
+        }, () => loadAgentData())
+        .subscribe();
 
-    const alertsChannel = supabase
-      .channel('agent-alerts-changes')
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'ai_agent_alerts'
-      }, (payload) => {
-        toast.warning(`New agent alert: ${payload.new.title}`, {
-          description: payload.new.description
-        });
-        loadAgentData();
-      })
-      .subscribe();
+      const alertsChannel = supabase
+        .channel('agent-alerts-changes')
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'ai_agent_alerts'
+        }, (payload) => {
+          toast.warning(`New agent alert: ${payload.new.title}`, {
+            description: payload.new.description
+          });
+          loadAgentData();
+        })
+        .subscribe();
 
-    return () => {
-      supabase.removeChannel(stateChannel);
-      supabase.removeChannel(alertsChannel);
-    };
-  }, []);
+      return () => {
+        supabase.removeChannel(stateChannel);
+        supabase.removeChannel(alertsChannel);
+      };
+    }
+  }, [profileLoading, profile?.customer_id]);
 
   const loadAgentData = async () => {
+    if (!profile?.customer_id) return;
+
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const [states, alerts, tasks] = await Promise.all([
+        AIAgentService.getAgentStates(profile.customer_id),
+        AIAgentService.getAgentAlerts(profile.customer_id),
+        AIAgentService.getActiveAgentTasks(profile.customer_id)
+      ]);
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile) return;
-
-      // Load agent states
-      const { data: states } = await supabase
-        .from('ai_agent_state')
-        .select('*')
-        .eq('customer_id', profile.customer_id)
-        .order('department');
-
-      // Load alerts
-      const { data: alerts } = await supabase
-        .from('ai_agent_alerts')
-        .select('*')
-        .eq('customer_id', profile.customer_id)
-        .in('status', ['new', 'acknowledged'])
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      // Load tasks
-      const { data: tasks } = await supabase
-        .from('ai_agent_tasks')
-        .select('*')
-        .eq('customer_id', profile.customer_id)
-        .eq('is_active', true)
-        .order('priority', { ascending: false });
-
-      setAgentStates(states || []);
-      setAgentAlerts((alerts || []).map(alert => ({
-        ...alert,
-        recommended_actions: (alert.recommended_actions as any) || []
-      })) as AgentAlert[]);
-      setAgentTasks(tasks || []);
+      setAgentStates(states);
+      setAgentAlerts(alerts);
+      setAgentTasks(tasks);
     } catch (error) {
       console.error('Failed to load agent data:', error);
       toast.error('Failed to load agent data');
@@ -138,16 +77,10 @@ export const AutonomousAgentMonitor = () => {
 
   const acknowledgeAlert = async (alertId: string) => {
     try {
-      const { error } = await supabase
-        .from('ai_agent_alerts')
-        .update({
-          status: 'acknowledged',
-          acknowledged_by: (await supabase.auth.getUser()).data.user?.id,
-          acknowledged_at: new Date().toISOString()
-        })
-        .eq('id', alertId);
+      const user = await AuthService.getCurrentUser();
+      if (!user) throw new Error('Not authenticated');
 
-      if (error) throw error;
+      await AIAgentService.acknowledgeAlert(alertId, user.id);
       
       toast.success('Alert acknowledged');
       loadAgentData();
@@ -176,7 +109,7 @@ export const AutonomousAgentMonitor = () => {
     }
   };
 
-  if (loading) {
+  if (loading || profileLoading) {
     return <Card><CardContent className="p-6">Loading agent data...</CardContent></Card>;
   }
 
