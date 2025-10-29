@@ -4,80 +4,33 @@ import { Button } from "@/components/ui/button";
 import { Database, Layers, TrendingUp, Activity, CheckCircle2, AlertCircle, Brain } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { DataLakeService } from "@/services/dataLakeService";
 
 const DataLakeDashboard = () => {
   // Fetch stats for each layer
   const { data: bronzeStats } = useQuery({
     queryKey: ['bronze-stats'],
-    queryFn: async () => {
-      const { count } = await supabase
-        .from('data_lake_raw')
-        .select('*', { count: 'exact', head: true });
-      return count || 0;
-    }
+    queryFn: () => DataLakeService.getBronzeStats()
   });
 
   const { data: silverStats } = useQuery({
     queryKey: ['silver-stats'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('data_lake_silver')
-        .select('quality_score, validation_status');
-      
-      const validated = data?.filter(d => d.validation_status === 'validated').length || 0;
-      const avgQuality = data?.length 
-        ? Math.round(data.reduce((sum, d) => sum + (d.quality_score || 0), 0) / data.length)
-        : 0;
-      
-      return { total: data?.length || 0, validated, avgQuality };
-    }
+    queryFn: () => DataLakeService.getSilverStats()
   });
 
   const { data: goldStats } = useQuery({
     queryKey: ['gold-stats'],
-    queryFn: async () => {
-      const { count } = await supabase
-        .from('data_lake_gold')
-        .select('*', { count: 'exact', head: true });
-      return count || 0;
-    }
+    queryFn: () => DataLakeService.getGoldStats()
   });
 
   const { data: productStats } = useQuery({
     queryKey: ['product-stats'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('data_products')
-        .select('domain, is_active');
-      
-      const byDomain = data?.reduce((acc: Record<string, number>, p) => {
-        acc[p.domain] = (acc[p.domain] || 0) + 1;
-        return acc;
-      }, {}) || {};
-      
-      return {
-        total: data?.length || 0,
-        active: data?.filter(p => p.is_active).length || 0,
-        byDomain
-      };
-    }
+    queryFn: () => DataLakeService.getProductStats()
   });
 
   const { data: pipelineStats } = useQuery({
     queryKey: ['pipeline-stats'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('etl_pipeline_runs')
-        .select('status')
-        .order('created_at', { ascending: false })
-        .limit(100);
-      
-      const completed = data?.filter(p => p.status === 'completed').length || 0;
-      const failed = data?.filter(p => p.status === 'failed').length || 0;
-      
-      return { completed, failed, total: data?.length || 0 };
-    }
+    queryFn: () => DataLakeService.getPipelineStats()
   });
 
   return (
