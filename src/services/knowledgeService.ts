@@ -3,6 +3,7 @@
  * Centralized knowledge base operations
  */
 
+import { BaseService, ServiceResponse } from "./baseService";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface KnowledgeArticle {
@@ -37,47 +38,44 @@ export interface KnowledgeCategory {
   description: string;
 }
 
-export class KnowledgeService {
+export class KnowledgeService extends BaseService {
   /**
    * Load knowledge articles
    */
-  static async getArticles() {
-    const { data, error } = await supabase
-      .from("knowledge_articles")
-      .select("*")
-      .eq("status", "published")
-      .not("source_type", "in", '("ninjaone_api","sharepoint_api","integration","vendor_documentation")')
-      .order("updated_at", { ascending: false });
-
-    if (error) throw error;
-    return data as KnowledgeArticle[];
+  static async getArticles(): Promise<ServiceResponse<KnowledgeArticle[]>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from("knowledge_articles")
+        .select("*")
+        .eq("status", "published")
+        .not("source_type", "in", '("ninjaone_api","sharepoint_api","integration","vendor_documentation")')
+        .order("updated_at", { ascending: false });
+    });
   }
 
   /**
    * Load knowledge insights
    */
-  static async getInsights() {
-    const { data, error } = await supabase
-      .from("knowledge_insights")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(10);
-
-    if (error) throw error;
-    return data as KnowledgeInsight[];
+  static async getInsights(): Promise<ServiceResponse<KnowledgeInsight[]>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from("knowledge_insights")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(10);
+    });
   }
 
   /**
    * Load knowledge categories
    */
-  static async getCategories() {
-    const { data, error } = await supabase
-      .from("knowledge_categories")
-      .select("*")
-      .order("name");
-
-    if (error) throw error;
-    return data as KnowledgeCategory[];
+  static async getCategories(): Promise<ServiceResponse<KnowledgeCategory[]>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from("knowledge_categories")
+        .select("*")
+        .order("name");
+    });
   }
 
   /**

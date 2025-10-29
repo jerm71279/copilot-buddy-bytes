@@ -34,8 +34,10 @@ export function useITData() {
 
   const fetchMcpServers = async () => {
     try {
-      const data = await ITService.getITMCPServers();
-      setMcpServers(data as MCPServer[]);
+      const response = await ITService.getITMCPServers();
+      if (response.data) {
+        setMcpServers(response.data as MCPServer[]);
+      }
     } catch (error) {
       console.error("Error fetching MCP servers:", error);
     }
@@ -69,8 +71,10 @@ export function useITData() {
 
   const fetchStats = async () => {
     try {
-      const stats = await ITService.getITStats();
-      setStats(stats);
+      const response = await ITService.getITStats();
+      if (response.data) {
+        setStats(response.data);
+      }
     } catch (error) {
       console.error("Error fetching stats:", error);
     }

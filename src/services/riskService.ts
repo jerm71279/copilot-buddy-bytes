@@ -3,44 +3,42 @@
  * Centralized risk management operations
  */
 
+import { BaseService, ServiceResponse } from "./baseService";
 import { supabase } from "@/integrations/supabase/client";
 
-export class RiskService {
+export class RiskService extends BaseService {
   /**
    * Get all risk assessments
    */
-  static async getRiskAssessments() {
-    const { data, error } = await supabase
-      .from("risk_assessments")
-      .select("*")
-      .order("inherent_score", { ascending: false });
-    
-    if (error) throw error;
-    return data || [];
+  static async getRiskAssessments(): Promise<ServiceResponse<any[]>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from("risk_assessments")
+        .select("*")
+        .order("inherent_score", { ascending: false });
+    });
   }
 
   /**
    * Get risk controls
    */
-  static async getRiskControls() {
-    const { data, error } = await supabase
-      .from("risk_controls")
-      .select("*");
-    
-    if (error) throw error;
-    return data || [];
+  static async getRiskControls(): Promise<ServiceResponse<any[]>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from("risk_controls")
+        .select("*");
+    });
   }
 
   /**
    * Get risk treatments
    */
-  static async getRiskTreatments() {
-    const { data, error } = await supabase
-      .from("risk_treatments")
-      .select("*");
-    
-    if (error) throw error;
-    return data || [];
+  static async getRiskTreatments(): Promise<ServiceResponse<any[]>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from("risk_treatments")
+        .select("*");
+    });
   }
 
   /**
@@ -86,11 +84,13 @@ export class RiskService {
     created_by: string;
     identified_by: string;
     risk_id: string;
-  }): Promise<void> {
-    const { error } = await supabase
-      .from("risk_assessments")
-      .insert([riskData as never]);
-
-    if (error) throw new Error(`Failed to create risk assessment: ${error.message}`);
+  }): Promise<ServiceResponse<null>> {
+    return this.executeQuery(async () => {
+      const { error } = await supabase
+        .from("risk_assessments")
+        .insert([riskData as never]);
+      
+      return { data: null, error };
+    });
   }
 }

@@ -7,20 +7,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Award, TrendingUp, CheckCircle, AlertTriangle, Activity, Clock, MessageSquare } from "lucide-react";
 
 const InternalOperationsDashboard = () => {
-  const { data: metrics, isLoading: metricsLoading } = useQuery({
+  const { data: metricsResponse, isLoading: metricsLoading } = useQuery({
     queryKey: ["internal-operations-metrics"],
     queryFn: () => InternalOperationsService.getMetrics(),
   });
 
-  const { data: champions } = useQuery({
+  const { data: championsResponse } = useQuery({
     queryKey: ["employee-champions"],
     queryFn: () => InternalOperationsService.getActiveChampions(),
   });
 
-  const { data: recentFeedback } = useQuery({
+  const { data: recentFeedbackResponse } = useQuery({
     queryKey: ["recent-feedback"],
     queryFn: () => InternalOperationsService.getRecentFeedback(),
   });
+
+  const metrics = metricsResponse?.data || [];
+  const champions = championsResponse?.data || [];
+  const recentFeedback = recentFeedbackResponse?.data || [];
 
   const latestMetrics = metrics?.[0];
   const previousMetrics = metrics?.[1];

@@ -40,16 +40,19 @@ export const usePortalData = () => {
       // Fetch customer data if profile has customer_id
       let customer = null;
       if (profile?.customer_id) {
-        customer = await PortalService.getCustomer(profile.customer_id);
+        const customerResponse = await PortalService.getCustomer(profile.customer_id);
+        customer = customerResponse.data;
       }
 
       // Fetch recent knowledge articles
-      const articles = await PortalService.getRecentArticles();
+      const articlesResponse = await PortalService.getRecentArticles();
+      const articles = articlesResponse.data || [];
 
       // Fetch recent workflow executions (only if customer_id exists)
       let workflows: any[] = [];
       if (profile?.customer_id) {
-        workflows = await PortalService.getRecentWorkflows(profile.customer_id);
+        const workflowsResponse = await PortalService.getRecentWorkflows(profile.customer_id);
+        workflows = workflowsResponse.data || [];
       }
 
       setData({

@@ -3,6 +3,7 @@
  * Handles Slack integration operations
  */
 
+import { BaseService, ServiceResponse } from "./baseService";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface SlackConfig {
@@ -23,23 +24,23 @@ export interface SlackMessage {
   blocks?: any[];
 }
 
-export class SlackService {
+export class SlackService extends BaseService {
   /**
    * Send Slack message via edge function
    */
-  static async sendMessage(customerId: string, message: SlackMessage) {
-    const { data, error } = await supabase.functions.invoke('slack-notify', {
-      body: { customerId, ...message }
+  static async sendMessage(customerId: string, message: SlackMessage): Promise<ServiceResponse<any>> {
+    return this.executeQuery(async () => {
+      const { data, error } = await supabase.functions.invoke('slack-notify', {
+        body: { customerId, ...message }
+      });
+      return { data, error };
     });
-
-    if (error) throw error;
-    return data;
   }
 
   /**
    * Test Slack connection
    */
-  static async testConnection(customerId: string) {
+  static async testConnection(customerId: string): Promise<ServiceResponse<any>> {
     return this.sendMessage(customerId, {
       channel: 'general',
       text: 'Test connection from OberaConnect'
@@ -49,12 +50,12 @@ export class SlackService {
   /**
    * Sync Slack users via edge function
    */
-  static async syncUsers(customerId: string) {
-    const { data, error } = await supabase.functions.invoke('slack-sync-users', {
-      body: { customerId }
+  static async syncUsers(customerId: string): Promise<ServiceResponse<any>> {
+    return this.executeQuery(async () => {
+      const { data, error } = await supabase.functions.invoke('slack-sync-users', {
+        body: { customerId }
+      });
+      return { data, error };
     });
-
-    if (error) throw error;
-    return data;
   }
 }

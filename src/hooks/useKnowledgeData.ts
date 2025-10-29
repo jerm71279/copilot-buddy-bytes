@@ -33,15 +33,15 @@ export function useKnowledgeData() {
       }
 
       // Load all data in parallel
-      const [articlesData, insightsData, categoriesData] = await Promise.all([
+      const [articlesResponse, insightsResponse, categoriesResponse] = await Promise.all([
         KnowledgeService.getArticles(),
         KnowledgeService.getInsights(),
         KnowledgeService.getCategories()
       ]);
 
-      setArticles(articlesData);
-      setInsights(insightsData);
-      setCategories(categoriesData);
+      setArticles(articlesResponse.data || []);
+      setInsights(insightsResponse.data || []);
+      setCategories(categoriesResponse.data || []);
     } catch (error) {
       console.error("Error loading knowledge base:", error);
       toast.error("Failed to load knowledge base");

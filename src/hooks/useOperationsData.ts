@@ -33,8 +33,10 @@ export function useOperationsData() {
 
   const fetchMcpServers = async () => {
     try {
-      const data = await OperationsService.getOperationsMCPServers();
-      setMcpServers(data as MCPServer[]);
+      const response = await OperationsService.getOperationsMCPServers();
+      if (response.data) {
+        setMcpServers(response.data as MCPServer[]);
+      }
     } catch (error) {
       console.error("Error fetching MCP servers:", error);
     }
@@ -68,8 +70,10 @@ export function useOperationsData() {
 
   const fetchStats = async () => {
     try {
-      const stats = await OperationsService.getOperationsStats();
-      setStats(stats);
+      const response = await OperationsService.getOperationsStats();
+      if (response.data) {
+        setStats(response.data);
+      }
     } catch (error) {
       console.error("Error fetching stats:", error);
     }

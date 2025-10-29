@@ -3,49 +3,47 @@
  * Centralized roles management
  */
 
+import { BaseService, ServiceResponse } from "./baseService";
 import { supabase } from "@/integrations/supabase/client";
 
-export class RolesService {
+export class RolesService extends BaseService {
   /**
    * Get all roles
    */
-  static async getRoles() {
-    const { data, error } = await supabase
-      .from("roles")
-      .select("*")
-      .order("name");
-    
-    if (error) throw error;
-    return data;
+  static async getRoles(): Promise<ServiceResponse<any[]>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from("roles")
+        .select("*")
+        .order("name");
+    });
   }
 
   /**
    * Get single role by ID
    */
-  static async getRole(roleId: string) {
-    const { data, error } = await supabase
-      .from("roles")
-      .select("*")
-      .eq("id", roleId)
-      .maybeSingle();
-    
-    if (error) throw error;
-    return data;
+  static async getRole(roleId: string): Promise<ServiceResponse<any>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from("roles")
+        .select("*")
+        .eq("id", roleId)
+        .maybeSingle();
+    });
   }
 
   /**
    * Get roles with permission counts
    */
-  static async getRolesWithPermissions() {
-    const { data, error } = await supabase
-      .from("roles")
-      .select(`
-        *,
-        role_permissions(count)
-      `)
-      .order("name");
-    
-    if (error) throw error;
-    return data;
+  static async getRolesWithPermissions(): Promise<ServiceResponse<any[]>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from("roles")
+        .select(`
+          *,
+          role_permissions(count)
+        `)
+        .order("name");
+    });
   }
 }

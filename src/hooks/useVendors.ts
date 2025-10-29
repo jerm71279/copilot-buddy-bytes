@@ -31,7 +31,8 @@ export function useVendors(customerId?: string): UseVendorsReturn {
     try {
       setLoading(true);
       setError(null);
-      const data = await VendorService.getActiveVendors(customerId);
+      const response = await VendorService.getActiveVendors(customerId);
+      const data = response.data || [];
       setVendors(data);
 
       // Auto-select first vendor if none selected
@@ -56,10 +57,13 @@ export function useVendors(customerId?: string): UseVendorsReturn {
     customerId: string,
     userId: string
   ): Promise<Vendor> => {
-    const vendor = await VendorService.createVendor(input, customerId, userId);
+    const response = await VendorService.createVendor(input, customerId, userId);
+    if (!response.data) {
+      throw new Error('Failed to create vendor');
+    }
     await reloadVendors();
-    setSelectedVendorId(vendor.id);
-    return vendor;
+    setSelectedVendorId(response.data.id);
+    return response.data;
   }, [reloadVendors]);
 
   useEffect(() => {

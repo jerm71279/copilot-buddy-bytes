@@ -96,12 +96,12 @@ export default function VendorDetail() {
       setVendor(vendorData as any);
 
       // Fetch contracts
-      const contractsData = await VendorService.getContractsByVendor(id!, customerId!);
-      setContracts(contractsData);
+      const contractsResponse = await VendorService.getContractsByVendor(id!, customerId!);
+      setContracts(contractsResponse.data || []);
 
       // Fetch performance
-      const performanceData = await VendorService.getPerformanceByVendor(id!, customerId!);
-      setPerformance(performanceData);
+      const performanceResponse = await VendorService.getPerformanceByVendor(id!, customerId!);
+      setPerformance(performanceResponse.data || []);
     } catch (error) {
       console.error("Error fetching vendor details:", error);
       showToast.loadFailed("vendor details");

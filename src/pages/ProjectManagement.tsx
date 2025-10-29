@@ -56,8 +56,8 @@ const ProjectManagement = () => {
   const fetchProjects = async () => {
     if (!customerId) return;
     try {
-      const data = await ProjectService.getProjectsByCustomer(customerId);
-      setProjects(data);
+      const response = await ProjectService.getProjectsByCustomer(customerId);
+      setProjects(response.data || []);
     } catch (error) {
       console.error("Error fetching projects:", error);
       toast.loadFailed("projects");
