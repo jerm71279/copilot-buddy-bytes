@@ -6,23 +6,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Shield, Activity, AlertTriangle, Search, Filter, Download, FileWarning, Database, FileText } from 'lucide-react';
 import { useStandardToast } from '@/hooks/useStandardToast';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
-
-interface SecurityEvent {
-  id: string;
-  timestamp: string;
-  event_type: string;
-  severity: string;
-  source: string;
-  user_id?: string;
-  ip_address?: string;
-  description: string;
-  raw_data: any;
-}
+import { SIEMService } from '@/services/siemService';
 
 const SIEMDashboard = () => {
   const toast = useStandardToast();
@@ -37,64 +25,7 @@ const SIEMDashboard = () => {
     queryKey: ['siem-events', timeRange, severityFilter, eventTypeFilter, searchQuery],
     queryFn: async () => {
       const hoursAgo = timeRange === '24h' ? 24 : timeRange === '7d' ? 168 : 720;
-      const since = new Date(Date.now() - hoursAgo * 60 * 60 * 1000).toISOString();
-
-      // Fetch from multiple sources
-      const [alerts, behavioral, audit, anomalies] = await Promise.all([
-        supabase.from('security_alerts' as any).select('*').gte('created_at', since),
-        supabase.from('behavioral_events').select('*').gte('created_at', since),
-        supabase.from('audit_logs').select('*').gte('created_at', since),
-        supabase.from('anomaly_detections').select('*').gte('created_at', since),
-      ]);
-
-      // Normalize events from different sources
-      const normalized: SecurityEvent[] = [];
-
-      alerts.data?.forEach((a: any) => normalized.push({
-        id: a.id,
-        timestamp: a.created_at,
-        event_type: 'security_alert',
-        severity: a.severity,
-        source: 'Security Alerts',
-        description: a.alert_name,
-        raw_data: a,
-      }));
-
-      behavioral.data?.forEach(b => normalized.push({
-        id: b.id,
-        timestamp: b.timestamp,
-        event_type: 'behavioral',
-        severity: 'info',
-        source: b.system_name,
-        user_id: b.user_id,
-        description: `${b.action} on ${b.system_name}`,
-        raw_data: b,
-      }));
-
-      audit.data?.forEach(a => normalized.push({
-        id: a.id,
-        timestamp: a.timestamp,
-        event_type: 'audit',
-        severity: 'info',
-        source: a.system_name,
-        user_id: a.user_id,
-        description: a.action_type,
-        raw_data: a,
-      }));
-
-      anomalies.data?.forEach(a => normalized.push({
-        id: a.id,
-        timestamp: a.created_at,
-        event_type: 'anomaly',
-        severity: a.severity,
-        source: a.system_name,
-        user_id: a.affected_user_id,
-        description: a.description,
-        raw_data: a,
-      }));
-
-      // Sort by timestamp desc
-      return normalized.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      return await SIEMService.getSecurityEvents(hoursAgo, severityFilter, eventTypeFilter, searchQuery);
     },
   });
 
@@ -103,29 +34,11 @@ const SIEMDashboard = () => {
     queryKey: ['siem-metrics', timeRange],
     queryFn: async () => {
       const hoursAgo = timeRange === '24h' ? 24 : timeRange === '7d' ? 168 : 720;
-      const since = new Date(Date.now() - hoursAgo * 60 * 60 * 1000).toISOString();
-
-      const [alertCount, anomalyCount, eventCount] = await Promise.all([
-        supabase.from('security_alerts' as any).select('*', { count: 'exact', head: true }).gte('created_at', since),
-        supabase.from('anomaly_detections').select('*', { count: 'exact', head: true }).gte('created_at', since),
-        supabase.from('behavioral_events').select('*', { count: 'exact', head: true }).gte('created_at', since),
-      ]);
-
-      return {
-        total_events: (eventCount.count || 0) + (alertCount.count || 0) + (anomalyCount.count || 0),
-        security_alerts: alertCount.count || 0,
-        anomalies: anomalyCount.count || 0,
-        events_per_hour: Math.round(((eventCount.count || 0) + (alertCount.count || 0)) / hoursAgo),
-      };
+      return await SIEMService.getSIEMMetrics(hoursAgo);
     },
   });
 
-  const filteredEvents = events?.filter(event => {
-    if (severityFilter !== 'all' && event.severity !== severityFilter) return false;
-    if (eventTypeFilter !== 'all' && event.event_type !== eventTypeFilter) return false;
-    if (searchQuery && !event.description.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    return true;
-  }) || [];
+  const filteredEvents = events || [];
 
   const getSeverityColor = (severity: string): "default" | "destructive" | "outline" | "secondary" => {
     const map: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
