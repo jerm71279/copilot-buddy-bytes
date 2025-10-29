@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 
 interface UseAIStreamOptions {
   onChunk?: (content: string) => void;
@@ -21,8 +21,7 @@ export const useAIStream = () => {
     try {
       const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
       // Get the current user's JWT; do NOT use the publishable key for protected functions
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData?.session?.access_token;
+      const accessToken = await AuthService.getAccessToken();
 
       if (!accessToken) {
         throw new Error("You must be signed in to use this feature.");

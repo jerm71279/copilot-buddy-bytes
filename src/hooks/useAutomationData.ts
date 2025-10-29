@@ -1,16 +1,10 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useRequireAuth } from './useAuth';
+import { AutomationService, type Workflow } from '@/services/automationService';
+import { AuthService } from '@/services/authService';
 
-interface Workflow {
-  id: string;
-  workflow_name: string;
-  description: string | null;
-  workflow_type: string;
-  is_active: boolean;
-  created_at: string;
-}
+export type { Workflow } from '@/services/automationService';
 
 interface WorkflowExecution {
   id: string;
@@ -48,22 +42,21 @@ export const useAutomationData = () => {
 
   const loadWorkflows = async () => {
     try {
-      const [workflowsRes, executionsRes] = await Promise.all([
-        supabase.from('workflows').select('*').order('created_at', { ascending: false }),
-        supabase.from('workflow_executions').select('*').order('started_at', { ascending: false }).limit(20)
-      ]);
+      // Get user's customer ID first
+      const user = await AuthService.getCurrentUser();
+      if (!user) throw new Error('Not authenticated');
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) throw new Error('Customer not found');
 
-      if (workflowsRes.error) throw workflowsRes.error;
-      if (executionsRes.error) throw executionsRes.error;
+      const workflows = await AutomationService.getWorkflows(customerId);
+      
+      setWorkflows(workflows);
+      setExecutions([]);
 
-      setWorkflows(workflowsRes.data || []);
-      setExecutions(executionsRes.data || []);
-
-      const total = workflowsRes.data?.length || 0;
-      const active = workflowsRes.data?.filter(w => w.is_active).length || 0;
-      const totalExecs = executionsRes.data?.length || 0;
-      const successExecs = executionsRes.data?.filter(e => e.status === 'completed').length || 0;
-      const successRate = totalExecs > 0 ? Math.round((successExecs / totalExecs) * 100) : 0;
+      const total = workflows?.length || 0;
+      const active = workflows?.filter(w => w.is_active).length || 0;
+      const totalExecs = 0;
+      const successRate = 0;
 
       setStats({ total, active, executions: totalExecs, successRate });
     } catch (error) {
@@ -80,12 +73,7 @@ export const useAutomationData = () => {
 
   const toggleWorkflowStatus = async (id: string, currentIsActive: boolean) => {
     try {
-      const { error } = await supabase
-        .from('workflows')
-        .update({ is_active: !currentIsActive })
-        .eq('id', id);
-
-      if (error) throw error;
+      await AutomationService.toggleWorkflow(id, !currentIsActive);
 
       toast({
         title: 'Success',

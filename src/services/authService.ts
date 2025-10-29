@@ -59,6 +59,14 @@ export class AuthService {
   }
 
   /**
+   * Get current access token
+   */
+  static async getAccessToken(): Promise<string | null> {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.access_token || null;
+  }
+
+  /**
    * Check if user has admin role
    */
   static async isUserAdmin(userId: string): Promise<boolean> {
