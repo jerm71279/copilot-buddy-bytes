@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Shield, Lock, AlertCircle, CheckCircle2, FileText, AlertTriangle, TrendingUp } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const DataGovernance = () => {
   const { data: catalogStats } = useQuery({
@@ -77,19 +78,17 @@ const DataGovernance = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Shield className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold">Data Governance</h1>
-          </div>
-          <p className="text-muted-foreground text-lg">
-            Monitor data policies, classifications, and compliance standards
-          </p>
+    <DashboardLayout>
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <Shield className="h-8 w-8 text-primary" />
+          <h1 className="text-4xl font-bold">Data Governance</h1>
         </div>
+        <p className="text-muted-foreground text-lg">
+          Monitor data policies, classifications, and compliance standards
+        </p>
+      </div>
 
         {/* Governance Metrics */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
@@ -305,9 +304,7 @@ const DataGovernance = () => {
             </div>
           </CardContent>
         </Card>
-
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { GitBranch, ArrowRight, Database, Filter as FilterIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const DataLineage = () => {
   const [selectedLayer, setSelectedLayer] = useState<string>("all");
@@ -46,19 +47,17 @@ const DataLineage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <GitBranch className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold">Data Lineage</h1>
-          </div>
-          <p className="text-muted-foreground text-lg">
-            Visualize data transformations and dependencies across layers
-          </p>
+    <DashboardLayout>
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <GitBranch className="h-8 w-8 text-primary" />
+          <h1 className="text-4xl font-bold">Data Lineage</h1>
         </div>
+        <p className="text-muted-foreground text-lg">
+          Visualize data transformations and dependencies across layers
+        </p>
+      </div>
 
         {/* Filters */}
         <Card className="mb-8">
@@ -214,9 +213,7 @@ const DataLineage = () => {
             </div>
           </CardContent>
         </Card>
-
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
