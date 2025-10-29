@@ -17,6 +17,7 @@ import {
   Users,
   ArrowRight
 } from "lucide-react";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 interface RecommendedAction {
   action: string;
@@ -147,9 +148,8 @@ export default function GlobalInsights() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-      <div className="flex justify-between items-center">
+    <DashboardLayout>
+      <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Global Insights</h1>
           <p className="text-muted-foreground">
@@ -316,7 +316,6 @@ export default function GlobalInsights() {
           ))}
         </div>
       )}
-      </div>
-    </div>
+    </DashboardLayout>
   );
 }

@@ -13,6 +13,7 @@ import { ProjectDialog } from "@/components/planner/ProjectDialog";
 import { ProjectSelector } from "@/components/planner/ProjectSelector";
 import { useDeploymentData } from "@/hooks/useDeploymentData";
 import { VIEW_MODE_OPTIONS, getDefaultNewProject, type ViewMode } from "@/lib/deploymentPlannerConfig";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const DeploymentPlanner = () => {
   const {
@@ -51,9 +52,8 @@ const DeploymentPlanner = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
-      <main className="container mx-auto p-6 max-w-[1800px] overflow-x-hidden" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="flex items-center justify-between mb-8">
+    <DashboardLayout className="max-w-[1800px] overflow-x-hidden">
+      <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-4xl font-bold mb-2">Deployment Planner</h1>
           <p className="text-muted-foreground">
@@ -255,8 +255,7 @@ const DeploymentPlanner = () => {
           </TabsContent>
         </Tabs>
       )}
-      </main>
-    </div>
+    </DashboardLayout>
   );
 };
 

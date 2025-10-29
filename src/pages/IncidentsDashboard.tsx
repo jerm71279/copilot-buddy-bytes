@@ -16,6 +16,7 @@ import IncidentEvidenceUpload from "@/components/IncidentEvidenceUpload";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 export default function IncidentsDashboard() {
   const queryClient = useQueryClient();
@@ -75,14 +76,13 @@ export default function IncidentsDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Incidents Dashboard</h1>
-            <p className="text-muted-foreground">Monitor and manage system incidents</p>
-          </div>
-          <DashboardSettingsMenu dashboardName="Incidents" />
+    <DashboardLayout>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold">Incidents Dashboard</h1>
+          <p className="text-muted-foreground">Monitor and manage system incidents</p>
+        </div>
+        <DashboardSettingsMenu dashboardName="Incidents" />
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
             <Button>Create Incident</Button>
@@ -148,7 +148,7 @@ export default function IncidentsDashboard() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card>
           <CardHeader>
             <CardTitle>Open</CardTitle>
@@ -185,7 +185,7 @@ export default function IncidentsDashboard() {
         </Card>
       </div>
 
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle>Recent Incidents</CardTitle>
           <CardDescription>System incidents and auto-remediation status</CardDescription>
@@ -247,11 +247,10 @@ export default function IncidentsDashboard() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-2 mt-6">
+      <div className="grid gap-6 md:grid-cols-2">
         <DepartmentAIAssistant department="incidents" departmentLabel="Incident Management" />
         <MCPServerStatus filterByServerType="incidents" />
       </div>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 }

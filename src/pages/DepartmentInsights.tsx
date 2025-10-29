@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Lightbulb, TrendingUp, AlertTriangle, Target, CheckCircle, XCircle } from "lucide-react";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 interface DepartmentInsight {
   id: string;
@@ -104,8 +105,7 @@ export default function DepartmentInsights() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout>
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Department Insights</h1>
         <p className="text-muted-foreground">
@@ -301,7 +301,6 @@ export default function DepartmentInsights() {
           )}
         </TabsContent>
       </Tabs>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 }
