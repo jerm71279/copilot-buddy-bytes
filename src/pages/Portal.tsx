@@ -271,6 +271,7 @@ const Portal = () => {
               <Microsoft365Integration />
             </TabsContent>
         </Tabs>
+      </div>
       </DashboardLayout>
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </>
