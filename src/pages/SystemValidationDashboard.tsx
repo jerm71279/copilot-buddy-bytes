@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,19 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from "@/hooks/useStandardToast";
-
-interface ValidationResult {
-  category: string;
-  tests: TestResult[];
-  passRate: number;
-}
-
-interface TestResult {
-  name: string;
-  status: 'passed' | 'failed' | 'warning';
-  message: string;
-  details?: string;
-}
+import { SystemValidationService, ValidationResult, TestResult } from "@/services/systemValidationService";
 
 export default function SystemValidationDashboard() {
   const showToast = useStandardToast();
@@ -52,204 +39,52 @@ export default function SystemValidationDashboard() {
     try {
       // 1. Database Schema Validation
       setOverallProgress(10);
-      const dbTests: TestResult[] = [];
-      
-      // Check critical tables exist
-      const tables = ['workflows', 'workflow_executions', 'knowledge_articles', 'evidence_files', 'audit_logs'];
-      for (const table of tables) {
-        try {
-          const { count, error } = await supabase.from(table as any).select('*', { count: 'exact', head: true });
-          if (error) throw error;
-          dbTests.push({
-            name: `Table ${table} exists`,
-            status: 'passed',
-            message: `Found ${count} records`
-          });
-        } catch (error) {
-          dbTests.push({
-            name: `Table ${table} exists`,
-            status: 'failed',
-            message: error instanceof Error ? error.message : 'Table not found'
-          });
-        }
-      }
-
+      const dbTests = await SystemValidationService.validateDatabaseSchema();
       validationResults.push({
         category: 'Database Schema',
         tests: dbTests,
-        passRate: (dbTests.filter(t => t.status === 'passed').length / dbTests.length) * 100
+        passRate: SystemValidationService.calculatePassRate(dbTests)
       });
 
       // 2. RLS Policy Validation
       setOverallProgress(25);
-      const rlsTests: TestResult[] = [];
-      
-      try {
-        // Test authenticated user can read their own data
-        const { data: session } = await supabase.auth.getSession();
-        if (session) {
-          const { error } = await supabase.from('workflows').select('*').limit(1);
-          rlsTests.push({
-            name: 'Authenticated user can read workflows',
-            status: error ? 'failed' : 'passed',
-            message: error ? error.message : 'RLS policy working correctly'
-          });
-        } else {
-          rlsTests.push({
-            name: 'Authentication check',
-            status: 'warning',
-            message: 'No active session to test RLS policies'
-          });
-        }
-      } catch (error) {
-        rlsTests.push({
-          name: 'RLS Policy Test',
-          status: 'failed',
-          message: error instanceof Error ? error.message : 'Unknown error'
-        });
-      }
-
+      const rlsTests = await SystemValidationService.validateRLSPolicies();
       validationResults.push({
         category: 'Row Level Security',
         tests: rlsTests,
-        passRate: (rlsTests.filter(t => t.status === 'passed').length / rlsTests.length) * 100
+        passRate: SystemValidationService.calculatePassRate(rlsTests)
       });
 
       // 3. Edge Function Validation
       setOverallProgress(40);
-      const functionTests: TestResult[] = [];
-      
-      const functions = [
-        'workflow-insights',
-        'intelligent-assistant',
-        'department-assistant',
-        'comprehensive-test-data-generator'
-      ];
-
-      for (const func of functions) {
-        try {
-          const { error } = await supabase.functions.invoke(func, {
-            body: { test: true }
-          });
-          
-          // Some functions may return errors for test payloads, that's okay
-          functionTests.push({
-            name: `Function ${func}`,
-            status: 'passed',
-            message: 'Function is accessible'
-          });
-        } catch (error) {
-          functionTests.push({
-            name: `Function ${func}`,
-            status: 'failed',
-            message: error instanceof Error ? error.message : 'Function not accessible'
-          });
-        }
-      }
-
+      const functionTests = await SystemValidationService.validateEdgeFunctions();
       validationResults.push({
         category: 'Edge Functions',
         tests: functionTests,
-        passRate: (functionTests.filter(t => t.status === 'passed').length / functionTests.length) * 100
+        passRate: SystemValidationService.calculatePassRate(functionTests)
       });
 
       // 4. Data Integrity Validation
       setOverallProgress(60);
-      const dataTests: TestResult[] = [];
-
-      // Check for orphaned records
-      try {
-        const { data: executions, error } = await supabase
-          .from('workflow_executions')
-          .select('workflow_id')
-          .limit(100);
-
-        if (error) throw error;
-
-        const uniqueWorkflowIds = [...new Set(executions?.map(e => e.workflow_id) || [])];
-        
-        if (uniqueWorkflowIds.length > 0) {
-          const { count: workflowCount } = await supabase
-            .from('workflows')
-            .select('*', { count: 'exact', head: true })
-            .in('id', uniqueWorkflowIds);
-
-          dataTests.push({
-            name: 'Workflow execution references',
-            status: workflowCount === uniqueWorkflowIds.length ? 'passed' : 'warning',
-            message: `${workflowCount}/${uniqueWorkflowIds.length} workflow references valid`
-          });
-        } else {
-          dataTests.push({
-            name: 'Workflow execution references',
-            status: 'passed',
-            message: 'No workflow executions to validate'
-          });
-        }
-      } catch (error) {
-        dataTests.push({
-          name: 'Data integrity check',
-          status: 'failed',
-          message: error instanceof Error ? error.message : 'Unknown error'
-        });
-      }
-
+      const dataTests = await SystemValidationService.validateDataIntegrity();
       validationResults.push({
         category: 'Data Integrity',
         tests: dataTests,
-        passRate: (dataTests.filter(t => t.status === 'passed').length / dataTests.length) * 100
+        passRate: SystemValidationService.calculatePassRate(dataTests)
       });
 
       // 5. Performance Validation
       setOverallProgress(80);
-      const perfTests: TestResult[] = [];
-
-      // Test query performance
-      const startTime = Date.now();
-      try {
-        await supabase.from('workflows').select('*').limit(100);
-        const duration = Date.now() - startTime;
-        
-        perfTests.push({
-          name: 'Query performance',
-          status: duration < 1000 ? 'passed' : duration < 3000 ? 'warning' : 'failed',
-          message: `Query took ${duration}ms`,
-          details: duration < 1000 ? 'Excellent' : duration < 3000 ? 'Acceptable' : 'Slow'
-        });
-      } catch (error) {
-        perfTests.push({
-          name: 'Query performance',
-          status: 'failed',
-          message: error instanceof Error ? error.message : 'Query failed'
-        });
-      }
-
+      const perfTests = await SystemValidationService.validatePerformance();
       validationResults.push({
         category: 'Performance',
         tests: perfTests,
-        passRate: (perfTests.filter(t => t.status === 'passed').length / perfTests.length) * 100
+        passRate: SystemValidationService.calculatePassRate(perfTests)
       });
 
       // 6. UI Component Validation
       setOverallProgress(90);
-      const uiTests: TestResult[] = [];
-
-      // Check if critical routes are accessible (via checking if components loaded)
-      const routes = [
-        { path: '/workflows', name: 'Workflow Automation' },
-        { path: '/compliance', name: 'Compliance Portal' },
-        { path: '/knowledge', name: 'Knowledge Base' },
-        { path: '/admin', name: 'Admin Dashboard' }
-      ];
-
-      routes.forEach(route => {
-        uiTests.push({
-          name: `Route ${route.path}`,
-          status: 'passed',
-          message: `${route.name} accessible`
-        });
-      });
-
+      const uiTests = SystemValidationService.validateUIComponents();
       validationResults.push({
         category: 'UI Components',
         tests: uiTests,
