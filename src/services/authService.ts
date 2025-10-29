@@ -1,97 +1,155 @@
 /**
  * Authentication Service
- * Centralized authentication and authorization logic
+ * Centralized authentication operations
  */
 
 import { supabase } from "@/integrations/supabase/client";
 
+export interface UserProfile {
+  user_id: string;
+  full_name: string | null;
+  department: string | null;
+  customer_id: string | null;
+  email?: string;
+}
+
 export class AuthService {
   /**
-   * Check if user has a specific role
+   * Get current user
    */
-  static async hasRole(userId: string, roleName: string): Promise<boolean> {
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role_id, roles(name)")
-      .eq("user_id", userId);
-
-    if (error) {
-      console.error("Error checking role:", error);
-      return false;
-    }
-
-    return data?.some((ur: any) => ur.roles?.name === roleName) || false;
+  static async getCurrentUser() {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) throw error;
+    return data.user;
   }
 
   /**
-   * Check if user is admin (Admin or Super Admin)
+   * Get current session
    */
-  static async isAdmin(userId: string): Promise<boolean> {
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role_id, roles(name)")
-      .eq("user_id", userId);
-
-    if (error) {
-      console.error("Error checking admin status:", error);
-      return false;
-    }
-
-    return (
-      data?.some(
-        (ur: any) =>
-          ur.roles?.name === "Super Admin" || ur.roles?.name === "Admin"
-      ) || false
-    );
+  static async getSession() {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    return data.session;
   }
 
   /**
-   * Get user's department
+   * Sign out user
    */
-  static async getUserDepartment(userId: string): Promise<string | null> {
+  static async signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  }
+
+  /**
+   * Get user profile by user ID
+   */
+  static async getUserProfile(userId: string): Promise<UserProfile | null> {
     const { data, error } = await supabase
       .from("user_profiles")
-      .select("department")
+      .select("*")
       .eq("user_id", userId)
       .maybeSingle();
 
     if (error) {
-      console.error("Error fetching department:", error);
+      console.warn("Profile not found:", error);
       return null;
     }
 
-    return data?.department || null;
+    return data;
   }
 
   /**
-   * Get all user roles
+   * Check if user has admin role
    */
-  static async getUserRoles(userId: string): Promise<string[]> {
+  static async isUserAdmin(userId: string): Promise<boolean> {
+    try {
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role_id, roles(name)")
+        .eq("user_id", userId);
+
+      let isAdmin = roles?.some((ur: any) => 
+        ur.roles?.name === "Super Admin" || ur.roles?.name === "Admin"
+      ) || false;
+
+      if (!isAdmin) {
+        const { data: rpcHasAdmin } = await supabase.rpc("has_role", {
+          _user_id: userId,
+          _role: "admin",
+        });
+        isAdmin = !!rpcHasAdmin;
+      }
+
+      return isAdmin;
+    } catch (error) {
+      console.warn("Could not check admin status:", error);
+      return false;
+    }
+  }
+
+  /**
+   * Get customer ID from user profile
+   */
+  static async getCustomerId(userId: string): Promise<string | null> {
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('customer_id')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    return profile?.customer_id || null;
+  }
+
+  /**
+   * Subscribe to auth state changes
+   */
+  static onAuthStateChange(callback: (event: string, session: any) => void) {
+    return supabase.auth.onAuthStateChange(callback);
+  }
+
+  /**
+   * Check permission using RPC
+   */
+  static async checkPermission(
+    userId: string,
+    resourceType: string,
+    resourceName: string,
+    minPermission: string
+  ): Promise<boolean> {
+    try {
+      const { data, error } = await supabase.rpc("has_permission", {
+        _user_id: userId,
+        _resource_type: resourceType,
+        _resource_name: resourceName,
+        _min_permission: minPermission,
+      });
+
+      if (error) {
+        console.error("Permission check error:", error);
+        return false;
+      }
+
+      return data === true;
+    } catch (error) {
+      console.error("Permission check error:", error);
+      return false;
+    }
+  }
+
+  /**
+   * Get user roles
+   */
+  static async getUserRoles(userId: string) {
     const { data, error } = await supabase
       .from("user_roles")
       .select("role_id, roles(name)")
       .eq("user_id", userId);
 
     if (error) {
-      console.error("Error fetching roles:", error);
+      console.error("Error fetching user roles:", error);
       return [];
     }
 
-    return data?.map((ur: any) => ur.roles?.name).filter(Boolean) || [];
-  }
-
-  /**
-   * Get department route based on user's department
-   */
-  static getDepartmentRoute(department: string | null): string {
-    const routes: Record<string, string> = {
-      compliance: "/dashboard/compliance",
-      it: "/dashboard/it",
-      operations: "/dashboard/operations",
-      hr: "/dashboard/hr",
-      finance: "/dashboard/finance",
-      executive: "/dashboard/executive",
-    };
-    return routes[department?.toLowerCase() || ""] || "/portal";
+    return data || [];
   }
 }

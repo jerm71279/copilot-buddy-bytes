@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
+import { AuthService } from "@/services/authService";
 
 /**
  * Centralized Permission Management Hook
@@ -50,17 +50,12 @@ export function usePermissions(): PermissionCheck {
     }
 
     try {
-      const { data, error } = await supabase.rpc("has_permission", {
-        _user_id: user.id,
-        _resource_type: "portal",
-        _resource_name: resource,
-        _min_permission: level,
-      });
-
-      if (error) {
-        console.error("Permission check error:", error);
-        return false;
-      }
+      const data = await AuthService.checkPermission(
+        user.id,
+        "portal",
+        resource,
+        level
+      );
 
       const hasAccess = data === true;
       permissionCacheRef.current.set(cacheKey, hasAccess);

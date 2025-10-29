@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 
 interface UserProfile {
   user_id: string;
@@ -37,7 +37,7 @@ export function useUserProfile(requireAuth = true): UseUserProfileReturn {
       setIsLoading(true);
       setError(null);
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       
       if (!user) {
         if (requireAuth) {
@@ -46,15 +46,7 @@ export function useUserProfile(requireAuth = true): UseUserProfileReturn {
         return;
       }
 
-      const { data: userProfile, error: profileError } = await supabase
-        .from("user_profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (profileError) {
-        throw profileError;
-      }
+      const userProfile = await AuthService.getUserProfile(user.id);
 
       setProfile(userProfile);
       setCustomerId(userProfile?.customer_id || null);
