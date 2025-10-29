@@ -1,33 +1,9 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { DeploymentService } from "@/services/deploymentService";
+import { AuthService } from "@/services/authService";
 
-export interface Project {
-  id: string;
-  project_name: string;
-  project_number: string;
-  description: string;
-  project_type: string;
-  project_status: string;
-  customer_id: string;
-  project_manager_id: string;
-  created_at: string;
-}
-
-export interface ProjectData {
-  tasks: any[];
-  dependencies: any[];
-  milestones: any[];
-  risks: any[];
-  allocations: any[];
-}
-
-export interface NewProjectForm {
-  project_name: string;
-  description: string;
-  project_type: string;
-  project_status: string;
-}
+export type { Project, ProjectData, NewProjectForm } from "@/services/deploymentService";
 
 export function useDeploymentData() {
   const [loading, setLoading] = useState(true);
@@ -54,25 +30,21 @@ export function useDeploymentData() {
 
   const initializeData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) {
         toast.error("Please log in to access deployment planner");
         return;
       }
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const customerId = await AuthService.getCustomerId(user.id);
 
-      if (!profile?.customer_id) {
+      if (!customerId) {
         toast.error("Customer profile not found");
         return;
       }
 
-      setCustomerId(profile.customer_id);
-      await loadProjects(profile.customer_id);
+      setCustomerId(customerId);
+      await loadProjects(customerId);
     } catch (error) {
       console.error("Error initializing:", error);
       toast.error("Failed to initialize deployment planner");
@@ -83,15 +55,8 @@ export function useDeploymentData() {
 
   const loadProjects = async (custId: string) => {
     try {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .eq("customer_id", custId)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-
-      setProjects(data || []);
+      const data = await DeploymentService.getProjects(custId);
+      setProjects(data);
       if (data && data.length > 0 && !selectedProjectId) {
         setSelectedProjectId(data[0].id);
       }
@@ -104,27 +69,8 @@ export function useDeploymentData() {
   const loadProjectData = async (projectId: string) => {
     setLoading(true);
     try {
-      const [tasksRes, depsRes, milestonesRes, risksRes, allocsRes] = await Promise.all([
-        supabase.from("project_tasks").select("*").eq("project_id", projectId).order("start_date"),
-        supabase.from("task_dependencies").select("*").eq("project_id", projectId),
-        supabase.from("project_milestones").select("*").eq("project_id", projectId).order("due_date"),
-        supabase.from("risk_assessments").select("*").eq("project_id", projectId),
-        supabase.from("resource_allocations").select("*").eq("project_id", projectId)
-      ]);
-
-      if (tasksRes.error) throw tasksRes.error;
-      if (depsRes.error) throw depsRes.error;
-      if (milestonesRes.error) throw milestonesRes.error;
-      if (risksRes.error) throw risksRes.error;
-      if (allocsRes.error) throw allocsRes.error;
-
-      setProjectData({
-        tasks: tasksRes.data || [],
-        dependencies: depsRes.data || [],
-        milestones: milestonesRes.data || [],
-        risks: risksRes.data || [],
-        allocations: allocsRes.data || []
-      });
+      const data = await DeploymentService.getProjectData(projectId);
+      setProjectData(data);
     } catch (error) {
       console.error("Error loading project data:", error);
       toast.error("Failed to load project data");
@@ -140,24 +86,10 @@ export function useDeploymentData() {
     }
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("User not authenticated");
 
-      const projectNumber = `PRJ${Date.now().toString().slice(-8)}`;
-
-      const { data, error } = await supabase
-        .from("projects")
-        .insert({
-          customer_id: customerId,
-          project_number: projectNumber,
-          project_manager_id: user.id,
-          ...newProject
-        })
-        .select()
-        .maybeSingle();
-
-      if (error || !data) throw error || new Error("Failed to create project");
-
+      const data = await DeploymentService.createProject(customerId, user.id, newProject);
       toast.success("Project created successfully");
       setProjects([data, ...projects]);
       setSelectedProjectId(data.id);

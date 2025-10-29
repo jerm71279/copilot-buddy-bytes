@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { PortalService } from "@/services/portalService";
+import { AuthService } from "@/services/authService";
 
 interface PortalData {
   profile: any;
@@ -30,51 +31,31 @@ export const usePortalData = () => {
       setLoading(true);
       
       // Fetch session
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await AuthService.getSession();
       if (!session) return;
 
       // Fetch user profile
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
+      const profile = await AuthService.getUserProfile(session.user.id);
 
       // Fetch customer data if profile has customer_id
       let customer = null;
       if (profile?.customer_id) {
-        const { data: customerData } = await supabase
-          .from("customers")
-          .select("*")
-          .eq("id", profile.customer_id)
-          .maybeSingle();
-        customer = customerData;
+        customer = await PortalService.getCustomer(profile.customer_id);
       }
 
       // Fetch recent knowledge articles
-      const { data: articles } = await supabase
-        .from("knowledge_articles")
-        .select("*")
-        .eq("status", "published")
-        .order("updated_at", { ascending: false })
-        .limit(5);
+      const articles = await PortalService.getRecentArticles();
 
       // Fetch recent workflow executions (only if customer_id exists)
-      let workflows = [];
+      let workflows: any[] = [];
       if (profile?.customer_id) {
-        const { data: workflowData } = await supabase
-          .from("workflow_executions")
-          .select("*")
-          .eq("customer_id", profile.customer_id)
-          .order("started_at", { ascending: false })
-          .limit(5);
-        workflows = workflowData || [];
+        workflows = await PortalService.getRecentWorkflows(profile.customer_id);
       }
 
       setData({
         profile: profile || null,
         customer,
-        recentArticles: articles || [],
+        recentArticles: articles,
         recentWorkflows: workflows,
       });
     } catch (error) {
@@ -105,16 +86,11 @@ export const useCustomerId = () => {
   useEffect(() => {
     const fetchCustomerId = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await AuthService.getCurrentUser();
         if (user) {
-          const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('customer_id')
-            .eq('user_id', user.id)
-            .maybeSingle();
-          
-          if (profile?.customer_id) {
-            setCustomerId(profile.customer_id);
+          const customerId = await AuthService.getCustomerId(user.id);
+          if (customerId) {
+            setCustomerId(customerId);
           }
         }
       } catch (error) {

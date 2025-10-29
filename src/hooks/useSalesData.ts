@@ -1,16 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { useDemoMode } from '@/hooks/useDemoMode';
 import type { MCPServer } from '@/hooks/useMCPServers';
-
-export interface SalesStats {
-  totalRevenue: number;
-  activeDeals: number;
-  customerCount: number;
-  conversionRate: number;
-  monthlyGrowth: number;
-}
+import { SalesService, type SalesStats } from '@/services/salesService';
+import { AuthService } from '@/services/authService';
 
 interface UserProfile {
   full_name: string;
@@ -39,14 +32,8 @@ export const useSalesData = () => {
 
   const fetchMcpServers = async () => {
     try {
-      const { data } = await supabase
-        .from("mcp_servers")
-        .select("id, server_name, server_type")
-        .eq("server_type", "sales")
-        .eq("status", "active")
-        .order("server_name");
-      
-      if (data) setMcpServers(data as MCPServer[]);
+      const data = await SalesService.getSalesMCPServers();
+      setMcpServers(data as MCPServer[]);
     } catch (error) {
       console.error("Error fetching MCP servers:", error);
     }
@@ -60,18 +47,14 @@ export const useSalesData = () => {
     }
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await AuthService.getSession();
       
       if (!session) {
         navigate('/auth');
         return;
       }
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .maybeSingle();
+      const profile = await AuthService.getUserProfile(session.user.id);
 
       setUserProfile(profile);
     } catch (error) {
@@ -86,7 +69,7 @@ export const useSalesData = () => {
       navigate('/demo');
       return;
     }
-    await supabase.auth.signOut();
+    await AuthService.signOut();
     navigate('/auth');
   };
 
@@ -100,4 +83,4 @@ export const useSalesData = () => {
   };
 };
 
-export type { UserProfile };
+export type { SalesStats, UserProfile };

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { useDemoMode } from '@/hooks/useDemoMode';
 import { toast } from 'sonner';
+import { AuthService } from '@/services/authService';
+import { supabase } from '@/integrations/supabase/client';
 
+// Using HRStats from service would require reading it first, so defining here
 export interface HRStats {
   totalUsers: number;
   activeSessions: number;
@@ -61,18 +63,14 @@ export const useHRData = () => {
     }
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+    const session = await AuthService.getSession();
       
       if (!session) {
         navigate("/auth");
         return;
       }
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
+      const profile = await AuthService.getUserProfile(session.user.id);
 
       setUserProfile(profile);
       await fetchStats();
@@ -109,7 +107,7 @@ export const useHRData = () => {
       navigate("/demo");
       return;
     }
-    await supabase.auth.signOut();
+    await AuthService.signOut();
     navigate("/auth");
   };
 
