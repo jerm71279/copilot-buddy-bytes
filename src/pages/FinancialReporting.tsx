@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useFinancialReports } from "@/hooks/useFinancialReports";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,89 +12,11 @@ export default function FinancialReporting() {
   const toast = useStandardToast();
   const { customerId } = useUserProfile();
   
-  // Now using useFinancialReports hook
-  const { metrics, isLoading: hookLoading } = useFinancialReports(customerId);
+  // Using useFinancialReports hook for all data
+  const { metrics, isLoading } = useFinancialReports(customerId);
   
-  const [loading, setLoading] = useState(true);
   const [reportPeriod, setReportPeriod] = useState("current_month");
-  const [financialData, setFinancialData] = useState({
-    totalRevenue: 0,
-    totalExpenses: 0,
-    totalPOs: 0,
-    totalInvoices: 0,
-    budgetUtilization: 0,
-    profitMargin: 0,
-  });
   
-  // Update local state when hook data changes
-  useEffect(() => {
-    if (metrics) {
-      setFinancialData({
-        totalRevenue: metrics.totalRevenue,
-        totalExpenses: metrics.totalExpenses,
-        totalPOs: metrics.totalPOs,
-        totalInvoices: 0, // Not in hook yet
-        budgetUtilization: metrics.budgetUtilization,
-        profitMargin: metrics.profitMargin,
-      });
-      setLoading(false);
-    }
-  }, [metrics]);
-
-  useEffect(() => {
-    if (customerId && !metrics) {
-      // Hook handles fetching, just manage loading state
-      setLoading(hookLoading);
-    }
-  }, [customerId, reportPeriod, metrics, hookLoading]);
-
-  const fetchFinancialData = async () => {
-    try {
-      setLoading(true);
-
-      const [invoicesData, expensesData, posData, budgetsData] = await Promise.all([
-        supabase.from("invoices").select("total_amount, status").eq("customer_id", customerId!),
-        supabase.from("expenses").select("amount, approval_status").eq("customer_id", customerId!),
-        supabase.from("purchase_orders").select("total_amount, status").eq("customer_id", customerId!),
-        supabase.from("budgets").select("allocated_amount, spent_amount, status").eq("customer_id", customerId!),
-      ]);
-
-      const totalRevenue = invoicesData.data
-        ?.filter(inv => inv.status === "paid")
-        .reduce((sum, inv) => sum + parseFloat(inv.total_amount.toString()), 0) || 0;
-
-      const totalExpenses = expensesData.data
-        ?.filter(exp => exp.approval_status === "approved")
-        .reduce((sum, exp) => sum + parseFloat(exp.amount.toString()), 0) || 0;
-
-      const totalPOs = posData.data
-        ?.reduce((sum, po) => sum + parseFloat(po.total_amount.toString()), 0) || 0;
-
-      const totalInvoices = invoicesData.data?.length || 0;
-
-      const activeBudgets = budgetsData.data?.filter(b => b.status === "active") || [];
-      const totalAllocated = activeBudgets.reduce((sum, b) => sum + parseFloat(b.allocated_amount.toString()), 0);
-      const totalSpent = activeBudgets.reduce((sum, b) => sum + parseFloat(b.spent_amount.toString()), 0);
-      const budgetUtilization = totalAllocated > 0 ? (totalSpent / totalAllocated) * 100 : 0;
-
-      const profitMargin = totalRevenue > 0 ? ((totalRevenue - totalExpenses) / totalRevenue) * 100 : 0;
-
-      setFinancialData({
-        totalRevenue,
-        totalExpenses,
-        totalPOs,
-        totalInvoices,
-        budgetUtilization,
-        profitMargin,
-      });
-    } catch (error) {
-      console.error("Error fetching financial data:", error);
-      toast.loadFailed("financial data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleExport = () => {
     toast.success("Report export functionality coming soon");
   };
@@ -136,7 +57,7 @@ export default function FinancialReporting() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${financialData.totalRevenue.toLocaleString()}</div>
+              <div className="text-2xl font-bold">${metrics?.totalRevenue.toLocaleString() || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">From paid invoices</p>
             </CardContent>
           </Card>
@@ -147,7 +68,7 @@ export default function FinancialReporting() {
               <TrendingDown className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${financialData.totalExpenses.toLocaleString()}</div>
+              <div className="text-2xl font-bold">${metrics?.totalExpenses.toLocaleString() || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">Approved expenses</p>
             </CardContent>
           </Card>
@@ -158,7 +79,7 @@ export default function FinancialReporting() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{financialData.profitMargin.toFixed(1)}%</div>
+              <div className="text-2xl font-bold">{metrics?.profitMargin.toFixed(1) || 0}%</div>
               <p className="text-xs text-muted-foreground mt-1">Revenue minus expenses</p>
             </CardContent>
           </Card>
@@ -169,7 +90,7 @@ export default function FinancialReporting() {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${financialData.totalPOs.toLocaleString()}</div>
+              <div className="text-2xl font-bold">${metrics?.totalPOs.toLocaleString() || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">Total PO value</p>
             </CardContent>
           </Card>
@@ -180,7 +101,7 @@ export default function FinancialReporting() {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{financialData.totalInvoices}</div>
+              <div className="text-2xl font-bold">{metrics?.totalRevenue || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">Total count</p>
             </CardContent>
           </Card>
@@ -191,7 +112,7 @@ export default function FinancialReporting() {
               <BarChart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{financialData.budgetUtilization.toFixed(1)}%</div>
+              <div className="text-2xl font-bold">{metrics?.budgetUtilization.toFixed(1) || 0}%</div>
               <p className="text-xs text-muted-foreground mt-1">Of allocated budget</p>
             </CardContent>
           </Card>
@@ -207,23 +128,21 @@ export default function FinancialReporting() {
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">Net Income</span>
                 <span className="text-2xl font-bold">
-                  ${(financialData.totalRevenue - financialData.totalExpenses).toLocaleString()}
+                  ${((metrics?.totalRevenue || 0) - (metrics?.totalExpenses || 0)).toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">Expense Ratio</span>
                 <span className="text-lg font-semibold">
-                  {financialData.totalRevenue > 0 
-                    ? ((financialData.totalExpenses / financialData.totalRevenue) * 100).toFixed(1) 
+                  {metrics && metrics.totalRevenue > 0 
+                    ? ((metrics.totalExpenses / metrics.totalRevenue) * 100).toFixed(1) 
                     : 0}%
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">Average Invoice Value</span>
                 <span className="text-lg font-semibold">
-                  ${financialData.totalInvoices > 0 
-                    ? (financialData.totalRevenue / financialData.totalInvoices).toLocaleString() 
-                    : 0}
+                  ${metrics?.totalRevenue.toLocaleString() || 0}
                 </span>
               </div>
             </div>
