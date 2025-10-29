@@ -90,6 +90,23 @@ export interface IPAllowlist {
 
 export class SAWService {
   /**
+   * Get current user's profile
+   */
+  static async getUserProfile() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
+    
+    const { data, error } = await supabase
+      .from("user_profiles")
+      .select("customer_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    
+    if (error) throw error;
+    return data;
+  }
+
+  /**
    * Get trusted devices
    */
   static async getTrustedDevices() {
@@ -106,12 +123,45 @@ export class SAWService {
   }
 
   /**
+   * Get trusted devices with registrar info
+   */
+  static async getTrustedDevicesWithRegistrar() {
+    const { data, error } = await supabase
+      .from("trusted_devices")
+      .select(`
+        *,
+        registered_by_profile:user_profiles!trusted_devices_registered_by_fkey(full_name)
+      `)
+      .order("created_at", { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  }
+
+  /**
    * Add trusted device
    */
   static async addTrustedDevice(deviceData: any) {
     const { error } = await supabase
       .from('trusted_devices')
       .insert([deviceData as any]);
+    
+    if (error) throw error;
+  }
+
+  /**
+   * Register device with user authentication
+   */
+  static async registerDevice(deviceData: any) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
+
+    const { error } = await supabase
+      .from("trusted_devices")
+      .insert([{
+        ...deviceData,
+        registered_by: user.id
+      } as any]);
     
     if (error) throw error;
   }

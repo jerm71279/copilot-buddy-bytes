@@ -13,7 +13,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Shield, ShieldCheck, ShieldAlert, Laptop, Monitor, Smartphone, Server } from "lucide-react";
 import { toast } from "sonner";
 import { SAWService } from "@/services/sawService";
-import { supabase } from "@/integrations/supabase/client";
 
 // Generate device fingerprint from browser/system information
 const generateDeviceFingerprint = () => {
@@ -48,73 +47,42 @@ export default function TrustedDevicesManager() {
   // Get current user's customer_id
   const { data: userProfile } = useQuery({
     queryKey: ["user-profile"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-      
-      const { data, error } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => SAWService.getUserProfile(),
   });
 
   // Fetch trusted devices
   const { data: devices, isLoading } = useQuery({
     queryKey: ["trusted-devices"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("trusted_devices")
-        .select(`
-          *,
-          registered_by_profile:user_profiles!trusted_devices_registered_by_fkey(full_name)
-        `)
-        .order("created_at", { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => SAWService.getTrustedDevicesWithRegistrar(),
   });
 
   // Register device mutation
   const registerDeviceMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
       const fingerprint = generateDeviceFingerprint();
       
       // Get current IP (in production, use server-side detection)
       const ipResponse = await fetch('https://api.ipify.org?format=json');
       const { ip } = await ipResponse.json();
 
-      const { error } = await supabase
-        .from("trusted_devices")
-        .insert({
-          customer_id: userProfile?.customer_id,
-          device_name: data.deviceName,
-          device_fingerprint: fingerprint,
-          device_type: data.deviceType,
-          ip_address: ip,
-          operating_system: navigator.platform,
-          is_saw: data.isSAW,
-          security_level: data.securityLevel,
-          requires_mfa: data.requiresMFA,
-          notes: data.notes,
-          registered_by: user.id,
-          device_metadata: {
-            userAgent: navigator.userAgent,
-            language: navigator.language,
-            screenResolution: `${screen.width}x${screen.height}`,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-          }
-        });
-      
-      if (error) throw error;
+      await SAWService.registerDevice({
+        customer_id: userProfile?.customer_id,
+        device_name: data.deviceName,
+        device_fingerprint: fingerprint,
+        device_type: data.deviceType,
+        ip_address: ip,
+        operating_system: navigator.platform,
+        is_saw: data.isSAW,
+        security_level: data.securityLevel,
+        requires_mfa: data.requiresMFA,
+        notes: data.notes,
+        device_metadata: {
+          userAgent: navigator.userAgent,
+          language: navigator.language,
+          screenResolution: `${screen.width}x${screen.height}`,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        }
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trusted-devices"] });
