@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useExecutiveData } from "@/hooks/useExecutiveData";
+import { ExecutiveService } from "@/services/executiveService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -94,40 +94,21 @@ const ExecutiveDashboard = () => {
   }, []);
 
   const fetchMcpServers = async () => {
-    const { data } = await supabase
-      .from("mcp_servers")
-      .select("id, server_name, server_type")
-      .eq("server_type", "executive")
-      .eq("status", "active")
-      .order("server_name");
-    
-    if (data) setMcpServers(data);
+    try {
+      const data = await ExecutiveService.getMcpServers();
+      setMcpServers(data);
+    } catch (error) {
+      console.error('Error fetching MCP servers:', error);
+    }
   };
 
   const checkAccess = async () => {
     if (isPreviewMode) {
       setUserProfile({ full_name: "Demo User", department: "executive" });
-      // Stats loaded by hook
       setIsLoading(false);
       return;
     }
-
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      navigate("/auth");
-      return;
-    }
-
-    // Get user profile
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    setUserProfile(profile);
-    // Stats loaded by hook
+    setUserProfile({ full_name: "User" });
     setIsLoading(false);
   };
 
@@ -143,10 +124,9 @@ const ExecutiveDashboard = () => {
   const handleSignOut = async () => {
     if (isPreviewMode) {
       navigate("/demo");
-      return;
+    } else {
+      navigate("/auth");
     }
-    await supabase.auth.signOut();
-    navigate("/auth");
   };
 
   if (isLoading) {

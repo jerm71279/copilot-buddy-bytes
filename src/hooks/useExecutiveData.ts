@@ -1,14 +1,6 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "./useAuth";
-
-export interface ExecutiveStats {
-  customers: number;
-  complianceScore: number;
-  workflowEfficiency: number;
-  mlInsights: number;
-  anomalies: number;
-}
+import { ExecutiveService, ExecutiveStats } from "@/services/executiveService";
 
 /**
  * useExecutiveData Hook
@@ -28,19 +20,8 @@ export function useExecutiveData() {
 
   const fetchStats = async () => {
     try {
-      const [customers, insights, anomalies] = await Promise.all([
-        supabase.from("customers").select("*", { count: "exact", head: true }),
-        supabase.from("ml_insights").select("*", { count: "exact", head: true }),
-        supabase.from("anomaly_detections").select("*", { count: "exact", head: true })
-      ]);
-
-      setStats({
-        customers: customers.count || 0,
-        complianceScore: 92,
-        workflowEfficiency: 87,
-        mlInsights: insights.count || 0,
-        anomalies: anomalies.count || 0
-      });
+      const data = await ExecutiveService.getStats();
+      setStats(data);
     } catch (error) {
       console.error('Error fetching executive stats:', error);
     } finally {
