@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Users } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
@@ -65,10 +64,9 @@ const AdminDashboard = () => {
   const handleSignOut = async () => {
     if (isPreviewMode) {
       navigate("/demo");
-      return;
+    } else {
+      navigate("/auth");
     }
-    await supabase.auth.signOut();
-    navigate("/auth");
   };
 
   if (!isAdmin) {
