@@ -17,6 +17,7 @@ import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { quickAccessTools, analyticsDashboards, adminTools } from "@/lib/portalConfig";
 import { useToolPermissions, useDashboardPermissions } from "@/hooks/useNavigationPermissions";
 import { useAuth } from "@/hooks/useAuth";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const Portal = () => {
   const navigate = useNavigate();
@@ -65,9 +66,10 @@ const Portal = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
+    <>
+    <DashboardLayout className="space-y-6">
       {/* Header */}
-      <header className="border-b bg-card">
+      <header className="border-b bg-card -mx-4 -mt-6">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -269,10 +271,9 @@ const Portal = () => {
               <Microsoft365Integration />
             </TabsContent>
         </Tabs>
-      </div>
-
+      </DashboardLayout>
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
-    </div>
+    </>
   );
 };
 

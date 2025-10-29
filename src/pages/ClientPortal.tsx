@@ -16,6 +16,7 @@ import MCPServerStatus from "@/components/MCPServerStatus";
 import { useClientPortalData, useCreateTicket, usePortalMetrics } from "@/hooks/useClientPortalData";
 import { ticketCategories, priorityLevels, clientPortalDashboards, defaultTicketValues } from "@/lib/clientPortalConfig";
 import { PriorityBadge, formatStatus, formatCategory } from "@/lib/clientPortalUtils";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 export default function ClientPortal() {
   const [isTicketOpen, setIsTicketOpen] = useState(false);
@@ -30,12 +31,11 @@ export default function ClientPortal() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8 pt-8 space-y-6" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <DashboardNavigation 
-          title="Client Portal"
-          dashboards={clientPortalDashboards}
-        />
+    <DashboardLayout className="space-y-6">
+      <DashboardNavigation 
+        title="Client Portal"
+        dashboards={clientPortalDashboards}
+      />
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Client Portal</h1>
@@ -248,12 +248,11 @@ export default function ClientPortal() {
           </div>
         </TabsContent>
       </Tabs>
-
+      
       <div className="grid gap-6 md:grid-cols-2 mt-6">
         <DepartmentAIAssistant department="client_portal" departmentLabel="Client Portal" />
         <MCPServerStatus filterByServerType="client_portal" />
       </div>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

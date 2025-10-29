@@ -20,6 +20,7 @@ import {
   Plus
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 export default function CustomerAdmin() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -135,69 +136,68 @@ export default function CustomerAdmin() {
   ).length || 0;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-bold">Customer Administration</h1>
-            <p className="text-muted-foreground mt-2">
-              Manage tenants, monitor health, and track usage
-            </p>
-          </div>
-          <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Customer
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Customer</DialogTitle>
-                <DialogDescription>
-                  Create a new customer account
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label>Company Name</Label>
-                  <Input
-                    value={newCustomer.company_name}
-                    onChange={(e) => setNewCustomer({ ...newCustomer, company_name: e.target.value })}
-                    placeholder="Acme Corp"
-                  />
-                </div>
-                <div>
-                  <Label>Industry</Label>
-                  <Input
-                    value={newCustomer.industry}
-                    onChange={(e) => setNewCustomer({ ...newCustomer, industry: e.target.value })}
-                    placeholder="Technology"
-                  />
-                </div>
-                <div>
-                  <Label>Primary Contact Email</Label>
-                  <Input
-                    type="email"
-                    value={newCustomer.primary_contact_email}
-                    onChange={(e) => setNewCustomer({ ...newCustomer, primary_contact_email: e.target.value })}
-                    placeholder="contact@acme.com"
-                  />
-                </div>
-                <Button
-                  onClick={() => addCustomerMutation.mutate()}
-                  disabled={!newCustomer.company_name || !newCustomer.primary_contact_email || addCustomerMutation.isPending}
-                  className="w-full"
-                >
-                  Create Customer
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+    <DashboardLayout>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-4xl font-bold">Customer Administration</h1>
+          <p className="text-muted-foreground mt-2">
+            Manage tenants, monitor health, and track usage
+          </p>
         </div>
+        <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Customer
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Customer</DialogTitle>
+              <DialogDescription>
+                Create a new customer account
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Company Name</Label>
+                <Input
+                  value={newCustomer.company_name}
+                  onChange={(e) => setNewCustomer({ ...newCustomer, company_name: e.target.value })}
+                  placeholder="Acme Corp"
+                />
+              </div>
+              <div>
+                <Label>Industry</Label>
+                <Input
+                  value={newCustomer.industry}
+                  onChange={(e) => setNewCustomer({ ...newCustomer, industry: e.target.value })}
+                  placeholder="Technology"
+                />
+              </div>
+              <div>
+                <Label>Primary Contact Email</Label>
+                <Input
+                  type="email"
+                  value={newCustomer.primary_contact_email}
+                  onChange={(e) => setNewCustomer({ ...newCustomer, primary_contact_email: e.target.value })}
+                  placeholder="contact@acme.com"
+                />
+              </div>
+              <Button
+                onClick={() => addCustomerMutation.mutate()}
+                disabled={!newCustomer.company_name || !newCustomer.primary_contact_email || addCustomerMutation.isPending}
+                className="w-full"
+              >
+                Create Customer
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
@@ -253,21 +253,21 @@ export default function CustomerAdmin() {
               </div>
               <p className="text-xs text-muted-foreground">Overall health</p>
             </CardContent>
-          </Card>
-        </div>
+        </Card>
+      </div>
 
-        {/* Search */}
-        <div className="mb-6">
+      {/* Search */}
+      <div className="mb-6">
           <Input
             placeholder="Search customers by name, industry, or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-md"
           />
-        </div>
+      </div>
 
-        {/* Customer List */}
-        <Card>
+      {/* Customer List */}
+      <Card>
           <CardHeader>
             <CardTitle>All Customers</CardTitle>
             <CardDescription>Manage and monitor customer accounts</CardDescription>
@@ -346,10 +346,9 @@ export default function CustomerAdmin() {
               <p className="text-center py-8 text-muted-foreground">
                 {searchTerm ? 'No matching customers found' : 'No customers yet'}
               </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          )}
+        </CardContent>
+      </Card>
+    </DashboardLayout>
   );
 }

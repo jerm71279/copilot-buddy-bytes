@@ -6,12 +6,13 @@ import TrustedDevicesManager from "@/components/saw/TrustedDevicesManager";
 import IPAllowlistManager from "@/components/saw/IPAllowlistManager";
 import DeviceSessionsMonitor from "@/components/saw/DeviceSessionsMonitor";
 import BreakGlassAccess from "@/components/saw/BreakGlassAccess";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 export default function SAWManagement() {
   const [activeTab, setActiveTab] = useState("devices");
 
   return (
-    <div className="min-h-screen bg-background">
+    <DashboardLayout>
       <DashboardNavigation 
         title="Secure Access Workstations (SAW)"
         dashboards={[
@@ -21,18 +22,17 @@ export default function SAWManagement() {
         ]}
       />
       
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Shield className="h-10 w-10 text-primary" />
-            <h1 className="text-4xl font-bold">Secure Access Workstations</h1>
-          </div>
-          <p className="text-muted-foreground">
-            Manage trusted devices, IP allowlists, session monitoring, and break-glass emergency access
-          </p>
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <Shield className="h-10 w-10 text-primary" />
+          <h1 className="text-4xl font-bold">Secure Access Workstations</h1>
         </div>
+        <p className="text-muted-foreground">
+          Manage trusted devices, IP allowlists, session monitoring, and break-glass emergency access
+        </p>
+      </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="devices" className="gap-2">
               <Monitor className="h-4 w-4" />
@@ -66,9 +66,8 @@ export default function SAWManagement() {
 
           <TabsContent value="break-glass">
             <BreakGlassAccess />
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
+        </TabsContent>
+      </Tabs>
+    </DashboardLayout>
   );
 }

@@ -10,6 +10,7 @@ import { DocumentationCard } from "@/components/developers/DocumentationCard";
 import { ToolCard } from "@/components/developers/ToolCard";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const Developers = () => {
   const { expandedDocs, docContents, loadingDocs, toggleDoc } = useDevelopersData();

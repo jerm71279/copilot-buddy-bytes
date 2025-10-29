@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const NavigationScaffold = () => {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({
@@ -13,7 +14,7 @@ const NavigationScaffold = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <DashboardLayout>
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Platform Navigation Scaffold</h1>
         
@@ -238,7 +239,7 @@ const NavigationScaffold = () => {
           </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

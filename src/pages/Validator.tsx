@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 // Simple in-browser validator that scans source files via Vite's import.meta.glob
 // Note: This mirrors key checks from the CLI scripts that are safe to run in the browser
@@ -141,7 +142,8 @@ const Validator: React.FC = () => {
   const totalIssues = results.singleUsage.length + results.hardcodedColors.length + results.layoutIssues.length;
 
   return (
-    <main className="min-h-screen bg-background">
+    <DashboardLayout>
+      <main className="space-y-8">
       <section className="container mx-auto px-4 py-6 md:py-10">
         <header className="mb-6 md:mb-8">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">In-Browser Validation</h1>
@@ -255,7 +257,8 @@ const Validator: React.FC = () => {
           </Card>
         </div>
       </section>
-    </main>
+      </main>
+    </DashboardLayout>
   );
 };
 

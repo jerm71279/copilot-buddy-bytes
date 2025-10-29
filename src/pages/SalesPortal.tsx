@@ -16,6 +16,7 @@ import {
   mockCustomers, 
   salesReportCards 
 } from "@/lib/salesConfig";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const SalesPortal = () => {
   const navigate = useNavigate();
@@ -24,32 +25,31 @@ const SalesPortal = () => {
   const metricCards = getSalesMetricCards(stats);
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <DashboardLayout><div className="flex items-center justify-center py-12">Loading...</div></DashboardLayout>;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
-              <TrendingUp className="h-8 w-8 text-primary" />
-              Sales Portal
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Manage your pipeline and close more deals
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <DashboardSettingsMenu dashboardName="Sales Portal" />
-            <span className="text-sm text-muted-foreground">{userProfile?.full_name}</span>
-            {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
-            <Button onClick={handleSignOut} variant="outline" size="sm">
-              <LogOut className="h-4 w-4 mr-2" />
-              {isPreviewMode ? "Back to Demos" : "Sign Out"}
-            </Button>
-          </div>
+    <DashboardLayout className="space-y-6">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <TrendingUp className="h-8 w-8 text-primary" />
+            Sales Portal
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Manage your pipeline and close more deals
+          </p>
         </div>
+        <div className="flex items-center gap-4">
+          <DashboardSettingsMenu dashboardName="Sales Portal" />
+          <span className="text-sm text-muted-foreground">{userProfile?.full_name}</span>
+          {isPreviewMode && <Badge variant="outline">Preview Mode</Badge>}
+          <Button onClick={handleSignOut} variant="outline" size="sm">
+            <LogOut className="h-4 w-4 mr-2" />
+            {isPreviewMode ? "Back to Demos" : "Sign Out"}
+          </Button>
+        </div>
+      </div>
 
         {/* My Performance Metrics */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
@@ -216,11 +216,12 @@ const SalesPortal = () => {
           </TabsContent>
         </Tabs>
 
-        <div className="mt-6">
-          <MCPServerStatus filterByServerType="sales" />
-        </div>
-      </main>
-    </div>
+      <div className="mt-6">
+        <MCPServerStatus filterByServerType="sales" />
+      </div>
+      
+      <DepartmentAIAssistant department="sales" departmentLabel="Sales" />
+    </DashboardLayout>
   );
 };
 
