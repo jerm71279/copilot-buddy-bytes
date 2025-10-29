@@ -71,10 +71,14 @@ import DashboardNavigation from "@/components/DashboardNavigation";
 export default function OnboardingDashboard() {
   const navigate = useNavigate();
   const toast = useStandardToast();
-  const { isLoading: profileLoading } = useUserProfile();
+  const { profile, isLoading: profileLoading } = useUserProfile();
   const [onboardings, setOnboardings] = useState<ClientOnboarding[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<OnboardingStats>({
+    total_onboardings: 0,
+    active_onboardings: 0,
+    completed_onboardings: 0,
+    avg_completion_percentage: 0,
     total: 0,
     inProgress: 0,
     completed: 0,
@@ -83,10 +87,14 @@ export default function OnboardingDashboard() {
 
   const loadOnboardings = async () => {
     try {
-      const data = await OnboardingService.getClientOnboardings();
+      if (!profile?.customer_id) {
+        throw new Error('Customer ID not found');
+      }
+
+      const data = await OnboardingService.getClientOnboardings(profile.customer_id);
       setOnboardings(data);
       
-      const statsData = await OnboardingService.getOnboardingStats();
+      const statsData = await OnboardingService.getOnboardingStats(profile.customer_id);
       setStats(statsData);
     } catch (error) {
       console.error('Error loading onboardings:', error);
@@ -97,10 +105,10 @@ export default function OnboardingDashboard() {
   };
 
   useEffect(() => {
-    if (!profileLoading) {
+    if (!profileLoading && profile?.customer_id) {
       loadOnboardings();
     }
-  }, [profileLoading]);
+  }, [profileLoading, profile?.customer_id]);
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -218,11 +226,11 @@ export default function OnboardingDashboard() {
                   <div className="flex justify-between items-start">
                     <div>
                       <CardTitle className="flex items-center gap-2">
-                        {onboarding.client_name}
+                        {onboarding.employee_name}
                         {getStatusIcon(onboarding.status)}
                       </CardTitle>
                       <CardDescription className="mt-1">
-                        Started {new Date(onboarding.created_at).toLocaleDateString()}
+                        Started {onboarding.start_date ? new Date(onboarding.start_date).toLocaleDateString() : 'Not started'}
                         {onboarding.target_completion_date && (
                           <> • Target: {new Date(onboarding.target_completion_date).toLocaleDateString()}</>
                         )}
