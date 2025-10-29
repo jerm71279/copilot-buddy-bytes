@@ -19,6 +19,7 @@ import {
   Activity,
   TrendingUp
 } from "lucide-react";
+import { CIPPService, CIPPTenant, TenantHealth } from "@/services/cippService";
 
 /**
  * CIPP Dashboard Data Flow
@@ -56,28 +57,6 @@ import {
  * ```
  */
 
-interface CIPPTenant {
-  id: string;
-  tenant_id: string;
-  tenant_name: string;
-  default_domain_name: string;
-  status: string;
-  last_sync_at: string;
-  sync_status: string;
-}
-
-interface TenantHealth {
-  id: string;
-  tenant_id: string;
-  health_score: number | null;
-  security_score: number | null;
-  compliance_score: number | null;
-  alerts: any;
-  recommendations: any;
-  last_checked_at: string;
-  created_at: string;
-}
-
 const CIPPDashboard = () => {
   const navigate = useNavigate();
   const [tenants, setTenants] = useState<CIPPTenant[]>([]);
@@ -94,7 +73,6 @@ const CIPPDashboard = () => {
     try {
       setLoading(true);
 
-      // Get user's customer_id
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error("Please log in to continue");
@@ -102,40 +80,21 @@ const CIPPDashboard = () => {
         return;
       }
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) {
+      const customerId = await CIPPService.getUserCustomerId(user.id);
+      if (!customerId) {
         toast.error("Customer profile not found");
         return;
       }
 
-      setCustomerId(profile.customer_id);
+      setCustomerId(customerId);
 
-      // Load CIPP tenants
-      const { data: tenantsData, error: tenantsError } = await supabase
-        .from('cipp_tenants')
-        .select('*')
-        .eq('customer_id', profile.customer_id)
-        .order('tenant_name');
+      const tenantsData = await CIPPService.getTenantsByCustomer(customerId);
+      setTenants(tenantsData);
 
-      if (tenantsError) throw tenantsError;
-      setTenants(tenantsData || []);
-
-      // Load health data
-      if (tenantsData && tenantsData.length > 0) {
+      if (tenantsData.length > 0) {
         const tenantIds = tenantsData.map(t => t.id);
-        const { data: healthData, error: healthError } = await supabase
-          .from('cipp_tenant_health')
-          .select('*')
-          .in('tenant_id', tenantIds)
-          .order('last_checked_at', { ascending: false });
-
-        if (healthError) throw healthError;
-        setHealthData(healthData || []);
+        const healthData = await CIPPService.getHealthDataByTenants(tenantIds);
+        setHealthData(healthData);
       }
     } catch (error) {
       console.error('Error loading CIPP data:', error);
@@ -155,14 +114,7 @@ const CIPPDashboard = () => {
       setSyncing(true);
       toast.info("Syncing tenants from CIPP...");
 
-      const { data, error } = await supabase.functions.invoke('cipp-sync', {
-        body: { 
-          action: 'sync_tenants',
-          customerId 
-        }
-      });
-
-      if (error) throw error;
+      const data = await CIPPService.syncTenants(customerId);
 
       if (data.success) {
         toast.success(data.message);
@@ -179,25 +131,14 @@ const CIPPDashboard = () => {
   };
 
   const getTenantHealth = (tenantId: string) => {
-    return healthData.find(h => h.tenant_id === tenantId);
+    return CIPPService.getTenantHealth(healthData, tenantId);
   };
 
   const getHealthColor = (score: number | null) => {
-    if (!score) return "text-muted-foreground";
-    if (score >= 80) return "text-primary";
-    if (score >= 60) return "text-warning";
-    return "text-destructive";
+    return CIPPService.getHealthColor(score);
   };
 
-  const stats = {
-    totalTenants: tenants.length,
-    healthyTenants: healthData.filter(h => (h.health_score ?? 0) >= 80).length,
-    warningTenants: healthData.filter(h => (h.health_score ?? 0) >= 60 && (h.health_score ?? 0) < 80).length,
-    criticalTenants: healthData.filter(h => (h.health_score ?? 0) < 60).length,
-    avgSecurityScore: healthData.length > 0 
-      ? Math.round(healthData.reduce((sum, h) => sum + (h.security_score ?? 0), 0) / healthData.length)
-      : 0,
-  };
+  const stats = CIPPService.calculateStats(tenants, healthData);
 
   return (
     <div className="min-h-screen bg-background">
