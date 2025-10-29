@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { IncidentsService, NewIncidentInput } from "@/services/incidentsService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,54 +20,21 @@ import MCPServerStatus from "@/components/MCPServerStatus";
 export default function IncidentsDashboard() {
   const queryClient = useQueryClient();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [newIncident, setNewIncident] = useState({
+  const [newIncident, setNewIncident] = useState<NewIncidentInput>({
     title: "",
     description: "",
-    severity: "medium" as const,
-    incident_type: "operational" as const,
-    detection_method: "manual" as const
+    severity: "medium",
+    incident_type: "operational",
+    detection_method: "manual"
   });
 
   const { data: incidents, isLoading } = useQuery({
     queryKey: ["incidents"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("incidents")
-        .select("*")
-        .order("detected_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => IncidentsService.getIncidents(),
   });
 
   const createIncident = useMutation({
-    mutationFn: async (incident: typeof newIncident) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      const { data, error } = await supabase
-        .from("incidents")
-        .insert({
-          title: incident.title,
-          description: incident.description,
-          severity: incident.severity,
-          incident_type: incident.incident_type,
-          detection_method: incident.detection_method,
-          customer_id: profile?.customer_id!,
-          created_by: user.id,
-          incident_number: `INC-${Date.now()}`,
-        })
-        .select()
-        .maybeSingle();
-      if (error || !data) throw error || new Error("Failed to create incident");
-      return data;
-    },
+    mutationFn: (incident: NewIncidentInput) => IncidentsService.createIncident(incident),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["incidents"] });
       toast.success("Incident created successfully");
@@ -77,13 +44,7 @@ export default function IncidentsDashboard() {
   });
 
   const triggerRemediation = useMutation({
-    mutationFn: async (incidentId: string) => {
-      const { data, error } = await supabase.functions.invoke("auto-remediation", {
-        body: { action: "trigger_remediation", incidentId },
-      });
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: (incidentId: string) => IncidentsService.triggerRemediation(incidentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["incidents"] });
       toast.success("Remediation triggered successfully");
