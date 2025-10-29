@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { OnboardingService, ClientOnboarding, OnboardingStats } from "@/services/onboardingService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -68,23 +68,13 @@ import DashboardNavigation from "@/components/DashboardNavigation";
  * ```
  */
 
-interface ClientOnboarding {
-  id: string;
-  client_name: string;
-  status: string;
-  completion_percentage: number;
-  start_date: string | null;
-  target_completion_date: string | null;
-  created_at: string;
-}
-
 export default function OnboardingDashboard() {
   const navigate = useNavigate();
   const toast = useStandardToast();
   const { isLoading: profileLoading } = useUserProfile();
   const [onboardings, setOnboardings] = useState<ClientOnboarding[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<OnboardingStats>({
     total: 0,
     inProgress: 0,
     completed: 0,
@@ -93,25 +83,11 @@ export default function OnboardingDashboard() {
 
   const loadOnboardings = async () => {
     try {
-      const { data, error } = await supabase
-        .from('client_onboardings')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setOnboardings(data || []);
+      const data = await OnboardingService.getClientOnboardings();
+      setOnboardings(data);
       
-      // Calculate stats
-      const total = data?.length || 0;
-      const inProgress = data?.filter(o => o.status === 'in_progress').length || 0;
-      const completed = data?.filter(o => o.status === 'completed').length || 0;
-      const overdue = data?.filter(o => {
-        if (!o.target_completion_date || o.status === 'completed') return false;
-        return new Date(o.target_completion_date) < new Date();
-      }).length || 0;
-
-      setStats({ total, inProgress, completed, overdue });
+      const statsData = await OnboardingService.getOnboardingStats();
+      setStats(statsData);
     } catch (error) {
       console.error('Error loading onboardings:', error);
       toast.error("Failed to load client onboardings");
