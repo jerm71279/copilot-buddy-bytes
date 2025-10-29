@@ -7,6 +7,7 @@ import { Code, Play, Terminal, CheckCircle2, XCircle } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const CodeExecutionAI = () => {
   const [code, setCode] = useState("console.log('Hello from AI!');");
@@ -32,8 +33,7 @@ const CodeExecutionAI = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout>
         
         <div className="mb-8">
           <div className="flex items-center gap-3">
@@ -151,8 +151,7 @@ const CodeExecutionAI = () => {
           </CardContent>
         </Card>
 
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

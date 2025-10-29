@@ -8,6 +8,7 @@ import { Database, Search, Filter, Tag, Clock, Shield } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const DataCatalog = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,8 +55,7 @@ const DataCatalog = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout>
         
         {/* Header */}
         <div className="mb-8">
@@ -243,8 +243,7 @@ const DataCatalog = () => {
           ))}
         </div>
 
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ZoomIn, ZoomOut, Maximize2, ChevronDown, ChevronUp } from "lucide-react";
 import mermaid from "mermaid";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const ArchitectureCanvas = () => {
   const [zoom, setZoom] = useState(1);
@@ -316,8 +317,7 @@ graph TB
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout>
         <div className="max-w-[98vw] mx-auto">
         <div className="mb-4 flex items-center justify-between">
           <div>
@@ -399,9 +399,8 @@ graph TB
             <span className="text-muted-foreground">Compliance System</span>
           </div>
         </div>
-      </div>
-    </div>
-    </div>
+        </div>
+    </DashboardLayout>
   );
 };
 

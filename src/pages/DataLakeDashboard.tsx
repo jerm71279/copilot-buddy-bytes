@@ -5,6 +5,7 @@ import { Database, Layers, TrendingUp, Activity, CheckCircle2, AlertCircle, Brai
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { DataLakeService } from "@/services/dataLakeService";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const DataLakeDashboard = () => {
   // Fetch stats for each layer
@@ -34,8 +35,7 @@ const DataLakeDashboard = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout>
         
         {/* Header */}
         <div className="mb-8">
@@ -268,8 +268,7 @@ const DataLakeDashboard = () => {
           </Card>
         )}
 
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

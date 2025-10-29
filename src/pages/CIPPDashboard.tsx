@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import DashboardNavigation from "@/components/DashboardNavigation";
 import ExternalSystemsBar from "@/components/ExternalSystemsBar";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -141,10 +142,8 @@ const CIPPDashboard = () => {
   const stats = CIPPService.calculateStats(tenants, healthData);
 
   return (
-    <div className="min-h-screen bg-background">
+    <DashboardLayout showDashboardNavigation={false}>
       <ExternalSystemsBar />
-
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
         <DashboardNavigation 
           dashboards={[
             { name: "CIPP Dashboard", path: "/cipp" },
@@ -357,8 +356,7 @@ const CIPPDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

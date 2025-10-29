@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 import DashboardNavigation from "@/components/DashboardNavigation";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -153,9 +154,7 @@ const CMDBItemDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout showDashboardNavigation={false}>
         <DashboardNavigation
           title="Configuration Item Details"
           dashboards={[
@@ -482,8 +481,7 @@ const CMDBItemDetail = () => {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

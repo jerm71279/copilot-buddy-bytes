@@ -7,6 +7,7 @@ import { Activity, TrendingUp, BarChart3, PieChart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const domains = [
   { id: 'hr', label: 'HR', variant: 'default' as const },
@@ -57,8 +58,7 @@ const CrossDomainAnalytics = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 pb-8 pt-8" style={{ marginTop: 'var(--lanes-height, 0px)' }}>
+    <DashboardLayout>
         
         {/* Header */}
         <div className="mb-8">
@@ -202,8 +202,7 @@ const CrossDomainAnalytics = () => {
           </Card>
         )}
 
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
