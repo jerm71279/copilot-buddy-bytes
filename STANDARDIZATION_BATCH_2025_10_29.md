@@ -64,6 +64,9 @@
 </DashboardLayout>
 ```
 
+## Batch Script Available
+Run `node scripts/batch-standardize-layouts.js` to automatically standardize remaining pages.
+
 ## Notes
 - All files use same standardization pattern
 - Import statement added: `import { DashboardLayout } from "@/components/layouts/DashboardLayout"`
