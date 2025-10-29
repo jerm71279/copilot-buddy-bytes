@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Vendor, CreateVendorInput } from '@/types/vendor';
-// TODO: Re-enable after creating vendorService
-// import { VendorService } from '@/services/vendorService';
+import { VendorService } from '@/services/vendorService';
 
 interface UseVendorsReturn {
   vendors: Vendor[];

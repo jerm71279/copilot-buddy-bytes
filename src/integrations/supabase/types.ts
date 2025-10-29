@@ -13360,6 +13360,69 @@ export type Database = {
           },
         ]
       }
+      warehouse_locations: {
+        Row: {
+          address: string | null
+          capacity_sqft: number | null
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          country: string | null
+          created_at: string | null
+          customer_id: string
+          id: string
+          is_active: boolean | null
+          location_code: string | null
+          location_name: string
+          manager_name: string | null
+          notes: string | null
+          postal_code: string | null
+          state: string | null
+          updated_at: string | null
+          warehouse_type: string | null
+        }
+        Insert: {
+          address?: string | null
+          capacity_sqft?: number | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string | null
+          customer_id: string
+          id?: string
+          is_active?: boolean | null
+          location_code?: string | null
+          location_name: string
+          manager_name?: string | null
+          notes?: string | null
+          postal_code?: string | null
+          state?: string | null
+          updated_at?: string | null
+          warehouse_type?: string | null
+        }
+        Update: {
+          address?: string | null
+          capacity_sqft?: number | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string | null
+          customer_id?: string
+          id?: string
+          is_active?: boolean | null
+          location_code?: string | null
+          location_name?: string
+          manager_name?: string | null
+          notes?: string | null
+          postal_code?: string | null
+          state?: string | null
+          updated_at?: string | null
+          warehouse_type?: string | null
+        }
+        Relationships: []
+      }
       warehouses: {
         Row: {
           address: string

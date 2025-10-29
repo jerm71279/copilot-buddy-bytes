@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-// TODO: Re-enable after creating inventoryService
-// import { InventoryItemService } from "@/services/inventoryService";
+import { InventoryItemService } from "@/services/inventoryService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

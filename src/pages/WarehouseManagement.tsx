@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-// TODO: Re-enable after creating inventoryService
-// import { WarehouseService } from "@/services/inventoryService";
+import { WarehouseService } from "@/services/inventoryService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,13 +16,13 @@ import { useStandardToast } from "@/hooks/useStandardToast";
 
 interface WarehouseType {
   id: string;
-  warehouse_code: string;
-  warehouse_name: string;
+  location_code: string | null;
+  location_name: string;
   warehouse_type: string | null;
   address: string;
   city: string | null;
   state: string | null;
-  status: string;
+  is_active: boolean;
   capacity_sqft: number | null;
   contact_phone: string | null;
   created_at: string;
@@ -38,8 +37,8 @@ export default function WarehouseManagement() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   const [newWarehouse, setNewWarehouse] = useState({
-    warehouse_code: "",
-    warehouse_name: "",
+    location_code: "",
+    location_name: "",
     warehouse_type: "main",
     address: "",
     city: "",
@@ -75,8 +74,8 @@ export default function WarehouseManagement() {
 
       await WarehouseService.createWarehouse({
         customer_id: customerId,
-        warehouse_code: newWarehouse.warehouse_code,
-        warehouse_name: newWarehouse.warehouse_name,
+        location_code: newWarehouse.location_code,
+        location_name: newWarehouse.location_name,
         warehouse_type: newWarehouse.warehouse_type,
         address: newWarehouse.address,
         city: newWarehouse.city,
@@ -90,8 +89,8 @@ export default function WarehouseManagement() {
       showToast.created("Warehouse");
       setIsCreateDialogOpen(false);
       setNewWarehouse({
-        warehouse_code: "",
-        warehouse_name: "",
+        location_code: "",
+        location_name: "",
         warehouse_type: "main",
         address: "",
         city: "",
@@ -119,14 +118,14 @@ export default function WarehouseManagement() {
 
   const filteredWarehouses = warehouses.filter((warehouse) => {
     return (
-      warehouse.warehouse_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      warehouse.warehouse_code.toLowerCase().includes(searchTerm.toLowerCase())
+      warehouse.location_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (warehouse.location_code?.toLowerCase() || '').includes(searchTerm.toLowerCase())
     );
   });
 
   const stats = {
     total: warehouses.length,
-    active: warehouses.filter(w => w.status === "active").length,
+    active: warehouses.filter(w => w.is_active).length,
     totalCapacity: warehouses.reduce((sum, w) => sum + (w.capacity_sqft || 0), 0),
   };
 
@@ -156,18 +155,18 @@ export default function WarehouseManagement() {
               </DialogHeader>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Warehouse Code</Label>
+                  <Label>Location Code</Label>
                   <Input
-                    value={newWarehouse.warehouse_code}
-                    onChange={(e) => setNewWarehouse({ ...newWarehouse, warehouse_code: e.target.value })}
-                    placeholder="WH-001"
+                    value={newWarehouse.location_code}
+                    onChange={(e) => setNewWarehouse({ ...newWarehouse, location_code: e.target.value })}
+                    placeholder="LOC-001"
                   />
                 </div>
                 <div>
-                  <Label>Warehouse Name</Label>
+                  <Label>Location Name</Label>
                   <Input
-                    value={newWarehouse.warehouse_name}
-                    onChange={(e) => setNewWarehouse({ ...newWarehouse, warehouse_name: e.target.value })}
+                    value={newWarehouse.location_name}
+                    onChange={(e) => setNewWarehouse({ ...newWarehouse, location_name: e.target.value })}
                     placeholder="Main Warehouse"
                   />
                 </div>
@@ -323,12 +322,16 @@ export default function WarehouseManagement() {
                 ) : (
                   filteredWarehouses.map((warehouse) => (
                     <TableRow key={warehouse.id}>
-                      <TableCell className="font-medium">{warehouse.warehouse_code}</TableCell>
-                      <TableCell>{warehouse.warehouse_name}</TableCell>
+                      <TableCell className="font-medium">{warehouse.location_code || "—"}</TableCell>
+                      <TableCell>{warehouse.location_name}</TableCell>
                       <TableCell className="capitalize">{warehouse.warehouse_type || "—"}</TableCell>
                       <TableCell>{`${warehouse.city || ""}, ${warehouse.state || ""}`.trim() || warehouse.address}</TableCell>
                       <TableCell>{warehouse.capacity_sqft ? `${warehouse.capacity_sqft.toLocaleString()} sq ft` : "—"}</TableCell>
-                      <TableCell>{getStatusBadge(warehouse.status)}</TableCell>
+                      <TableCell>
+                        <Badge variant={warehouse.is_active ? "default" : "secondary"}>
+                          {warehouse.is_active ? "Active" : "Inactive"}
+                        </Badge>
+                      </TableCell>
                       <TableCell>{warehouse.contact_phone || "—"}</TableCell>
                     </TableRow>
                   ))
