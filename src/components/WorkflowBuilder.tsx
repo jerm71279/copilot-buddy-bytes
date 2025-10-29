@@ -29,9 +29,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Save, Play, GitBranch, Clock, Webhook } from "lucide-react";
 import { z } from "zod";
+import { WorkflowService, WorkflowStep } from "@/services/workflowService";
 
 // Validation schemas
 const workflowSchema = z.object({
@@ -48,15 +48,9 @@ const stepSchema = z.object({
 });
 
 /**
- * Represents a single step in the workflow execution chain
+ * Represents a conditional branching step in the workflow
+ * Not currently used but reserved for future conditional logic implementation
  */
-interface WorkflowStep {
-  id: string;                      // Unique identifier generated from timestamp
-  type: string;                    // Step type: api_call, data_transform, condition, etc.
-  name: string;                    // User-friendly step name
-  config: Record<string, any>;     // JSON configuration specific to step type
-  order: number;                   // Sequential execution order
-}
 
 /**
  * Represents a conditional branching step in the workflow
@@ -217,35 +211,22 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
       });
 
       // Step 1: Save workflow definition
-      const { data: workflow, error: workflowError } = await supabase
-        .from("workflows")
-        .insert({
-          customer_id: customerId,
-          workflow_name: validatedWorkflow.workflow_name,
-          description: validatedWorkflow.description || null,
-          steps: steps as any,
-          systems_involved: [...new Set(steps.map(s => s.type))],
-          workflow_type: triggers.length > 0 ? triggers[0].trigger_type : "manual",
-          is_active: true
-        })
-        .select()
-        .maybeSingle();
-
-      if (workflowError || !workflow) throw workflowError || new Error("Failed to create workflow");
+      const workflow = await WorkflowService.createWorkflow(customerId, {
+        workflow_name: validatedWorkflow.workflow_name,
+        description: validatedWorkflow.description,
+        steps: steps,
+        workflow_type: triggers.length > 0 ? triggers[0].trigger_type : "manual"
+      });
 
       // Step 2: Save trigger configurations (if any)
       if (triggers.length > 0) {
-        const triggersToInsert = triggers.map(t => ({
-          workflow_id: workflow.id,
-          customer_id: customerId,
-          ...t
-        }));
-
-        const { error: triggersError } = await supabase
-          .from("workflow_triggers")
-          .insert(triggersToInsert);
-
-        if (triggersError) throw triggersError;
+        for (const trigger of triggers) {
+          await WorkflowService.createTrigger(workflow.id, customerId, {
+            trigger_type: trigger.trigger_type,
+            trigger_config: trigger.trigger_config,
+            is_enabled: trigger.is_enabled
+          });
+        }
       }
 
       toast.success("Workflow saved successfully!");

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Plus, Shield, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { RBACService } from "@/services/rbacService";
 
 const RESOURCE_TYPES = [
   "compliance", "workflows", "cmdb", "change_management",
@@ -32,46 +32,20 @@ export default function PermissionManagement() {
   // Fetch roles
   const { data: roles } = useQuery({
     queryKey: ["roles"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("roles")
-        .select("*")
-        .order("name");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => RBACService.getRoles(),
   });
 
   // Fetch permissions for selected role
   const { data: permissions, isLoading } = useQuery({
     queryKey: ["role-permissions", selectedRole],
-    queryFn: async () => {
-      if (!selectedRole) return [];
-      const { data, error } = await supabase
-        .from("role_permissions")
-        .select("*")
-        .eq("role_id", selectedRole)
-        .order("resource_type");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => selectedRole ? RBACService.getRolePermissions(selectedRole) : Promise.resolve([]),
     enabled: !!selectedRole,
   });
 
   // Add permission mutation
   const addPermissionMutation = useMutation({
-    mutationFn: async (permission: any) => {
-      const { data, error } = await supabase
-        .from("role_permissions")
-        .insert({
-          role_id: selectedRole,
-          ...permission,
-        })
-        .select()
-        .maybeSingle();
-      if (error || !data) throw error || new Error("Failed to add permission");
-      return data;
-    },
+    mutationFn: (permission: any) => 
+      RBACService.addPermission(selectedRole, permission),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["role-permissions", selectedRole] });
       toast.success("Permission added successfully");
@@ -89,13 +63,8 @@ export default function PermissionManagement() {
 
   // Delete permission mutation
   const deletePermissionMutation = useMutation({
-    mutationFn: async (permissionId: string) => {
-      const { error } = await supabase
-        .from("role_permissions")
-        .delete()
-        .eq("id", permissionId);
-      if (error) throw error;
-    },
+    mutationFn: (permissionId: string) =>
+      RBACService.deletePermission(permissionId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["role-permissions", selectedRole] });
       toast.success("Permission removed successfully");

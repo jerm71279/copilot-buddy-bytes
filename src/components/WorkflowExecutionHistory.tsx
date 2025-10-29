@@ -28,27 +28,10 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { RefreshCw, CheckCircle, XCircle, Clock } from "lucide-react";
+import { WorkflowService, WorkflowExecution } from "@/services/workflowService";
 
-/**
- * Represents a single workflow execution record from the database
- * Includes execution metadata and step-by-step logs
- */
-interface WorkflowExecution {
-  id: string;                           // Unique execution ID
-  workflow_id: string;                  // Reference to parent workflow
-  triggered_by: string;                 // How it was initiated (manual, webhook, schedule)
-  status: string;                       // running, completed, failed
-  started_at: string;                   // ISO timestamp of execution start
-  completed_at: string | null;          // ISO timestamp of completion (null if still running)
-  error_message: string | null;         // Error details if status is failed
-  execution_log: any[];                 // Array of step execution results
-  workflows: {
-    workflow_name: string;              // Joined workflow name for display
-  };
-}
 
 export const WorkflowExecutionHistory = ({ customerId }: { customerId: string }) => {
   const navigate = useNavigate();
@@ -81,20 +64,8 @@ export const WorkflowExecutionHistory = ({ customerId }: { customerId: string })
     }
 
     try {
-      const { data, error } = await supabase
-        .from("workflow_executions")
-        .select(`
-          *,
-          workflows(workflow_name)
-        `)
-        .eq("customer_id", customerId)
-        .order("started_at", { ascending: false })  // Most recent first
-        .limit(50);                                 // Pagination limit
-
-      if (error) throw error;
-
-      // Cast to our interface type (needed due to JSONB fields)
-      setExecutions((data || []) as any);
+      const data = await WorkflowService.getExecutions(customerId, 50);
+      setExecutions(data);
     } catch (error: any) {
       console.error("Error fetching executions:", error);
       toast.error("Failed to load execution history");

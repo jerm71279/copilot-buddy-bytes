@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, Users, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { RBACService } from "@/services/rbacService";
 
 export default function RoleManagement() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -21,32 +21,13 @@ export default function RoleManagement() {
   // Fetch all roles
   const { data: roles, isLoading } = useQuery({
     queryKey: ["roles"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("roles")
-        .select(`
-          *,
-          user_roles(count)
-        `)
-        .order("name");
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => RBACService.getRoles(),
   });
 
   // Create role mutation
   const createRoleMutation = useMutation({
-    mutationFn: async (roleData: { name: string; description: string }) => {
-      const { data, error } = await supabase
-        .from("roles")
-        .insert(roleData)
-        .select()
-        .maybeSingle();
-      
-      if (error || !data) throw error || new Error("Failed to create role");
-      return data;
-    },
+    mutationFn: (roleData: { name: string; description: string }) =>
+      RBACService.createRole(roleData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
       toast.success("Role created successfully");
@@ -61,48 +42,7 @@ export default function RoleManagement() {
 
   // Clone role mutation
   const cloneRoleMutation = useMutation({
-    mutationFn: async (roleId: string) => {
-      // Get the role and its permissions
-      const { data: role, error: roleError } = await supabase
-        .from("roles")
-        .select("*, role_permissions(*)")
-        .eq("id", roleId)
-        .maybeSingle();
-      
-      if (roleError) throw roleError;
-      if (!role) throw new Error("Role not found");
-
-      // Create new role
-      const { data: newRole, error: newRoleError } = await supabase
-        .from("roles")
-        .insert({
-          name: `${role.name} (Copy)`,
-          description: role.description,
-        })
-        .select()
-        .maybeSingle();
-      
-      if (newRoleError || !newRole) throw newRoleError || new Error("Failed to create new role");
-
-      // Copy permissions
-      if (role.role_permissions && role.role_permissions.length > 0) {
-        const permissionsCopy = role.role_permissions.map((perm: any) => ({
-          role_id: newRole.id,
-          resource_type: perm.resource_type,
-          resource_name: perm.resource_name,
-          permission_level: perm.permission_level,
-          conditions: perm.conditions,
-        }));
-
-        const { error: permError } = await supabase
-          .from("role_permissions")
-          .insert(permissionsCopy);
-        
-        if (permError) throw permError;
-      }
-
-      return newRole;
-    },
+    mutationFn: (roleId: string) => RBACService.cloneRole(roleId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
       toast.success("Role cloned successfully");

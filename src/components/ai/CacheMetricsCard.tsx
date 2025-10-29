@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
 import { Database, TrendingDown, Zap, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-interface CacheMetrics {
-  totalHits: number;
-  totalCached: number;
-  avgProcessingTime: number;
-  estimatedSavings: number;
-}
+import { AICacheService, CacheMetrics } from "@/services/aiCacheService";
 
 export const CacheMetricsCard = () => {
   const [metrics, setMetrics] = useState<CacheMetrics>({
@@ -27,28 +20,8 @@ export const CacheMetricsCard = () => {
 
   const fetchCacheMetrics = async () => {
     try {
-      const { data, error } = await supabase
-        .from("ai_prompt_cache")
-        .select("hit_count, cached_tokens");
-
-      if (error) throw error;
-
-      if (data) {
-        const totalHits = data.reduce((sum, item) => sum + (item.hit_count || 0), 0);
-        const totalCached = data.length;
-        const totalTokens = data.reduce((sum, item) => sum + (item.cached_tokens || 0), 0);
-        
-        // Estimate savings: cached tokens * average cost per 1K tokens * cache discount (90%)
-        // Assuming $0.50 per 1M tokens, 90% discount on cached
-        const estimatedSavings = (totalTokens / 1000000) * 0.50 * 0.90;
-
-        setMetrics({
-          totalHits,
-          totalCached,
-          avgProcessingTime: 150, // Estimated avg reduction in ms
-          estimatedSavings,
-        });
-      }
+      const metrics = await AICacheService.getCacheMetrics();
+      setMetrics(metrics);
     } catch (error) {
       console.error("Error fetching cache metrics:", error);
       toast({

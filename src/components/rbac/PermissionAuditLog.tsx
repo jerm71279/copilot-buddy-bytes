@@ -1,30 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Shield } from "lucide-react";
 import { useState } from "react";
+import { RBACService } from "@/services/rbacService";
 
 export default function PermissionAuditLog() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data: auditLogs, isLoading } = useQuery({
     queryKey: ["permission-audit-log"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("permission_audit_log" as any)
-        .select(`
-          *,
-          user:user_profiles!permission_audit_log_user_id_fkey(full_name),
-          target_user:user_profiles!permission_audit_log_target_user_id_fkey(full_name)
-        `)
-        .order("created_at", { ascending: false })
-        .limit(100);
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => RBACService.getPermissionAuditLogs(100),
   });
 
   const filteredLogs = auditLogs?.filter((log: any) => {

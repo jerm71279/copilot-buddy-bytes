@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Plus, ArrowRight, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { RBACService } from "@/services/rbacService";
 
 export default function RoleHierarchy() {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -20,41 +20,18 @@ export default function RoleHierarchy() {
   // Fetch roles
   const { data: roles } = useQuery({
     queryKey: ["roles"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("roles")
-        .select("*")
-        .order("name");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => RBACService.getRoles(),
   });
 
   // Fetch role hierarchy
   const { data: hierarchies, isLoading } = useQuery({
     queryKey: ["role-hierarchy"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("role_hierarchy" as any)
-        .select(`
-          *,
-          parent_role:roles!role_hierarchy_parent_role_id_fkey(name),
-          child_role:roles!role_hierarchy_child_role_id_fkey(name)
-        `)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => RBACService.getRoleHierarchy(),
   });
 
   // Add hierarchy mutation
   const addHierarchyMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const { error } = await supabase
-        .from("role_hierarchy" as any)
-        .insert(data);
-      if (error) throw error;
-    },
+    mutationFn: (data: any) => RBACService.addHierarchy(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["role-hierarchy"] });
       toast.success("Role hierarchy added successfully");
@@ -70,13 +47,7 @@ export default function RoleHierarchy() {
 
   // Delete hierarchy mutation
   const deleteHierarchyMutation = useMutation({
-    mutationFn: async (hierarchyId: string) => {
-      const { error } = await supabase
-        .from("role_hierarchy" as any)
-        .delete()
-        .eq("id", hierarchyId);
-      if (error) throw error;
-    },
+    mutationFn: (hierarchyId: string) => RBACService.deleteHierarchy(hierarchyId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["role-hierarchy"] });
       toast.success("Role hierarchy removed successfully");

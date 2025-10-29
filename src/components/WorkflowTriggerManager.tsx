@@ -33,38 +33,13 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { Copy, Webhook, Clock, RefreshCw } from "lucide-react";
+import { WorkflowService, WorkflowTrigger } from "@/services/workflowService";
 
-/**
- * Simplified workflow data for trigger creation
- * Only includes fields needed for the trigger management UI
- */
-interface Workflow {
-  id: string;
-  workflow_name: string;
-}
-
-/**
- * Trigger configuration with workflow details
- * Includes joined workflow name for display purposes
- */
-interface Trigger {
-  id: string;
-  workflow_id: string;
-  trigger_type: string;                  // webhook, schedule, event, manual
-  trigger_config: any;                   // Type-specific config (cron schedule, etc.)
-  webhook_url: string | null;            // Auto-generated webhook URL
-  is_enabled: boolean;                   // Whether trigger is active
-  last_triggered_at: string | null;      // Last execution timestamp
-  workflows: {
-    workflow_name: string;               // Joined from workflows table
-  };
-}
 
 export const WorkflowTriggerManager = ({ customerId }: { customerId: string }) => {
-  const [workflows, setWorkflows] = useState<Workflow[]>([]);
-  const [triggers, setTriggers] = useState<Trigger[]>([]);
+  const [workflows, setWorkflows] = useState<any[]>([]);
+  const [triggers, setTriggers] = useState<WorkflowTrigger[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const isDemoMode = customerId === "demo-customer";
 
@@ -102,25 +77,12 @@ export const WorkflowTriggerManager = ({ customerId }: { customerId: string }) =
 
     try {
       const [workflowsData, triggersData] = await Promise.all([
-        supabase
-          .from("workflows")
-          .select("id, workflow_name")
-          .eq("customer_id", customerId)
-          .eq("is_active", true),
-        supabase
-          .from("workflow_triggers")
-          .select(`
-            *,
-            workflows(workflow_name)
-          `)
-          .eq("customer_id", customerId)
+        WorkflowService.getActiveWorkflows(customerId),
+        WorkflowService.getTriggers(customerId)
       ]);
 
-      if (workflowsData.error) throw workflowsData.error;
-      if (triggersData.error) throw triggersData.error;
-
-      setWorkflows(workflowsData.data || []);
-      setTriggers((triggersData.data || []) as any);
+      setWorkflows(workflowsData);
+      setTriggers(triggersData);
     } catch (error: any) {
       console.error("Error fetching data:", error);
       toast.error("Failed to load workflows and triggers");
@@ -145,33 +107,8 @@ export const WorkflowTriggerManager = ({ customerId }: { customerId: string }) =
    */
   const createWebhookTrigger = async (workflowId: string) => {
     try {
-      // Step 1: Create trigger record
-      const { data, error } = await supabase
-        .from("workflow_triggers")
-        .insert({
-          workflow_id: workflowId,
-          customer_id: customerId,
-          trigger_type: "webhook",
-          trigger_config: {},           // Empty config for now
-          is_enabled: true              // Active by default
-        })
-        .select()
-        .maybeSingle();
-
-      if (error || !data) throw error || new Error("Failed to create trigger");
-
-      // Step 2: Generate unique webhook URL using trigger ID
-      const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/workflow-webhook?id=${data.id}`;
-      
-      // Step 3: Update trigger with webhook URL
-      await supabase
-        .from("workflow_triggers")
-        .update({ webhook_url: webhookUrl })
-        .eq("id", data.id);
-
+      await WorkflowService.createWebhookTrigger(workflowId, customerId);
       toast.success("Webhook trigger created!");
-      
-      // Step 4: Refresh UI
       fetchData();
     } catch (error: any) {
       console.error("Error creating webhook:", error);
@@ -188,15 +125,9 @@ export const WorkflowTriggerManager = ({ customerId }: { customerId: string }) =
    */
   const toggleTrigger = async (triggerId: string, currentState: boolean) => {
     try {
-      const { error } = await supabase
-        .from("workflow_triggers")
-        .update({ is_enabled: !currentState })
-        .eq("id", triggerId);
-
-      if (error) throw error;
-
+      await WorkflowService.toggleTrigger(triggerId, currentState);
       toast.success(`Trigger ${!currentState ? "enabled" : "disabled"}`);
-      fetchData();  // Refresh to show updated state
+      fetchData();
     } catch (error: any) {
       console.error("Error toggling trigger:", error);
       toast.error("Failed to update trigger");
