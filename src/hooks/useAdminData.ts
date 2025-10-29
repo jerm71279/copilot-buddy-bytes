@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useDemoMode } from "./useDemoMode";
 import { AdminService, Customer } from "@/services/adminService";
+import { AuthService } from "@/services/authService";
 
 export type { Customer };
 
@@ -36,7 +36,7 @@ export function useAdminData() {
       return;
     }
 
-    const { data: { session } } = await supabase.auth.getSession();
+    const session = await AuthService.getSession();
     
     if (!session) {
       navigate("/auth");

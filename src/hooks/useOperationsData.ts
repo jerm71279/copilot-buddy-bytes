@@ -1,15 +1,11 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useDemoMode } from "./useDemoMode";
 import type { MCPServer } from "./useMCPServers";
+import { OperationsService, type OperationsStats } from "@/services/operationsService";
+import { AuthService } from "@/services/authService";
 
-interface OperationsStats {
-  workflows: number;
-  mlInsights: number;
-  efficiency: number;
-  bottlenecks: number;
-}
+export type { OperationsStats };
 
 interface UserProfile {
   full_name: string;
@@ -37,14 +33,8 @@ export function useOperationsData() {
 
   const fetchMcpServers = async () => {
     try {
-      const { data } = await supabase
-        .from("mcp_servers")
-        .select("id, server_name, server_type")
-        .eq("server_type", "operations")
-        .eq("status", "active")
-        .order("server_name");
-      
-      if (data) setMcpServers(data as MCPServer[]);
+      const data = await OperationsService.getOperationsMCPServers();
+      setMcpServers(data as MCPServer[]);
     } catch (error) {
       console.error("Error fetching MCP servers:", error);
     }
@@ -59,19 +49,14 @@ export function useOperationsData() {
     }
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await AuthService.getSession();
       
       if (!session) {
         navigate("/auth");
         return;
       }
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-
+      const profile = await AuthService.getUserProfile(session.user.id);
       setUserProfile(profile);
       await fetchStats();
     } catch (error) {
@@ -83,17 +68,8 @@ export function useOperationsData() {
 
   const fetchStats = async () => {
     try {
-      const [workflows, insights] = await Promise.all([
-        supabase.from("workflows").select("*", { count: "exact", head: true }),
-        supabase.from("ml_insights").select("*", { count: "exact", head: true })
-      ]);
-
-      setStats({
-        workflows: workflows.count || 0,
-        mlInsights: insights.count || 0,
-        efficiency: 87,
-        bottlenecks: 3
-      });
+      const stats = await OperationsService.getOperationsStats();
+      setStats(stats);
     } catch (error) {
       console.error("Error fetching stats:", error);
     }
@@ -104,7 +80,7 @@ export function useOperationsData() {
       navigate("/demo");
       return;
     }
-    await supabase.auth.signOut();
+    await AuthService.signOut();
     navigate("/auth");
   };
 

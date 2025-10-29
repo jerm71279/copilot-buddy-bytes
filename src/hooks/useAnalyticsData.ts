@@ -1,23 +1,14 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AnalyticsService } from "@/services/analyticsService";
+import { AuthService } from "@/services/authService";
 
 export const useAnalyticsData = (customerId: string | null, period: string) => {
   // Fetch metrics
   const { data: metrics, refetch: refetchMetrics } = useQuery({
     queryKey: ['system-metrics', customerId, period],
     enabled: !!customerId,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('system_metrics' as any)
-        .select('*')
-        .eq('customer_id', customerId)
-        .eq('aggregation_period', period)
-        .order('period_start', { ascending: false })
-        .limit(100);
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => AnalyticsService.getSystemMetrics(customerId!, period),
   });
 
   // Fetch alerts with auto-refresh
@@ -25,112 +16,60 @@ export const useAnalyticsData = (customerId: string | null, period: string) => {
     queryKey: ['network-alerts', customerId],
     enabled: !!customerId,
     refetchInterval: 30000,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('network_alerts' as any)
-        .select('*')
-        .eq('customer_id', customerId)
-        .eq('is_resolved', false)
-        .order('created_at', { ascending: false })
-        .limit(50);
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => AnalyticsService.getNetworkAlerts(customerId!),
   });
 
   // Fetch benchmarks
   const { data: benchmarks } = useQuery({
     queryKey: ['performance-benchmarks', customerId],
     enabled: !!customerId,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('performance_benchmarks' as any)
-        .select('*')
-        .eq('customer_id', customerId)
-        .order('benchmark_category');
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => AnalyticsService.getPerformanceBenchmarks(customerId!),
   });
 
   // Fetch reports
   const { data: reports } = useQuery({
     queryKey: ['generated-reports', customerId],
     enabled: !!customerId,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('generated_reports' as any)
-        .select('*')
-        .eq('customer_id', customerId)
-        .order('generated_at', { ascending: false })
-        .limit(20);
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => AnalyticsService.getGeneratedReports(customerId!),
   });
 
   // Mutations
   const aggregateMetricsMutation = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke('analytics-processor', {
-        body: { action: 'aggregate_metrics', period, customerId }
-      });
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: () => AnalyticsService.aggregateMetrics(customerId!, period),
     onSuccess: () => {
       toast.success('Metrics aggregated successfully');
       refetchMetrics();
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.error(`Failed to aggregate metrics: ${error.message}`);
     },
   });
 
   const generateReportMutation = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke('analytics-processor', {
-        body: { action: 'generate_report', customerId }
-      });
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: () => AnalyticsService.generateReport(customerId!),
     onSuccess: () => {
       toast.success('Report generated successfully');
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.error(`Failed to generate report: ${error.message}`);
     },
   });
 
   const checkBenchmarksMutation = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke('analytics-processor', {
-        body: { action: 'check_benchmarks', customerId }
-      });
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: () => AnalyticsService.checkBenchmarks(customerId!),
     onSuccess: () => {
       toast.success('Benchmarks checked successfully');
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.error(`Failed to check benchmarks: ${error.message}`);
     },
   });
 
   const acknowledgeAlertMutation = useMutation({
     mutationFn: async (alertId: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { error } = await supabase
-        .from('real_time_alerts' as any)
-        .update({
-          is_acknowledged: true,
-          acknowledged_by: user?.id,
-          acknowledged_at: new Date().toISOString(),
-        })
-        .eq('id', alertId);
-      if (error) throw error;
+      const user = await AuthService.getCurrentUser();
+      if (!user) throw new Error('User not authenticated');
+      await AnalyticsService.acknowledgeAlert(alertId, user.id);
     },
     onSuccess: () => {
       toast.success('Alert acknowledged');
