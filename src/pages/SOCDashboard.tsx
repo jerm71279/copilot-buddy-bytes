@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { SOCService, ThreatAnalysis } from "@/services/socService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,12 +23,6 @@ import {
   getStatusColor
 } from "@/lib/securityConfig";
 
-interface ThreatAnalysis {
-  analysis: string;
-  securityContext: any;
-  timestamp: string;
-}
-
 const SOCDashboard = () => {
   const navigate = useNavigate();
   const isPreviewMode = useDemoMode();
@@ -47,14 +41,12 @@ const SOCDashboard = () => {
   }, []);
 
   const fetchMcpServers = async () => {
-    const { data } = await supabase
-      .from("mcp_servers")
-      .select("id, server_name, server_type")
-      .eq("server_type", "security")
-      .eq("status", "active")
-      .order("server_name");
-    
-    if (data) setMcpServers(data);
+    try {
+      const data = await SOCService.getSecurityMCPServers();
+      setMcpServers(data);
+    } catch (error) {
+      console.error("Error fetching MCP servers:", error);
+    }
   };
 
   const checkAccess = async () => {
@@ -64,21 +56,21 @@ const SOCDashboard = () => {
       return;
     }
 
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
+    try {
+      const { hasAccess, profile } = await SOCService.checkSOCAccess();
+      
+      if (!hasAccess) {
+        navigate("/auth");
+        return;
+      }
+
+      setUserProfile(profile);
+    } catch (error) {
+      console.error("Error checking access:", error);
       navigate("/auth");
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    setUserProfile(profile);
-    setIsLoading(false);
   };
 
   const handleSignOut = async () => {
@@ -86,6 +78,7 @@ const SOCDashboard = () => {
       navigate("/demo");
       return;
     }
+    const { supabase } = await import("@/integrations/supabase/client");
     await supabase.auth.signOut();
     navigate("/auth");
   };
@@ -99,39 +92,22 @@ const SOCDashboard = () => {
 
     setIsAnalyzing(true);
     try {
-      // Verify user is authenticated
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error("Please sign in to run threat analysis");
-        navigate("/auth");
-        return;
-      }
-
-      const { data, error } = await supabase.functions.invoke('soc-threat-analysis', {
-        body: { analysisType: 'comprehensive', timeframe: selectedTimeframe },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
+      const data = await SOCService.runThreatAnalysis({
+        analysisType: 'comprehensive',
+        timeframe: selectedTimeframe
       });
-
-      if (error) {
-        console.error('Function invocation error:', error);
-        throw error;
-      }
-
-      if (data?.error) {
-        console.error('Function response error:', data.error);
-        toast.error(data.error || "Failed to run threat analysis");
-        return;
-      }
 
       setThreatAnalysis(data);
       toast.success("Threat analysis complete");
       setActiveTab("ai-analysis");
     } catch (error: any) {
       console.error('Threat analysis error:', error);
-      const errorMessage = error?.message || error?.error || "Failed to run threat analysis";
+      const errorMessage = error?.message || "Failed to run threat analysis";
       toast.error(errorMessage);
+      
+      if (errorMessage.includes("Authentication required")) {
+        navigate("/auth");
+      }
     } finally {
       setIsAnalyzing(false);
     }
