@@ -194,4 +194,20 @@ export class SIEMService {
     if (error) throw error;
     return data;
   }
+
+  /**
+   * Get SIEM data (events + metrics)
+   * Convenience method that combines getSecurityEvents and getSIEMMetrics
+   */
+  static async getSIEMData(timeRange: '24h' | '7d' | '30d') {
+    const hoursMap = { '24h': 24, '7d': 168, '30d': 720 };
+    const hoursAgo = hoursMap[timeRange];
+
+    const [events, metrics] = await Promise.all([
+      this.getSecurityEvents(hoursAgo),
+      this.getSIEMMetrics(hoursAgo)
+    ]);
+
+    return { events, metrics };
+  }
 }

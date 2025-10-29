@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { DeploymentService } from "@/services/deploymentService";
+import { DeploymentService, type Project, type ProjectData, type NewProjectForm } from "@/services/deploymentService";
 import { AuthService } from "@/services/authService";
 
 export type { Project, ProjectData, NewProjectForm } from "@/services/deploymentService";
