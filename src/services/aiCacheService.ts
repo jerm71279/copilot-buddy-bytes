@@ -12,16 +12,27 @@ export interface CacheMetrics {
   estimatedSavings: number;
 }
 
+interface CacheData {
+  hit_count: number | null;
+  cached_tokens: number | null;
+}
+
 export class AICacheService {
+  private static readonly COST_PER_MILLION_TOKENS = 0.50;
+  private static readonly CACHE_DISCOUNT_RATE = 0.90;
+  private static readonly AVG_PROCESSING_TIME_MS = 150;
+
   /**
    * Get cache metrics and statistics
+   * @returns Cache performance metrics including hits, savings, and processing time
+   * @throws Error if database query fails
    */
   static async getCacheMetrics(): Promise<CacheMetrics> {
     const { data, error } = await supabase
       .from('ai_prompt_cache')
       .select('hit_count, cached_tokens');
 
-    if (error) throw error;
+    if (error) throw new Error(`Failed to fetch cache metrics: ${error.message}`);
 
     if (!data || data.length === 0) {
       return {
@@ -32,19 +43,22 @@ export class AICacheService {
       };
     }
 
-    const totalHits = data.reduce((sum, item) => sum + (item.hit_count || 0), 0);
-    const totalCached = data.length;
-    const totalTokens = data.reduce((sum, item) => sum + (item.cached_tokens || 0), 0);
+    const cacheData = data as CacheData[];
+    const totalHits = cacheData.reduce((sum, item) => sum + (item.hit_count || 0), 0);
+    const totalCached = cacheData.length;
+    const totalTokens = cacheData.reduce((sum, item) => sum + (item.cached_tokens || 0), 0);
     
-    // Estimate savings: cached tokens * average cost per 1K tokens * cache discount (90%)
-    // Assuming $0.50 per 1M tokens, 90% discount on cached
-    const estimatedSavings = (totalTokens / 1000000) * 0.50 * 0.90;
+    // Calculate estimated savings based on cached tokens
+    const estimatedSavings = 
+      (totalTokens / 1000000) * 
+      this.COST_PER_MILLION_TOKENS * 
+      this.CACHE_DISCOUNT_RATE;
 
     return {
       totalHits,
       totalCached,
-      avgProcessingTime: 150, // Estimated avg reduction in ms
-      estimatedSavings
+      avgProcessingTime: this.AVG_PROCESSING_TIME_MS,
+      estimatedSavings: Number(estimatedSavings.toFixed(2))
     };
   }
 }
