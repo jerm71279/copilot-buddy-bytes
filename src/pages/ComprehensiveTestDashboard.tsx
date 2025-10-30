@@ -142,7 +142,7 @@ export default function ComprehensiveTestDashboard() {
 
   const checkTestUser = async () => {
     try {
-      const data = await createTestUserHook.invoke({ userType: 'check', email: undefined });
+      const data = await createTestUserHook.invoke({ action: 'get' });
       if (data?.success) {
         setTestUser(data);
       }
@@ -154,7 +154,7 @@ export default function ComprehensiveTestDashboard() {
   const createTestUser = async () => {
     setIsManagingUser(true);
     try {
-      const data = await createTestUserHook.invoke({ userType: 'create', email: undefined });
+      const data = await createTestUserHook.invoke({ action: 'create' });
       if (data) {
         setTestUser(data);
       }
@@ -168,7 +168,7 @@ export default function ComprehensiveTestDashboard() {
   const deleteTestUser = async () => {
     setIsManagingUser(true);
     try {
-      await createTestUserHook.invoke({ userType: 'delete', email: undefined });
+      await createTestUserHook.invoke({ action: 'delete' });
       setTestUser(null);
     } catch (error) {
       console.error('Error deleting test user:', error);

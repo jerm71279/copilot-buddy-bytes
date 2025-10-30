@@ -13,8 +13,7 @@ interface DatabaseFlowLoggerRequest {
 }
 
 interface CreateTestUserRequest {
-  userType: string;
-  email?: string;
+  action: 'create' | 'get' | 'delete';
 }
 
 /**
