@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,106 +8,54 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Clock, Play, Square, DollarSign, Calendar, TrendingUp } from "lucide-react";
-import { useStandardToast } from "@/hooks/useStandardToast";
 import { Label } from "@/components/ui/label";
+import { useTimeTracking, type Project, type TimeEntry, type TimeStats } from "@/hooks/useTimeTracking";
+import { toast } from "sonner";
 
 const TimeTracking = () => {
-  const toast = useStandardToast();
-  const queryClient = useQueryClient();
+  const { getProjects, getTodayEntries, getWeeklyStats, submitTimeEntry } = useTimeTracking();
+  
   const [isTracking, setIsTracking] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [selectedProject, setSelectedProject] = useState("");
   const [description, setDescription] = useState("");
   const [hours, setHours] = useState("");
   const [activityType, setActivityType] = useState("development");
-
-  // Fetch projects
-  const { data: projects } = useQuery({
-    queryKey: ["projects"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("projects" as any)
-        .select("*")
-        .eq("status", "active")
-        .order("project_name");
-      if (error) throw error;
-      return data as any[];
-    },
+  
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [todayEntries, setTodayEntries] = useState<TimeEntry[]>([]);
+  const [weeklyStats, setWeeklyStats] = useState<TimeStats>({ 
+    totalHours: 0, 
+    billableHours: 0, 
+    revenue: 0, 
+    entries: 0 
   });
 
-  // Fetch today's time entries
-  const { data: todayEntries } = useQuery({
-    queryKey: ["time-entries-today"],
-    queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+  useEffect(() => {
+    loadData();
+  }, []);
 
-      const { data, error } = await supabase
-        .from("time_entries" as any)
-        .select("*, projects(project_name)")
-        .eq("user_id", user.id)
-        .eq("entry_date", today)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data as any[];
-    },
-  });
+  const loadData = async () => {
+    // Load projects
+    const projectsData = await getProjects.invoke();
+    if (projectsData) setProjects(projectsData);
 
-  // Fetch this week's stats
-  const { data: weeklyStats } = useQuery({
-    queryKey: ["time-stats-weekly"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+    // Load today's entries
+    const today = new Date().toISOString().split('T')[0];
+    const entriesData = await getTodayEntries.invoke({ 
+      startDate: today, 
+      endDate: today 
+    });
+    if (entriesData) setTodayEntries(entriesData);
 
-      const weekStart = new Date();
-      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-      
-      const { data, error } = await supabase
-        .from("time_entries" as any)
-        .select("hours, is_billable, billing_rate")
-        .eq("user_id", user.id)
-        .gte("entry_date", weekStart.toISOString().split('T')[0]);
-      
-      if (error) throw error;
-
-      const totalHours = data.reduce((sum: number, entry: any) => sum + Number(entry.hours), 0);
-      const billableHours = data.filter((e: any) => e.is_billable).reduce((sum: number, entry: any) => sum + Number(entry.hours), 0);
-      const revenue = data.reduce((sum: number, entry: any) => {
-        if (entry.is_billable && entry.billing_rate) {
-          return sum + (Number(entry.hours) * Number(entry.billing_rate));
-        }
-        return sum;
-      }, 0);
-
-      return { totalHours, billableHours, revenue, entries: data.length };
-    },
-  });
-
-  // Submit time entry mutation
-  const submitTimeMutation = useMutation({
-    mutationFn: async (entry: any) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { error } = await supabase.from("time_entries" as any).insert({
-        ...entry,
-        user_id: user.id,
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["time-entries-today"] });
-      queryClient.invalidateQueries({ queryKey: ["time-stats-weekly"] });
-      toast.success("Time entry saved successfully");
-      setDescription("");
-      setHours("");
-    },
-    onError: () => {
-      toast.error("Failed to save time entry");
-    },
-  });
+    // Load weekly stats
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    const statsData = await getWeeklyStats.invoke({ 
+      startDate: weekStart.toISOString().split('T')[0] 
+    });
+    if (statsData) setWeeklyStats(statsData);
+  };
 
   const startTimer = () => {
     setStartTime(new Date());
@@ -126,13 +72,13 @@ const TimeTracking = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedProject || !description || !hours) {
       toast.error("Please fill in all required fields");
       return;
     }
 
-    submitTimeMutation.mutate({
+    await submitTimeEntry.invoke({
       project_id: selectedProject,
       description,
       hours: parseFloat(hours),
@@ -140,9 +86,13 @@ const TimeTracking = () => {
       is_billable: true,
       entry_date: new Date().toISOString().split('T')[0],
     });
+
+    setDescription("");
+    setHours("");
+    await loadData();
   };
 
-  const todayTotal = todayEntries?.reduce((sum, entry) => sum + Number(entry.hours), 0) || 0;
+  const todayTotal = todayEntries.reduce((sum, entry) => sum + Number(entry.hours), 0);
 
   return (
     <DashboardLayout>
@@ -160,8 +110,8 @@ const TimeTracking = () => {
               <Clock className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{weeklyStats?.totalHours.toFixed(1) || 0}h</div>
-              <p className="text-xs text-muted-foreground mt-1">{weeklyStats?.entries || 0} entries</p>
+              <div className="text-2xl font-bold">{weeklyStats.totalHours.toFixed(1)}h</div>
+              <p className="text-xs text-muted-foreground mt-1">{weeklyStats.entries} entries</p>
             </CardContent>
           </Card>
 
@@ -171,9 +121,9 @@ const TimeTracking = () => {
               <DollarSign className="h-4 w-4 text-success" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{weeklyStats?.billableHours.toFixed(1) || 0}h</div>
+              <div className="text-2xl font-bold">{weeklyStats.billableHours.toFixed(1)}h</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {weeklyStats ? ((weeklyStats.billableHours / weeklyStats.totalHours) * 100).toFixed(0) : 0}% utilization
+                {weeklyStats.totalHours > 0 ? ((weeklyStats.billableHours / weeklyStats.totalHours) * 100).toFixed(0) : 0}% utilization
               </p>
             </CardContent>
           </Card>
@@ -184,7 +134,7 @@ const TimeTracking = () => {
               <TrendingUp className="h-4 w-4 text-success" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${weeklyStats?.revenue.toFixed(0) || 0}</div>
+              <div className="text-2xl font-bold">${weeklyStats.revenue.toFixed(0)}</div>
               <p className="text-xs text-muted-foreground mt-1">This week</p>
             </CardContent>
           </Card>
@@ -196,7 +146,7 @@ const TimeTracking = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{todayTotal.toFixed(1)}h</div>
-              <p className="text-xs text-muted-foreground mt-1">{todayEntries?.length || 0} entries</p>
+              <p className="text-xs text-muted-foreground mt-1">{todayEntries.length} entries</p>
             </CardContent>
           </Card>
         </div>
@@ -242,7 +192,7 @@ const TimeTracking = () => {
                         <SelectValue placeholder="Select project" />
                       </SelectTrigger>
                       <SelectContent>
-                        {projects?.map((project) => (
+                        {projects.map((project) => (
                           <SelectItem key={project.id} value={project.id}>
                             {project.project_name}
                           </SelectItem>
@@ -290,8 +240,8 @@ const TimeTracking = () => {
                   />
                 </div>
 
-                <Button onClick={handleSubmit} disabled={submitTimeMutation.isPending}>
-                  {submitTimeMutation.isPending ? "Saving..." : "Save Time Entry"}
+                <Button onClick={handleSubmit} disabled={submitTimeEntry.isLoading}>
+                  {submitTimeEntry.isLoading ? "Saving..." : "Save Time Entry"}
                 </Button>
               </CardContent>
             </Card>
@@ -304,13 +254,13 @@ const TimeTracking = () => {
                 <CardDescription>Your logged hours for {new Date().toLocaleDateString()}</CardDescription>
               </CardHeader>
               <CardContent>
-                {todayEntries && todayEntries.length > 0 ? (
+                {todayEntries.length > 0 ? (
                   <div className="space-y-3">
-                    {todayEntries.map((entry: any) => (
+                    {todayEntries.map((entry) => (
                       <div key={entry.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <p className="font-medium">{entry.projects?.project_name || "No Project"}</p>
+                            <p className="font-medium">Project</p>
                             <Badge variant={entry.is_billable ? "default" : "secondary"}>
                               {entry.is_billable ? "Billable" : "Non-billable"}
                             </Badge>
@@ -320,7 +270,7 @@ const TimeTracking = () => {
                             {entry.activity_type} • {entry.hours}h
                           </p>
                         </div>
-                        <Badge variant="outline">{entry.status}</Badge>
+                        <Badge variant="outline">{entry.status || 'pending'}</Badge>
                       </div>
                     ))}
                   </div>

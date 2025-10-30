@@ -38,28 +38,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { useIntegrationFunctions } from "@/hooks/useIntegrationFunctions";
-
-interface SyncConfig {
-  id: string;
-  site_name: string;
-  site_url: string;
-  library_name: string | null;
-  sync_enabled: boolean;
-  last_sync_at: string | null;
-  sync_frequency_minutes: number;
-  filter_extensions: string[] | null;
-}
-
-interface SyncLog {
-  id: string;
-  sync_started_at: string;
-  sync_completed_at: string | null;
-  status: string;
-  files_synced: number;
-  files_failed: number;
-  error_message: string | null;
-}
+import { 
+  useIntegrationFunctions, 
+  type SharePointConfig, 
+  type SharePointLog 
+} from "@/hooks/useIntegrationFunctions";
 
 const SharePointSync = () => {
   const { user } = useRequireAuth('/auth', {
@@ -69,11 +52,20 @@ const SharePointSync = () => {
       await fetchLogs();
     }
   });
-  const { graphAPI, sharepointSync } = useIntegrationFunctions();
+  const { 
+    graphAPI, 
+    sharepointSync,
+    getSharePointConfigs,
+    addSharePointConfig,
+    updateSharePointConfig,
+    deleteSharePointConfig,
+    getSharePointLogs
+  } = useIntegrationFunctions();
+  
   const [isLoading, setIsLoading] = useState(true);
   const [syncing, setSyncing] = useState<string | null>(null);
-  const [configs, setConfigs] = useState<SyncConfig[]>([]);
-  const [logs, setLogs] = useState<SyncLog[]>([]);
+  const [configs, setConfigs] = useState<SharePointConfig[]>([]);
+  const [logs, setLogs] = useState<SharePointLog[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [sharePointSites, setSharePointSites] = useState<any[]>([]);
   const [selectedSite, setSelectedSite] = useState<string>("");
@@ -97,32 +89,17 @@ const SharePointSync = () => {
   };
 
   const fetchConfigs = async () => {
-    const { data, error } = await supabase
-      .from("sharepoint_sync_config")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      toast.error("Failed to load sync configurations");
-      return;
+    const data = await getSharePointConfigs.invoke();
+    if (data) {
+      setConfigs(data);
     }
-
-    setConfigs(data || []);
   };
 
   const fetchLogs = async () => {
-    const { data, error } = await supabase
-      .from("sharepoint_sync_logs")
-      .select("*")
-      .order("sync_started_at", { ascending: false })
-      .limit(10);
-
-    if (error) {
-      toast.error("Failed to load sync logs");
-      return;
+    const data = await getSharePointLogs.invoke();
+    if (data) {
+      setLogs(data);
     }
-
-    setLogs(data || []);
   };
 
   const fetchSharePointSites = async () => {
@@ -171,7 +148,7 @@ const SharePointSync = () => {
       const site = sharePointSites.find((s) => s.id === selectedSite);
       if (!site) return;
 
-      const { error } = await supabase.from("sharepoint_sync_config").insert({
+      await addSharePointConfig.invoke({
         customer_id: customerId,
         site_id: site.id,
         site_name: site.displayName,
@@ -179,30 +156,18 @@ const SharePointSync = () => {
         sync_enabled: true,
         sync_frequency_minutes: 60,
       });
-
-      if (error) {
-        toast.error("Failed to add sync configuration");
-        return;
-      }
     } else if (manualSiteUrl) {
-      const { error } = await supabase.from("sharepoint_sync_config").insert({
+      await addSharePointConfig.invoke({
         customer_id: customerId,
-        site_id: null,
         site_name: manualSiteName || manualSiteUrl,
         site_url: manualSiteUrl,
         sync_enabled: true,
         sync_frequency_minutes: 60,
       });
-
-      if (error) {
-        toast.error("Failed to add sync configuration");
-        return;
-      }
     } else {
       return; // nothing to add
     }
 
-    toast.success("Sync configuration added successfully");
     setIsAddDialogOpen(false);
     setSelectedSite("");
     setManualSiteUrl("");
@@ -211,21 +176,11 @@ const SharePointSync = () => {
   };
 
   const handleToggleSync = async (configId: string, enabled: boolean) => {
-    const { error } = await supabase
-      .from("sharepoint_sync_config")
-      .update({ sync_enabled: enabled })
-      .eq("id", configId);
-
-    if (error) {
-      toast.error("Failed to update sync configuration");
-      return;
-    }
-
-    toast.success(enabled ? "Sync enabled" : "Sync disabled");
+    await updateSharePointConfig.invoke({ id: configId, sync_enabled: enabled });
     await fetchConfigs();
   };
 
-  const handleSyncNow = async (config: SyncConfig) => {
+  const handleSyncNow = async (config: SharePointConfig) => {
     setSyncing(config.id);
 
     try {
@@ -262,17 +217,7 @@ const SharePointSync = () => {
   };
 
   const handleDeleteConfig = async (configId: string) => {
-    const { error } = await supabase
-      .from("sharepoint_sync_config")
-      .delete()
-      .eq("id", configId);
-
-    if (error) {
-      toast.error("Failed to delete sync configuration");
-      return;
-    }
-
-    toast.success("Sync configuration deleted");
+    await deleteSharePointConfig.invoke({ id: configId });
     await fetchConfigs();
   };
 
