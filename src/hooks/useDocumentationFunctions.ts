@@ -4,6 +4,10 @@ interface IngestDocumentationRequest {
   url?: string;
   content?: string;
   title?: string;
+  source?: string;
+  category?: string;
+  customerId?: string;
+  vendorId?: string;
   metadata?: Record<string, unknown>;
 }
 
@@ -20,6 +24,12 @@ interface ExtractAPIInstructionsRequest {
 interface AnalyzeTrainingVideosRequest {
   videoUrls: string[];
   analysisType?: string;
+}
+
+interface WorkflowInsightsRequest {
+  workflowType?: string;
+  metricName?: string;
+  department?: string;
 }
 
 /**
@@ -57,11 +67,17 @@ export function useDocumentationFunctions() {
     errorMessage: 'Failed to process knowledge',
   });
 
+  const workflowInsights = useEdgeFunction<WorkflowInsightsRequest, any>('workflow-insights', {
+    showErrorToast: true,
+    errorMessage: 'Failed to generate workflow insights',
+  });
+
   return {
     ingestDocumentation,
     parseDocument,
     extractAPIInstructions,
     analyzeTrainingVideos,
     knowledgeProcessor,
+    workflowInsights,
   };
 }

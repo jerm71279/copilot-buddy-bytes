@@ -10,6 +10,7 @@ import { ArrowLeft, TrendingUp, AlertTriangle, Lightbulb, Activity, CheckCircle,
 import { toast } from "sonner";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useDocumentationFunctions } from "@/hooks/useDocumentationFunctions";
 
 interface WorkflowExecution {
   id: string;
@@ -42,6 +43,7 @@ const WorkflowDetail = () => {
   const department = searchParams.get("department") || "operations";
   
   const isPreviewMode = useDemoMode();
+  const { workflowInsights } = useDocumentationFunctions();
   const [isLoading, setIsLoading] = useState(true);
   const [executions, setExecutions] = useState<WorkflowExecution[]>([]);
   const [aiInsights, setAIInsights] = useState<AIInsight | null>(null);
@@ -83,20 +85,16 @@ const WorkflowDetail = () => {
     console.log("🤖 Generating AI insights for:", { workflowType, metricName, department });
     setIsLoadingInsights(true);
     try {
-      const { data, error } = await supabase.functions.invoke("workflow-insights", {
-        body: {
-          workflowType,
-          metricName,
-          department
-        }
+      const data = await workflowInsights.invoke({
+        workflowType,
+        metricName,
+        department
       });
 
-      if (error) {
-        console.error("❌ Error from workflow-insights function:", error);
-        throw error;
+      if (data) {
+        console.log("✅ AI insights generated successfully:", data);
+        setAIInsights(data.insights);
       }
-      console.log("✅ AI insights generated successfully:", data);
-      setAIInsights(data.insights);
     } catch (error) {
       console.error("Error generating insights:", error);
       toast.error("Failed to generate AI insights");

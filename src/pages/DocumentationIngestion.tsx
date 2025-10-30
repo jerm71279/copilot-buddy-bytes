@@ -15,6 +15,8 @@ import { useVendors } from "@/hooks/useVendors";
 import { AddVendorDialog } from "@/components/documentation/AddVendorDialog";
 import { validateUrl } from "@/utils/validation";
 import { CreateVendorInput } from "@/types/vendor";
+import { useDocumentationFunctions } from "@/hooks/useDocumentationFunctions";
+import { useIntegrationFunctions } from "@/hooks/useIntegrationFunctions";
 
 export default function DocumentationIngestion() {
   const [url, setUrl] = useState("");
@@ -25,9 +27,11 @@ export default function DocumentationIngestion() {
   const [apiInstructions, setApiInstructions] = useState<any>(null);
   const toast = useStandardToast();
   
-  // Custom hooks for auth and vendor management
+  // Custom hooks
   const { user, customerId, isLoading: authLoading, error: authError } = useCustomerAuth();
-  const { 
+  const { ingestDocumentation, extractAPIInstructions } = useDocumentationFunctions();
+  const { ninjaOneTest } = useIntegrationFunctions();
+  const {
     vendors, 
     loading: vendorsLoading, 
     selectedVendorId, 
@@ -101,17 +105,15 @@ export default function DocumentationIngestion() {
     try {
       for (const urlToIngest of urls) {
         try {
-          const { data, error } = await supabase.functions.invoke('ingest-documentation', {
-            body: {
-              url: urlToIngest,
-              source: selectedVendor?.vendor_name || 'Unknown',
-              category,
-              customerId,
-              vendorId: selectedVendorId
-            }
+          await ingestDocumentation.invoke({
+            url: urlToIngest,
+            source: selectedVendor?.vendor_name || 'Unknown',
+            category,
+            customerId,
+            vendorId: selectedVendorId,
+            metadata: {}
           });
 
-          if (error) throw error;
           successCount++;
         } catch (error) {
           console.error(`Error ingesting ${urlToIngest}:`, error);
@@ -144,21 +146,16 @@ export default function DocumentationIngestion() {
   const handleTestNinjaOne = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('test-ninjaone', {
-        body: { instanceUrl: 'https://app.ninjarmm.com' }
+      const data = await ninjaOneTest.invoke({ 
+        action: 'test' 
       });
 
-      if (error) {
-        toast.error(error.message || "Failed to connect to NinjaOne");
-        return;
-      }
-
-      if (data.success) {
+      if (data?.success) {
         toast.success(`Connected to NinjaOne. Found ${data.organizationCount} organizations.`, {
           description: "Connection Successful!"
         });
       } else {
-        toast.error(data.error || "Failed to connect to NinjaOne", {
+        toast.error(data?.error || "Failed to connect to NinjaOne", {
           description: "Connection Failed"
         });
       }
@@ -178,65 +175,40 @@ export default function DocumentationIngestion() {
 
     setExtracting(true);
     try {
-      const { data, error } = await supabase.functions.invoke('extract-api-instructions', {
-        body: {
-          vendorId: selectedVendorId,
-          customerId,
-          vendorName: selectedVendor.vendor_name
-        }
+      const data = await extractAPIInstructions.invoke({
+        url: selectedVendor.documentation_url || '',
+        integrationName: selectedVendor.vendor_name
       });
 
-      if (error) {
-        const status = (error as any).status as number | undefined;
-        const msg = (error as any).message as string | undefined;
-        const lower = (msg || '').toLowerCase();
-          if (status === 404 || lower.includes('no documentation found')) {
-            if (selectedVendor.documentation_url) {
-              toast.info("No docs found. Ingesting the vendor's default URL, then retrying...");
+      if (!data) {
+        // No data - check if we need to ingest first
+        if (selectedVendor.documentation_url) {
+          toast.info("No docs found. Ingesting the vendor's default URL, then retrying...");
 
-              const { error: ingestError } = await supabase.functions.invoke('ingest-documentation', {
-                body: {
-                  url: selectedVendor.documentation_url,
-                  source: selectedVendor.vendor_name || 'Unknown',
-                  category: 'technical_documentation',
-                  customerId,
-                  vendorId: selectedVendorId
-                }
-              });
+          await ingestDocumentation.invoke({
+            url: selectedVendor.documentation_url,
+            source: selectedVendor.vendor_name || 'Unknown',
+            category: 'technical_documentation',
+            customerId,
+            vendorId: selectedVendorId,
+            metadata: {}
+          });
 
-              if (ingestError) {
-                toast.error("Could not ingest the default documentation URL. Please add docs and try again.");
-                return;
-              }
+          // Retry extraction after ingesting
+          const retryData = await extractAPIInstructions.invoke({
+            url: selectedVendor.documentation_url,
+            integrationName: selectedVendor.vendor_name
+          });
 
-              // Retry extraction after ingesting
-              const { data: retryData, error: retryError } = await supabase.functions.invoke('extract-api-instructions', {
-                body: {
-                  vendorId: selectedVendorId,
-                  customerId,
-                  vendorName: selectedVendor.vendor_name
-                }
-              });
-
-              if (retryError) throw retryError;
-
-              setApiInstructions(retryData.instructions);
-              toast.success(`Successfully extracted API key instructions for ${retryData.vendorName}`);
-              return;
-            } else {
-              toast.error("Please ingest this vendor's docs first, then try again.");
-              return;
-            }
+          if (retryData) {
+            setApiInstructions(retryData.instructions);
+            toast.success(`Successfully extracted API key instructions for ${retryData.vendorName}`);
           }
-        if (status === 429 || lower.includes('rate limit')) {
-          toast.warning("Please wait a moment and try again.");
+          return;
+        } else {
+          toast.error("Please ingest this vendor's docs first, then try again.");
           return;
         }
-        if (status === 402 || lower.includes('payment required')) {
-          toast.error("Please add credits to your workspace and retry.");
-          return;
-        }
-        throw error as any;
       }
 
       setApiInstructions(data.instructions);
