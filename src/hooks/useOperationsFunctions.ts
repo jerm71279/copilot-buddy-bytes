@@ -62,8 +62,7 @@ export function useOperationsFunctions() {
   });
 
   const templateMaintenance = useEdgeFunction<TemplateMaintenanceRequest, any>('template-maintenance', {
-    showSuccessToast: true,
-    successMessage: 'Template maintenance complete',
+    showSuccessToast: false,
     showErrorToast: true,
     errorMessage: 'Failed to perform template maintenance',
   });
