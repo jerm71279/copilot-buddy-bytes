@@ -24,10 +24,12 @@ export default function TemporaryPrivileges() {
   const queryClient = useQueryClient();
 
   // Fetch users
-  const { data: users } = useQuery({
+  const { data: usersResponse } = useQuery({
     queryKey: ["users-for-temp-privileges"],
     queryFn: () => ProfileService.getUserProfilesForSelection(),
   });
+
+  const users = usersResponse?.data || [];
 
   // Fetch roles
   const { data: roles } = useQuery({
@@ -135,7 +137,7 @@ export default function TemporaryPrivileges() {
                       <SelectValue placeholder="Select user" />
                     </SelectTrigger>
                     <SelectContent>
-                      {users?.map((user: any) => (
+                      {users.map((user: any) => (
                         <SelectItem key={user.user_id} value={user.user_id}>
                           {user.full_name}
                         </SelectItem>

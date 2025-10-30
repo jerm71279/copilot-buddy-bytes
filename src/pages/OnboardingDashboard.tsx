@@ -92,10 +92,12 @@ export default function OnboardingDashboard() {
       }
 
       const data = await OnboardingService.getClientOnboardings(profile.customer_id);
-      setOnboardings(data);
+      if (data.error || !data.data) throw data.error;
+      setOnboardings(data.data);
       
       const statsData = await OnboardingService.getOnboardingStats(profile.customer_id);
-      setStats(statsData);
+      if (statsData.error || !statsData.data) throw statsData.error;
+      setStats(statsData.data);
     } catch (error) {
       console.error('Error loading onboardings:', error);
       toast.error("Failed to load client onboardings");

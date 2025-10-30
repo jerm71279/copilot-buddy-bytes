@@ -47,9 +47,9 @@ export default function DashboardPortalLanes() {
       if (!profile?.customer_id) return;
 
       const customization = await ProfileService.getCustomerCustomizations(profile.customer_id);
-      if (customization) {
-        setEnabledPortals(customization.enabled_portals);
-        setEnabledModules(customization.enabled_modules);
+      if (customization?.data) {
+        setEnabledPortals(customization.data.enabled_portals);
+        setEnabledModules(customization.data.enabled_modules);
       }
     };
 
