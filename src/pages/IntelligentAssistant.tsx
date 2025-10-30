@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import { useComplianceFunctions } from "@/hooks/useComplianceFunctions";
 import {
   LogOut,
   Brain,
@@ -47,6 +48,7 @@ const IntelligentAssistant = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [metrics, setMetrics] = useState<LearningMetric | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { intelligentAssistant } = useComplianceFunctions();
 
   const loadUserProfile = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -114,19 +116,13 @@ const IntelligentAssistant = () => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke(
-        "intelligent-assistant",
-        {
-          body: {
-            query: input,
-            conversationId: conversationId,
-            customerId: customerId || null,
-            userId: userId,
-          },
-        }
-      );
+      const data = await intelligentAssistant.invoke({
+        query: input,
+        context: conversationId,
+        conversationHistory: messages.map(m => ({ role: m.role, content: m.content }))
+      });
 
-      if (error) throw error;
+      if (!data) throw new Error('No response received');
 
       const assistantMessage: Message = {
         role: "assistant",
@@ -146,8 +142,6 @@ const IntelligentAssistant = () => {
       }
     } catch (error) {
       console.error("Error invoking intelligent-assistant:", error);
-      const msg = (error as any)?.message || (error as any)?.error || "Failed to get response";
-      toast.error(typeof msg === 'string' ? msg : 'Failed to get response');
     } finally {
       setIsLoading(false);
     }

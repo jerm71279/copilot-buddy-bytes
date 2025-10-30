@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { useAnalyticsFunctions } from "@/hooks/useAnalyticsFunctions";
 import { 
   Globe, 
   TrendingUp, 
@@ -45,6 +46,7 @@ export default function GlobalInsights() {
   const [insights, setInsights] = useState<GlobalInsight[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const { centralMMLProcessor } = useAnalyticsFunctions();
 
   useEffect(() => {
     fetchGlobalInsights();
@@ -80,26 +82,16 @@ export default function GlobalInsights() {
   const runProcessor = async () => {
     setProcessing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('central-mml-processor', {
-        // Some backends expect a JSON body to parse
-        body: {}
+      const data = await centralMMLProcessor.invoke({
+        operation: 'process',
+        data: {}
       });
 
-      if (error) throw error as any;
-
-      const count = (data as any)?.globalInsightsGenerated ?? 0;
-
+      const count = data?.globalInsightsGenerated ?? 0;
       toast.success(`Generated ${count} new global insights`);
       await fetchGlobalInsights();
     } catch (err: any) {
-      console.error('Error running processor (full):', err);
-
-      const status = err?.context?.response?.status ?? err?.status ?? err?.context?.status;
-      const message = err?.message ?? err?.context?.response?.statusText ?? 'Edge Function returned a non-2xx status code';
-
-      toast.error(status ? `Initialization Failed (${status})` : 'Initialization Failed', {
-        description: message || 'Check console for full details',
-      });
+      console.error('Error running processor:', err);
     } finally {
       setProcessing(false);
     }

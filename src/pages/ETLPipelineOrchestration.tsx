@@ -8,10 +8,12 @@ import { Play, Pause, RefreshCw, Settings, Clock, CheckCircle2, XCircle } from "
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useOperationsFunctions } from "@/hooks/useOperationsFunctions";
 
 const ETLPipelineOrchestration = () => {
   const toast = useStandardToast();
   const queryClient = useQueryClient();
+  const { etlOrchestration } = useOperationsFunctions();
 
   const { data: pipelines, isLoading } = useQuery({
     queryKey: ['etl-pipelines'],
@@ -29,15 +31,15 @@ const ETLPipelineOrchestration = () => {
 
   const triggerPipeline = useMutation({
     mutationFn: async (pipelineName: string) => {
-      const { data, error } = await supabase.functions.invoke('etl-orchestration', {
-        body: { action: 'trigger', pipeline: pipelineName }
+      const result = await etlOrchestration.invoke({ 
+        action: 'trigger', 
+        config: { pipeline: pipelineName }
       });
-      if (error) throw error;
-      return data;
+      if (!result) throw new Error('Failed to trigger pipeline');
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['etl-pipelines'] });
-      toast.success("ETL pipeline started successfully");
     }
   });
 

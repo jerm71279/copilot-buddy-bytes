@@ -11,6 +11,7 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { useDocumentationFunctions } from "@/hooks/useDocumentationFunctions";
 
 interface VideoInput {
   id: string;
@@ -24,6 +25,7 @@ export default function IngestTrainingVideos() {
   const { customerId } = useUserProfile();
   const toast = useStandardToast();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const { analyzeTrainingVideos } = useDocumentationFunctions();
   const [videos, setVideos] = useState<VideoInput[]>([
     {
       id: '1',
@@ -100,23 +102,14 @@ export default function IngestTrainingVideos() {
 
       const loadingToast = toast.loading(`Analyzing ${validVideos.length} training videos with AI...`);
 
-      const { data, error } = await supabase.functions.invoke('analyze-training-videos', {
-        body: {
-          videos: validVideos,
-          customerId,
-          userId: user.id,
-        },
+      const data = await analyzeTrainingVideos.invoke({
+        videoUrls: validVideos.map(v => v.url),
+        analysisType: 'training'
       });
-
-      if (error) throw error;
 
       toast.dismiss(loadingToast);
-      toast.success(data.message, {
-        description: 'View the insights and enhanced checklist in the Knowledge Base'
-      });
-
-      // Navigate to the enhanced checklist
-      if (data.checklistId) {
+      
+      if (data?.checklistId) {
         navigate(`/knowledge/${data.checklistId}`);
       } else {
         navigate('/knowledge');

@@ -11,11 +11,13 @@ import { Cloud, FolderSync, RefreshCw, Shield } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useIntegrationFunctions } from "@/hooks/useIntegrationFunctions";
 
 export default function FileCollaboration() {
   const toast = useStandardToast();
   const { customerId } = useUserProfile();
   const [syncing, setSyncing] = useState(false);
+  const { fileRepositorySync } = useIntegrationFunctions();
 
   const { data: repositories, refetch: refetchRepositories } = useQuery({
     queryKey: ['file_repositories', customerId],
@@ -53,21 +55,17 @@ export default function FileCollaboration() {
 
     setSyncing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('file-repository-sync', {
-        body: {
-          customer_id: customerId,
-          repository_type: type,
-          full_sync: true
-        }
+      const data = await fileRepositorySync.invoke({
+        integrationId: customerId,
+        action: 'sync',
       });
 
-      if (error) throw error;
-
-      toast.success(data.message || 'Sync completed successfully');
+      if (data?.message) {
+        toast.success(data.message);
+      }
       refetchRepositories();
     } catch (error) {
       console.error('Sync error:', error);
-      toast.error((error as any).message || 'Failed to sync files');
     } finally {
       setSyncing(false);
     }
