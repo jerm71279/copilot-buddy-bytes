@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Key, RefreshCw, Database } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useIntegrationFunctions } from "@/hooks/useIntegrationFunctions";
 
 interface KeeperConfigProps {
   integrationId: string;
@@ -13,35 +13,20 @@ interface KeeperConfigProps {
 
 export function KeeperConfig({ integrationId }: KeeperConfigProps) {
   const [folderFilter, setFolderFilter] = useState("");
-  const [isSyncing, setIsSyncing] = useState(false);
   const { toast } = useToast();
+  const { keeperSync } = useIntegrationFunctions();
 
   const handleSync = async () => {
-    try {
-      setIsSyncing(true);
+    const data = await keeperSync.invoke({
+      integration_id: integrationId,
+      folder_filter: folderFilter || null,
+    });
 
-      const { data, error } = await supabase.functions.invoke('keeper-sync', {
-        body: {
-          integration_id: integrationId,
-          folder_filter: folderFilter || null,
-        },
-      });
-
-      if (error) throw error;
-
+    if (data) {
       toast({
         title: "Sync Complete",
         description: `Synced ${data.synced} credentials from Keeper${data.errors > 0 ? ` (${data.errors} errors)` : ''}`,
       });
-    } catch (error: any) {
-      console.error('Keeper sync error:', error);
-      toast({
-        title: "Sync Failed",
-        description: error.message || "Failed to sync with Keeper",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSyncing(false);
     }
   };
 
@@ -74,10 +59,10 @@ export function KeeperConfig({ integrationId }: KeeperConfigProps) {
 
           <Button
             onClick={handleSync}
-            disabled={isSyncing}
+            disabled={keeperSync.isLoading}
             className="w-full"
           >
-            {isSyncing ? (
+            {keeperSync.isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Syncing from Keeper...

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +8,7 @@ import { toast } from "sonner";
 import { Bot, Send, Loader2, Sparkles } from "lucide-react";
 import { PromptTemplateSelector } from "./PromptTemplateSelector";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useAIFunctions } from "@/hooks/useAIFunctions";
 
 type Message = {
   role: "user" | "assistant";
@@ -32,9 +32,9 @@ interface DepartmentAIAssistantProps {
 export const DepartmentAIAssistant = ({ department, departmentLabel }: DepartmentAIAssistantProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<PromptTemplate | null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
+  const { departmentAssistant } = useAIFunctions();
 
   const handleTemplateSelect = (template: PromptTemplate) => {
     setSelectedTemplate(template);
@@ -48,7 +48,7 @@ export const DepartmentAIAssistant = ({ department, departmentLabel }: Departmen
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || departmentAssistant.isLoading) return;
 
     const userMessage = input.trim();
     setInput("");
@@ -57,56 +57,34 @@ export const DepartmentAIAssistant = ({ department, departmentLabel }: Departmen
       content: userMessage,
       templateUsed: selectedTemplate?.template_name 
     }]);
-    setIsLoading(true);
 
-    try {
-      const { data, error } = await supabase.functions.invoke("department-assistant", {
-        body: {
-          department,
-          query: userMessage,
-          conversationHistory: messages,
-          templateId: selectedTemplate?.id,
-          useContextInjection: true
-        }
-      });
+    const data = await departmentAssistant.invoke({
+      department,
+      query: userMessage,
+      conversationHistory: messages,
+      templateId: selectedTemplate?.id,
+      useContextInjection: true,
+    });
 
-      if (error) {
-        if (error.message?.includes("429")) {
-          toast.error("Rate limit exceeded. Please try again in a moment.");
-        } else if (error.message?.includes("402")) {
-          toast.error("AI credits needed. Please contact your administrator.");
-        } else {
-          toast.error("Failed to get AI response");
-        }
-        console.error("AI Assistant error:", error);
-        return;
+    if (data?.response) {
+      setMessages(prev => [...prev, { 
+        role: "assistant", 
+        content: data.response,
+        contextInjected: data.contextInjected 
+      }]);
+      
+      if (data.toolCalled) {
+        toast.success(`Used ${data.toolCalled} tool for analysis`);
       }
-
-      if (data?.response) {
-        setMessages(prev => [...prev, { 
-          role: "assistant", 
-          content: data.response,
-          contextInjected: data.contextInjected 
-        }]);
-        
-        if (data.toolCalled) {
-          toast.success(`Used ${data.toolCalled} tool for analysis`);
-        }
-        
-        if (data.contextInjected && data.contextInjected.length > 0) {
-          toast.success(`Auto-injected ${data.contextInjected.length} context items`, {
-            description: data.contextInjected.join(", ")
-          });
-        }
+      
+      if (data.contextInjected && data.contextInjected.length > 0) {
+        toast.success(`Auto-injected ${data.contextInjected.length} context items`, {
+          description: data.contextInjected.join(", ")
+        });
       }
       
       // Reset template selection after use
       setSelectedTemplate(null);
-    } catch (err) {
-      console.error("Error calling AI assistant:", err);
-      toast.error("Failed to connect to AI assistant");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -196,9 +174,9 @@ export const DepartmentAIAssistant = ({ department, departmentLabel }: Departmen
                       ))}
                     </div>
                   )}
-                </div>
+                 </div>
               ))}
-              {isLoading && (
+              {departmentAssistant.isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-muted rounded-lg px-4 py-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -215,10 +193,10 @@ export const DepartmentAIAssistant = ({ department, departmentLabel }: Departmen
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            disabled={isLoading}
+            disabled={departmentAssistant.isLoading}
           />
-          <Button onClick={sendMessage} disabled={isLoading || !input.trim()}>
-            {isLoading ? (
+          <Button onClick={sendMessage} disabled={departmentAssistant.isLoading || !input.trim()}>
+            {departmentAssistant.isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Send className="h-4 w-4" />

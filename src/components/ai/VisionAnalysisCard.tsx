@@ -6,16 +6,16 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, Upload, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAIFunctions } from "@/hooks/useAIFunctions";
 
 export const VisionAnalysisCard = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [prompt, setPrompt] = useState("");
   const [analysisType, setAnalysisType] = useState("compliance");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<string>("");
   const { toast } = useToast();
+  const { visionAnalysis } = useAIFunctions();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,45 +39,29 @@ export const VisionAnalysisCard = () => {
       return;
     }
 
-    setIsAnalyzing(true);
     setResult("");
 
-    try {
-      // Convert image to base64
-      const reader = new FileReader();
-      reader.readAsDataURL(imageFile);
-      reader.onloadend = async () => {
-        const base64Image = reader.result as string;
+    // Convert image to base64
+    const reader = new FileReader();
+    reader.readAsDataURL(imageFile);
+    reader.onloadend = async () => {
+      const base64Image = reader.result as string;
 
-        const { data, error } = await supabase.functions.invoke("vision-analyzer", {
-          body: {
-            imageBase64: base64Image,
-            prompt: prompt,
-            analysisType: analysisType,
-            customerId: "demo-customer-id", // Replace with actual customer ID
-          },
-        });
+      const data = await visionAnalysis.invoke({
+        imageBase64: base64Image,
+        prompt: prompt,
+        analysisType: analysisType,
+        customerId: "demo-customer-id", // Replace with actual customer ID
+      });
 
-        if (error) {
-          throw error;
-        }
-
+      if (data) {
         setResult(data.analysis);
         toast({
           title: "Analysis Complete",
           description: `Processed in ${data.processingTime}ms`,
         });
-      };
-    } catch (error) {
-      console.error("Error analyzing image:", error);
-      toast({
-        title: "Analysis Failed",
-        description: error instanceof Error ? error.message : "Failed to analyze image",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAnalyzing(false);
-    }
+      }
+    };
   };
 
   return (
@@ -149,10 +133,10 @@ export const VisionAnalysisCard = () => {
 
         <Button
           onClick={analyzeImage}
-          disabled={!imageFile || !prompt || isAnalyzing}
+          disabled={!imageFile || !prompt || visionAnalysis.isLoading}
           className="w-full"
         >
-          {isAnalyzing ? (
+          {visionAnalysis.isLoading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               Analyzing...

@@ -1,13 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Sparkles } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { SearchResult, SearchResponse } from "@/lib/globalSearchConfig";
+import { SearchResult } from "@/lib/globalSearchConfig";
 import { SearchResultItem } from "@/components/search/SearchResultItem";
+import { useSearchFunctions } from "@/hooks/useSearchFunctions";
 
 interface GlobalSearchProps {
   open: boolean;
@@ -18,38 +17,26 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [aiSummary, setAiSummary] = useState<string>("");
-  const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [devMode, setDevMode] = useState(false);
   const navigate = useNavigate();
+  const { performGlobalSearch, isLoading } = useSearchFunctions();
 
-  const performSearch = useCallback(async (searchQuery: string) => {
+  const performSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) {
       setResults([]);
       setAiSummary("");
       return;
     }
 
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("global-search", {
-        body: { query: searchQuery }
-      });
-
-      if (error) throw error;
-
-      const response = data as SearchResponse;
+    const response = await performGlobalSearch(searchQuery);
+    if (response) {
       setResults(response.results || []);
       setAiSummary(response.aiSummary || "");
       setDevMode(response.devMode || false);
       setSelectedIndex(0);
-    } catch (error) {
-      console.error("Search error:", error);
-      toast.error("Search failed");
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -114,7 +101,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
         )}
 
         <ScrollArea className="max-h-[400px]">
-          {loading ? (
+          {isLoading ? (
             <div className="p-8 text-center text-muted-foreground">Searching...</div>
           ) : results.length === 0 && query ? (
             <div className="p-8 text-center text-muted-foreground">No results found</div>
