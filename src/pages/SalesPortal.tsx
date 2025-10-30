@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, TrendingUp } from "lucide-react";
+import { LogOut, TrendingUp, ExternalLink } from "lucide-react";
 import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
 import MCPServerStatus from "@/components/MCPServerStatus";
@@ -73,6 +73,24 @@ const SalesPortal = () => {
             </Card>
           ))}
         </div>
+
+        {/* Quick Access - SharePoint */}
+        <Card className="mb-8 border-primary/20 hover:border-primary/40 transition-colors cursor-pointer" onClick={() => window.open('https://sharepoint.com', '_blank')}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  SharePoint Resources
+                  <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                </CardTitle>
+                <CardDescription>Access sales documents, templates, and resources</CardDescription>
+              </div>
+              <Button variant="outline" size="sm">
+                Open SharePoint
+              </Button>
+            </div>
+          </CardHeader>
+        </Card>
 
         <Tabs defaultValue="pipeline" className="space-y-6">
           <TabsList>
