@@ -12087,6 +12087,72 @@ export type Database = {
         }
         Relationships: []
       }
+      sharepoint_documents: {
+        Row: {
+          content_text: string | null
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          document_id: string
+          download_url: string | null
+          file_name: string
+          file_size: number | null
+          file_type: string
+          id: string
+          last_synced_at: string | null
+          metadata: Json | null
+          modified_at: string
+          modified_by: string | null
+          preview_url: string | null
+          sharepoint_path: string | null
+          sync_status: string | null
+          thumbnail_url: string | null
+          web_url: string
+        }
+        Insert: {
+          content_text?: string | null
+          created_at: string
+          created_by?: string | null
+          customer_id: string
+          document_id: string
+          download_url?: string | null
+          file_name: string
+          file_size?: number | null
+          file_type: string
+          id?: string
+          last_synced_at?: string | null
+          metadata?: Json | null
+          modified_at: string
+          modified_by?: string | null
+          preview_url?: string | null
+          sharepoint_path?: string | null
+          sync_status?: string | null
+          thumbnail_url?: string | null
+          web_url: string
+        }
+        Update: {
+          content_text?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          document_id?: string
+          download_url?: string | null
+          file_name?: string
+          file_size?: number | null
+          file_type?: string
+          id?: string
+          last_synced_at?: string | null
+          metadata?: Json | null
+          modified_at?: string
+          modified_by?: string | null
+          preview_url?: string | null
+          sharepoint_path?: string | null
+          sync_status?: string | null
+          thumbnail_url?: string | null
+          web_url?: string
+        }
+        Relationships: []
+      }
       sharepoint_sync_config: {
         Row: {
           created_at: string
@@ -12149,6 +12215,42 @@ export type Database = {
             referencedColumns: ["customer_id"]
           },
         ]
+      }
+      sharepoint_sync_log: {
+        Row: {
+          customer_id: string
+          documents_failed: number | null
+          documents_synced: number | null
+          error_message: string | null
+          id: string
+          sync_completed_at: string | null
+          sync_config: Json | null
+          sync_started_at: string
+          sync_status: string
+        }
+        Insert: {
+          customer_id: string
+          documents_failed?: number | null
+          documents_synced?: number | null
+          error_message?: string | null
+          id?: string
+          sync_completed_at?: string | null
+          sync_config?: Json | null
+          sync_started_at?: string
+          sync_status?: string
+        }
+        Update: {
+          customer_id?: string
+          documents_failed?: number | null
+          documents_synced?: number | null
+          error_message?: string | null
+          id?: string
+          sync_completed_at?: string | null
+          sync_config?: Json | null
+          sync_started_at?: string
+          sync_status?: string
+        }
+        Relationships: []
       }
       sharepoint_sync_logs: {
         Row: {
@@ -14191,6 +14293,26 @@ export type Database = {
         }[]
       }
       sanitize_text_array: { Args: { input: string[] }; Returns: string[] }
+      search_sharepoint_documents: {
+        Args: {
+          _customer_id: string
+          _file_types?: string[]
+          _limit?: number
+          _offset?: number
+          _search_query?: string
+        }
+        Returns: {
+          file_name: string
+          file_size: number
+          file_type: string
+          id: string
+          modified_at: string
+          modified_by: string
+          rank: number
+          thumbnail_url: string
+          web_url: string
+        }[]
+      }
       strip_control_chars: { Args: { input: string }; Returns: string }
       validate_array_input: {
         Args: {
