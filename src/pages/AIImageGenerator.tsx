@@ -2,53 +2,23 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Download, Image as ImageIcon } from 'lucide-react';
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { useStandardToast } from '@/hooks/useStandardToast';
+import { useAIFunctions } from '@/hooks/useAIFunctions';
 
 const AIImageGenerator = () => {
   const [prompt, setPrompt] = useState('');
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const toast = useStandardToast();
+  const { imageGeneration } = useAIFunctions();
 
   const handleGenerate = async () => {
-    if (!prompt.trim()) {
-      toast.error("Prompt required", {
-        description: "Please enter a description for the image you want to generate.",
-      });
-      return;
-    }
+    if (!prompt.trim()) return;
 
-    setIsGenerating(true);
     setGeneratedImage(null);
+    const result = await imageGeneration.invoke({ prompt: prompt.trim() });
 
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-image', {
-        body: { prompt: prompt.trim() }
-      });
-
-      if (error) throw error;
-
-      if (data?.error) {
-        toast.error("Generation failed", { description: data.error });
-        return;
-      }
-
-      if (data?.imageUrl) {
-        setGeneratedImage(data.imageUrl);
-        toast.success("Image generated!", {
-          description: "Your image has been created successfully.",
-        });
-      }
-    } catch (error) {
-      console.error('Error generating image:', error);
-      toast.error("Generation failed", {
-        description: error instanceof Error ? error.message : "Failed to generate image",
-      });
-    } finally {
-      setIsGenerating(false);
+    if (result?.imageUrl) {
+      setGeneratedImage(result.imageUrl);
     }
   };
 
@@ -92,16 +62,16 @@ const AIImageGenerator = () => {
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Example: A serene landscape with mountains at sunset, vibrant colors, photorealistic style..."
                 className="min-h-[200px] resize-none"
-                disabled={isGenerating}
+                disabled={imageGeneration.isLoading}
               />
 
               <Button 
                 onClick={handleGenerate}
-                disabled={isGenerating || !prompt.trim()}
+                disabled={imageGeneration.isLoading || !prompt.trim()}
                 className="w-full"
                 size="lg"
               >
-                {isGenerating ? (
+                {imageGeneration.isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Generating...
@@ -134,7 +104,7 @@ const AIImageGenerator = () => {
               </div>
 
               <div className="relative aspect-square bg-muted rounded-lg overflow-hidden flex items-center justify-center">
-                {isGenerating ? (
+                {imageGeneration.isLoading ? (
                   <div className="flex flex-col items-center gap-4">
                     <Loader2 className="w-12 h-12 animate-spin text-primary" />
                     <p className="text-sm text-muted-foreground">Creating your image...</p>
@@ -155,7 +125,7 @@ const AIImageGenerator = () => {
                 )}
               </div>
 
-              {generatedImage && !isGenerating && (
+              {generatedImage && !imageGeneration.isLoading && (
                 <Button 
                   onClick={handleDownload}
                   variant="outline"

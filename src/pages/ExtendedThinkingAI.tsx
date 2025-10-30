@@ -4,32 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Brain, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useStandardToast } from "@/hooks/useStandardToast";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useAIFunctions } from "@/hooks/useAIFunctions";
 
 const ExtendedThinkingAI = () => {
   const [prompt, setPrompt] = useState("");
   const [thinkingProcess, setThinkingProcess] = useState<any[]>([]);
-  const toast = useStandardToast();
+  const { extendedThinking } = useAIFunctions();
 
-  const deepThinking = useMutation({
-    mutationFn: async (userPrompt: string) => {
-      const { data, error } = await supabase.functions.invoke('extended-thinking', {
-        body: { prompt: userPrompt, mode: 'deep' }
-      });
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (data) => {
-      setThinkingProcess(data.reasoning_steps || []);
-      toast.success("Extended thinking process finished");
-    },
-    onError: (error: any) => {
-      toast.error(error.message);
+  const handleAnalyze = async () => {
+    const result = await extendedThinking.invoke({ prompt, thinkingTime: 5000 });
+    if (result?.reasoning_steps) {
+      setThinkingProcess(result.reasoning_steps);
     }
-  });
+  };
 
   return (
     <DashboardLayout>
@@ -58,10 +46,10 @@ const ExtendedThinkingAI = () => {
             />
             <Button 
               className="w-full" 
-              onClick={() => deepThinking.mutate(prompt)}
-              disabled={!prompt || deepThinking.isPending}
+              onClick={handleAnalyze}
+              disabled={!prompt || extendedThinking.isLoading}
             >
-              {deepThinking.isPending ? (
+              {extendedThinking.isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Thinking Deeply...

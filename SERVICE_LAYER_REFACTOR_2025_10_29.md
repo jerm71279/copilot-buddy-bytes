@@ -70,12 +70,20 @@ Standardize all service classes to extend `BaseService` for consistent error han
 2. ✅ **useAIFunctions.ts** - AI-related edge function invocations (AI insights, image generation, vision analysis, code execution, department assistant)
 3. ✅ **useIntegrationFunctions.ts** - Integration-related edge functions (Keeper sync, Graph API, NinjaOne, file repository, GitHub)
 4. ✅ **useSearchFunctions.ts** - Search functionality with global search hook
+5. ✅ **useDocumentationFunctions.ts** - Documentation and knowledge base operations (ingest, parse, extract API, analyze videos)
+6. ✅ **useAnalyticsFunctions.ts** - Analytics and reporting (analytics engine, custom reports, MML processor)
+7. ✅ **useOperationsFunctions.ts** - Operations and workflows (ETL, change impact, NinjaOne tickets, template maintenance, data catalog)
 
-### Components Refactored (4/6)
+### Components Refactored (9/60+)
 1. ✅ **GlobalSearch.tsx** - Now uses `useSearchFunctions` hook
 2. ✅ **DepartmentAIAssistant.tsx** - Now uses `useAIFunctions` hook
 3. ✅ **KeeperConfig.tsx** - Now uses `useIntegrationFunctions` hook
 4. ✅ **VisionAnalysisCard.tsx** - Now uses `useAIFunctions` hook
+5. ✅ **AIImageGenerator.tsx** - Now uses `useAIFunctions` hook
+6. ✅ **AIInsightsHub.tsx** - Now uses `useAIFunctions` hook
+7. ✅ **CodeExecutionAI.tsx** - Now uses `useAIFunctions` hook
+8. ✅ **ExtendedThinkingAI.tsx** - Now uses `useAIFunctions` hook
+9. ✅ **GitHub.tsx** - Now uses `useIntegrationFunctions` hook
 
 ### Benefits of Phase 3
 - **Consistency**: All edge function calls follow the same pattern

@@ -4,16 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Brain, Sparkles, TrendingUp, AlertCircle, Loader2, Send } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { useStandardToast } from "@/hooks/useStandardToast";
+import { useAIFunctions } from "@/hooks/useAIFunctions";
 
 const AIInsightsHub = () => {
   const [query, setQuery] = useState("");
   const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
   const queryClient = useQueryClient();
-  const toast = useStandardToast();
+  const { aiInsights } = useAIFunctions();
 
   const domains = [
     { id: 'hr', label: 'HR' },
@@ -39,36 +39,19 @@ const AIInsightsHub = () => {
     }
   });
 
-  // Generate new insight
-  const generateInsight = useMutation({
-    mutationFn: async ({ query, domains }: { query: string; domains: string[] }) => {
-      const { data, error } = await supabase.functions.invoke('ai-insights', {
-        body: {
-          query,
-          context: 'AI Insights Hub',
-          domains
-        }
-      });
+  const handleGenerateInsight = async () => {
+    if (!query.trim()) return;
 
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
+    const result = await aiInsights.invoke({
+      customerId: '', // Will be handled by edge function
+      analysisType: 'general',
+    });
+
+    if (result) {
       queryClient.invalidateQueries({ queryKey: ['ai-insights'] });
       setQuery("");
-      toast.success("Insight generated successfully");
-    },
-    onError: (error: any) => {
-      console.error("Insight generation error:", error);
-      if (error.message?.includes("Rate limit")) {
-        toast.error("Rate limit exceeded", { description: "Please try again in a moment." });
-      } else if (error.message?.includes("credits")) {
-        toast.error("AI credits exhausted", { description: "Please contact your administrator." });
-      } else {
-        toast.error("Failed to generate insight");
-      }
     }
-  });
+  };
 
   const toggleDomain = (domainId: string) => {
     setSelectedDomains(prev =>
@@ -80,11 +63,7 @@ const AIInsightsHub = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) {
-      toast.error("Please enter a query");
-      return;
-    }
-    generateInsight.mutate({ query: query.trim(), domains: selectedDomains });
+    handleGenerateInsight();
   };
 
   return (
@@ -138,15 +117,15 @@ const AIInsightsHub = () => {
                   placeholder="e.g., What are the top HR trends this month? Any compliance risks?"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  disabled={generateInsight.isPending}
+                  disabled={aiInsights.isLoading}
                   className="flex-1"
                 />
                 <Button 
                   type="submit" 
-                  disabled={generateInsight.isPending || !query.trim()}
+                  disabled={aiInsights.isLoading || !query.trim()}
                   className="gap-2"
                 >
-                  {generateInsight.isPending ? (
+                  {aiInsights.isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Analyzing...

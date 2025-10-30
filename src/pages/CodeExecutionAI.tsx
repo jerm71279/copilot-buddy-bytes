@@ -4,33 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Code, Play, Terminal, CheckCircle2, XCircle } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useStandardToast } from "@/hooks/useStandardToast";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useAIFunctions } from "@/hooks/useAIFunctions";
 
 const CodeExecutionAI = () => {
   const [code, setCode] = useState("console.log('Hello from AI!');");
   const [output, setOutput] = useState<any>(null);
-  const toast = useStandardToast();
+  const { codeExecution } = useAIFunctions();
 
-  const executeCode = useMutation({
-    mutationFn: async (codeToRun: string) => {
-      const { data, error } = await supabase.functions.invoke('code-execution', {
-        body: { code: codeToRun, language: 'javascript' }
-      });
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (data) => {
-      setOutput(data);
-      toast.success("Code ran successfully in sandbox");
-    },
-    onError: (error: any) => {
-      setOutput({ success: false, error: error.message });
-      toast.error(error.message);
+  const handleExecute = async () => {
+    const result = await codeExecution.invoke({ code, language: 'javascript' });
+    if (result) {
+      setOutput(result);
     }
-  });
+  };
 
   return (
     <DashboardLayout>
@@ -60,8 +47,8 @@ const CodeExecutionAI = () => {
               />
               <Button 
                 className="w-full" 
-                onClick={() => executeCode.mutate(code)}
-                disabled={!code || executeCode.isPending}
+                onClick={handleExecute}
+                disabled={!code || codeExecution.isLoading}
               >
                 <Play className="h-4 w-4 mr-2" />
                 Execute Code

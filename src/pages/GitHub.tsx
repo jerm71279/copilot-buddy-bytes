@@ -1,52 +1,25 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Github, GitBranch, GitCommit, GitPullRequest, ExternalLink, Search, FileText, Folder } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { useStandardToast } from "@/hooks/useStandardToast";
+import { useIntegrationFunctions } from "@/hooks/useIntegrationFunctions";
 
 const GitHub = () => {
-  const toast = useStandardToast();
   const [isConnected] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-
-  // Search GitHub repositories
-  const { data: searchResults, refetch: performSearch } = useQuery({
-    queryKey: ['githubSearch', searchQuery],
-    enabled: false, // Only run on manual trigger
-    queryFn: async () => {
-      if (!searchQuery.trim()) return { items: [] };
-
-      const { data, error } = await supabase.functions.invoke('search-github', {
-        body: { query: searchQuery }
-      });
-
-      if (error) {
-        console.error('GitHub search error:', error);
-        toast.error('Failed to search GitHub: ' + error.message);
-        throw error;
-      }
-
-      return data;
-    }
-  });
+  const [searchResults, setSearchResults] = useState<any>(null);
+  const { githubSearch } = useIntegrationFunctions();
 
   const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      toast.error("Please enter a search query");
-      return;
-    }
+    if (!searchQuery.trim()) return;
 
-    setIsSearching(true);
-    try {
-      await performSearch();
-    } finally {
-      setIsSearching(false);
+    const result = await githubSearch.invoke({ query: searchQuery });
+    if (result) {
+      setSearchResults(result);
     }
   };
 
@@ -83,8 +56,8 @@ const GitHub = () => {
                   className="pl-10"
                 />
               </div>
-              <Button onClick={handleSearch} disabled={isSearching || !searchQuery.trim()}>
-                {isSearching ? "Searching..." : "Search"}
+              <Button onClick={handleSearch} disabled={githubSearch.isLoading || !searchQuery.trim()}>
+                {githubSearch.isLoading ? "Searching..." : "Search"}
               </Button>
             </div>
             
@@ -126,7 +99,7 @@ const GitHub = () => {
               </div>
             )}
             
-            {searchQuery && searchResults && searchResults.items && searchResults.items.length === 0 && !isSearching && (
+            {searchQuery && searchResults && searchResults.items && searchResults.items.length === 0 && !githubSearch.isLoading && (
               <p className="text-sm text-muted-foreground mt-4">
                 No files found on GitHub for "{searchQuery}".
               </p>
