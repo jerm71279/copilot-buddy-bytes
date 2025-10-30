@@ -17,7 +17,32 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { action, pipeline } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const action = String(requestData.action || '').slice(0, 50);
+    const pipeline = String(requestData.pipeline || '').slice(0, 100);
+    
+    if (!action) {
+      return new Response(
+        JSON.stringify({ error: 'action is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (!pipeline) {
+      return new Response(
+        JSON.stringify({ error: 'pipeline is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (action === "trigger") {
       // Create a new pipeline run
@@ -29,9 +54,11 @@ serve(async (req) => {
           started_at: new Date().toISOString(),
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (runError) throw runError;
+      if (runError || !run) {
+        throw runError || new Error('Failed to create pipeline run');
+      }
 
       // Simulate ETL processing (in production, this would trigger actual jobs)
       setTimeout(async () => {
