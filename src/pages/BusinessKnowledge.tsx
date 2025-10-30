@@ -153,25 +153,18 @@ export default function BusinessKnowledge() {
       if (!profile?.customer_id) throw new Error("No customer ID found");
 
       if (uploadType === "url") {
-        await ingestDocumentation.invoke({
-          url: uploadUrl,
-          content: '',
-          title: uploadSource,
-          metadata: { customerId: profile.customer_id }
+        const { error } = await supabase.functions.invoke('ingest-documentation', {
+          body: { url: uploadUrl, source: uploadSource, customerId: profile.customer_id }
         });
+        if (error) throw error;
       } else {
         const filePath = `${profile.customer_id}/${Date.now()}-${uploadFile!.name}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('business-documents')
-          .upload(filePath, uploadFile!);
-
+        const { error: uploadError } = await supabase.storage.from('business-documents').upload(filePath, uploadFile!);
         if (uploadError) throw uploadError;
-
-        await parseDocument.invoke({
-          documentUrl: filePath,
-          documentType: uploadSource
+        const { error: parseError } = await supabase.functions.invoke('parse-document', {
+          body: { filePath, customerId: profile.customer_id, source: uploadSource }
         });
+        if (parseError) throw parseError;
       }
 
       toast.success("The content is being processed");
@@ -219,11 +212,10 @@ export default function BusinessKnowledge() {
         .delete()
         .eq('id', article.id);
 
-      await ingestDocumentation.invoke({
-        url: article.source_metadata.url,
-        title: article.source_metadata.source || 'Unknown',
-        metadata: { customerId: profile.customer_id }
+      const { error } = await supabase.functions.invoke('ingest-documentation', {
+        body: { url: article.source_metadata.url, source: article.source_metadata.source || 'Unknown', customerId: profile.customer_id }
       });
+      if (error) throw error;
 
       toast.success("The page is being re-processed");
 

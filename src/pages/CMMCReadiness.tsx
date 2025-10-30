@@ -115,21 +115,20 @@ const CMMCReadiness = () => {
   };
 
   const generateEvidencePackage = async () => {
-    await batchEvidenceGenerator.invoke({
-      controlIds: controls.map(c => c.id),
-      customerId: customerId || undefined
+    const { error } = await supabase.functions.invoke('batch-evidence-generator', {
+      body: { framework: 'CMMC Level 2', include_controls: controls.map(c => c.id), output_format: 'c3pao_ready' }
     });
+    if (error) console.error(error);
   };
 
   const runPreAssessment = async () => {
-    await intelligentAssistant.invoke({
-      query: `Conduct a comprehensive CMMC Level 2 readiness assessment. Analyze all 43 controls across 15 domains. Identify gaps, missing evidence, and provide actionable recommendations for C3PAO audit preparation.`,
-      context: JSON.stringify({
-        controls: controls,
-        evidence_count: evidenceCount,
-        current_score: readinessScore
-      })
+    const { error } = await supabase.functions.invoke('intelligent-assistant', {
+      body: {
+        prompt: `Conduct a comprehensive CMMC Level 2 readiness assessment. Analyze all 43 controls across 15 domains.`,
+        context: { controls, evidence_count: evidenceCount, current_score: readinessScore }
+      }
     });
+    if (error) console.error(error);
   };
 
   const getDomainProgress = (domainId: string) => {

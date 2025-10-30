@@ -54,30 +54,15 @@ const ComplianceRoadmap = () => {
   const handleRebuildTemplates = async () => {
     setIsRebuilding(true);
     try {
-      const rebuildData = await templateMaintenance.invoke({
-        operation: 'rebuild',
-        templateId: selectedFramework || undefined
+      const { data: rebuildData, error } = await supabase.functions.invoke('template-maintenance', {
+        body: selectedFramework ? { action: 'rebuild', frameworkIds: [selectedFramework] } : { action: 'rebuild' }
       });
-      
-      console.log('Rebuild response:', rebuildData);
-      
-      if (!rebuildData) {
-        setLastRun({
-          when: new Date(),
-          action: 'Rebuild',
-          details: 'Failed: No data returned',
-          success: false
-        });
-        toast.error('Failed to rebuild templates');
-        return;
-      }
+      if (error || !rebuildData) { toast.error('Rebuild failed'); return; }
       
       const stageCount = rebuildData?.inserted?.stageTemplates ?? rebuildData?.stageTemplates ?? 0;
       const milestoneCount = rebuildData?.inserted?.milestoneTemplates ?? rebuildData?.milestoneTemplates ?? 0;
       
-      const sanitizeData = await templateMaintenance.invoke({
-        operation: 'sanitize'
-      });
+      const { data: sanitizeData } = await supabase.functions.invoke('template-maintenance', { body: { action: 'sanitize' } });
       
       console.log('Sanitize response:', sanitizeData);
       
@@ -123,35 +108,20 @@ const ComplianceRoadmap = () => {
   const handleSanitizeTemplates = async () => {
     setIsSanitizing(true);
     try {
-      const data = await templateMaintenance.invoke({
-        operation: 'sanitize'
+      const { data, error } = await supabase.functions.invoke('template-maintenance', { body: { action: 'sanitize' } });
+      if (error || !data) { toast.error('Sanitize failed'); return; }
+      const stageCount = data?.stageTemplatesUpdated || 0;
+      const milestoneCount = data?.milestoneTemplatesUpdated || 0;
+      const details = `${stageCount} stage templates, ${milestoneCount} milestone templates updated`;
+      
+      setLastRun({
+        when: new Date(),
+        action: 'Sanitize',
+        details,
+        success: true
       });
       
-      console.log('Sanitize response:', data);
-      
-      if (!data) {
-        setLastRun({
-          when: new Date(),
-          action: 'Sanitize',
-          details: 'Failed: No data returned',
-          success: false
-        });
-        
-        toast.error('Failed to sanitize templates');
-      } else {
-        const stageCount = data?.stageTemplatesUpdated || 0;
-        const milestoneCount = data?.milestoneTemplatesUpdated || 0;
-        const details = `${stageCount} stage templates, ${milestoneCount} milestone templates updated`;
-        
-        setLastRun({
-          when: new Date(),
-          action: 'Sanitize',
-          details,
-          success: true
-        });
-        
-        toast.success(`Templates sanitized: ${details}`);
-      }
+      toast.success(`Templates sanitized: ${details}`);
     } catch (err) {
       console.error('Unexpected sanitize error:', err);
       const errMsg = err instanceof Error ? err.message : String(err);

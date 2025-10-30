@@ -84,11 +84,10 @@ const ChangeManagementNew = () => {
   const analyzeImpact = async () => {
     try {
       setAnalyzingImpact(true);
-      const data = await changeImpactAnalyzer.invoke({
-        changeDescription: `${formData.title}: ${formData.description}`,
-        affectedSystems: formData.affected_ci_ids
+      const { data, error } = await supabase.functions.invoke("change-impact-analyzer", {
+        body: { title: formData.title, description: formData.description, change_type: formData.change_type }
       });
-
+      if (error) throw error;
       if (data?.success) {
         toast.success("Impact analysis complete");
         // Update form with AI recommendations
