@@ -18,13 +18,15 @@ export const PageContainer = ({
   const paddingClasses = noPadding ? "" : "px-4 pb-8 pt-8";
   
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen bg-background overflow-x-hidden relative">
       <main
         className={`container mx-auto ${paddingClasses} ${className}`}
         style={{ 
           marginTop: 'var(--lanes-height, 0px)',
           minHeight: 'calc(100vh - var(--lanes-height, 0px))',
-          willChange: 'transform'
+          willChange: 'transform',
+          position: 'relative',
+          zIndex: 1
         }}
       >
         {children}
