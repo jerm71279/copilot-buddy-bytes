@@ -9,6 +9,7 @@ import { Loader2, Sparkles, Copy, Download } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useAIFunctions } from "@/hooks/useAIFunctions";
 
 interface Pattern {
   id: string;
@@ -29,6 +30,7 @@ export default function PatternLibrary() {
   const [isLoading, setIsLoading] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
   const toast = useStandardToast();
+  const { patternExecutor } = useAIFunctions();
 
   useEffect(() => {
     fetchPatterns();
@@ -63,20 +65,16 @@ export default function PatternLibrary() {
     setOutput("");
 
     try {
-      const { data, error } = await supabase.functions.invoke('pattern-executor', {
-        body: {
-          patternId: selectedPattern.id,
-          inputText: inputText.trim(),
-        },
+      const data = await patternExecutor.invoke({
+        patternId: selectedPattern.id,
+        inputText: inputText.trim(),
       });
 
-      if (error) throw error;
-
-      setOutput(data.output);
-      toast.success(`Pattern executed in ${data.executionTime}ms`);
+      if (data) {
+        setOutput(data.output);
+      }
     } catch (error: any) {
       console.error('Error executing pattern:', error);
-      toast.error(error.message || "Failed to execute pattern");
     } finally {
       setIsExecuting(false);
     }

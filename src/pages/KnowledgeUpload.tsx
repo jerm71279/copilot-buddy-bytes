@@ -9,6 +9,7 @@ import { ArrowLeft, Upload, FileText, Loader2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useDocumentationFunctions } from "@/hooks/useDocumentationFunctions";
 
 export default function KnowledgeUpload() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function KnowledgeUpload() {
   useUserProfile();
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const { knowledgeProcessor } = useDocumentationFunctions();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedFiles(e.target.files);
@@ -38,20 +40,12 @@ export default function KnowledgeUpload() {
       // Process each file
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
-        const formData = new FormData();
-        formData.append("file", file);
-
-        // Call the knowledge processor to extract content
-        const { data, error } = await supabase.functions.invoke("knowledge-processor", {
-          body: {
-            action: "process_file",
-            fileName: file.name,
-            fileType: file.type,
-            fileContent: await file.text()
-          }
+        await knowledgeProcessor.invoke({
+          action: "process_file",
+          fileName: file.name,
+          fileType: file.type,
+          fileContent: await file.text()
         });
-
-        if (error) throw error;
       }
 
       toast.success(`Successfully uploaded ${selectedFiles.length} file(s)`);

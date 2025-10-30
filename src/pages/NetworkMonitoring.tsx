@@ -16,6 +16,7 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from "@/hooks/useStandardToast";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import { useOperationsFunctions } from "@/hooks/useOperationsFunctions";
 
 export default function NetworkMonitoring() {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ export default function NetworkMonitoring() {
     criticalAlerts: 0,
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const { devicePoller } = useOperationsFunctions();
 
   const loadData = async () => {
     try {
@@ -90,17 +92,12 @@ export default function NetworkMonitoring() {
   const pollDevice = async (deviceId: string) => {
     try {
       toast.info('Polling device...');
-      const { data, error } = await supabase.functions.invoke('device-poller', {
-        body: { device_id: deviceId }
-      });
-
-      if (error) throw error;
-      
-      toast.success(`Collected ${data.metrics_collected} metrics from ${data.device}`);
-      await loadData();
+      const data = await devicePoller.invoke({ device_id: deviceId });
+      if (data) {
+        await loadData();
+      }
     } catch (error) {
       console.error('Error polling device:', error);
-      toast.error('Failed to poll device');
     }
   };
 

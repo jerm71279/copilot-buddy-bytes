@@ -20,12 +20,14 @@ import {
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useAIFunctions } from "@/hooks/useAIFunctions";
 
 export default function PredictiveInsights() {
   const [selectedType, setSelectedType] = useState<string>("all");
   const queryClient = useQueryClient();
   const toast = useStandardToast();
   const { customerId } = useUserProfile();
+  const { predictiveInsights } = useAIFunctions();
 
   // Fetch insights
   const { data: insights, isLoading } = useQuery({
@@ -51,22 +53,14 @@ export default function PredictiveInsights() {
     mutationFn: async (analysisType: string) => {
       if (!customerId) throw new Error("No customer ID");
 
-      const { data, error } = await supabase.functions.invoke('predictive-insights', {
-        body: { 
-          analysisType,
-          customerId
-        }
+      const data = await predictiveInsights.invoke({ 
+        analysisType,
+        customerId
       });
-
-      if (error) throw error;
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ai-insights", customerId] });
-      toast.success("AI analysis completed successfully");
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Analysis failed");
     },
   });
 

@@ -52,10 +52,16 @@ export function useDocumentationFunctions() {
     errorMessage: 'Failed to analyze training videos',
   });
 
+  const knowledgeProcessor = useEdgeFunction<{ action: string; [key: string]: any }, any>('knowledge-processor', {
+    showErrorToast: true,
+    errorMessage: 'Failed to process knowledge',
+  });
+
   return {
     ingestDocumentation,
     parseDocument,
     extractAPIInstructions,
     analyzeTrainingVideos,
+    knowledgeProcessor,
   };
 }

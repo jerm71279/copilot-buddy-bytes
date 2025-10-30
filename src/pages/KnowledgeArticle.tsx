@@ -9,6 +9,7 @@ import { ArrowLeft, Edit, History, Download, Sparkles } from "lucide-react";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useDocumentationFunctions } from "@/hooks/useDocumentationFunctions";
 
 export default function KnowledgeArticle() {
   const { id } = useParams();
@@ -18,6 +19,7 @@ export default function KnowledgeArticle() {
   const [versions, setVersions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const { knowledgeProcessor } = useDocumentationFunctions();
 
   useEffect(() => {
     loadArticle();
@@ -71,19 +73,13 @@ export default function KnowledgeArticle() {
   const enhanceWithAI = async () => {
     setIsEnhancing(true);
     try {
-      const { data, error } = await supabase.functions.invoke("knowledge-processor", {
-        body: {
-          action: "enhance_article",
-          articleContent: article.content
-        }
+      await knowledgeProcessor.invoke({
+        action: "enhance_article",
+        articleContent: article.content
       });
-
-      if (error) throw error;
       toast.success("AI enhancement generated! Review the suggestions.");
-      // You could show the enhanced version in a modal for review
     } catch (error) {
       console.error("Error enhancing article:", error);
-      toast.error("Failed to enhance article");
     } finally {
       setIsEnhancing(false);
     }

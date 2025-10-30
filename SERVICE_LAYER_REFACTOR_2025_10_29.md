@@ -63,23 +63,23 @@ Standardize all service classes to extend `BaseService` for consistent error han
 2. **etl-orchestration/index.ts** - Added comprehensive input validation and changed `.single()` to `.maybeSingle()`
 3. All other edge functions already secured
 
-## 🎯 Phase 3: Database Query Refactoring (23/60+ components complete)
+## 🎯 Phase 3: Database Query Refactoring (28/60+ components complete)
 
-Successfully refactored 23 components and created 10 domain-specific hooks. Significant progress made with all major hook categories implemented.
+Successfully refactored 28 components and created 10 domain-specific hooks. All major hook categories implemented with coverage for AI, analytics, operations, integrations, documentation, compliance, testing, auth, and search functionality.
 
 ### Custom Hooks Created (10 total)
 1. ✅ **useEdgeFunctions.ts** - Base hook for edge function invocations with standardized error handling
-2. ✅ **useAIFunctions.ts** - AI-related edge function invocations (AI insights, image generation, vision analysis, code execution, department assistant)
+2. ✅ **useAIFunctions.ts** - AI-related edge function invocations (AI insights, image generation, vision analysis, code execution, department assistant, pattern executor, predictive insights)
 3. ✅ **useIntegrationFunctions.ts** - Integration-related edge functions (Keeper sync, Graph API, NinjaOne, file repository, GitHub)
 4. ✅ **useSearchFunctions.ts** - Search functionality with global search hook
-5. ✅ **useDocumentationFunctions.ts** - Documentation and knowledge base operations (ingest, parse, extract API, analyze videos)
+5. ✅ **useDocumentationFunctions.ts** - Documentation and knowledge base operations (ingest, parse, extract API, analyze videos, knowledge processor)
 6. ✅ **useAnalyticsFunctions.ts** - Analytics and reporting (analytics engine, custom reports, MML processor)
-7. ✅ **useOperationsFunctions.ts** - Operations and workflows (ETL, change impact, NinjaOne tickets, template maintenance, data catalog)
+7. ✅ **useOperationsFunctions.ts** - Operations and workflows (ETL, change impact, NinjaOne tickets, template maintenance, data catalog, device poller)
 8. ✅ **useTestingFunctions.ts** - Testing and admin tools (test data generator, fuzzer, flow logger, test user creation)
 9. ✅ **useComplianceFunctions.ts** - Compliance operations (batch evidence, intelligent assistant, templates)
 10. ✅ **useAuthFunctions.ts** - Authentication and onboarding (signup completion, AI MCP generator)
 
-### Components Refactored (23/60+)
+### Components Refactored (28/60+)
 1. ✅ **GlobalSearch.tsx** - Now uses `useSearchFunctions` hook
 2. ✅ **DepartmentAIAssistant.tsx** - Now uses `useAIFunctions` hook
 3. ✅ **KeeperConfig.tsx** - Now uses `useIntegrationFunctions` hook
@@ -103,6 +103,11 @@ Successfully refactored 23 components and created 10 domain-specific hooks. Sign
 21. ✅ **GlobalInsights.tsx** - Now uses `useAnalyticsFunctions` hook
 22. ✅ **IngestTrainingVideos.tsx** - Now uses `useDocumentationFunctions` hook
 23. ✅ **IntelligentAssistant.tsx** - Now uses `useComplianceFunctions` hook
+24. ✅ **KnowledgeArticle.tsx** - Now uses `useDocumentationFunctions` hook
+25. ✅ **KnowledgeUpload.tsx** - Now uses `useDocumentationFunctions` hook
+26. ✅ **NetworkMonitoring.tsx** - Now uses `useOperationsFunctions` hook
+27. ✅ **PatternLibrary.tsx** - Now uses `useAIFunctions` hook
+28. ✅ **PredictiveInsights.tsx** - Now uses `useAIFunctions` hook
 
 ### Benefits of Phase 3
 - **Consistency**: All edge function calls follow the same pattern
@@ -121,5 +126,5 @@ Successfully refactored 23 components and created 10 domain-specific hooks. Sign
 
 1. ✅ Complete service layer refactoring (47/47 services complete)
 2. ✅ Edge function security improvements (all functions secured)
-3. 🎯 Database query refactoring (in progress - 10 hooks created, 23 components refactored)
+3. 🎯 Database query refactoring (in progress - 10 hooks created, 28 components refactored)
 4. 🔒 Security hardening (rate limiting, query optimization)

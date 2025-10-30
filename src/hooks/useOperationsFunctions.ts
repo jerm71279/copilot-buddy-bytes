@@ -62,11 +62,19 @@ export function useOperationsFunctions() {
     errorMessage: 'Failed to access data catalog',
   });
 
+  const devicePoller = useEdgeFunction<{ device_id: string }, any>('device-poller', {
+    showSuccessToast: true,
+    successMessage: 'Device polled successfully',
+    showErrorToast: true,
+    errorMessage: 'Failed to poll device',
+  });
+
   return {
     etlOrchestration,
     changeImpactAnalyzer,
     ninjaOneTicket,
     templateMaintenance,
     dataCatalog,
+    devicePoller,
   };
 }

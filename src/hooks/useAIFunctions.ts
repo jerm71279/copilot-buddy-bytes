@@ -69,6 +69,16 @@ export function useAIFunctions() {
     errorMessage: 'Failed to get assistant response',
   });
 
+  const patternExecutor = useEdgeFunction<{ patternId: string; inputText: string }, any>('pattern-executor', {
+    showErrorToast: true,
+    errorMessage: 'Failed to execute pattern',
+  });
+
+  const predictiveInsights = useEdgeFunction<{ analysisType: string; customerId: string }, any>('predictive-insights', {
+    showErrorToast: true,
+    errorMessage: 'Failed to generate insights',
+  });
+
   return {
     aiInsights,
     imageGeneration,
@@ -76,5 +86,7 @@ export function useAIFunctions() {
     extendedThinking,
     codeExecution,
     departmentAssistant,
+    patternExecutor,
+    predictiveInsights,
   };
 }
