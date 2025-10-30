@@ -14,10 +14,12 @@ import ReactMarkdown from "react-markdown";
 import { useCustomerAuth } from "@/hooks/useCustomerAuth";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useOperationsFunctions } from "@/hooks/useOperationsFunctions";
 
 export default function SOCConfiguration() {
   const showToast = useStandardToast();
   const { customerId, isLoading: authLoading } = useCustomerAuth();
+  const { generateConfigChecklist } = useOperationsFunctions();
   
   const [projectName, setProjectName] = useState("");
   const [selectedVendors, setSelectedVendors] = useState<string[]>([]);
@@ -76,24 +78,20 @@ export default function SOCConfiguration() {
     setChecklist(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('generate-config-checklist', {
-        body: {
-          projectName,
-          vendors: selectedVendors,
-          deploymentType,
-          customRequirements: customRequirements.trim() || undefined,
-        },
+      const data = await generateConfigChecklist.invoke({
+        projectName,
+        vendors: selectedVendors,
+        deploymentType,
+        customRequirements: customRequirements.trim() || undefined,
       });
 
-      if (error) throw error;
-
-      if (data.success) {
+      if (data?.success) {
         setChecklist(data.checklist);
         showToast.success("Checklist generated", { 
           description: `Generated using ${data.vendorDocs} vendor documentation articles` 
         });
       } else {
-        throw new Error(data.error || 'Generation failed');
+        throw new Error(data?.error || 'Generation failed');
       }
     } catch (error: any) {
       console.error('Generation error:', error);

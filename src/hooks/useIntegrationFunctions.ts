@@ -7,6 +7,7 @@ interface KeeperSyncRequest {
 
 interface GraphAPIRequest {
   endpoint: string;
+  method?: string;
 }
 
 interface NinjaOneTestRequest {
@@ -21,6 +22,11 @@ interface FileRepositorySyncRequest {
 interface GitHubSearchRequest {
   query: string;
   searchType?: string;
+}
+
+interface SharePointSyncRequest {
+  syncConfigId: string;
+  accessToken?: string;
 }
 
 /**
@@ -56,11 +62,19 @@ export function useIntegrationFunctions() {
     errorMessage: 'Failed to search GitHub',
   });
 
+  const sharepointSync = useEdgeFunction<SharePointSyncRequest, any>('sharepoint-sync', {
+    showSuccessToast: true,
+    successMessage: 'SharePoint sync completed',
+    showErrorToast: true,
+    errorMessage: 'Failed to sync SharePoint documents',
+  });
+
   return {
     keeperSync,
     graphAPI,
     ninjaOneTest,
     fileRepositorySync,
     githubSearch,
+    sharepointSync,
   };
 }

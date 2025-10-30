@@ -38,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useIntegrationFunctions } from "@/hooks/useIntegrationFunctions";
 
 interface SyncConfig {
   id: string;
@@ -68,6 +69,7 @@ const SharePointSync = () => {
       await fetchLogs();
     }
   });
+  const { graphAPI, sharepointSync } = useIntegrationFunctions();
   const [isLoading, setIsLoading] = useState(true);
   const [syncing, setSyncing] = useState<string | null>(null);
   const [configs, setConfigs] = useState<SyncConfig[]>([]);
@@ -140,14 +142,12 @@ const SharePointSync = () => {
       }
 
       // Call Graph API to get SharePoint sites
-      const { data, error } = await supabase.functions.invoke("graph-api", {
-        body: {
-          endpoint: "/sites?search=*",
-          method: "GET",
-        },
+      const data = await graphAPI.invoke({
+        endpoint: "/sites?search=*",
+        method: "GET",
       });
 
-      if (error) throw error;
+      if (!data) throw new Error('No data returned');
       if (data && (data as any).error) {
         console.warn("graph-api returned error:", (data as any).error);
         toast.error((data as any).error || "Unable to load SharePoint sites");
@@ -243,16 +243,14 @@ const SharePointSync = () => {
       }
 
       // Trigger sync
-      const { data, error } = await supabase.functions.invoke("sharepoint-sync", {
-        body: {
-          syncConfigId: config.id,
-          accessToken: msIdentity.identity_data?.access_token,
-        },
+      const data = await sharepointSync.invoke({
+        syncConfigId: config.id,
+        accessToken: msIdentity.identity_data?.access_token,
       });
 
-      if (error) throw error;
-
-      toast.success(`Synced ${data.files_synced} files successfully`);
+      if (data) {
+        toast.success(`Synced ${data.files_synced} files successfully`);
+      }
       await fetchLogs();
       await fetchConfigs();
     } catch (error) {

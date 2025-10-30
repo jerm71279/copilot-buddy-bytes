@@ -6,9 +6,11 @@ import { Play, CheckCircle, AlertCircle, LayoutDashboard, FileText, Database } f
 import { LinkTray } from "@/components/LinkTray";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useComplianceFunctions } from "@/hooks/useComplianceFunctions";
 
 export default function TestWorkflowEvidence() {
   const showToast = useStandardToast();
+  const { batchEvidenceGenerator } = useComplianceFunctions();
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<any>(null);
 
@@ -19,19 +21,16 @@ export default function TestWorkflowEvidence() {
     try {
       console.log('Calling batch-evidence-generator...');
       
-      const { data, error } = await supabase.functions.invoke('batch-evidence-generator', {
-        body: {}
+      const data = await batchEvidenceGenerator.invoke({
+        controlIds: [],
       });
-
-      if (error) {
-        console.error('Error calling function:', error);
-        throw error;
-      }
 
       console.log('Function response:', data);
       setResult(data);
 
-      showToast.success(`Generated evidence for ${data.evidence_generated} workflows`);
+      if (data) {
+        showToast.success(`Generated evidence for ${data.evidence_generated} workflows`);
+      }
     } catch (error) {
       console.error('Error generating evidence:', error);
       showToast.error("Error", { 

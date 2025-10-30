@@ -12,6 +12,7 @@ import { useStandardToast } from "@/hooks/useStandardToast";
 import { Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import { useAuthFunctions } from "@/hooks/useAuthFunctions";
 
 interface Vendor {
   id: string;
@@ -27,6 +28,7 @@ interface Vendor {
 }
 
 export default function VendorDocumentation() {
+  const { signupComplete } = useAuthFunctions();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [showDialog, setShowDialog] = useState(false);
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
@@ -71,12 +73,13 @@ const [formData, setFormData] = useState({
       // If no customer linked yet, attempt to complete signup
       if (!profile?.customer_id) {
         const fullName = (user.user_metadata?.full_name as string | undefined) || (user.email ?? 'User');
-        const emailUsername = (user.email || '').split('@')[0] || 'user';
-        const { error: completeError } = await supabase.functions.invoke('complete-user-signup', {
-          body: { userId: user.id, fullName, emailUsername }
+        const data = await signupComplete.invoke({
+          userId: user.id,
+          email: user.email || '',
+          fullName
         });
         
-        if (completeError) {
+        if (!data) {
           toast.error("We couldn't auto-complete your profile. Please contact an admin.");
           return;
         }

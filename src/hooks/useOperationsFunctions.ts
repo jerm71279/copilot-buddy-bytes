@@ -25,6 +25,17 @@ interface DataCatalogRequest {
   catalogData?: Record<string, unknown>;
 }
 
+interface GenerateConfigChecklistRequest {
+  projectName: string;
+  vendors: string[];
+  deploymentType: string;
+  customRequirements?: string;
+}
+
+interface ThreatIntelSyncRequest {
+  feedId: string;
+}
+
 /**
  * Hook for operations and workflow edge function invocations
  */
@@ -69,6 +80,20 @@ export function useOperationsFunctions() {
     errorMessage: 'Failed to poll device',
   });
 
+  const generateConfigChecklist = useEdgeFunction<GenerateConfigChecklistRequest, any>('generate-config-checklist', {
+    showSuccessToast: true,
+    successMessage: 'Configuration checklist generated',
+    showErrorToast: true,
+    errorMessage: 'Failed to generate checklist',
+  });
+
+  const threatIntelSync = useEdgeFunction<ThreatIntelSyncRequest, any>('threat-intel-sync', {
+    showSuccessToast: true,
+    successMessage: 'Threat intelligence synced',
+    showErrorToast: true,
+    errorMessage: 'Failed to sync threat intelligence',
+  });
+
   return {
     etlOrchestration,
     changeImpactAnalyzer,
@@ -76,5 +101,7 @@ export function useOperationsFunctions() {
     templateMaintenance,
     dataCatalog,
     devicePoller,
+    generateConfigChecklist,
+    threatIntelSync,
   };
 }

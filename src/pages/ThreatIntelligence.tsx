@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useOperationsFunctions } from "@/hooks/useOperationsFunctions";
 
 interface ThreatFeed {
   id: string;
@@ -46,6 +47,7 @@ export default function ThreatIntelligence() {
   const navigate = useNavigate();
   const toast = useStandardToast();
   const { customerId } = useUserProfile();
+  const { threatIntelSync } = useOperationsFunctions();
   const [searchQuery, setSearchQuery] = useState("");
   const queryClient = useQueryClient();
 
@@ -89,11 +91,8 @@ export default function ThreatIntelligence() {
 
   const syncFeed = useMutation({
     mutationFn: async (feedId: string) => {
-      const { data, error } = await supabase.functions.invoke('threat-intel-sync', {
-        body: { feedId }
-      });
-
-      if (error) throw error;
+      const data = await threatIntelSync.invoke({ feedId });
+      if (!data) throw new Error('Sync failed');
       return data;
     },
     onSuccess: (data) => {
