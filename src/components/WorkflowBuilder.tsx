@@ -211,7 +211,7 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
       });
 
       // Step 1: Save workflow definition
-      const workflow = await WorkflowService.createWorkflow(customerId, {
+      const workflowResult = await WorkflowService.createWorkflow(customerId, {
         workflow_name: validatedWorkflow.workflow_name,
         description: validatedWorkflow.description,
         steps: steps,

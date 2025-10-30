@@ -111,7 +111,7 @@ export class WorkflowService extends BaseService {
    */
   static async getExecutions(customerId: string, limit: number = 50): Promise<ServiceResponse<WorkflowExecution[]>> {
     return this.executeQuery(async () => {
-      return await supabase
+      const result = await supabase
         .from('workflow_executions')
         .select(`
           *,
@@ -120,6 +120,8 @@ export class WorkflowService extends BaseService {
         .eq('customer_id', customerId)
         .order('started_at', { ascending: false })
         .limit(limit);
+      
+      return { data: result.data as any, error: result.error };
     });
   }
 
@@ -131,13 +133,15 @@ export class WorkflowService extends BaseService {
    */
   static async getTriggers(customerId: string): Promise<ServiceResponse<WorkflowTrigger[]>> {
     return this.executeQuery(async () => {
-      return await supabase
+      const result = await supabase
         .from('workflow_triggers')
         .select(`
           *,
           workflows(workflow_name)
         `)
         .eq('customer_id', customerId);
+      
+      return { data: result.data as any, error: result.error };
     });
   }
 
