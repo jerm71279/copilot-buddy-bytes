@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useComplianceFunctions } from "@/hooks/useComplianceFunctions";
 import {
   FileEdit,
   Clock,
@@ -85,6 +86,7 @@ const ChangeManagement = () => {
   const toast = useStandardToast();
   const [loading, setLoading] = useState(true);
   const [seedingTemplates, setSeedingTemplates] = useState(false);
+  const { seedChangeTemplates } = useComplianceFunctions();
   const [changes, setChanges] = useState<ChangeRequest[]>([]);
   const [stats, setStats] = useState({
     total: 0,
@@ -163,15 +165,7 @@ const ChangeManagement = () => {
     if (!customerId) return;
     try {
       setSeedingTemplates(true);
-      toast.info("Initializing change request templates...");
-
-      const { data, error } = await supabase.functions.invoke("seed-change-templates", {
-        body: { customer_id: customerId },
-      });
-
-      if (error) throw error;
-
-      toast.success("Templates initialized successfully");
+      await seedChangeTemplates.invoke({ action: 'seed' });
     } catch (error) {
       console.error("Error seeding templates:", error);
       toast.error("Failed to initialize templates");

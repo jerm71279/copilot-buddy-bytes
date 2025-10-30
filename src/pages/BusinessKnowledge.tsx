@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useDocumentationFunctions } from "@/hooks/useDocumentationFunctions";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -152,18 +153,13 @@ export default function BusinessKnowledge() {
       if (!profile?.customer_id) throw new Error("No customer ID found");
 
       if (uploadType === "url") {
-        // URL ingestion
-        const { error } = await supabase.functions.invoke('ingest-documentation', {
-          body: {
-            url: uploadUrl,
-            source: uploadSource,
-            customerId: profile.customer_id
-          }
+        await ingestDocumentation.invoke({
+          url: uploadUrl,
+          content: '',
+          title: uploadSource,
+          metadata: { customerId: profile.customer_id }
         });
-
-        if (error) throw error;
       } else {
-        // File upload
         const filePath = `${profile.customer_id}/${Date.now()}-${uploadFile!.name}`;
         
         const { error: uploadError } = await supabase.storage
@@ -172,16 +168,10 @@ export default function BusinessKnowledge() {
 
         if (uploadError) throw uploadError;
 
-        // Parse the document
-        const { error: parseError } = await supabase.functions.invoke('parse-document', {
-          body: {
-            filePath,
-            customerId: profile.customer_id,
-            source: uploadSource
-          }
+        await parseDocument.invoke({
+          documentUrl: filePath,
+          documentType: uploadSource
         });
-
-        if (parseError) throw parseError;
       }
 
       toast.success("The content is being processed");
@@ -229,16 +219,11 @@ export default function BusinessKnowledge() {
         .delete()
         .eq('id', article.id);
 
-      // Re-ingest
-      const { error } = await supabase.functions.invoke('ingest-documentation', {
-        body: {
-          url: article.source_metadata.url,
-          source: article.source_metadata.source || 'Unknown',
-          customerId: profile.customer_id
-        }
+      await ingestDocumentation.invoke({
+        url: article.source_metadata.url,
+        title: article.source_metadata.source || 'Unknown',
+        metadata: { customerId: profile.customer_id }
       });
-
-      if (error) throw error;
 
       toast.success("The page is being re-processed");
 

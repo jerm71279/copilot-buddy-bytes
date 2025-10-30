@@ -54,55 +54,42 @@ const ComplianceRoadmap = () => {
   const handleRebuildTemplates = async () => {
     setIsRebuilding(true);
     try {
-      const rebuildBody = selectedFramework 
-        ? { action: 'rebuild', frameworkIds: [selectedFramework] }
-        : { action: 'rebuild' };
-      
-      const { data: rebuildData, error: rebuildError } = await supabase.functions.invoke('template-maintenance', {
-        body: rebuildBody
+      const rebuildData = await templateMaintenance.invoke({
+        operation: 'rebuild',
+        templateId: selectedFramework || undefined
       });
       
-      console.log('Rebuild response:', { data: rebuildData, error: rebuildError });
+      console.log('Rebuild response:', rebuildData);
       
-      if (rebuildError) {
-        const errorContext = JSON.stringify({
-          name: rebuildError.name,
-          message: rebuildError.message,
-          context: (rebuildError as any).context || 'none'
-        }, null, 2);
-        console.error('Rebuild error details:', errorContext);
-        
+      if (!rebuildData) {
         setLastRun({
           when: new Date(),
           action: 'Rebuild',
-          details: `Failed: ${rebuildError.message}`,
+          details: 'Failed: No data returned',
           success: false
         });
-        
-        toast.error(`Failed to rebuild templates: ${rebuildError.message}\n\nSee console for details.`);
+        toast.error('Failed to rebuild templates');
         return;
       }
       
       const stageCount = rebuildData?.inserted?.stageTemplates ?? rebuildData?.stageTemplates ?? 0;
       const milestoneCount = rebuildData?.inserted?.milestoneTemplates ?? rebuildData?.milestoneTemplates ?? 0;
       
-      // Auto-sanitize after rebuild
-      const { data: sanitizeData, error: sanitizeError } = await supabase.functions.invoke('template-maintenance', {
-        body: { action: 'sanitize' }
+      const sanitizeData = await templateMaintenance.invoke({
+        operation: 'sanitize'
       });
       
-      console.log('Sanitize response:', { data: sanitizeData, error: sanitizeError });
+      console.log('Sanitize response:', sanitizeData);
       
-      if (sanitizeError) {
-        console.error('Sanitize error:', sanitizeError);
+      if (!sanitizeData) {
         setLastRun({
           when: new Date(),
           action: 'Rebuild + Sanitize',
-          details: `Rebuilt: ${stageCount} stages, ${milestoneCount} milestones. Sanitize failed: ${sanitizeError.message}`,
+          details: `Rebuilt: ${stageCount} stages, ${milestoneCount} milestones. Sanitize failed`,
           success: false
         });
         
-        toast.error(`Rebuild succeeded, sanitize failed: ${sanitizeError.message}`);
+        toast.error('Rebuild succeeded, sanitize failed');
       } else {
         const sanitizedStages = sanitizeData?.stageTemplatesUpdated || 0;
         const sanitizedMilestones = sanitizeData?.milestoneTemplatesUpdated || 0;
@@ -136,28 +123,21 @@ const ComplianceRoadmap = () => {
   const handleSanitizeTemplates = async () => {
     setIsSanitizing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('template-maintenance', {
-        body: { action: 'sanitize' }
+      const data = await templateMaintenance.invoke({
+        operation: 'sanitize'
       });
       
-      console.log('Sanitize response:', { data, error });
+      console.log('Sanitize response:', data);
       
-      if (error) {
-        const errorContext = JSON.stringify({
-          name: error.name,
-          message: error.message,
-          context: (error as any).context || 'none'
-        }, null, 2);
-        console.error('Sanitize error details:', errorContext);
-        
+      if (!data) {
         setLastRun({
           when: new Date(),
           action: 'Sanitize',
-          details: `Failed: ${error.message}`,
+          details: 'Failed: No data returned',
           success: false
         });
         
-        toast.error(`Failed to sanitize templates: ${error.message}\n\nSee console for details.`);
+        toast.error('Failed to sanitize templates');
       } else {
         const stageCount = data?.stageTemplatesUpdated || 0;
         const milestoneCount = data?.milestoneTemplatesUpdated || 0;

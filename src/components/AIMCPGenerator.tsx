@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -7,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useAuthFunctions } from '@/hooks/useAuthFunctions';
 
 interface AIMCPGeneratorProps {
   customerId: string;
@@ -34,7 +34,7 @@ export const AIMCPGenerator: React.FC<AIMCPGeneratorProps> = ({
   onServersCreated 
 }) => {
   const { toast } = useToast();
-  const [isGenerating, setIsGenerating] = useState(false);
+  const { aiMCPGenerator } = useAuthFunctions();
   const [currentProcesses, setCurrentProcesses] = useState('');
   const [painPoints, setPainPoints] = useState('');
   const [goals, setGoals] = useState('');
@@ -51,62 +51,37 @@ export const AIMCPGenerator: React.FC<AIMCPGeneratorProps> = ({
       return;
     }
 
-    setIsGenerating(true);
     setShowResults(false);
 
-    try {
-      console.log('Invoking AI MCP Generator...');
+    const result = await aiMCPGenerator.invoke({
+      prompt: `Generate MCP servers for ${department}`,
+      config: {
+        customerId,
+        department,
+        businessContext: {
+          currentProcesses: currentProcesses.split('\n').filter(p => p.trim()),
+          painPoints: painPoints.split('\n').filter(p => p.trim()),
+          goals: goals.split('\n').filter(g => g.trim()),
+        }
+      }
+    });
+
+    if (result?.success) {
+      setCreatedServers(result.servers);
+      setShowResults(true);
       
-      const { data, error } = await supabase.functions.invoke('ai-mcp-generator', {
-        body: {
-          customerId,
-          department,
-          businessContext: {
-            currentProcesses: currentProcesses.split('\n').filter(p => p.trim()),
-            painPoints: painPoints.split('\n').filter(p => p.trim()),
-            goals: goals.split('\n').filter(g => g.trim()),
-          }
-        }
-      });
-
-      if (error) {
-        console.error('Edge function error:', error);
-        throw error;
-      }
-
-      console.log('AI MCP Generator response:', data);
-
-      if (data.success) {
-        setCreatedServers(data.servers);
-        setShowResults(true);
-        
-        toast({
-          title: "MCP Servers Created!",
-          description: `AI generated ${data.serversCreated} server(s) to optimize your workflows`,
-        });
-
-        // Clear form
-        setCurrentProcesses('');
-        setPainPoints('');
-        setGoals('');
-
-        // Notify parent component
-        if (onServersCreated) {
-          onServersCreated();
-        }
-      } else {
-        throw new Error(data.error || 'Failed to generate MCP servers');
-      }
-
-    } catch (error) {
-      console.error('Error generating MCP servers:', error);
       toast({
-        title: "Generation Failed",
-        description: error instanceof Error ? error.message : 'Failed to generate MCP servers',
-        variant: "destructive",
+        title: "MCP Servers Created!",
+        description: `AI generated ${result.serversCreated} server(s) to optimize your workflows`,
       });
-    } finally {
-      setIsGenerating(false);
+
+      setCurrentProcesses('');
+      setPainPoints('');
+      setGoals('');
+
+      if (onServersCreated) {
+        onServersCreated();
+      }
     }
   };
 
@@ -132,7 +107,7 @@ export const AIMCPGenerator: React.FC<AIMCPGeneratorProps> = ({
               value={currentProcesses}
               onChange={(e) => setCurrentProcesses(e.target.value)}
               rows={4}
-              disabled={isGenerating}
+              disabled={aiMCPGenerator.isLoading}
             />
           </div>
 
@@ -144,7 +119,7 @@ export const AIMCPGenerator: React.FC<AIMCPGeneratorProps> = ({
               value={painPoints}
               onChange={(e) => setPainPoints(e.target.value)}
               rows={4}
-              disabled={isGenerating}
+              disabled={aiMCPGenerator.isLoading}
             />
           </div>
 
@@ -156,16 +131,16 @@ export const AIMCPGenerator: React.FC<AIMCPGeneratorProps> = ({
               value={goals}
               onChange={(e) => setGoals(e.target.value)}
               rows={4}
-              disabled={isGenerating}
+              disabled={aiMCPGenerator.isLoading}
             />
           </div>
 
           <Button 
             onClick={handleGenerate} 
-            disabled={isGenerating}
+            disabled={aiMCPGenerator.isLoading}
             className="w-full"
           >
-            {isGenerating ? (
+            {aiMCPGenerator.isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 AI is analyzing and creating servers...

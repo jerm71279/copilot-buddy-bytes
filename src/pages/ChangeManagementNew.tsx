@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useOperationsFunctions } from "@/hooks/useOperationsFunctions";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,21 +84,12 @@ const ChangeManagementNew = () => {
   const analyzeImpact = async () => {
     try {
       setAnalyzingImpact(true);
-      toast.info("Analyzing change impact with AI...");
-
-      const { data, error } = await supabase.functions.invoke("change-impact-analyzer", {
-        body: {
-          title: formData.title,
-          description: formData.description,
-          change_type: formData.change_type,
-          affected_ci_ids: formData.affected_ci_ids,
-          implementation_plan: formData.implementation_plan,
-        },
+      const data = await changeImpactAnalyzer.invoke({
+        changeDescription: `${formData.title}: ${formData.description}`,
+        affectedSystems: formData.affected_ci_ids
       });
 
-      if (error) throw error;
-
-      if (data.success) {
+      if (data?.success) {
         toast.success("Impact analysis complete");
         // Update form with AI recommendations
         if (data.analysis?.recommended_approach) {

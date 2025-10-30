@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useOperationsFunctions } from "@/hooks/useOperationsFunctions";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,6 +33,7 @@ const ChangeManagementDetail = () => {
   const [linkedToThis, setLinkedToThis] = useState<any[]>([]);
   const [creatingTicket, setCreatingTicket] = useState(false);
   const [syncingTicket, setSyncingTicket] = useState(false);
+  const { ninjaOneTicket } = useOperationsFunctions();
 
   useEffect(() => {
     loadChangeData();
@@ -113,26 +115,14 @@ const ChangeManagementDetail = () => {
   const createNinjaOneTicket = async () => {
     try {
       setCreatingTicket(true);
-      toast.info("Creating NinjaOne ticket...");
-
-      const { data, error } = await supabase.functions.invoke("ninjaone-ticket", {
-        body: {
-          change_request_id: id,
-          action: "create",
-        },
+      const data = await ninjaOneTicket.invoke({
+        action: "create",
+        ticketData: { change_request_id: id }
       });
 
-      if (error) throw error;
-
-      if (data.success) {
-        toast.created("NinjaOne ticket");
+      if (data?.success) {
         loadChangeData();
-      } else {
-        toast.error(data.error || "Failed to create ticket");
       }
-    } catch (error) {
-      console.error("Error creating ticket:", error);
-      toast.error("Failed to create NinjaOne ticket");
     } finally {
       setCreatingTicket(false);
     }
@@ -141,18 +131,12 @@ const ChangeManagementDetail = () => {
   const syncNinjaOneTicket = async () => {
     try {
       setSyncingTicket(true);
-      toast.info("Syncing ticket status...");
-
-      const { data, error } = await supabase.functions.invoke("ninjaone-ticket", {
-        body: {
-          change_request_id: id,
-          action: "sync",
-        },
+      const data = await ninjaOneTicket.invoke({
+        action: "sync",
+        ticketData: { change_request_id: id }
       });
 
-      if (error) throw error;
-
-      if (data.success) {
+      if (data?.success) {
         toast.success("Ticket status synced");
         loadChangeData();
       } else {

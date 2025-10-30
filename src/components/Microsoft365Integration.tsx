@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Mail, User, FileText, Loader2, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { useIntegrationFunctions } from "@/hooks/useIntegrationFunctions";
 
 interface UserProfile {
   displayName: string;
@@ -54,6 +55,7 @@ export const Microsoft365Integration = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasAzureProvider, setHasAzureProvider] = useState<boolean | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const { graphAPI } = useIntegrationFunctions();
 
   useEffect(() => {
     checkAuthProvider();
@@ -110,11 +112,8 @@ export const Microsoft365Integration = () => {
   };
 
   const callGraphAPI = async (endpoint: string) => {
-    const { data, error } = await supabase.functions.invoke('graph-api', {
-      body: { endpoint }
-    });
-
-    if (error) throw error;
+    const data = await graphAPI.invoke({ endpoint });
+    if (!data) throw new Error('Failed to call Graph API');
     if (data.error) throw new Error(data.error);
     return data;
   };
