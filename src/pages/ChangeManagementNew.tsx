@@ -44,6 +44,7 @@ const ChangeManagementNew = () => {
   const [loading, setLoading] = useState(false);
   const [analyzingImpact, setAnalyzingImpact] = useState(false);
   const [cis, setCis] = useState<ConfigurationItem[]>([]);
+  const { changeImpactAnalyzer } = useOperationsFunctions();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -84,24 +85,20 @@ const ChangeManagementNew = () => {
   const analyzeImpact = async () => {
     try {
       setAnalyzingImpact(true);
-      const { data, error } = await supabase.functions.invoke("change-impact-analyzer", {
-        body: { title: formData.title, description: formData.description, change_type: formData.change_type }
+      const data = await changeImpactAnalyzer.invoke({ 
+        changeDescription: `${formData.title}: ${formData.description}`,
+        affectedSystems: formData.affected_ci_ids
       });
-      if (error) throw error;
-      if (data?.success) {
-        toast.success("Impact analysis complete");
-        // Update form with AI recommendations
-        if (data.analysis?.recommended_approach) {
-          setFormData(prev => ({
-            ...prev,
-            business_impact: data.analysis.business_impact_summary || prev.business_impact,
-            technical_impact: data.analysis.technical_impact_summary || prev.technical_impact,
-          }));
-        }
+      
+      if (data?.success && data.analysis?.recommended_approach) {
+        setFormData(prev => ({
+          ...prev,
+          business_impact: data.analysis.business_impact_summary || prev.business_impact,
+          technical_impact: data.analysis.technical_impact_summary || prev.technical_impact,
+        }));
       }
     } catch (error) {
       console.error("Error analyzing impact:", error);
-      toast.error("Failed to analyze impact");
     } finally {
       setAnalyzingImpact(false);
     }

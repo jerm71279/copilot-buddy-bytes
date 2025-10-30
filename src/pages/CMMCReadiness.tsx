@@ -70,6 +70,7 @@ const CMMCReadiness = () => {
   const [controls, setControls] = useState<ControlStatus[]>([]);
   const [evidenceCount, setEvidenceCount] = useState(0);
   const [readinessScore, setReadinessScore] = useState(0);
+  const { batchEvidenceGenerator, intelligentAssistant } = useComplianceFunctions();
 
   useEffect(() => {
     loadReadinessData();
@@ -115,20 +116,17 @@ const CMMCReadiness = () => {
   };
 
   const generateEvidencePackage = async () => {
-    const { error } = await supabase.functions.invoke('batch-evidence-generator', {
-      body: { framework: 'CMMC Level 2', include_controls: controls.map(c => c.id), output_format: 'c3pao_ready' }
+    await batchEvidenceGenerator.invoke({ 
+      controlIds: controls.map(c => c.id),
+      customerId: undefined
     });
-    if (error) console.error(error);
   };
 
   const runPreAssessment = async () => {
-    const { error } = await supabase.functions.invoke('intelligent-assistant', {
-      body: {
-        prompt: `Conduct a comprehensive CMMC Level 2 readiness assessment. Analyze all 43 controls across 15 domains.`,
-        context: { controls, evidence_count: evidenceCount, current_score: readinessScore }
-      }
+    await intelligentAssistant.invoke({
+      query: `Conduct a comprehensive CMMC Level 2 readiness assessment. Analyze all 43 controls across 15 domains.`,
+      context: JSON.stringify({ controls, evidence_count: evidenceCount, current_score: readinessScore })
     });
-    if (error) console.error(error);
   };
 
   const getDomainProgress = (domainId: string) => {

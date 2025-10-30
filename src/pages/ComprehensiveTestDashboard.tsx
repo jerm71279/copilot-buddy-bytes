@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { useStandardToast } from '@/hooks/useStandardToast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
+import { useTestingFunctions } from '@/hooks/useTestingFunctions';
 import { 
   CheckCircle2,
   XCircle, 
@@ -60,6 +61,7 @@ export default function ComprehensiveTestDashboard() {
   const [flowTrace, setFlowTrace] = useState<any>(null);
   const [testUser, setTestUser] = useState<any>(null);
   const [isManagingUser, setIsManagingUser] = useState(false);
+  const { comprehensiveTestDataGenerator, inputFuzzer, databaseFlowLogger, createTestUser: createTestUserHook } = useTestingFunctions();
   
   const [testPhases] = useState<TestPhase[]>([
     {
@@ -90,13 +92,12 @@ export default function ComprehensiveTestDashboard() {
     setTestDataResult(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('comprehensive-test-data-generator', {});
-      if (error) throw error;
-
-      setTestDataResult(data);
-      toast.success(`Generated ${data.summary.total_records_created} test records`);
+      const data = await comprehensiveTestDataGenerator.invoke({ testType: 'comprehensive' });
+      if (data) {
+        setTestDataResult(data);
+      }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to generate test data");
+      console.error('Error generating test data:', error);
     } finally {
       setIsGenerating(false);
     }
@@ -107,17 +108,12 @@ export default function ComprehensiveTestDashboard() {
     setFuzzResult(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('input-fuzzer', {});
-      if (error) throw error;
-
-      setFuzzResult(data);
-      if (data.summary.vulnerabilities_found > 0) {
-        toast.error(`Vulnerabilities Found: ${data.summary.passed}/${data.summary.total_tests} tests passed`);
-      } else {
-        toast.success(`All Tests Passed: ${data.summary.passed}/${data.summary.total_tests}`);
+      const data = await inputFuzzer.invoke({ targetEndpoint: 'all' });
+      if (data) {
+        setFuzzResult(data);
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to run fuzz tests");
+      console.error('Error running fuzz tests:', error);
     } finally {
       setIsFuzzing(false);
     }
@@ -128,15 +124,12 @@ export default function ComprehensiveTestDashboard() {
     setFlowTrace(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('database-flow-logger', {
-        body: { action: `trace_${flowType}` }
-      });
-      if (error) throw error;
-
-      setFlowTrace(data);
-      toast.success(`Traced ${data.summary.total_operations} operations`);
+      const data = await databaseFlowLogger.invoke({ operation: `trace_${flowType}` });
+      if (data) {
+        setFlowTrace(data);
+      }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to trace flow");
+      console.error('Error tracing flow:', error);
     } finally {
       setIsTracing(false);
     }
@@ -149,11 +142,8 @@ export default function ComprehensiveTestDashboard() {
 
   const checkTestUser = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('create-test-user', {
-        body: { action: 'get' }
-      });
-      if (error) throw error;
-      if (data.success) {
+      const data = await createTestUserHook.invoke({ userType: 'check', email: undefined });
+      if (data?.success) {
         setTestUser(data);
       }
     } catch (error) {
@@ -164,14 +154,12 @@ export default function ComprehensiveTestDashboard() {
   const createTestUser = async () => {
     setIsManagingUser(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-test-user', {
-        body: { action: 'create' }
-      });
-      if (error) throw error;
-      setTestUser(data);
-      toast.success("Test user created: test.user@obera.app");
+      const data = await createTestUserHook.invoke({ userType: 'create', email: undefined });
+      if (data) {
+        setTestUser(data);
+      }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create test user");
+      console.error('Error creating test user:', error);
     } finally {
       setIsManagingUser(false);
     }
@@ -180,14 +168,10 @@ export default function ComprehensiveTestDashboard() {
   const deleteTestUser = async () => {
     setIsManagingUser(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-test-user', {
-        body: { action: 'delete' }
-      });
-      if (error) throw error;
+      await createTestUserHook.invoke({ userType: 'delete', email: undefined });
       setTestUser(null);
-      toast.success("Test user deleted successfully");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete test user");
+      console.error('Error deleting test user:', error);
     } finally {
       setIsManagingUser(false);
     }

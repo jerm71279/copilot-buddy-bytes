@@ -16,6 +16,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { supabase } from "@/integrations/supabase/client";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useOperationsFunctions } from "@/hooks/useOperationsFunctions";
 
 const ComplianceRoadmap = () => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const ComplianceRoadmap = () => {
     success: boolean;
   } | null>(null);
   const { stages, milestones, frameworks, isLoading, initializeRoadmap, isReady, isInitializing, probeFrameworks, isProbing } = useComplianceRoadmap(selectedFramework);
+  const { templateMaintenance } = useOperationsFunctions();
 
   // Use shared utility functions
   const overallProgress = stages ? calculateOverallProgress(stages) : 0;
@@ -54,15 +56,19 @@ const ComplianceRoadmap = () => {
   const handleRebuildTemplates = async () => {
     setIsRebuilding(true);
     try {
-      const { data: rebuildData, error } = await supabase.functions.invoke('template-maintenance', {
-        body: selectedFramework ? { action: 'rebuild', frameworkIds: [selectedFramework] } : { action: 'rebuild' }
+      const rebuildData = await templateMaintenance.invoke({
+        operation: 'rebuild',
+        templateId: selectedFramework || undefined
       });
-      if (error || !rebuildData) { toast.error('Rebuild failed'); return; }
+      
+      if (!rebuildData) { toast.error('Rebuild failed'); return; }
       
       const stageCount = rebuildData?.inserted?.stageTemplates ?? rebuildData?.stageTemplates ?? 0;
       const milestoneCount = rebuildData?.inserted?.milestoneTemplates ?? rebuildData?.milestoneTemplates ?? 0;
       
-      const { data: sanitizeData } = await supabase.functions.invoke('template-maintenance', { body: { action: 'sanitize' } });
+      const sanitizeData = await templateMaintenance.invoke({ 
+        operation: 'sanitize'
+      });
       
       console.log('Sanitize response:', sanitizeData);
       
@@ -73,8 +79,6 @@ const ComplianceRoadmap = () => {
           details: `Rebuilt: ${stageCount} stages, ${milestoneCount} milestones. Sanitize failed`,
           success: false
         });
-        
-        toast.error('Rebuild succeeded, sanitize failed');
       } else {
         const sanitizedStages = sanitizeData?.stageTemplatesUpdated || 0;
         const sanitizedMilestones = sanitizeData?.milestoneTemplatesUpdated || 0;
@@ -98,8 +102,6 @@ const ComplianceRoadmap = () => {
         details: `Exception: ${errMsg}`,
         success: false
       });
-      
-      toast.error(`Failed to rebuild templates: ${errMsg}`);
     } finally {
       setIsRebuilding(false);
     }
@@ -108,8 +110,12 @@ const ComplianceRoadmap = () => {
   const handleSanitizeTemplates = async () => {
     setIsSanitizing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('template-maintenance', { body: { action: 'sanitize' } });
-      if (error || !data) { toast.error('Sanitize failed'); return; }
+      const data = await templateMaintenance.invoke({ 
+        operation: 'sanitize'
+      });
+      
+      if (!data) { toast.error('Sanitize failed'); return; }
+      
       const stageCount = data?.stageTemplatesUpdated || 0;
       const milestoneCount = data?.milestoneTemplatesUpdated || 0;
       const details = `${stageCount} stage templates, ${milestoneCount} milestone templates updated`;
@@ -131,8 +137,6 @@ const ComplianceRoadmap = () => {
         details: `Exception: ${errMsg}`,
         success: false
       });
-      
-      toast.error(`Failed to sanitize templates: ${errMsg}`);
     } finally {
       setIsSanitizing(false);
     }

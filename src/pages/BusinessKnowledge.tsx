@@ -46,6 +46,7 @@ export default function BusinessKnowledge() {
   const [uploadType, setUploadType] = useState<"url" | "file">("url");
   const [isUploading, setIsUploading] = useState(false);
   const toast = useStandardToast();
+  const { ingestDocumentation, parseDocument } = useDocumentationFunctions();
 
   useEffect(() => {
     loadKnowledgeBase();
@@ -153,18 +154,18 @@ export default function BusinessKnowledge() {
       if (!profile?.customer_id) throw new Error("No customer ID found");
 
       if (uploadType === "url") {
-        const { error } = await supabase.functions.invoke('ingest-documentation', {
-          body: { url: uploadUrl, source: uploadSource, customerId: profile.customer_id }
+        await ingestDocumentation.invoke({ 
+          url: uploadUrl,
+          metadata: { customerId: profile.customer_id, source: uploadSource }
         });
-        if (error) throw error;
       } else {
         const filePath = `${profile.customer_id}/${Date.now()}-${uploadFile!.name}`;
         const { error: uploadError } = await supabase.storage.from('business-documents').upload(filePath, uploadFile!);
         if (uploadError) throw uploadError;
-        const { error: parseError } = await supabase.functions.invoke('parse-document', {
-          body: { filePath, customerId: profile.customer_id, source: uploadSource }
+        await parseDocument.invoke({ 
+          documentUrl: filePath,
+          documentType: uploadFile!.type
         });
-        if (parseError) throw parseError;
       }
 
       toast.success("The content is being processed");
@@ -212,10 +213,10 @@ export default function BusinessKnowledge() {
         .delete()
         .eq('id', article.id);
 
-      const { error } = await supabase.functions.invoke('ingest-documentation', {
-        body: { url: article.source_metadata.url, source: article.source_metadata.source || 'Unknown', customerId: profile.customer_id }
+      await ingestDocumentation.invoke({ 
+        url: article.source_metadata.url,
+        metadata: { customerId: profile.customer_id, source: article.source_metadata.source || 'Unknown' }
       });
-      if (error) throw error;
 
       toast.success("The page is being re-processed");
 
