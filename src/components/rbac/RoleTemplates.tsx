@@ -20,16 +20,20 @@ export default function RoleTemplates() {
   const queryClient = useQueryClient();
 
   // Fetch templates
-  const { data: templates, isLoading } = useQuery({
+  const { data: templatesResponse, isLoading } = useQuery({
     queryKey: ["role-templates"],
     queryFn: () => RBACService.getRoleTemplates(),
   });
 
+  const templates = templatesResponse?.data || [];
+
   // Fetch roles
-  const { data: roles } = useQuery({
+  const { data: rolesResponse } = useQuery({
     queryKey: ["roles"],
     queryFn: () => RBACService.getRoles(),
   });
+
+  const roles = rolesResponse?.data || [];
 
   // Apply template mutation
   const applyTemplateMutation = useMutation({
@@ -134,7 +138,7 @@ export default function RoleTemplates() {
                                 <SelectValue placeholder="Choose a role" />
                               </SelectTrigger>
                               <SelectContent>
-                                {roles?.map((role: any) => (
+                                {roles.map((role: any) => (
                                   <SelectItem key={role.id} value={role.id}>
                                     {role.name}
                                   </SelectItem>

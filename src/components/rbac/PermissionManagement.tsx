@@ -30,17 +30,21 @@ export default function PermissionManagement() {
   const queryClient = useQueryClient();
 
   // Fetch roles
-  const { data: roles } = useQuery({
+  const { data: rolesResponse } = useQuery({
     queryKey: ["roles"],
     queryFn: () => RBACService.getRoles(),
   });
 
+  const roles = rolesResponse?.data || [];
+
   // Fetch permissions for selected role
-  const { data: permissions, isLoading } = useQuery({
+  const { data: permissionsResponse, isLoading } = useQuery({
     queryKey: ["role-permissions", selectedRole],
-    queryFn: () => selectedRole ? RBACService.getRolePermissions(selectedRole) : Promise.resolve([]),
+    queryFn: () => selectedRole ? RBACService.getRolePermissions(selectedRole) : Promise.resolve({ data: [], error: null }),
     enabled: !!selectedRole,
   });
+
+  const permissions = permissionsResponse?.data || [];
 
   // Add permission mutation
   const addPermissionMutation = useMutation({
@@ -178,7 +182,7 @@ export default function PermissionManagement() {
               <SelectValue placeholder="Choose a role to manage permissions" />
             </SelectTrigger>
             <SelectContent>
-              {roles?.map((role: any) => (
+              {roles.map((role: any) => (
                 <SelectItem key={role.id} value={role.id}>
                   {role.name}
                 </SelectItem>

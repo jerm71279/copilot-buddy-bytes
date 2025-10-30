@@ -18,16 +18,20 @@ export default function RoleHierarchy() {
   const queryClient = useQueryClient();
 
   // Fetch roles
-  const { data: roles } = useQuery({
+  const { data: rolesResponse } = useQuery({
     queryKey: ["roles"],
     queryFn: () => RBACService.getRoles(),
   });
 
+  const roles = rolesResponse?.data || [];
+
   // Fetch role hierarchy
-  const { data: hierarchies, isLoading } = useQuery({
+  const { data: hierarchiesResponse, isLoading } = useQuery({
     queryKey: ["role-hierarchy"],
     queryFn: () => RBACService.getRoleHierarchy(),
   });
+
+  const hierarchies = hierarchiesResponse?.data || [];
 
   // Add hierarchy mutation
   const addHierarchyMutation = useMutation({
@@ -105,7 +109,7 @@ export default function RoleHierarchy() {
                       <SelectValue placeholder="Select parent role" />
                     </SelectTrigger>
                     <SelectContent>
-                      {roles?.map((role: any) => (
+                      {roles.map((role: any) => (
                         <SelectItem key={role.id} value={role.id}>
                           {role.name}
                         </SelectItem>
@@ -120,7 +124,7 @@ export default function RoleHierarchy() {
                       <SelectValue placeholder="Select child role" />
                     </SelectTrigger>
                     <SelectContent>
-                      {roles?.map((role: any) => (
+                      {roles.map((role: any) => (
                         <SelectItem key={role.id} value={role.id}>
                           {role.name}
                         </SelectItem>

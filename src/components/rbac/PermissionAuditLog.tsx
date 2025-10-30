@@ -10,12 +10,14 @@ import { RBACService } from "@/services/rbacService";
 export default function PermissionAuditLog() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: auditLogs, isLoading } = useQuery({
+  const { data: auditLogsResponse, isLoading } = useQuery({
     queryKey: ["permission-audit-log"],
     queryFn: () => RBACService.getPermissionAuditLogs(100),
   });
 
-  const filteredLogs = auditLogs?.filter((log: any) => {
+  const auditLogs = auditLogsResponse?.data || [];
+
+  const filteredLogs = auditLogs.filter((log: any) => {
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
     return (

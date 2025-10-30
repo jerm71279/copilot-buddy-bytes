@@ -19,10 +19,12 @@ export default function RoleManagement() {
   const queryClient = useQueryClient();
 
   // Fetch all roles
-  const { data: roles, isLoading } = useQuery({
+  const { data: rolesResponse, isLoading } = useQuery({
     queryKey: ["roles"],
     queryFn: () => RBACService.getRoles(),
   });
+
+  const roles = rolesResponse?.data || [];
 
   // Create role mutation
   const createRoleMutation = useMutation({
@@ -138,7 +140,7 @@ export default function RoleManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {roles?.map((role: any) => (
+              {roles.map((role: any) => (
                 <TableRow key={role.id}>
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2">

@@ -32,16 +32,20 @@ export default function TemporaryPrivileges() {
   const users = usersResponse?.data || [];
 
   // Fetch roles
-  const { data: roles } = useQuery({
+  const { data: rolesResponse } = useQuery({
     queryKey: ["roles"],
     queryFn: () => RBACService.getRoles(),
   });
 
+  const roles = rolesResponse?.data || [];
+
   // Fetch temporary privileges
-  const { data: privileges, isLoading } = useQuery({
+  const { data: privilegesResponse, isLoading } = useQuery({
     queryKey: ["temporary-privileges"],
     queryFn: () => RBACService.getTemporaryPrivileges(),
   });
+
+  const privileges = privilegesResponse?.data || [];
 
   // Grant privilege mutation
   const grantPrivilegeMutation = useMutation({
@@ -152,7 +156,7 @@ export default function TemporaryPrivileges() {
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
-                      {roles?.map((role: any) => (
+                      {roles.map((role: any) => (
                         <SelectItem key={role.id} value={role.id}>
                           {role.name}
                         </SelectItem>
