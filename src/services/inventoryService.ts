@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { BaseService } from "./baseService";
 
 type InventoryItem = Database['public']['Tables']['inventory_items']['Row'];
 type InventoryItemInsert = Database['public']['Tables']['inventory_items']['Insert'];
@@ -12,7 +13,7 @@ type WarehouseLocationUpdate = Database['public']['Tables']['warehouse_locations
 /**
  * Inventory Item Service
  */
-export class InventoryItemService {
+export class InventoryItemService extends BaseService {
   static async getItemsByCustomer(customerId: string) {
     const { data, error } = await supabase
       .from('inventory_items')
@@ -61,7 +62,7 @@ export class InventoryItemService {
 /**
  * Warehouse Service
  */
-export class WarehouseService {
+export class WarehouseService extends BaseService {
   static async getWarehousesByCustomer(customerId: string) {
     const { data, error } = await supabase
       .from('warehouse_locations')

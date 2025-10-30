@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
+import { BaseService } from './baseService';
 
 /**
  * HR Service
@@ -14,7 +15,7 @@ type EmployeeRow = Database['public']['Tables']['employees']['Row'];
 /**
  * Employee Service
  */
-export class EmployeeService {
+export class EmployeeService extends BaseService {
   /**
    * Create a new employee
    */
@@ -97,7 +98,7 @@ type DepartmentRow = Database['public']['Tables']['departments']['Row'];
 /**
  * Department Service
  */
-export class DepartmentService {
+export class DepartmentService extends BaseService {
   static async createDepartment(input: DepartmentInsert) {
     const { data, error } = await supabase
       .from('departments')
@@ -165,7 +166,7 @@ type LeaveRow = Database['public']['Tables']['employee_leave']['Row'];
 /**
  * Leave Service
  */
-export class LeaveService {
+export class LeaveService extends BaseService {
   static async createLeave(input: LeaveInsert) {
     const { data, error } = await supabase
       .from('employee_leave')

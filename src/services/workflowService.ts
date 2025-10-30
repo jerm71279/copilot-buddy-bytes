@@ -5,6 +5,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { BaseService, ServiceResponse } from "./baseService";
 
 export interface WorkflowStep {
   id: string;
@@ -51,22 +52,21 @@ export interface WorkflowTrigger {
   };
 }
 
-export class WorkflowService {
+export class WorkflowService extends BaseService {
   /**
    * Get active workflows by customer ID
    * @param customerId - The customer's unique identifier
    * @returns Array of active workflows with id and name
    * @throws Error if database query fails
    */
-  static async getActiveWorkflows(customerId: string): Promise<Array<{ id: string; workflow_name: string }>> {
-    const { data, error } = await supabase
-      .from('workflows')
-      .select('id, workflow_name')
-      .eq('customer_id', customerId)
-      .eq('is_active', true);
-
-    if (error) throw new Error(`Failed to fetch workflows: ${error.message}`);
-    return data || [];
+  static async getActiveWorkflows(customerId: string): Promise<ServiceResponse<Array<{ id: string; workflow_name: string }>>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from('workflows')
+        .select('id, workflow_name')
+        .eq('customer_id', customerId)
+        .eq('is_active', true);
+    });
   }
 
   /**
@@ -84,24 +84,22 @@ export class WorkflowService {
       steps: WorkflowStep[];
       workflow_type?: string;
     }
-  ): Promise<Workflow> {
-    const { data, error } = await supabase
-      .from('workflows')
-      .insert({
-        customer_id: customerId,
-        workflow_name: workflowData.workflow_name,
-        description: workflowData.description || null,
-        steps: workflowData.steps as unknown as Database['public']['Tables']['workflows']['Insert']['steps'],
-        systems_involved: [...new Set(workflowData.steps.map(s => s.type))],
-        workflow_type: workflowData.workflow_type || 'manual',
-        is_active: true
-      })
-      .select()
-      .maybeSingle();
-
-    if (error) throw new Error(`Failed to create workflow: ${error.message}`);
-    if (!data) throw new Error('Failed to create workflow: No data returned');
-    return data as unknown as Workflow;
+  ): Promise<ServiceResponse<Workflow>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from('workflows')
+        .insert({
+          customer_id: customerId,
+          workflow_name: workflowData.workflow_name,
+          description: workflowData.description || null,
+          steps: workflowData.steps as unknown as Database['public']['Tables']['workflows']['Insert']['steps'],
+          systems_involved: [...new Set(workflowData.steps.map(s => s.type))],
+          workflow_type: workflowData.workflow_type || 'manual',
+          is_active: true
+        })
+        .select()
+        .maybeSingle();
+    });
   }
 
   /**
@@ -111,19 +109,18 @@ export class WorkflowService {
    * @returns Array of workflow executions ordered by start time
    * @throws Error if database query fails
    */
-  static async getExecutions(customerId: string, limit: number = 50): Promise<WorkflowExecution[]> {
-    const { data, error } = await supabase
-      .from('workflow_executions')
-      .select(`
-        *,
-        workflows(workflow_name)
-      `)
-      .eq('customer_id', customerId)
-      .order('started_at', { ascending: false })
-      .limit(limit);
-
-    if (error) throw new Error(`Failed to fetch executions: ${error.message}`);
-    return (data || []) as WorkflowExecution[];
+  static async getExecutions(customerId: string, limit: number = 50): Promise<ServiceResponse<WorkflowExecution[]>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from('workflow_executions')
+        .select(`
+          *,
+          workflows(workflow_name)
+        `)
+        .eq('customer_id', customerId)
+        .order('started_at', { ascending: false })
+        .limit(limit);
+    });
   }
 
   /**
@@ -132,17 +129,16 @@ export class WorkflowService {
    * @returns Array of workflow triggers with workflow names
    * @throws Error if database query fails
    */
-  static async getTriggers(customerId: string): Promise<WorkflowTrigger[]> {
-    const { data, error } = await supabase
-      .from('workflow_triggers')
-      .select(`
-        *,
-        workflows(workflow_name)
-      `)
-      .eq('customer_id', customerId);
-
-    if (error) throw new Error(`Failed to fetch triggers: ${error.message}`);
-    return (data || []) as WorkflowTrigger[];
+  static async getTriggers(customerId: string): Promise<ServiceResponse<WorkflowTrigger[]>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from('workflow_triggers')
+        .select(`
+          *,
+          workflows(workflow_name)
+        `)
+        .eq('customer_id', customerId);
+    });
   }
 
   /**
@@ -152,34 +148,36 @@ export class WorkflowService {
    * @returns The created trigger with webhook URL
    * @throws Error if trigger creation fails
    */
-  static async createWebhookTrigger(workflowId: string, customerId: string): Promise<WorkflowTrigger> {
-    const { data, error } = await supabase
-      .from('workflow_triggers')
-      .insert({
-        workflow_id: workflowId,
-        customer_id: customerId,
-        trigger_type: 'webhook',
-        trigger_config: {},
-        is_enabled: true
-      })
-      .select()
-      .maybeSingle();
+  static async createWebhookTrigger(workflowId: string, customerId: string): Promise<ServiceResponse<WorkflowTrigger>> {
+    return this.executeQuery(async () => {
+      const { data, error } = await supabase
+        .from('workflow_triggers')
+        .insert({
+          workflow_id: workflowId,
+          customer_id: customerId,
+          trigger_type: 'webhook',
+          trigger_config: {},
+          is_enabled: true
+        })
+        .select()
+        .maybeSingle();
 
-    if (error) throw new Error(`Failed to create webhook trigger: ${error.message}`);
-    if (!data) throw new Error('Failed to create webhook trigger: No data returned');
+      if (error) throw error;
+      if (!data) throw new Error('Failed to create webhook trigger: No data returned');
 
-    // Generate unique webhook URL
-    const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/workflow-webhook?id=${data.id}`;
-    
-    // Update trigger with webhook URL
-    const { error: updateError } = await supabase
-      .from('workflow_triggers')
-      .update({ webhook_url: webhookUrl })
-      .eq('id', data.id);
+      // Generate unique webhook URL
+      const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/workflow-webhook?id=${data.id}`;
+      
+      // Update trigger with webhook URL
+      const { error: updateError } = await supabase
+        .from('workflow_triggers')
+        .update({ webhook_url: webhookUrl })
+        .eq('id', data.id);
 
-    if (updateError) throw new Error(`Failed to update webhook URL: ${updateError.message}`);
+      if (updateError) throw updateError;
 
-    return { ...data, webhook_url: webhookUrl } as unknown as WorkflowTrigger;
+      return { data: { ...data, webhook_url: webhookUrl } as unknown as WorkflowTrigger, error: null };
+    });
   }
 
   /**
@@ -198,22 +196,20 @@ export class WorkflowService {
       trigger_config: Record<string, unknown>;
       is_enabled?: boolean;
     }
-  ): Promise<WorkflowTrigger> {
-    const { data, error } = await supabase
-      .from('workflow_triggers')
-      .insert({
-        workflow_id: workflowId,
-        customer_id: customerId,
-        trigger_type: triggerData.trigger_type,
-        trigger_config: triggerData.trigger_config as never,
-        is_enabled: triggerData.is_enabled ?? true
-      })
-      .select()
-      .maybeSingle();
-
-    if (error) throw new Error(`Failed to create trigger: ${error.message}`);
-    if (!data) throw new Error('Failed to create trigger: No data returned');
-    return data as unknown as WorkflowTrigger;
+  ): Promise<ServiceResponse<WorkflowTrigger>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from('workflow_triggers')
+        .insert({
+          workflow_id: workflowId,
+          customer_id: customerId,
+          trigger_type: triggerData.trigger_type,
+          trigger_config: triggerData.trigger_config as never,
+          is_enabled: triggerData.is_enabled ?? true
+        })
+        .select()
+        .maybeSingle();
+    });
   }
 
   /**
@@ -222,12 +218,15 @@ export class WorkflowService {
    * @param isEnabled - Current enabled state (will be toggled)
    * @throws Error if update fails
    */
-  static async toggleTrigger(triggerId: string, isEnabled: boolean): Promise<void> {
-    const { error } = await supabase
-      .from('workflow_triggers')
-      .update({ is_enabled: !isEnabled })
-      .eq('id', triggerId);
+  static async toggleTrigger(triggerId: string, isEnabled: boolean): Promise<ServiceResponse<void>> {
+    return this.executeQuery(async () => {
+      const { error } = await supabase
+        .from('workflow_triggers')
+        .update({ is_enabled: !isEnabled })
+        .eq('id', triggerId);
 
-    if (error) throw new Error(`Failed to toggle trigger: ${error.message}`);
+      if (error) throw error;
+      return { data: undefined, error: null };
+    });
   }
 }

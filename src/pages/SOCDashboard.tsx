@@ -43,8 +43,10 @@ const SOCDashboard = () => {
 
   const fetchMcpServers = async () => {
     try {
-      const data = await SOCService.getSecurityMCPServers();
-      setMcpServers(data);
+      const result = await SOCService.getSecurityMCPServers();
+      if (result.data) {
+        setMcpServers(result.data);
+      }
     } catch (error) {
       console.error("Error fetching MCP servers:", error);
     }
@@ -93,14 +95,16 @@ const SOCDashboard = () => {
 
     setIsAnalyzing(true);
     try {
-      const data = await SOCService.runThreatAnalysis({
+      const result = await SOCService.runThreatAnalysis({
         analysisType: 'comprehensive',
         timeframe: selectedTimeframe
       });
 
-      setThreatAnalysis(data);
-      toast.success("Threat analysis complete");
-      setActiveTab("ai-analysis");
+      if (result.data) {
+        setThreatAnalysis(result.data);
+        toast.success("Threat analysis complete");
+        setActiveTab("ai-analysis");
+      }
     } catch (error: any) {
       console.error('Threat analysis error:', error);
       const errorMessage = error?.message || "Failed to run threat analysis";

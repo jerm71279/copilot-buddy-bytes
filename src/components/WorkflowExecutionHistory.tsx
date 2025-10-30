@@ -64,8 +64,8 @@ export const WorkflowExecutionHistory = ({ customerId }: { customerId: string })
     }
 
     try {
-      const data = await WorkflowService.getExecutions(customerId, 50);
-      setExecutions(data);
+      const result = await WorkflowService.getExecutions(customerId, 50);
+      if (result.data) setExecutions(result.data as any);
     } catch (error: any) {
       console.error("Error fetching executions:", error);
       toast.error("Failed to load execution history");

@@ -81,8 +81,8 @@ export const WorkflowTriggerManager = ({ customerId }: { customerId: string }) =
         WorkflowService.getTriggers(customerId)
       ]);
 
-      setWorkflows(workflowsData);
-      setTriggers(triggersData);
+      if (workflowsData.data) setWorkflows(workflowsData.data);
+      if (triggersData.data) setTriggers(triggersData.data as any);
     } catch (error: any) {
       console.error("Error fetching data:", error);
       toast.error("Failed to load workflows and triggers");

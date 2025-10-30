@@ -25,7 +25,8 @@ const SIEMDashboard = () => {
     queryKey: ['siem-events', timeRange, severityFilter, eventTypeFilter, searchQuery],
     queryFn: async () => {
       const hoursAgo = timeRange === '24h' ? 24 : timeRange === '7d' ? 168 : 720;
-      return await SIEMService.getSecurityEvents(hoursAgo, severityFilter, eventTypeFilter, searchQuery);
+      const result = await SIEMService.getSecurityEvents(hoursAgo, severityFilter, eventTypeFilter, searchQuery);
+      return result.data || [];
     },
   });
 
@@ -34,7 +35,8 @@ const SIEMDashboard = () => {
     queryKey: ['siem-metrics', timeRange],
     queryFn: async () => {
       const hoursAgo = timeRange === '24h' ? 24 : timeRange === '7d' ? 168 : 720;
-      return await SIEMService.getSIEMMetrics(hoursAgo);
+      const result = await SIEMService.getSIEMMetrics(hoursAgo);
+      return result.data || { total_events: 0, security_alerts: 0, anomalies: 0, events_per_hour: 0 };
     },
   });
 

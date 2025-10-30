@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
+import { BaseService, ServiceResponse } from './baseService';
 
 /**
  * Finance Service
@@ -14,7 +15,7 @@ type BudgetRow = Database['public']['Tables']['budgets']['Row'];
 /**
  * Budget Service
  */
-export class BudgetService {
+export class BudgetService extends BaseService {
   /**
    * Create a new budget
    */
@@ -97,7 +98,7 @@ type ExpenseRow = Database['public']['Tables']['expenses']['Row'];
 /**
  * Expense Service
  */
-export class ExpenseService {
+export class ExpenseService extends BaseService {
   static async createExpense(input: ExpenseInsert) {
     const { data, error } = await supabase
       .from('expenses')
@@ -165,7 +166,7 @@ type InvoiceRow = Database['public']['Tables']['invoices']['Row'];
 /**
  * Invoice Service
  */
-export class InvoiceService {
+export class InvoiceService extends BaseService {
   static async createInvoice(input: InvoiceInsert) {
     const { data, error } = await supabase
       .from('invoices')
@@ -233,7 +234,7 @@ type PurchaseOrderRow = Database['public']['Tables']['purchase_orders']['Row'];
 /**
  * Purchase Order Service
  */
-export class PurchaseOrderService {
+export class PurchaseOrderService extends BaseService {
   static async createPurchaseOrder(input: PurchaseOrderInsert) {
     const { data, error } = await supabase
       .from('purchase_orders')
@@ -328,7 +329,7 @@ export interface FinancialMetrics {
 /**
  * Financial Metrics Service
  */
-export class FinancialMetricsService {
+export class FinancialMetricsService extends BaseService {
   /**
    * Fetch all customers
    */

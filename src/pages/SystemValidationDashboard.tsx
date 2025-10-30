@@ -39,7 +39,8 @@ export default function SystemValidationDashboard() {
     try {
       // 1. Database Schema Validation
       setOverallProgress(10);
-      const dbTests = await SystemValidationService.validateDatabaseSchema();
+      const dbTestsResult = await SystemValidationService.validateDatabaseSchema();
+      const dbTests = dbTestsResult.data || [];
       validationResults.push({
         category: 'Database Schema',
         tests: dbTests,
@@ -48,7 +49,8 @@ export default function SystemValidationDashboard() {
 
       // 2. RLS Policy Validation
       setOverallProgress(25);
-      const rlsTests = await SystemValidationService.validateRLSPolicies();
+      const rlsTestsResult = await SystemValidationService.validateRLSPolicies();
+      const rlsTests = rlsTestsResult.data || [];
       validationResults.push({
         category: 'Row Level Security',
         tests: rlsTests,
@@ -57,7 +59,8 @@ export default function SystemValidationDashboard() {
 
       // 3. Edge Function Validation
       setOverallProgress(40);
-      const functionTests = await SystemValidationService.validateEdgeFunctions();
+      const functionTestsResult = await SystemValidationService.validateEdgeFunctions();
+      const functionTests = functionTestsResult.data || [];
       validationResults.push({
         category: 'Edge Functions',
         tests: functionTests,
@@ -66,7 +69,8 @@ export default function SystemValidationDashboard() {
 
       // 4. Data Integrity Validation
       setOverallProgress(60);
-      const dataTests = await SystemValidationService.validateDataIntegrity();
+      const dataTestsResult = await SystemValidationService.validateDataIntegrity();
+      const dataTests = dataTestsResult.data || [];
       validationResults.push({
         category: 'Data Integrity',
         tests: dataTests,
@@ -75,7 +79,8 @@ export default function SystemValidationDashboard() {
 
       // 5. Performance Validation
       setOverallProgress(80);
-      const perfTests = await SystemValidationService.validatePerformance();
+      const perfTestsResult = await SystemValidationService.validatePerformance();
+      const perfTests = perfTestsResult.data || [];
       validationResults.push({
         category: 'Performance',
         tests: perfTests,

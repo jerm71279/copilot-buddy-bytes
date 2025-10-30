@@ -23,8 +23,10 @@ export function useSIEMData(timeRange: '24h' | '7d' | '30d' = '24h') {
   const fetchSIEMData = async () => {
     try {
       const result = await SIEMService.getSIEMData(timeRange);
-      setEvents(result.events);
-      setMetrics(result.metrics);
+      if (result.data) {
+        setEvents(result.data.events);
+        setMetrics(result.data.metrics);
+      }
     } catch (error) {
       console.error('Error fetching SIEM data:', error);
     } finally {

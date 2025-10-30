@@ -219,9 +219,9 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
       });
 
       // Step 2: Save trigger configurations (if any)
-      if (triggers.length > 0) {
+      if (triggers.length > 0 && workflowResult.data) {
         for (const trigger of triggers) {
-          await WorkflowService.createTrigger(workflow.id, customerId, {
+          await WorkflowService.createTrigger(workflowResult.data.id, customerId, {
             trigger_type: trigger.trigger_type,
             trigger_config: trigger.trigger_config,
             is_enabled: trigger.is_enabled

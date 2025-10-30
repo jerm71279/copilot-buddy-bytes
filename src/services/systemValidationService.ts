@@ -4,6 +4,7 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import { BaseService, ServiceResponse } from "./baseService";
 
 export interface TestResult {
   name: string;
@@ -18,11 +19,12 @@ export interface ValidationResult {
   passRate: number;
 }
 
-export class SystemValidationService {
+export class SystemValidationService extends BaseService {
   /**
    * Validate database schema by checking table existence
    */
-  static async validateDatabaseSchema(): Promise<TestResult[]> {
+  static async validateDatabaseSchema(): Promise<ServiceResponse<TestResult[]>> {
+    return this.executeQuery(async () => {
     const tables = ['workflows', 'workflow_executions', 'knowledge_articles', 'evidence_files', 'audit_logs'];
     const tests: TestResult[] = [];
 
@@ -44,13 +46,15 @@ export class SystemValidationService {
       }
     }
 
-    return tests;
+      return { data: tests, error: null };
+    });
   }
 
   /**
    * Validate RLS policies
    */
-  static async validateRLSPolicies(): Promise<TestResult[]> {
+  static async validateRLSPolicies(): Promise<ServiceResponse<TestResult[]>> {
+    return this.executeQuery(async () => {
     const tests: TestResult[] = [];
 
     try {
@@ -77,13 +81,15 @@ export class SystemValidationService {
       });
     }
 
-    return tests;
+      return { data: tests, error: null };
+    });
   }
 
   /**
    * Validate edge functions
    */
-  static async validateEdgeFunctions(): Promise<TestResult[]> {
+  static async validateEdgeFunctions(): Promise<ServiceResponse<TestResult[]>> {
+    return this.executeQuery(async () => {
     const functions = [
       'workflow-insights',
       'intelligent-assistant',
@@ -112,10 +118,12 @@ export class SystemValidationService {
       }
     }
 
-    return tests;
+      return { data: tests, error: null };
+    });
   }
 
-  static async validateDataIntegrity(): Promise<TestResult[]> {
+  static async validateDataIntegrity(): Promise<ServiceResponse<TestResult[]>> {
+    return this.executeQuery(async () => {
     const tests: TestResult[] = [];
 
     try {
@@ -154,13 +162,15 @@ export class SystemValidationService {
       });
     }
 
-    return tests;
+      return { data: tests, error: null };
+    });
   }
 
   /**
    * Validate query performance
    */
-  static async validatePerformance(): Promise<TestResult[]> {
+  static async validatePerformance(): Promise<ServiceResponse<TestResult[]>> {
+    return this.executeQuery(async () => {
     const tests: TestResult[] = [];
     const startTime = Date.now();
 
@@ -182,7 +192,8 @@ export class SystemValidationService {
       });
     }
 
-    return tests;
+      return { data: tests, error: null };
+    });
   }
 
   /**

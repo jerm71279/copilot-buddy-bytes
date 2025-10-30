@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { BaseService, ServiceResponse } from "./baseService";
 
 export interface SecurityEvent {
   id: string;
@@ -23,7 +24,7 @@ export interface SIEMMetrics {
  * SIEM Service
  * Handles all Security Information and Event Management operations
  */
-export class SIEMService {
+export class SIEMService extends BaseService {
   /**
    * Get security events from multiple sources
    */
@@ -32,7 +33,8 @@ export class SIEMService {
     severityFilter?: string,
     eventTypeFilter?: string,
     searchQuery?: string
-  ): Promise<SecurityEvent[]> {
+  ): Promise<ServiceResponse<SecurityEvent[]>> {
+    return this.executeQuery(async () => {
     const since = new Date(Date.now() - hoursAgo * 60 * 60 * 1000).toISOString();
 
     // Fetch from multiple sources
@@ -114,13 +116,15 @@ export class SIEMService {
       );
     }
 
-    return filtered;
+      return { data: filtered, error: null };
+    });
   }
 
   /**
    * Get SIEM metrics
    */
-  static async getSIEMMetrics(hoursAgo: number): Promise<SIEMMetrics> {
+  static async getSIEMMetrics(hoursAgo: number): Promise<ServiceResponse<SIEMMetrics>> {
+    return this.executeQuery(async () => {
     const since = new Date(Date.now() - hoursAgo * 60 * 60 * 1000).toISOString();
 
     const [alertCount, anomalyCount, eventCount] = await Promise.all([
@@ -129,85 +133,94 @@ export class SIEMService {
       supabase.from('behavioral_events').select('*', { count: 'exact', head: true }).gte('created_at', since),
     ]);
 
-    return {
-      total_events: (eventCount.count || 0) + (alertCount.count || 0) + (anomalyCount.count || 0),
-      security_alerts: alertCount.count || 0,
-      anomalies: anomalyCount.count || 0,
-      events_per_hour: Math.round(((eventCount.count || 0) + (alertCount.count || 0)) / hoursAgo),
-    };
+      const metrics = {
+        total_events: (eventCount.count || 0) + (alertCount.count || 0) + (anomalyCount.count || 0),
+        security_alerts: alertCount.count || 0,
+        anomalies: anomalyCount.count || 0,
+        events_per_hour: Math.round(((eventCount.count || 0) + (alertCount.count || 0)) / hoursAgo),
+      };
+      return { data: metrics, error: null };
+    });
   }
 
   /**
    * Create a security alert
    */
-  static async createSecurityAlert(input: any) {
-    const { data, error } = await (supabase as any)
-      .from('security_alerts')
-      .insert([input])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+  static async createSecurityAlert(input: any): Promise<ServiceResponse<any>> {
+    return this.executeQuery(async () => {
+      return await (supabase as any)
+        .from('security_alerts')
+        .insert([input])
+        .select()
+        .maybeSingle();
+    });
   }
 
   /**
    * Update a security alert
    */
-  static async updateSecurityAlert(id: string, updates: any) {
-    const { data, error } = await (supabase as any)
-      .from('security_alerts')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+  static async updateSecurityAlert(id: string, updates: any): Promise<ServiceResponse<any>> {
+    return this.executeQuery(async () => {
+      return await (supabase as any)
+        .from('security_alerts')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .maybeSingle();
+    });
   }
 
   /**
    * Create an anomaly detection record
    */
-  static async createAnomalyDetection(input: any) {
-    const { data, error } = await supabase
-      .from('anomaly_detections')
-      .insert([input])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+  static async createAnomalyDetection(input: any): Promise<ServiceResponse<any>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from('anomaly_detections')
+        .insert([input])
+        .select()
+        .maybeSingle();
+    });
   }
 
   /**
    * Get audit logs by user
    */
-  static async getAuditLogsByUser(userId: string, limit = 100) {
-    const { data, error } = await supabase
-      .from('audit_logs')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(limit);
-
-    if (error) throw error;
-    return data;
+  static async getAuditLogsByUser(userId: string, limit = 100): Promise<ServiceResponse<any[]>> {
+    return this.executeQuery(async () => {
+      return await supabase
+        .from('audit_logs')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+    });
   }
 
   /**
    * Get SIEM data (events + metrics)
    * Convenience method that combines getSecurityEvents and getSIEMMetrics
    */
-  static async getSIEMData(timeRange: '24h' | '7d' | '30d') {
-    const hoursMap = { '24h': 24, '7d': 168, '30d': 720 };
-    const hoursAgo = hoursMap[timeRange];
+  static async getSIEMData(timeRange: '24h' | '7d' | '30d'): Promise<ServiceResponse<{ events: SecurityEvent[]; metrics: SIEMMetrics }>> {
+    return this.executeQuery(async () => {
+      const hoursMap = { '24h': 24, '7d': 168, '30d': 720 };
+      const hoursAgo = hoursMap[timeRange];
 
-    const [events, metrics] = await Promise.all([
-      this.getSecurityEvents(hoursAgo),
-      this.getSIEMMetrics(hoursAgo)
-    ]);
+      const [eventsResult, metricsResult] = await Promise.all([
+        this.getSecurityEvents(hoursAgo),
+        this.getSIEMMetrics(hoursAgo)
+      ]);
 
-    return { events, metrics };
+      if (eventsResult.error) throw new Error(eventsResult.error.message);
+      if (metricsResult.error) throw new Error(metricsResult.error.message);
+
+      return {
+        data: {
+          events: eventsResult.data || [],
+          metrics: metricsResult.data || { total_events: 0, security_alerts: 0, anomalies: 0, events_per_hour: 0 }
+        },
+        error: null
+      };
+    });
   }
 }

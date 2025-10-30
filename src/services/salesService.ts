@@ -4,6 +4,7 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import { BaseService } from "./baseService";
 
 export interface MCPServer {
   id: string;
@@ -19,7 +20,7 @@ export interface SalesStats {
   monthlyGrowth: number;
 }
 
-export class SalesService {
+export class SalesService extends BaseService {
   /**
    * Get active MCP servers for sales
    */
@@ -87,7 +88,7 @@ export class SalesService {
  * Lead Service
  * TODO: Implement full lead management operations
  */
-export class LeadService {
+export class LeadService extends BaseService {
   static async getLeads() {
     const { data, error } = await (supabase as any)
       .from("leads")
@@ -125,7 +126,7 @@ export class LeadService {
  * Opportunity Service
  * TODO: Implement full opportunity management operations
  */
-export class OpportunityService {
+export class OpportunityService extends BaseService {
   static async getOpportunities() {
     const { data, error } = await (supabase as any)
       .from("opportunities")
@@ -163,7 +164,7 @@ export class OpportunityService {
  * Quote Service
  * TODO: Implement full quote management operations
  */
-export class QuoteService {
+export class QuoteService extends BaseService {
   static async getQuotes() {
     const { data, error } = await (supabase as any)
       .from("quotes")
