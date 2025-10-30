@@ -153,9 +153,30 @@ All colors MUST be HSL.
 
   html {
     scroll-behavior: smooth;
+    /* Prevent scroll bounce on all platforms */
+    overscroll-behavior: none;
+    /* Enable hardware acceleration for smooth scrolling */
+    -webkit-overflow-scrolling: touch;
   }
 
   body {
     @apply bg-background text-foreground;
+    /* Prevent scroll bounce */
+    overscroll-behavior-y: none;
+    /* Prevent horizontal scroll bounce */
+    overscroll-behavior-x: none;
+    /* Ensure consistent scroll performance */
+    overflow-x: hidden;
+  }
+
+  /* Prevent layout shifts during scroll */
+  main {
+    contain: layout style;
+  }
+
+  /* Smooth transitions for dynamic content */
+  [data-loading="true"] {
+    min-height: 100vh;
   }
 }
+

@@ -1,7 +1,7 @@
 /**
  * PageContainer Component
  * Standard page container with consistent spacing and layout
- * Eliminates layout inconsistencies across the platform
+ * Prevents scroll bouncing and layout shifts
  */
 
 interface PageContainerProps {
@@ -18,10 +18,14 @@ export const PageContainer = ({
   const paddingClasses = noPadding ? "" : "px-4 pb-8 pt-8";
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <main
         className={`container mx-auto ${paddingClasses} ${className}`}
-        style={{ marginTop: 'var(--lanes-height, 0px)' }}
+        style={{ 
+          marginTop: 'var(--lanes-height, 0px)',
+          minHeight: 'calc(100vh - var(--lanes-height, 0px))',
+          willChange: 'transform'
+        }}
       >
         {children}
       </main>
