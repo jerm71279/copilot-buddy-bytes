@@ -60,10 +60,19 @@ export function useSecurityData() {
 
   const fetchSecurityData = async () => {
     try {
-      const result = await SecurityService.getSecurityData();
-      setMetrics(result.metrics);
-      setIncidents(result.incidents);
-      setAnomalies(result.anomalies);
+      const { data: result, error } = await SecurityService.getSecurityData();
+      if (error) {
+        console.error("Error fetching security data:", error);
+        toast.error("Failed to load security data");
+        setIsLoading(false);
+        return;
+      }
+      
+      if (result) {
+        setMetrics(result.metrics);
+        setIncidents(result.incidents);
+        setAnomalies(result.anomalies);
+      }
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching security data:", error);
