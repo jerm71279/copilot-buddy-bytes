@@ -20,8 +20,15 @@ export function useExecutiveData() {
 
   const fetchStats = async () => {
     try {
-      const data = await ExecutiveService.getStats();
-      setStats(data);
+      const response = await ExecutiveService.getStats();
+      if (response.error) throw response.error;
+      setStats(response.data || {
+        customers: 0,
+        complianceScore: 0,
+        workflowEfficiency: 0,
+        mlInsights: 0,
+        anomalies: 0
+      });
     } catch (error) {
       console.error('Error fetching executive stats:', error);
     } finally {

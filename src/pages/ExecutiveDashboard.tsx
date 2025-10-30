@@ -96,8 +96,9 @@ const ExecutiveDashboard = () => {
 
   const fetchMcpServers = async () => {
     try {
-      const data = await ExecutiveService.getMcpServers();
-      setMcpServers(data);
+      const response = await ExecutiveService.getMcpServers();
+      if (response.error) throw response.error;
+      setMcpServers(response.data || []);
     } catch (error) {
       console.error('Error fetching MCP servers:', error);
     }

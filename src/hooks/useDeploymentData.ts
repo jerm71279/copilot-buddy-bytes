@@ -55,7 +55,9 @@ export function useDeploymentData() {
 
   const loadProjects = async (custId: string) => {
     try {
-      const data = await DeploymentService.getProjects(custId);
+      const response = await DeploymentService.getProjects(custId);
+      if (response.error) throw response.error;
+      const data = response.data || [];
       setProjects(data);
       if (data && data.length > 0 && !selectedProjectId) {
         setSelectedProjectId(data[0].id);
@@ -69,8 +71,15 @@ export function useDeploymentData() {
   const loadProjectData = async (projectId: string) => {
     setLoading(true);
     try {
-      const data = await DeploymentService.getProjectData(projectId);
-      setProjectData(data);
+      const response = await DeploymentService.getProjectData(projectId);
+      if (response.error) throw response.error;
+      setProjectData(response.data || {
+        tasks: [],
+        dependencies: [],
+        milestones: [],
+        risks: [],
+        allocations: []
+      });
     } catch (error) {
       console.error("Error loading project data:", error);
       toast.error("Failed to load project data");
@@ -89,7 +98,12 @@ export function useDeploymentData() {
       const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("User not authenticated");
 
-      const data = await DeploymentService.createProject(customerId, user.id, newProject);
+      const response = await DeploymentService.createProject(customerId, user.id, newProject);
+      if (response.error || !response.data) {
+        throw response.error || new Error("Failed to create project");
+      }
+      
+      const data = response.data;
       toast.success("Project created successfully");
       setProjects([data, ...projects]);
       setSelectedProjectId(data.id);

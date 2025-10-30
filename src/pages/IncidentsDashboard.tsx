@@ -29,10 +29,12 @@ export default function IncidentsDashboard() {
     detection_method: "manual"
   });
 
-  const { data: incidents, isLoading } = useQuery({
+  const { data: incidentsResponse, isLoading } = useQuery({
     queryKey: ["incidents"],
     queryFn: () => IncidentsService.getIncidents(),
   });
+
+  const incidents = incidentsResponse?.data || [];
 
   const createIncident = useMutation({
     mutationFn: (incident: NewIncidentInput) => IncidentsService.createIncident(incident),
@@ -154,7 +156,7 @@ export default function IncidentsDashboard() {
             <CardTitle>Open</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{incidents?.filter(i => i.status === "open").length || 0}</p>
+            <p className="text-3xl font-bold">{incidents.filter(i => i.status === "open").length || 0}</p>
           </CardContent>
         </Card>
         <Card>
@@ -162,7 +164,7 @@ export default function IncidentsDashboard() {
             <CardTitle>Investigating</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{incidents?.filter(i => i.status === "investigating").length || 0}</p>
+            <p className="text-3xl font-bold">{incidents.filter(i => i.status === "investigating").length || 0}</p>
           </CardContent>
         </Card>
         <Card>
@@ -170,7 +172,7 @@ export default function IncidentsDashboard() {
             <CardTitle>Resolved</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{incidents?.filter(i => i.status === "resolved").length || 0}</p>
+            <p className="text-3xl font-bold">{incidents.filter(i => i.status === "resolved").length || 0}</p>
           </CardContent>
         </Card>
         <Card>
@@ -179,7 +181,7 @@ export default function IncidentsDashboard() {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-destructive">
-              {incidents?.filter(i => i.severity === "critical").length || 0}
+              {incidents.filter(i => i.severity === "critical").length || 0}
             </p>
           </CardContent>
         </Card>
@@ -204,7 +206,7 @@ export default function IncidentsDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {incidents?.map((incident) => (
+              {incidents.map((incident) => (
                 <TableRow key={incident.id}>
                   <TableCell className="font-mono text-sm">{incident.incident_number}</TableCell>
                   <TableCell>{incident.title}</TableCell>

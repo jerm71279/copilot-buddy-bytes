@@ -9,30 +9,36 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const DataLakeDashboard = () => {
   // Fetch stats for each layer
-  const { data: bronzeStats } = useQuery({
+  const { data: bronzeStatsResponse } = useQuery({
     queryKey: ['bronze-stats'],
     queryFn: () => DataLakeService.getBronzeStats()
   });
 
-  const { data: silverStats } = useQuery({
+  const { data: silverStatsResponse } = useQuery({
     queryKey: ['silver-stats'],
     queryFn: () => DataLakeService.getSilverStats()
   });
 
-  const { data: goldStats } = useQuery({
+  const { data: goldStatsResponse } = useQuery({
     queryKey: ['gold-stats'],
     queryFn: () => DataLakeService.getGoldStats()
   });
 
-  const { data: productStats } = useQuery({
+  const { data: productStatsResponse } = useQuery({
     queryKey: ['product-stats'],
     queryFn: () => DataLakeService.getProductStats()
   });
 
-  const { data: pipelineStats } = useQuery({
+  const { data: pipelineStatsResponse } = useQuery({
     queryKey: ['pipeline-stats'],
     queryFn: () => DataLakeService.getPipelineStats()
   });
+
+  const bronzeStats = bronzeStatsResponse?.data;
+  const silverStats = silverStatsResponse?.data;
+  const goldStats = goldStatsResponse?.data;
+  const productStats = productStatsResponse?.data;
+  const pipelineStats = pipelineStatsResponse?.data;
 
   return (
     <DashboardLayout>
