@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
           ? Math.max(1, Math.min(10080, Number(requestData.sync_frequency_minutes))) 
           : 60,
         filter_extensions: Array.isArray(requestData.filter_extensions) 
-          ? requestData.filter_extensions.slice(0, 20).map(ext => String(ext).slice(0, 10))
+          ? requestData.filter_extensions.slice(0, 20).map((ext: any) => String(ext).slice(0, 10))
           : null,
       })
       .select()
@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
     if (error) {
       console.error('Database error:', error);
       return new Response(
-        JSON.stringify({ error: error.message }),
+        JSON.stringify({ error: error instanceof Error ? error.message : 'Database error occurred' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
