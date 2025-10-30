@@ -39,10 +39,12 @@ export default function BreakGlassAccess() {
   });
 
   // Fetch break glass requests
-  const { data: requests, isLoading } = useQuery({
+  const { data: requestsResponse, isLoading } = useQuery({
     queryKey: ["break-glass-requests"],
     queryFn: () => SAWService.getBreakGlassRequests(50),
   });
+  
+  const requests = requestsResponse?.data;
 
   // Request break glass access
   const requestAccessMutation = useMutation({

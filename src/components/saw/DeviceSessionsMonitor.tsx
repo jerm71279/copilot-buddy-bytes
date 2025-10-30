@@ -7,11 +7,13 @@ import { SAWService } from "@/services/sawService";
 
 export default function DeviceSessionsMonitor() {
   // Fetch active sessions
-  const { data: sessions, isLoading } = useQuery({
+  const { data: sessionsResponse, isLoading } = useQuery({
     queryKey: ["device-sessions"],
     queryFn: () => SAWService.getActiveSessions(),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
+  
+  const sessions = sessionsResponse?.data;
 
   const getSessionTypeBadge = (type: string) => {
     switch (type) {

@@ -38,10 +38,12 @@ export default function IPAllowlistManager() {
   });
 
   // Fetch IP allowlist
-  const { data: allowlist, isLoading } = useQuery({
+  const { data: allowlistResponse, isLoading } = useQuery({
     queryKey: ["ip-allowlist"],
     queryFn: () => SAWService.getIPAllowlist(),
   });
+  
+  const allowlist = allowlistResponse?.data;
 
   // Add IP range mutation
   const addIPMutation = useMutation({

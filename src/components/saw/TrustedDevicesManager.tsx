@@ -45,16 +45,20 @@ export default function TrustedDevicesManager() {
   const queryClient = useQueryClient();
 
   // Get current user's customer_id
-  const { data: userProfile } = useQuery({
+  const { data: userProfileResponse } = useQuery({
     queryKey: ["user-profile"],
     queryFn: () => SAWService.getUserProfile(),
   });
+  
+  const userProfile = userProfileResponse?.data;
 
   // Fetch trusted devices
-  const { data: devices, isLoading } = useQuery({
+  const { data: devicesResponse, isLoading } = useQuery({
     queryKey: ["trusted-devices"],
     queryFn: () => SAWService.getTrustedDevicesWithRegistrar(),
   });
+  
+  const devices = devicesResponse?.data;
 
   // Register device mutation
   const registerDeviceMutation = useMutation({
