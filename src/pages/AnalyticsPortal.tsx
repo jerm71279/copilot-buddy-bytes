@@ -40,8 +40,8 @@ export default function AnalyticsPortal() {
   } = useAnalyticsData(customerId, period);
 
   return (
-    <DashboardLayout>
-      <div className="flex items-center justify-between mb-8">
+    <DashboardLayout className="max-w-7xl mx-auto space-y-6">
+      <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold">Analytics Portal</h1>
             <p className="text-muted-foreground mt-2">

@@ -182,8 +182,8 @@ export default function ComprehensiveTestDashboard() {
   }, []);
 
   return (
-    <DashboardLayout>
-      <DashboardNavigation 
+    <DashboardLayout className="max-w-7xl mx-auto space-y-6">
+      <DashboardNavigation
         title="Comprehensive Testing Dashboard"
         dashboards={[
           { name: "Admin Dashboard", path: "/admin" },

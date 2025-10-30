@@ -31,8 +31,8 @@ export default function ClientPortal() {
   });
 
   return (
-    <DashboardLayout className="space-y-6">
-      <DashboardNavigation 
+    <DashboardLayout className="max-w-7xl mx-auto space-y-6">
+      <DashboardNavigation
         title="Client Portal"
         dashboards={clientPortalDashboards}
       />

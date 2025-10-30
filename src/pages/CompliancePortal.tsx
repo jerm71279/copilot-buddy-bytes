@@ -17,7 +17,7 @@ export default function CompliancePortal() {
   const { frameworks, evidenceFiles, reports, isLoading, stats } = useComplianceData();
 
   return (
-    <DashboardLayout>
+    <DashboardLayout className="max-w-7xl mx-auto space-y-6">
       <PageHeader
         title="Compliance Management"
         description="Track compliance frameworks and evidence collection"

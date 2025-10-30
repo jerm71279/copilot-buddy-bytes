@@ -78,8 +78,8 @@ export default function IncidentsDashboard() {
   }
 
   return (
-    <DashboardLayout>
-      <div className="flex justify-between items-center mb-6">
+    <DashboardLayout className="max-w-7xl mx-auto space-y-6">
+      <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Incidents Dashboard</h1>
           <p className="text-muted-foreground">Monitor and manage system incidents</p>

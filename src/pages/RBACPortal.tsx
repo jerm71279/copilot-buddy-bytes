@@ -40,7 +40,7 @@ export default function RBACPortal() {
 
   if (isLoading || profileLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout className="max-w-7xl mx-auto space-y-6">
         <p>Loading...</p>
       </DashboardLayout>
     );
@@ -48,7 +48,7 @@ export default function RBACPortal() {
 
   if (!isAdmin) {
     return (
-      <DashboardLayout>
+      <DashboardLayout className="max-w-7xl mx-auto space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Access Denied</CardTitle>
@@ -62,7 +62,7 @@ export default function RBACPortal() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout className="max-w-7xl mx-auto space-y-6">
       <div className="mb-8 flex justify-between items-start">
         <div>
           <div className="flex items-center gap-3 mb-2">
