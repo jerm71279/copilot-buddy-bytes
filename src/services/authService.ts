@@ -160,4 +160,41 @@ export class AuthService {
 
     return data || [];
   }
+
+  /**
+   * Get department dashboard route based on department
+   */
+  static getDepartmentRoute(department: string | null): string {
+    const dashboardRoutes: Record<string, string> = {
+      compliance: "/dashboard/compliance",
+      it: "/dashboard/it",
+      operations: "/dashboard/operations",
+      hr: "/dashboard/hr",
+      finance: "/dashboard/finance",
+      executive: "/dashboard/executive"
+    };
+
+    return dashboardRoutes[department || ''] || '/portal';
+  }
+
+  /**
+   * Determine the appropriate dashboard route for a user
+   * Returns the route path based on user role and department
+   */
+  static async getDashboardRouteForUser(userId: string): Promise<string> {
+    // Check if user has admin role
+    const isAdmin = await this.isUserAdmin(userId);
+    if (isAdmin) {
+      return "/admin";
+    }
+
+    // Check user profile for department
+    const profile = await this.getUserProfile(userId);
+    if (profile?.department) {
+      return this.getDepartmentRoute(profile.department);
+    }
+
+    // Default to portal
+    return "/portal";
+  }
 }

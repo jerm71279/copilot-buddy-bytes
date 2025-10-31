@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -78,7 +79,8 @@ const Auth = () => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        await redirectToDepartmentDashboard(session.user.id);
+        const route = await AuthService.getDashboardRouteForUser(session.user.id);
+        navigate(route);
       }
     };
     checkSession();
@@ -86,64 +88,15 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         // Avoid async work directly in the callback to prevent deadlocks
-        setTimeout(() => {
-          redirectToDepartmentDashboard(session.user!.id);
+        setTimeout(async () => {
+          const route = await AuthService.getDashboardRouteForUser(session.user.id);
+          navigate(route);
         }, 0);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  const redirectToDepartmentDashboard = async (userId: string) => {
-    // Check if user has Super Admin/Admin role
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role_id, roles(name)")
-      .eq("user_id", userId);
-
-    let hasAdmin = roles?.some((ur: any) => ur.roles?.name === 'Super Admin' || ur.roles?.name === 'Admin');
-
-    if (!hasAdmin) {
-      const { data: rpcHasAdmin } = await supabase.rpc('has_role', {
-        _user_id: userId,
-        _role: 'admin'
-      });
-      hasAdmin = !!rpcHasAdmin;
-    }
-
-    if (hasAdmin) {
-      navigate("/admin");
-      return;
-    }
-
-    // Check user profile for department
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("department")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (profile?.department) {
-      const dashboardRoutes: Record<string, string> = {
-        compliance: "/dashboard/compliance",
-        it: "/dashboard/it",
-        operations: "/dashboard/operations",
-        hr: "/dashboard/hr",
-        finance: "/dashboard/finance",
-        executive: "/dashboard/executive"
-      };
-
-      const route = dashboardRoutes[profile.department];
-      if (route) {
-        navigate(route);
-        return;
-      }
-    }
-
-    // Default to portal for users without specific department
-    navigate("/portal");
-  };
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,7 +171,8 @@ const Auth = () => {
           }
 
           // Proactively redirect after successful login to avoid waiting on auth listener timings
-          await redirectToDepartmentDashboard(data.user.id);
+          const route = await AuthService.getDashboardRouteForUser(data.user.id);
+          navigate(route);
         }
         toast.success("Logged in successfully");
       }

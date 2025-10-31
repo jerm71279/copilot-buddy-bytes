@@ -32,6 +32,7 @@ interface EmployeeOnboarding {
 export default function EmployeeOnboardingDashboard() {
   const navigate = useNavigate();
   const toast = useStandardToast();
+  const { checkSessionAndLoad } = useRequireAuth();
   const [onboardings, setOnboardings] = useState<EmployeeOnboarding[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -42,7 +43,7 @@ export default function EmployeeOnboardingDashboard() {
   });
 
   useEffect(() => {
-    checkAuthAndLoad();
+    checkSessionAndLoad(loadOnboardings);
 
     // Reload data when window comes back into focus
     const handleVisibilityChange = () => {
@@ -63,15 +64,6 @@ export default function EmployeeOnboardingDashboard() {
       window.removeEventListener('focus', handleFocus);
     };
   }, []);
-
-  const checkAuthAndLoad = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-      return;
-    }
-    await loadOnboardings();
-  };
 
   const loadOnboardings = async () => {
     try {

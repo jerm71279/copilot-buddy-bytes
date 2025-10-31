@@ -30,6 +30,7 @@ interface Template {
 export default function EmployeeOnboardingTemplates() {
   const navigate = useNavigate();
   const toast = useStandardToast();
+  const { checkSessionAndLoad } = useRequireAuth();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -41,17 +42,8 @@ export default function EmployeeOnboardingTemplates() {
   });
 
   useEffect(() => {
-    checkAuthAndLoad();
+    checkSessionAndLoad(loadTemplates);
   }, []);
-
-  const checkAuthAndLoad = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-      return;
-    }
-    await loadTemplates();
-  };
 
   const loadTemplates = async () => {
     try {
