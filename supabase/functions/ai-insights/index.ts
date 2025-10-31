@@ -12,13 +12,49 @@ serve(async (req) => {
   }
 
   try {
-    const { query, context, domains } = await req.json();
+    // Parse and validate request body
+    const requestData = await req.json();
+    
+    // Validate request body type
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: "Invalid request body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
+    // Extract and validate query (required, max 1000 chars)
+    const query = String(requestData.query || '').slice(0, 1000).trim();
     if (!query) {
       return new Response(
         JSON.stringify({ error: "Query is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // Validate context (optional, max 2000 chars)
+    const context = requestData.context ? String(requestData.context).slice(0, 2000).trim() : undefined;
+
+    // Validate domains array (optional, max 20 items, max 100 chars each)
+    let domains: string[] | undefined;
+    if (requestData.domains !== undefined) {
+      if (!Array.isArray(requestData.domains)) {
+        return new Response(
+          JSON.stringify({ error: "domains must be an array" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      if (requestData.domains.length > 20) {
+        return new Response(
+          JSON.stringify({ error: "Maximum 20 domains allowed" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      domains = requestData.domains
+        .map((d: any) => String(d || '').slice(0, 100).trim())
+        .filter((d: string) => d.length > 0);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

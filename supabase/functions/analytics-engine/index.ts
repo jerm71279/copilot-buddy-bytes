@@ -22,8 +22,31 @@ serve(async (req) => {
 
     const { supabase, customerId } = await getAuthContext(authHeader);
 
+    // Parse and validate request body
     const requestData = await req.json();
-    const { action, domains, metricName, aggregationType, dimensions, timeRange } = requestData;
+    
+    // Validate request body type
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Extract and validate fields
+    const action = String(requestData.action || '').slice(0, 100);
+    if (!action) {
+      return new Response(JSON.stringify({ error: 'action is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const domains = requestData.domains;
+    const metricName = requestData.metricName ? String(requestData.metricName).slice(0, 200) : undefined;
+    const aggregationType = requestData.aggregationType ? String(requestData.aggregationType).slice(0, 50) : undefined;
+    const dimensions = requestData.dimensions;
+    const timeRange = requestData.timeRange;
 
     if (action === 'cross-domain-analytics') {
       // Query across multiple data products
@@ -34,9 +57,20 @@ serve(async (req) => {
         });
       }
 
+      // Validate array batch size
+      if (domains.length > 50) {
+        return new Response(JSON.stringify({ error: 'Maximum 50 domains allowed' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      // Validate domain strings
+      const sanitizedDomains = domains.map((d: any) => String(d || '').slice(0, 100)).filter(d => d.length > 0);
+
       const results: Record<string, any> = {};
 
-      for (const domain of domains) {
+      for (const domain of sanitizedDomains) {
         const { data: silverData } = await supabase
           .from('data_lake_silver')
           .select('*')
@@ -59,7 +93,7 @@ serve(async (req) => {
       return new Response(JSON.stringify({ 
         success: true,
         results,
-        queriedDomains: domains
+        queriedDomains: sanitizedDomains
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
