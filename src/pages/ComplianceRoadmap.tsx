@@ -100,8 +100,8 @@ const ComplianceRoadmap = () => {
     setIsRebuilding(true);
     try {
       const rebuildData = await templateMaintenance.invoke({
-        operation: 'rebuild',
-        templateId: selectedFramework || undefined
+        action: 'rebuild',
+        frameworkIds: selectedFramework ? [selectedFramework] : undefined
       });
       
       if (!rebuildData) { toast.error('Rebuild failed'); return; }
@@ -110,7 +110,7 @@ const ComplianceRoadmap = () => {
       const milestoneCount = rebuildData?.inserted?.milestoneTemplates ?? rebuildData?.milestoneTemplates ?? 0;
       
       const sanitizeData = await templateMaintenance.invoke({ 
-        operation: 'sanitize'
+        action: 'sanitize'
       });
       
       console.log('Sanitize response:', sanitizeData);
@@ -154,7 +154,7 @@ const ComplianceRoadmap = () => {
     setIsSanitizing(true);
     try {
       const data = await templateMaintenance.invoke({ 
-        operation: 'sanitize'
+        action: 'sanitize'
       });
       
       if (!data) { toast.error('Sanitize failed'); return; }

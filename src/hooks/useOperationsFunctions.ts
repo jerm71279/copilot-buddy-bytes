@@ -16,8 +16,8 @@ interface NinjaOneTicketRequest {
 }
 
 interface TemplateMaintenanceRequest {
-  operation: string;
-  templateId?: string;
+  action: 'sanitize' | 'rebuild';
+  frameworkIds?: string[];
 }
 
 interface DataCatalogRequest {
