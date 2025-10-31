@@ -23,7 +23,27 @@ serve(async (req) => {
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { action, ...params } = await req.json();
+    // Parse and validate request body
+    const requestData = await req.json();
+    
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate action field
+    const action = String(requestData.action || '').slice(0, 100).trim();
+    if (!action) {
+      return new Response(
+        JSON.stringify({ error: 'action is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Extract remaining params (already destructured, now validated)
+    const params = { ...requestData };
 
     let result;
 
@@ -56,15 +76,22 @@ serve(async (req) => {
 });
 
 async function sendCoordinationMessage(supabase: any, params: any) {
-  const {
-    customer_id,
-    from_department,
-    to_department,
-    message_type,
-    subject,
-    content,
-    priority = 5
-  } = params;
+  // Validate required fields
+  const customer_id = params.customer_id ? String(params.customer_id).slice(0, 100) : null;
+  const from_department = String(params.from_department || '').slice(0, 100).trim();
+  const to_department = String(params.to_department || '').slice(0, 100).trim();
+  const message_type = String(params.message_type || '').slice(0, 50).trim();
+  const subject = String(params.subject || '').slice(0, 200).trim();
+  const content = params.content;
+  const priority = Math.max(1, Math.min(10, Number(params.priority) || 5));
+
+  if (!customer_id || !from_department || !to_department || !message_type || !subject) {
+    throw new Error('customer_id, from_department, to_department, message_type, and subject are required');
+  }
+
+  if (!content || typeof content !== 'object') {
+    throw new Error('content must be a valid object');
+  }
 
   const { data, error } = await supabase
     .from("agent_coordination_messages")
@@ -90,7 +117,13 @@ async function sendCoordinationMessage(supabase: any, params: any) {
 }
 
 async function processInbox(supabase: any, lovableApiKey: string | undefined, params: any) {
-  const { customer_id, department } = params;
+  // Validate required fields
+  const customer_id = params.customer_id ? String(params.customer_id).slice(0, 100) : null;
+  const department = String(params.department || '').slice(0, 100).trim();
+
+  if (!customer_id || !department) {
+    throw new Error('customer_id and department are required');
+  }
 
   // Get pending messages for this department
   const { data: messages, error } = await supabase
@@ -247,14 +280,23 @@ async function handleEscalation(supabase: any, message: any) {
 }
 
 async function escalateToMultipleDepartments(supabase: any, params: any) {
-  const {
-    customer_id,
-    from_department,
-    target_departments,
-    subject,
-    content,
-    priority = 9
-  } = params;
+  // Validate required fields
+  const customer_id = params.customer_id ? String(params.customer_id).slice(0, 100) : null;
+  const from_department = String(params.from_department || '').slice(0, 100).trim();
+  const target_departments = Array.isArray(params.target_departments) 
+    ? params.target_departments.slice(0, 20).map((d: any) => String(d).slice(0, 100).trim())
+    : [];
+  const subject = String(params.subject || '').slice(0, 200).trim();
+  const content = params.content;
+  const priority = Math.max(1, Math.min(10, Number(params.priority) || 9));
+
+  if (!customer_id || !from_department || target_departments.length === 0 || !subject) {
+    throw new Error('customer_id, from_department, target_departments, and subject are required');
+  }
+
+  if (!content || typeof content !== 'object') {
+    throw new Error('content must be a valid object');
+  }
 
   const messages = [];
 

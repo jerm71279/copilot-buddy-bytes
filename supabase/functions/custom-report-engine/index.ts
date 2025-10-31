@@ -159,7 +159,23 @@ serve(async (req) => {
       }
 
       case 'preview_report': {
-        const { dataSources, filters } = await req.json();
+        // Validate preview request fields
+        if (!requestData.dataSources || !Array.isArray(requestData.dataSources)) {
+          return new Response(
+            JSON.stringify({ error: 'dataSources array is required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        if (requestData.dataSources.length > 10) {
+          return new Response(
+            JSON.stringify({ error: 'Maximum 10 data sources allowed' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const dataSources = requestData.dataSources;
+        const filters = requestData.filters || {};
         
         // Execute preview with limit
         let previewData: any[] = [];
@@ -182,7 +198,32 @@ serve(async (req) => {
       }
 
       case 'schedule_report': {
-        const { scheduleCron, recipients } = await req.json();
+        if (!reportId) {
+          return new Response(
+            JSON.stringify({ error: 'reportId is required for schedule_report action' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Validate scheduling fields
+        const scheduleCron = String(requestData.scheduleCron || '').slice(0, 100);
+        const recipients = Array.isArray(requestData.recipients) 
+          ? requestData.recipients.slice(0, 50).map((r: any) => String(r).slice(0, 255))
+          : [];
+
+        if (!scheduleCron) {
+          return new Response(
+            JSON.stringify({ error: 'scheduleCron is required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        if (recipients.length === 0) {
+          return new Response(
+            JSON.stringify({ error: 'At least one recipient is required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         // Update report with schedule
         const { error } = await supabase
