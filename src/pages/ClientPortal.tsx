@@ -15,7 +15,8 @@ import { DepartmentAIAssistant } from "@/components/DepartmentAIAssistant";
 import MCPServerStatus from "@/components/MCPServerStatus";
 import { useClientPortalData, useCreateTicket, usePortalMetrics } from "@/hooks/useClientPortalData";
 import { ticketCategories, priorityLevels, clientPortalDashboards, defaultTicketValues } from "@/lib/clientPortalConfig";
-import { PriorityBadge, formatStatus, formatCategory } from "@/lib/clientPortalUtils";
+import { PriorityBadge } from "@/lib/clientPortalUtils";
+import { formatStatus, formatCategory } from "@/lib/designSystemUtils";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 export default function ClientPortal() {

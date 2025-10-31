@@ -31,18 +31,3 @@ export const PriorityBadge = ({ priority }: { priority: string }) => (
   </Badge>
 );
 
-/**
- * Format status text (replace underscores with spaces, capitalize)
- * @deprecated Use formatStatus from @/lib/designSystemUtils instead
- */
-export const formatStatus = (status: string): string => {
-  return status.replace(/_/g, " ");
-};
-
-/**
- * Format category text (replace underscores with spaces, capitalize)
- * @deprecated Use formatCategory from @/lib/designSystemUtils instead
- */
-export const formatCategory = (category: string): string => {
-  return category.replace(/_/g, " ");
-};

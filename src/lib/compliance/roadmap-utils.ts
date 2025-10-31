@@ -59,13 +59,6 @@ export const getStatusBadgeVariant = (
          (type === 'roadmap' ? BADGE_VARIANTS.roadmap.not_started : BADGE_VARIANTS.milestone.pending);
 };
 
-/**
- * Format status for display (replace underscores, capitalize)
- * @deprecated Use formatStatusLabel from @/lib/designSystemUtils instead
- */
-export const formatStatusLabel = (status: string): string => {
-  return status.replace(/_/g, ' ').toUpperCase();
-};
 
 /**
  * Calculate overall roadmap progress from stages
