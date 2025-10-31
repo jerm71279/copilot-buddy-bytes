@@ -21,6 +21,7 @@
  */
 
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -246,13 +247,7 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
   };
 
   /**
-   * Tests the workflow without saving
-   * Currently logs to console - in production would call workflow-executor
-   * 
-   * Future Implementation:
-   * - Call workflow-executor edge function with test flag
-   * - Show execution results in modal or side panel
-   * - Allow step-by-step debugging
+   * Tests the workflow and calls workflow-executor edge function
    */
   const testWorkflow = async () => {
     if (steps.length === 0) {
@@ -260,10 +255,23 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
       return;
     }
 
-    toast.success("Test execution started - check execution history for results");
-    
-    // TODO: Call workflow-executor edge function for real testing
-    console.log("Testing workflow:", { workflowName, steps, triggers });
+    try {
+      const { data, error } = await supabase.functions.invoke('workflow-executor', {
+        body: {
+          workflow_id: null,
+          trigger_data: { test: true, workflowName, steps },
+          triggered_by: 'test'
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success("Test execution started - check execution history for results");
+      console.log("Test execution result:", data);
+    } catch (error) {
+      console.error("Test execution failed:", error);
+      toast.error("Test execution failed");
+    }
   };
 
   return (
