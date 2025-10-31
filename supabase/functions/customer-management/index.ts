@@ -26,15 +26,25 @@ serve(async (req) => {
       );
     }
     
-    const action = String(requestData.action || '').slice(0, 100);
-    const customerId = requestData.customerId;
+    const action = String(requestData.action || '').slice(0, 100).trim();
+    const customerId = requestData.customerId ? String(requestData.customerId).slice(0, 100) : null;
     const data = requestData.data;
     
     if (!action || !customerId) {
       return new Response(
-        JSON.stringify({ error: 'Action and customer ID are required' }),
+        JSON.stringify({ error: 'action and customerId are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Validate data field when required
+    if (['track_usage', 'generate_invoice', 'toggle_feature'].includes(action)) {
+      if (!data || typeof data !== 'object') {
+        return new Response(
+          JSON.stringify({ error: `data is required for action: ${action}` }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
     
     console.log('Customer management:', { action, customerId });
@@ -218,7 +228,13 @@ async function trackCustomerUsage(supabase: any, customerId: string, data: any) 
 }
 
 async function generateInvoice(supabase: any, customerId: string, data: any) {
-  const { period_start, period_end } = data;
+  // Validate date inputs
+  const period_start = String(data.period_start || '').slice(0, 50);
+  const period_end = String(data.period_end || '').slice(0, 50);
+
+  if (!period_start || !period_end) {
+    throw new Error('period_start and period_end are required');
+  }
 
   // Get usage for the period
   const { data: usage } = await supabase
@@ -283,7 +299,14 @@ async function generateInvoice(supabase: any, customerId: string, data: any) {
 }
 
 async function toggleFeature(supabase: any, customerId: string, data: any) {
-  const { feature_name, is_enabled, created_by } = data;
+  // Validate and sanitize inputs
+  const feature_name = String(data.feature_name || '').slice(0, 100).trim();
+  const is_enabled = Boolean(data.is_enabled);
+  const created_by = data.created_by ? String(data.created_by).slice(0, 100) : null;
+
+  if (!feature_name) {
+    throw new Error('feature_name is required');
+  }
 
   const { data: feature } = await supabase
     .from('customer_features')

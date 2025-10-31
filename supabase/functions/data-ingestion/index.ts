@@ -22,26 +22,56 @@ serve(async (req) => {
 
     const { supabase, userId, customerId } = await getAuthContext(authHeader);
 
+    // Parse and validate request body
     const requestData = await req.json();
-    const { sourceSystem, sourceTable, sourceId, data: rawData, method = 'batch' } = requestData;
-
-    if (!sourceSystem || !sourceTable || !rawData) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+    
+    // Validate request body type
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(JSON.stringify({ error: 'Invalid request body' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
+    // Extract and validate required fields
+    const sourceSystem = String(requestData.sourceSystem || '').slice(0, 100).trim();
+    const sourceTable = String(requestData.sourceTable || '').slice(0, 100).trim();
+    const sourceId = requestData.sourceId ? String(requestData.sourceId).slice(0, 200).trim() : null;
+    const rawData = requestData.data;
+    const method = String(requestData.method || 'batch').slice(0, 50);
+
+    if (!sourceSystem || !sourceTable || !rawData) {
+      return new Response(JSON.stringify({ error: 'sourceSystem, sourceTable, and data are required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate rawData is valid JSON
+    if (typeof rawData !== 'object') {
+      return new Response(JSON.stringify({ error: 'data must be a valid JSON object' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate data size (max 10MB)
     const dataSize = JSON.stringify(rawData).length;
+    if (dataSize > 10 * 1024 * 1024) {
+      return new Response(JSON.stringify({ error: 'data size exceeds 10MB limit' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Insert into bronze layer (raw data)
     const { data: ingested, error: ingestError } = await supabase
       .from('data_lake_raw')
       .insert({
         customer_id: customerId,
-        source_system: sourceSystem.slice(0, 100),
-        source_table: sourceTable.slice(0, 100),
-        source_id: sourceId ? String(sourceId).slice(0, 200) : null,
+        source_system: sourceSystem,
+        source_table: sourceTable,
+        source_id: sourceId,
         raw_data: rawData,
         ingestion_method: method,
         data_size_bytes: dataSize,
