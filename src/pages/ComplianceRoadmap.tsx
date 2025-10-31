@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useComplianceRoadmap } from "@/hooks/useComplianceRoadmap";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,8 +30,51 @@ const ComplianceRoadmap = () => {
     details: string;
     success: boolean;
   } | null>(null);
-  const { stages, milestones, frameworks, isLoading, initializeRoadmap, isReady, isInitializing, probeFrameworks, isProbing } = useComplianceRoadmap(selectedFramework);
+  const { stages, milestones, frameworks, isLoading, initializeRoadmap, isReady, isInitializing, probeFrameworks, isProbing, customerId } = useComplianceRoadmap(selectedFramework);
   const { templateMaintenance } = useOperationsFunctions();
+  const [availableCustomers, setAvailableCustomers] = useState<Array<{id: string, company_name: string}>>([]);
+  const [isAssigningCustomer, setIsAssigningCustomer] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
+
+  // Load available customers for assignment
+  useEffect(() => {
+    const loadCustomers = async () => {
+      const { data } = await supabase
+        .from('customers')
+        .select('id, company_name')
+        .order('company_name');
+      if (data) setAvailableCustomers(data);
+    };
+    if (!customerId) loadCustomers();
+  }, [customerId]);
+
+  const handleAssignCustomer = async () => {
+    if (!selectedCustomerId) {
+      toast.error('Please select a customer');
+      return;
+    }
+    
+    setIsAssigningCustomer(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ customer_id: selectedCustomerId })
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      
+      toast.success('Customer assigned successfully');
+      window.location.reload(); // Reload to refresh customer context
+    } catch (err) {
+      console.error('Failed to assign customer:', err);
+      toast.error('Failed to assign customer');
+    } finally {
+      setIsAssigningCustomer(false);
+    }
+  };
 
   // Use shared utility functions
   const overallProgress = stages ? calculateOverallProgress(stages) : 0;
@@ -144,6 +187,53 @@ const ComplianceRoadmap = () => {
 
   if (isLoading) {
     return <LoadingSpinner fullScreen message="Loading compliance roadmap..." />;
+  }
+
+  // Show customer assignment if user has no customer_id
+  if (!customerId && !isLoading) {
+    return (
+      <DashboardLayout>
+        <PageHeader
+          title="Compliance Roadmap"
+          description="Track your journey from assessment to certification"
+          backButton={{ onClick: () => navigate('/compliance') }}
+        />
+        
+        <Card className="border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20">
+          <CardHeader>
+            <CardTitle className="text-amber-900 dark:text-amber-100">Customer Assignment Required</CardTitle>
+            <CardDescription>
+              You need to be assigned to a customer organization to use the compliance roadmap feature.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-4">
+              <Select value={selectedCustomerId} onValueChange={setSelectedCustomerId}>
+                <SelectTrigger className="w-[300px]">
+                  <SelectValue placeholder="Select your organization" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableCustomers.map((customer) => (
+                    <SelectItem key={customer.id} value={customer.id}>
+                      {customer.company_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button 
+                onClick={handleAssignCustomer} 
+                disabled={!selectedCustomerId || isAssigningCustomer}
+              >
+                {isAssigningCustomer ? 'Assigning...' : 'Assign Customer'}
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              If your organization isn't listed, please contact your administrator or create a customer record first.
+            </p>
+          </CardContent>
+        </Card>
+      </DashboardLayout>
+    );
   }
 
   return (

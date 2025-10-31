@@ -276,5 +276,6 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
     isInitializing: initializeRoadmapMutation.isPending,
     probeFrameworks: probeFrameworksMutation.mutateAsync,
     isProbing: probeFrameworksMutation.isPending,
+    customerId, // Expose customerId for component to check
   };
 };
