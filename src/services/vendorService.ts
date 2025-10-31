@@ -46,22 +46,30 @@ export class VendorService extends BaseService {
 
   static async createVendor(input: Partial<VendorInsert>, customerId: string, userId: string): Promise<ServiceResponse<Vendor>> {
     return this.executeQuery(async () => {
-      return await (supabase as any)
+      const { data, error } = await (supabase as any)
         .from('vendors')
         .insert([{ ...input, customer_id: customerId, created_by: userId }])
         .select()
-        .single();
+        .maybeSingle();
+      
+      if (error) return { data: null, error };
+      if (!data) return { data: null, error: new Error('Failed to create vendor') };
+      return { data, error: null };
     });
   }
 
   static async updateVendor(id: string, updates: VendorUpdate): Promise<ServiceResponse<Vendor>> {
     return this.executeQuery(async () => {
-      return await (supabase as any)
+      const { data, error } = await (supabase as any)
         .from('vendors')
         .update(updates)
         .eq('id', id)
         .select()
-        .single();
+        .maybeSingle();
+      
+      if (error) return { data: null, error };
+      if (!data) return { data: null, error: new Error('Vendor not found') };
+      return { data, error: null };
     });
   }
 
@@ -89,11 +97,15 @@ export class VendorService extends BaseService {
 
   static async createContract(input: VendorContractInsert): Promise<ServiceResponse<VendorContract>> {
     return this.executeQuery(async () => {
-      return await (supabase as any)
+      const { data, error } = await (supabase as any)
         .from('vendor_contracts')
         .insert([input])
         .select()
-        .single();
+        .maybeSingle();
+      
+      if (error) return { data: null, error };
+      if (!data) return { data: null, error: new Error('Failed to create contract') };
+      return { data, error: null };
     });
   }
 

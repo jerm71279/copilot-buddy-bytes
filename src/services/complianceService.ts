@@ -88,9 +88,10 @@ export class ComplianceService {
       .from("compliance_frameworks")
       .insert([input])
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Failed to create framework');
     return data;
   }
 
@@ -102,9 +103,10 @@ export class ComplianceService {
       .from("compliance_controls")
       .insert([input])
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Failed to create control');
     return data;
   }
 
@@ -116,9 +118,10 @@ export class ComplianceService {
       .from("compliance_reports")
       .insert([input])
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Failed to create report');
     return data;
   }
 
@@ -130,9 +133,10 @@ export class ComplianceService {
       .from("evidence_files")
       .insert([input])
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Failed to create evidence file');
     return data;
   }
 
@@ -145,9 +149,10 @@ export class ComplianceService {
       .update(updates)
       .eq("id", id)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Framework not found');
     return data;
   }
 
@@ -160,9 +165,10 @@ export class ComplianceService {
       .update(updates)
       .eq("id", id)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Control not found');
     return data;
   }
 

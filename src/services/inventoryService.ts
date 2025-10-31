@@ -30,9 +30,10 @@ export class InventoryItemService extends BaseService {
       .from('inventory_items')
       .insert([input])
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Failed to create inventory item');
     return data as InventoryItem;
   }
 
@@ -42,9 +43,10 @@ export class InventoryItemService extends BaseService {
       .update(updates)
       .eq('id', id)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Inventory item not found');
     return data as InventoryItem;
   }
 
@@ -79,9 +81,10 @@ export class WarehouseService extends BaseService {
       .from('warehouse_locations')
       .insert([input])
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Failed to create warehouse location');
     return data as WarehouseLocation;
   }
 
@@ -91,9 +94,10 @@ export class WarehouseService extends BaseService {
       .update(updates)
       .eq('id', id)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Warehouse location not found');
     return data as WarehouseLocation;
   }
 

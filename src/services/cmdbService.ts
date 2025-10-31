@@ -103,9 +103,10 @@ export class CMDBService {
       .from("configuration_items")
       .insert(ci as any)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Failed to create configuration item');
     return data as ConfigurationItem;
   }
 
@@ -118,9 +119,10 @@ export class CMDBService {
       .update(updates as any)
       .eq("id", id)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) throw new Error('Configuration item not found');
     return data as ConfigurationItem;
   }
 
