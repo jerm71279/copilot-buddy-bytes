@@ -16,11 +16,11 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
  * ```mermaid
  * graph TD
  *     A[User] -->|Visits /workflow-automation| B[WorkflowAutomation Component]
- *     B -->|useEffect| C[checkAuthAndLoad]
- *     C -->|Auth Check| D[supabase.auth.getSession]
+ *     B -->|useAutomationData Hook| C[useRequireAuth Check]
+ *     C -->|Auth Check| D[AuthService.getCurrentUser]
  *     
  *     D -->|Authenticated| E[loadWorkflows]
- *     E -->|Query| F[workflows Table]
+ *     E -->|Query via AutomationService| F[workflows Table]
  *     F -->|Return Data| G[setWorkflows State]
  *     
  *     E -->|Query| H[workflow_executions Table]

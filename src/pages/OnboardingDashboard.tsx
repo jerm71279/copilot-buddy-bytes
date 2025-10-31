@@ -22,11 +22,11 @@ import DashboardNavigation from "@/components/DashboardNavigation";
  * ```mermaid
  * graph TD
  *     A[User] -->|Visits /onboarding-dashboard| B[OnboardingDashboard Component]
- *     B -->|useEffect| C[checkAuthAndLoad]
- *     C -->|Auth Check| D[supabase.auth.getSession]
+ *     B -->|useUserProfile Hook| C[Auth Check & Profile Fetch]
+ *     C -->|Authenticated| D[AuthService.getCurrentUser]
  *     
- *     D -->|Authenticated| E[loadOnboardings]
- *     E -->|Query| F[client_onboardings Table]
+ *     D -->|Success| E[loadOnboardings]
+ *     E -->|Query via OnboardingService| F[client_onboardings Table]
  *     F -->|Order by created_at| G[setOnboardings State]
  *     
  *     G -->|Calculate Stats| H[Total, In Progress, Completed, Overdue]
