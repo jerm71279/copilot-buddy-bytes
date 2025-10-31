@@ -22,14 +22,65 @@ serve(async (req) => {
   }
 
   try {
-    const { videos, customerId, userId }: VideoAnalysisRequest = await req.json();
+    const requestData = await req.json();
 
-    if (!videos || videos.length === 0) {
+    // Validate request body type
+    if (!requestData || typeof requestData !== 'object') {
       return new Response(
-        JSON.stringify({ error: 'No videos provided' }),
+        JSON.stringify({ error: 'Invalid request body' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const videos = requestData.videos;
+    const customerId = String(requestData.customerId || '').slice(0, 100);
+    const userId = String(requestData.userId || '').slice(0, 100);
+
+    // Validate required fields
+    if (!customerId || !userId) {
+      return new Response(
+        JSON.stringify({ error: 'customerId and userId are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate videos array
+    if (!videos || !Array.isArray(videos) || videos.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'videos must be a non-empty array' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate array batch size
+    if (videos.length > 20) {
+      return new Response(
+        JSON.stringify({ error: 'Maximum 20 videos allowed per request' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Sanitize and validate each video object
+    const sanitizedVideos = videos.map((video: any) => {
+      if (!video || typeof video !== 'object') {
+        throw new Error('Each video must be an object');
+      }
+
+      const url = String(video.url || '').slice(0, 2000);
+      const title = String(video.title || '').slice(0, 300);
+      const description = video.description ? String(video.description).slice(0, 1000) : undefined;
+
+      if (!url || !title) {
+        throw new Error('Each video must have url and title');
+      }
+
+      // Basic URL validation
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        throw new Error('Video URL must be a valid HTTP/HTTPS URL');
+      }
+
+      return { url, title, description };
+    });
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -44,7 +95,7 @@ serve(async (req) => {
 
     // Analyze each video
     const videoInsights = [];
-    for (const video of videos) {
+    for (const video of sanitizedVideos) {
       console.log(`Processing video: ${video.title}`);
 
       // Create a prompt to analyze the video content
@@ -211,7 +262,7 @@ ${enhancedChecklist}
 
 ## 📚 Source Training Videos
 
-${videos.map((v, i) => `${i + 1}. [${v.title}](${v.url})`).join('\n')}
+${sanitizedVideos.map((v, i) => `${i + 1}. [${v.title}](${v.url})`).join('\n')}
 
 **Last Updated**: ${new Date().toISOString().split('T')[0]}
 **OberaConnect Integration**: Fully Automated
@@ -241,7 +292,7 @@ ${videos.map((v, i) => `${i + 1}. [${v.title}](${v.url})`).join('\n')}
         insightsCreated: insertedArticles.length,
         checklistCreated: true,
         checklistId: checklistArticle.id,
-        message: `Analyzed ${videos.length} videos, created ${insertedArticles.length} insight articles, and generated an AI-enhanced checklist`,
+        message: `Analyzed ${sanitizedVideos.length} videos, created ${insertedArticles.length} insight articles, and generated an AI-enhanced checklist`,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

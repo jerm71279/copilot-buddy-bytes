@@ -16,11 +16,32 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { filePath, customerId, source } = await req.json();
+    const requestData = await req.json();
+
+    // Validate request body type
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Extract and validate fields with length limits
+    const filePath = String(requestData.filePath || '').slice(0, 500);
+    const customerId = String(requestData.customerId || '').slice(0, 100);
+    const source = requestData.source ? String(requestData.source).slice(0, 200) : undefined;
 
     if (!filePath || !customerId) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
+        JSON.stringify({ error: 'Missing required fields: filePath and customerId' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate filePath doesn't contain path traversal
+    if (filePath.includes('..') || filePath.includes('\\')) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid filePath: path traversal not allowed' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
