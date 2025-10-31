@@ -33,21 +33,26 @@ serve(async (req) => {
 
     const { vendorId, customerId, vendorName } = requestData as { vendorId?: string; customerId?: string; vendorName?: string };
 
-    if (!vendorId || !customerId || !vendorName) {
+    // Validate and sanitize required fields
+    const sanitizedVendorId = vendorId ? String(vendorId).slice(0, 100) : null;
+    const sanitizedCustomerId = customerId ? String(customerId).slice(0, 100) : null;
+    const sanitizedVendorName = vendorName ? String(vendorName).slice(0, 200).trim() : null;
+
+    if (!sanitizedVendorId || !sanitizedCustomerId || !sanitizedVendorName) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields: vendorId, customerId, vendorName' }),
+        JSON.stringify({ error: 'vendorId, customerId, and vendorName are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Extracting API key instructions for vendor:', vendorName);
+    console.log('Extracting API key instructions for vendor:', sanitizedVendorName);
 
     // Fetch all documentation articles for this vendor
     const { data: articles, error: fetchError } = await supabase
       .from('knowledge_articles')
       .select('title, content')
-      .eq('vendor_id', vendorId)
-      .eq('customer_id', customerId)
+      .eq('vendor_id', sanitizedVendorId)
+      .eq('customer_id', sanitizedCustomerId)
       .order('created_at', { ascending: false })
       .limit(20);
 
@@ -68,8 +73,8 @@ serve(async (req) => {
       const { data: vendorRow, error: vendorErr } = await supabase
         .from('documentation_vendors')
         .select('documentation_url, website, vendor_name')
-        .eq('id', vendorId)
-        .eq('customer_id', customerId)
+        .eq('id', sanitizedVendorId)
+        .eq('customer_id', sanitizedCustomerId)
         .maybeSingle();
 
       if (vendorErr) {
@@ -102,7 +107,7 @@ serve(async (req) => {
               const firecrawlData = await firecrawlResp.json();
               const markdown = firecrawlData?.data?.markdown || '';
               if (markdown) {
-                combinedContent = `# ${vendorName} Documentation\n\n` + markdown.slice(0, 50000);
+                combinedContent = `# ${sanitizedVendorName} Documentation\n\n` + markdown.slice(0, 50000);
                 console.log('Successfully extracted content via Firecrawl');
               }
             } else {
@@ -122,7 +127,7 @@ serve(async (req) => {
                 .replace(/<[^>]+>/g, ' ')
                 .replace(/\s+/g, ' ')
                 .trim();
-              combinedContent = `# ${vendorName} Documentation\n\n` + text.slice(0, 50000);
+              combinedContent = `# ${sanitizedVendorName} Documentation\n\n` + text.slice(0, 50000);
             } else {
               console.warn('Fallback URL fetch failed with status', resp.status);
             }
@@ -167,7 +172,7 @@ Format your response as a structured JSON object with these fields:
 
 If you cannot find clear API key instructions, return an error message in the summary field.`;
 
-    const userPrompt = `Extract API key setup instructions for ${vendorName} from the following documentation:\n\n${combinedContent}`;
+    const userPrompt = `Extract API key setup instructions for ${sanitizedVendorName} from the following documentation:\n\n${combinedContent}`;
 
     // Call Lovable AI Gateway (OpenAI-compatible)
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -243,8 +248,8 @@ If you cannot find clear API key instructions, return an error message in the su
         api_key_instructions: instructions,
         updated_at: new Date().toISOString()
       })
-      .eq('id', vendorId)
-      .eq('customer_id', customerId);
+      .eq('id', sanitizedVendorId)
+      .eq('customer_id', sanitizedCustomerId);
 
     if (updateError) {
       console.error('Failed to save instructions to vendor:', updateError);
@@ -254,7 +259,7 @@ If you cannot find clear API key instructions, return an error message in the su
     return new Response(
       JSON.stringify({
         success: true,
-        vendorName,
+        vendorName: sanitizedVendorName,
         instructions
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

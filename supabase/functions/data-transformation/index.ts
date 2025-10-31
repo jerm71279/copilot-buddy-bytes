@@ -22,14 +22,45 @@ serve(async (req) => {
 
     const { supabase, customerId } = await getAuthContext(authHeader);
 
+    // Parse and validate request body
     const requestData = await req.json();
-    const { rawDataId, domain, entityType, transformations } = requestData;
-
-    if (!rawDataId || !domain || !entityType) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+    
+    // Validate request body type
+    if (!requestData || typeof requestData !== 'object') {
+      return new Response(JSON.stringify({ error: 'Invalid request body' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // Extract and validate required fields
+    const rawDataId = requestData.rawDataId ? String(requestData.rawDataId).slice(0, 100) : null;
+    const domain = String(requestData.domain || '').slice(0, 50).trim();
+    const entityType = String(requestData.entityType || '').slice(0, 50).trim();
+    const transformations = requestData.transformations;
+
+    if (!rawDataId || !domain || !entityType) {
+      return new Response(JSON.stringify({ error: 'rawDataId, domain, and entityType are required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate transformations array
+    if (transformations !== undefined) {
+      if (!Array.isArray(transformations)) {
+        return new Response(JSON.stringify({ error: 'transformations must be an array' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (transformations.length > 100) {
+        return new Response(JSON.stringify({ error: 'Maximum 100 transformation rules allowed' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
     }
 
     // Fetch raw data
@@ -53,19 +84,30 @@ serve(async (req) => {
 
     if (transformations && Array.isArray(transformations)) {
       for (const rule of transformations) {
-        if (rule.type === 'rename' && rule.from && rule.to) {
-          if (transformedData[rule.from]) {
-            transformedData[rule.to] = transformedData[rule.from];
-            delete transformedData[rule.from];
-            appliedRules.push(`Renamed ${rule.from} to ${rule.to}`);
+        // Validate and sanitize rule fields
+        const ruleType = String(rule.type || '').slice(0, 50);
+        const ruleFrom = rule.from ? String(rule.from).slice(0, 100) : null;
+        const ruleTo = rule.to ? String(rule.to).slice(0, 100) : null;
+        const ruleField = rule.field ? String(rule.field).slice(0, 100) : null;
+        const ruleValue = rule.value;
+
+        if (ruleType === 'rename' && ruleFrom && ruleTo) {
+          if (transformedData[ruleFrom]) {
+            transformedData[ruleTo] = transformedData[ruleFrom];
+            delete transformedData[ruleFrom];
+            appliedRules.push(`Renamed ${ruleFrom} to ${ruleTo}`);
           }
-        } else if (rule.type === 'filter' && rule.field && rule.value) {
-          if (transformedData[rule.field] === rule.value) {
-            appliedRules.push(`Filtered ${rule.field} = ${rule.value}`);
+        } else if (ruleType === 'filter' && ruleField && ruleValue !== undefined) {
+          if (transformedData[ruleField] === ruleValue) {
+            appliedRules.push(`Filtered ${ruleField} = ${String(ruleValue).slice(0, 100)}`);
           }
-        } else if (rule.type === 'enrich' && rule.field && rule.value) {
-          transformedData[rule.field] = rule.value;
-          appliedRules.push(`Enriched ${rule.field}`);
+        } else if (ruleType === 'enrich' && ruleField && ruleValue !== undefined) {
+          // Sanitize value if it's a string
+          const sanitizedValue = typeof ruleValue === 'string' 
+            ? String(ruleValue).slice(0, 1000) 
+            : ruleValue;
+          transformedData[ruleField] = sanitizedValue;
+          appliedRules.push(`Enriched ${ruleField}`);
         }
       }
     }
@@ -85,8 +127,8 @@ serve(async (req) => {
       .insert({
         customer_id: customerId,
         raw_data_id: rawDataId,
-        domain: domain.slice(0, 50),
-        entity_type: entityType.slice(0, 50),
+        domain: domain,
+        entity_type: entityType,
         entity_id: transformedData.id || null,
         transformed_data: transformedData,
         transformation_rules: appliedRules,

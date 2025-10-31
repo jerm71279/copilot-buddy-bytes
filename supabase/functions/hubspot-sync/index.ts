@@ -83,13 +83,33 @@ serve(async (req) => {
         break;
       
       case 'createContact':
+        // Validate data object for createContact
+        if (!data || typeof data !== 'object') {
+          return new Response(
+            JSON.stringify({ error: 'data object is required for createContact action' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Sanitize data properties (limit string lengths)
+        const sanitizedData: Record<string, any> = {};
+        for (const [key, value] of Object.entries(data)) {
+          const sanitizedKey = String(key).slice(0, 100);
+          if (typeof value === 'string') {
+            sanitizedData[sanitizedKey] = String(value).slice(0, 500);
+          } else if (typeof value === 'number' || typeof value === 'boolean') {
+            sanitizedData[sanitizedKey] = value;
+          }
+          // Skip other types for security
+        }
+
         result = await fetch('https://api.hubapi.com/crm/v3/objects/contacts', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${hubspotApiKey}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ properties: data })
+          body: JSON.stringify({ properties: sanitizedData })
         });
         break;
       
