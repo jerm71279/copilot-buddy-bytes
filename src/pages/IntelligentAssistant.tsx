@@ -17,8 +17,7 @@ import {
   FileText,
   TrendingUp,
   Sparkles,
-} from "lucide-react";
-import DashboardNavigation from "@/components/DashboardNavigation";
+  } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
@@ -177,24 +176,6 @@ const IntelligentAssistant = () => {
           </Button>
         </div>
       </nav>
-
-      <DashboardNavigation
-          title="Intelligent Assistant"
-          dashboards={[
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Employee Portal", path: "/portal" },
-            { name: "Analytics Portal", path: "/analytics" },
-            { name: "Compliance Portal", path: "/compliance" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Executive Dashboard", path: "/dashboard/executive" },
-            { name: "Finance Dashboard", path: "/dashboard/finance" },
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "IT Dashboard", path: "/dashboard/it" },
-            { name: "Operations Dashboard", path: "/dashboard/operations" },
-            { name: "Sales Dashboard", path: "/dashboard/sales" },
-            { name: "SOC Dashboard", path: "/dashboard/soc" },
-          ]}
-        />
 
         {/* Learning Metrics */}
         {metrics && (

@@ -11,7 +11,6 @@ import { ArrowLeft, Plus } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
-import DashboardNavigation from "@/components/DashboardNavigation";
 
 interface Template {
   id: string;
@@ -112,13 +111,6 @@ export default function OnboardingNew() {
 
   return (
     <DashboardLayout showDashboardNavigation={false}>
-      <DashboardNavigation
-          title="New Client Onboarding"
-          dashboards={[
-            { name: "Onboarding Dashboard", path: "/onboarding" },
-            { name: "Templates", path: "/onboarding/templates" },
-          ]}
-        />
 
         <div className="mb-6">
           <Button

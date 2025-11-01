@@ -14,7 +14,6 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
-import DashboardNavigation from "@/components/DashboardNavigation";
 
 export default function NinjaOneIntegration() {
   const navigate = useNavigate();

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
-import DashboardNavigation from '@/components/DashboardNavigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -225,7 +224,6 @@ export default function LinkValidationTool() {
 
   return (
     <DashboardLayout>
-      <DashboardNavigation />
       <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Link Validation Tool</h1>
           <p className="text-muted-foreground">

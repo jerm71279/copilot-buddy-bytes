@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -46,7 +45,6 @@ const DataFlowPortal = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-background">
       <main className="container mx-auto px-4 pb-8" style={{ paddingTop: 'calc(var(--lanes-bottom, 0px) + 2rem)' }}>
-        <DashboardNavigation />
         
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">

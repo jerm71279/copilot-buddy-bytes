@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useStandardToast } from "@/hooks/useStandardToast";
 import { ArrowLeft, Save } from "lucide-react";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { useOnboardingRoles, useOnboardingUsers, useOnboardingTemplates } from "@/hooks/useOnboardingData";
 import { useOnboardingTemplateTasks } from "@/hooks/useOnboardingTemplateTasks";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";

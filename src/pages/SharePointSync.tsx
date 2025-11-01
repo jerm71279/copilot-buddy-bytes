@@ -20,7 +20,6 @@ import {
   Clock,
   FileText,
 } from "lucide-react";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import {
   Dialog,
   DialogContent,

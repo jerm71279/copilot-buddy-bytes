@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, Monitor, Network, AlertTriangle, Key } from "lucide-react";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import TrustedDevicesManager from "@/components/saw/TrustedDevicesManager";
 import IPAllowlistManager from "@/components/saw/IPAllowlistManager";
 import DeviceSessionsMonitor from "@/components/saw/DeviceSessionsMonitor";
@@ -13,14 +12,6 @@ export default function SAWManagement() {
 
   return (
     <DashboardLayout>
-      <DashboardNavigation 
-        title="Secure Access Workstations (SAW)"
-        dashboards={[
-          { name: "Admin", path: "/admin" },
-          { name: "RBAC", path: "/rbac" },
-          { name: "Privileged Access", path: "/audit/privileged-access" },
-        ]}
-      />
       
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">

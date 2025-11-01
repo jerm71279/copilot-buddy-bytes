@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import DashboardNavigation from "@/components/DashboardNavigation";
 import ExternalSystemsBar from "@/components/ExternalSystemsBar";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -144,15 +143,6 @@ const CIPPDashboard = () => {
   return (
     <DashboardLayout showDashboardNavigation={false}>
       <ExternalSystemsBar />
-        <DashboardNavigation 
-          dashboards={[
-            { name: "CIPP Dashboard", path: "/cipp" },
-            { name: "Admin Dashboard", path: "/admin" },
-            { name: "Change Management", path: "/change-management" },
-            { name: "Onboarding Dashboard", path: "/onboarding" },
-            { name: "Compliance Portal", path: "/compliance" },
-          ]}
-        />
 
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">

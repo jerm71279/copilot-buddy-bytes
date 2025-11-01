@@ -8,7 +8,6 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useStandardToast } from "@/hooks/useStandardToast";
 import { ArrowLeft, Mail, Phone, Calendar, Building, Briefcase, User, MapPin, Home, Pencil, CheckCircle2, Circle, Clock } from "lucide-react";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { calculateProgress, syncOnboardingProgress } from "@/hooks/useOnboardingProgress";
 import { useOnboardingTemplateTasks } from "@/hooks/useOnboardingTemplateTasks";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";

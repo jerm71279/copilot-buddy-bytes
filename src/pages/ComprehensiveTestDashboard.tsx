@@ -27,12 +27,11 @@ import {
   AlertTriangle,
   Copy,
   ExternalLink
-} from 'lucide-react';
+  } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardSettingsMenu } from '@/components/DashboardSettingsMenu';
 import { DepartmentAIAssistant } from '@/components/DepartmentAIAssistant';
 import MCPServerStatus from '@/components/MCPServerStatus';
-import DashboardNavigation from '@/components/DashboardNavigation';
 
 interface TestCase {
   id: string;
@@ -183,23 +182,6 @@ export default function ComprehensiveTestDashboard() {
 
   return (
     <DashboardLayout className="max-w-7xl mx-auto space-y-6">
-      <DashboardNavigation
-        title="Comprehensive Testing Dashboard"
-        dashboards={[
-          { name: "Admin Dashboard", path: "/admin" },
-          { name: "Employee Portal", path: "/portal" },
-          { name: "Analytics Portal", path: "/analytics" },
-          { name: "Compliance Portal", path: "/compliance" },
-          { name: "Change Management", path: "/change-management" },
-          { name: "Executive Dashboard", path: "/dashboard/executive" },
-          { name: "Finance Dashboard", path: "/dashboard/finance" },
-          { name: "HR Dashboard", path: "/dashboard/hr" },
-          { name: "IT Dashboard", path: "/dashboard/it" },
-          { name: "Operations Dashboard", path: "/dashboard/operations" },
-          { name: "Sales Dashboard", path: "/dashboard/sales" },
-          { name: "SOC Dashboard", path: "/dashboard/soc" },
-        ]}
-      />
       
       <div className="mb-8 flex justify-between items-center">
           <p className="text-muted-foreground">

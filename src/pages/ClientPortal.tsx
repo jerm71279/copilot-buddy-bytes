@@ -1,5 +1,4 @@
 import { useState } from "react";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,10 +32,6 @@ export default function ClientPortal() {
 
   return (
     <DashboardLayout className="max-w-7xl mx-auto space-y-6">
-      <DashboardNavigation
-        title="Client Portal"
-        dashboards={clientPortalDashboards}
-      />
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Client Portal</h1>

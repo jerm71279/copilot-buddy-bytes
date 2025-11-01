@@ -15,7 +15,6 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from "@/hooks/useStandardToast";
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { useOperationsFunctions } from "@/hooks/useOperationsFunctions";
 
 export default function NetworkMonitoring() {
@@ -134,14 +133,6 @@ export default function NetworkMonitoring() {
 
   return (
     <DashboardLayout showDashboardNavigation={false}>
-      <DashboardNavigation 
-        title="Network Monitoring"
-        dashboards={[
-          { name: "IT Dashboard", path: "/dashboard/it" },
-          { name: "SOC Dashboard", path: "/dashboard/soc" },
-          { name: "CMDB", path: "/cmdb" },
-        ]}
-      />
         
         <div className="flex justify-between items-center mb-6">
           <div>

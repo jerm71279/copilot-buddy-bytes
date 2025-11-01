@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
-import DashboardNavigation from "@/components/DashboardNavigation";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -155,13 +154,6 @@ const CMDBItemDetail = () => {
 
   return (
     <DashboardLayout showDashboardNavigation={false}>
-        <DashboardNavigation
-          title="Configuration Item Details"
-          dashboards={[
-            { name: "CMDB Dashboard", path: "/cmdb" },
-            { name: "Change Management", path: "/change-management" },
-          ]}
-        />
 
         {/* Header */}
         <div className="flex items-center justify-end gap-2 mb-6">
