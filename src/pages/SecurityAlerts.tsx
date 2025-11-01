@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -96,12 +97,12 @@ export default function SecurityAlerts() {
 
   const acknowledgeAlert = useMutation({
     mutationFn: async (alertId: string) => {
-      const { data: user } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       const { error } = await supabase
         .from('security_alerts' as any)
         .update({
           status: 'acknowledged',
-          acknowledged_by: user.user?.id,
+          acknowledged_by: user?.id,
           acknowledged_at: new Date().toISOString()
         })
         .eq('id', alertId);
@@ -116,12 +117,12 @@ export default function SecurityAlerts() {
 
   const resolveAlert = useMutation({
     mutationFn: async ({ alertId, notes }: { alertId: string; notes: string }) => {
-      const { data: user } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       const { error } = await supabase
         .from('security_alerts' as any)
         .update({
           status: 'resolved',
-          resolved_by: user.user?.id,
+          resolved_by: user?.id,
           resolved_at: new Date().toISOString(),
           resolution_notes: notes
         })
@@ -142,7 +143,7 @@ export default function SecurityAlerts() {
       const alert = alerts.find(a => a.id === alertId);
       if (!alert) throw new Error('Alert not found');
       
-      const { data: user } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       
       const { data: incident, error: incidentError } = await supabase
         .from('security_incidents' as any)
@@ -154,7 +155,7 @@ export default function SecurityAlerts() {
           description: `Alert ${alert.alert_id} escalated to incident`,
           initial_detection_time: alert.created_at,
           related_alerts: [alertId],
-          reported_by: user.user?.id
+          reported_by: user?.id
         })
         .select()
         .maybeSingle();

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +31,7 @@ const SecurityTraining = () => {
   const { data: completions, isLoading: completionsLoading } = useQuery({
     queryKey: ["security-training-completions"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
@@ -46,7 +47,7 @@ const SecurityTraining = () => {
   const { data: acknowledgments } = useQuery({
     queryKey: ["security-acknowledgments"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
@@ -75,7 +76,7 @@ const SecurityTraining = () => {
   };
 
   const startModule = async (moduleId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await AuthService.getCurrentUser();
     if (!user) return;
 
     const existing = getModuleCompletion(moduleId);

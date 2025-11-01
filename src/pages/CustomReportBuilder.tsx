@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,16 +51,11 @@ export default function CustomReportBuilder() {
 
   const createReport = useMutation({
     mutationFn: async (report: typeof newReport) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) {
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) {
         toast.error("Profile not found");
         return;
       }
@@ -69,7 +65,7 @@ export default function CustomReportBuilder() {
         .insert({
           report_name: report.report_name,
           description: report.description,
-          customer_id: profile?.customer_id!,
+          customer_id: customerId,
           created_by: user.id,
           report_type: "custom",
           data_sources: report.data_sources.length > 0 ? report.data_sources : [
@@ -95,16 +91,11 @@ export default function CustomReportBuilder() {
 
   const executeReport = useMutation({
     mutationFn: async (reportId: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) {
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) {
         toast.error("Profile not found");
         return;
       }
@@ -113,7 +104,7 @@ export default function CustomReportBuilder() {
         body: {
           action: "execute_report",
           reportId,
-          customerId: profile?.customer_id
+          customerId
         },
       });
       if (error) throw error;

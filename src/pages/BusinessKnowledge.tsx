@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDocumentationFunctions } from "@/hooks/useDocumentationFunctions";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -142,24 +143,19 @@ export default function BusinessKnowledge() {
 
     setIsUploading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer ID found");
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) throw new Error("No customer ID found");
 
       if (uploadType === "url") {
         await ingestDocumentation.invoke({ 
           url: uploadUrl,
-          metadata: { customerId: profile.customer_id, source: uploadSource }
+          metadata: { customerId, source: uploadSource }
         });
       } else {
-        const filePath = `${profile.customer_id}/${Date.now()}-${uploadFile!.name}`;
+        const filePath = `${customerId}/${Date.now()}-${uploadFile!.name}`;
         const { error: uploadError } = await supabase.storage.from('business-documents').upload(filePath, uploadFile!);
         if (uploadError) throw uploadError;
         await parseDocument.invoke({ 
@@ -196,16 +192,11 @@ export default function BusinessKnowledge() {
 
     setIsReingesting(article.id);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer ID found");
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) throw new Error("No customer ID found");
 
       // Delete old article
       await supabase
@@ -215,7 +206,7 @@ export default function BusinessKnowledge() {
 
       await ingestDocumentation.invoke({ 
         url: article.source_metadata.url,
-        metadata: { customerId: profile.customer_id, source: article.source_metadata.source || 'Unknown' }
+        metadata: { customerId, source: article.source_metadata.source || 'Unknown' }
       });
 
       toast.success("The page is being re-processed");
