@@ -6,12 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Video, Plus, Trash2, Sparkles } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { useDocumentationFunctions } from "@/hooks/useDocumentationFunctions";
+import { AuthService } from "@/services/authService";
 
 interface VideoInput {
   id: string;
@@ -87,7 +87,7 @@ export default function IngestTrainingVideos() {
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) {
         toast.error("You must be logged in");
         return;

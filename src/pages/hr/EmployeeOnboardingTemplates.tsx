@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -47,19 +48,14 @@ export default function EmployeeOnboardingTemplates() {
   const loadTemplates = async () => {
     try {
       // Get current user's customer_id
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) {
         navigate('/auth');
         return;
       }
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) {
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) {
         toast.error("Please complete your profile setup first.");
         setIsLoading(false);
         return;
@@ -68,7 +64,7 @@ export default function EmployeeOnboardingTemplates() {
       const { data, error } = await supabase
         .from('employee_onboarding_templates')
         .select('*')
-        .eq('customer_id', profile.customer_id)
+        .eq('customer_id', customerId)
         .order('created_at', { ascending: false});
 
       if (error) throw error;
@@ -83,22 +79,17 @@ export default function EmployeeOnboardingTemplates() {
 
   const handleCreateTemplate = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer profile found");
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) throw new Error("No customer profile found");
 
       const { error } = await supabase
         .from('employee_onboarding_templates')
         .insert({
           ...formData,
-          customer_id: profile.customer_id,
+          customer_id: customerId,
           created_by: user.id
         });
 
@@ -142,20 +133,15 @@ export default function EmployeeOnboardingTemplates() {
 
   const handleCreateStandardTemplate = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer profile found");
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) throw new Error("No customer profile found");
 
       const { data, error } = await supabase
         .rpc('create_employee_onboarding_template', {
-          _customer_id: profile.customer_id,
+          _customer_id: customerId,
           _created_by: user.id
         });
 

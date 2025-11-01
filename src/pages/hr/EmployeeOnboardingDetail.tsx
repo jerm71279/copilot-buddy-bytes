@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -89,7 +90,7 @@ export default function EmployeeOnboardingDetail() {
 
       // Check if we have a template but no tasks - copy from template using modularized hook
       if (onboardingData.template_id) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await AuthService.getCurrentUser();
         if (user) {
           await copyTasks(id, onboardingData.template_id, user.id);
         }
@@ -150,7 +151,7 @@ export default function EmployeeOnboardingDetail() {
       const updates: any = { status: newStatus };
       if (newStatus === 'completed') {
         updates.completed_at = new Date().toISOString();
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await AuthService.getCurrentUser();
         if (user) {
           updates.completed_by = user.id;
         }

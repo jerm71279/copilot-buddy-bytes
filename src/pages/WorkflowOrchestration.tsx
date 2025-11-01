@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,21 +34,16 @@ export default function WorkflowOrchestration() {
   const { data: workflows, isLoading } = useQuery({
     queryKey: ["workflow-templates"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer ID");
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) throw new Error("No customer ID");
 
       const { data, error } = await supabase
         .from("workflow_templates" as any)
         .select("*")
-        .eq("customer_id", profile.customer_id)
+        .eq("customer_id", customerId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -59,21 +55,16 @@ export default function WorkflowOrchestration() {
   const { data: analytics } = useQuery({
     queryKey: ["workflow-analytics"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("No customer ID");
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) throw new Error("No customer ID");
 
       const { data, error } = await supabase
         .from("workflow_analytics" as any)
         .select("*")
-        .eq("customer_id", profile.customer_id)
+        .eq("customer_id", customerId)
         .gte("date", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
 
       if (error) throw error;
@@ -103,14 +94,10 @@ export default function WorkflowOrchestration() {
   // Clone workflow mutation
   const cloneWorkflowMutation = useMutation({
     mutationFn: async (workflowId: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const customerId = await AuthService.getCustomerId(user.id);
 
       const workflow = workflows?.find((w: any) => w.id === workflowId) as any;
       if (!workflow) throw new Error("Workflow not found");
@@ -118,7 +105,7 @@ export default function WorkflowOrchestration() {
       const { error } = await supabase
         .from("workflow_templates" as any)
         .insert({
-          customer_id: profile?.customer_id,
+          customer_id: customerId,
           name: `${workflow?.name || 'Workflow'} (Copy)`,
           description: workflow?.description || "",
           category: workflow?.category || "automation",

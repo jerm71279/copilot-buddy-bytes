@@ -16,9 +16,9 @@
 - **Standard Pattern:** `max-w-7xl mx-auto space-y-6`
 - **Uniformity Score:** 67/100 → **95/100**
 
-#### 3. Auth Centralization - Phase 1 & 2
-**Status:** ✅ Phase 1 Complete | 🔄 Phase 2 Complete
-**Progress:** 16 of ~72 files refactored (22% complete)
+#### 3. Auth Centralization - Phases 1-4
+**Status:** ✅ Phases 1-4 Complete
+**Progress:** 29 of ~72 files refactored (40% complete)
 
 **Refactored Files (16 total):**
 
@@ -38,7 +38,7 @@
 11. ✅ `src/pages/SecurityAlerts.tsx` (3 auth calls removed)
 12. ✅ `src/pages/SecurityTraining.tsx` (3 auth calls removed)
 
-**Phase 3 (8 files - just completed):**
+**Phase 3 (8 files):**
 13. ✅ `src/pages/InsightQueue.tsx` (2 auth calls removed)
 14. ✅ `src/pages/SecurityTrainingModule.tsx` (2 auth calls removed)
 15. ✅ `src/pages/CMDBAddItem.tsx` (1 auth call removed)
@@ -48,10 +48,21 @@
 19. ✅ `src/pages/EmployeeFeedback.tsx` (1 auth call removed)
 20. ✅ `src/pages/FeedbackMetrics.tsx` (1 auth call + profile query removed)
 
+**Phase 4 (9 files - just completed):**
+21. ✅ `src/pages/IngestTrainingVideos.tsx` (1 auth call removed)
+22. ✅ `src/pages/OnboardingTemplates.tsx` (2 auth calls removed)
+23. ✅ `src/pages/WorkflowOrchestration.tsx` (3 auth calls removed)
+24. ✅ `src/pages/hr/EmployeeOnboardingTemplates.tsx` (3 auth calls removed)
+25. ✅ `src/pages/hr/EmployeeOnboardingDetail.tsx` (2 auth calls removed)
+26. ✅ `src/pages/VendorManagement.tsx` (1 auth call removed)
+27. ✅ `src/pages/VendorDetail.tsx` (1 auth call removed)
+28. ✅ `src/pages/NetworkDeviceNew.tsx` (1 auth call removed)
+29. ✅ `src/pages/ChangeManagementNew.tsx` (1 auth call removed)
+
 **Impact:**
-- Eliminated **42+ duplicate auth+profile query patterns**
+- Eliminated **57+ duplicate auth+profile query patterns**
 - Single source of truth for all authentication
-- Reduced direct auth calls: 72 → **~48 files** (33% reduction)
+- Reduced direct auth calls: 72 → **~39 files** (46% reduction)
 - Improved type safety and error handling consistency
 
 #### 4. Validation Metrics (Before → After)
@@ -59,16 +70,16 @@
 - **Unique max-widths:** 2 → **1** (`max-w-7xl` only) ✅
 - **Layout Usage:** 93% → **93%** (maintained) ✅
 - **Modularization Score:** 100/100 (unchanged) ✅
-- **Auth Centralization:** 0/100 → **28/100** 🟡 (24 files refactored)
-- **Direct Auth Calls:** 72 files → **~48 files** (33% reduction)
+- **Auth Centralization:** 0/100 → **40/100** 🟡 (29 files refactored)
+- **Direct Auth Calls:** 72 files → **~39 files** (46% reduction)
 
 ---
 
 ### 🔄 In Progress
 
-#### Auth Centralization - Phase 4
-**Status:** 24 of ~72 files refactored (33% complete)
-**Remaining:** ~48 files still using direct `supabase.auth` calls
+#### Auth Centralization - Phase 5
+**Status:** 29 of ~72 files refactored (40% complete)
+**Remaining:** ~39 files still using direct `supabase.auth` calls
 
 **Pattern Applied:**
 ```typescript
@@ -81,18 +92,27 @@ const user = await AuthService.getCurrentUser();
 const customerId = await AuthService.getCustomerId(user.id);
 ```
 
-**Next Batch Target (~48 remaining files):**
-- src/pages/IngestTrainingVideos.tsx
-- src/pages/Microsoft365Integration.tsx
-- src/pages/OnboardingTemplates.tsx (3 calls)
-- src/pages/WorkflowOrchestration.tsx (3 calls)
-- src/pages/EmployeeOnboardingTemplates.tsx (3 calls)
-- src/pages/EmployeeOnboardingDetail.tsx (2 calls)
-- src/pages/VendorManagement.tsx
-- src/pages/VendorDetail.tsx
-- src/pages/NetworkDeviceNew.tsx
-- src/pages/ChangeManagementNew.tsx
-- + ~38 more files
+**Next Batch Target (~39 remaining files):**
+- src/pages/CIPPDashboard.tsx
+- src/pages/DepartmentFeedback.tsx
+- src/pages/IntelligentAssistant.tsx
+- src/pages/KnowledgeArticle.tsx
+- src/pages/KnowledgeUpload.tsx
+- src/pages/OnboardingNew.tsx
+- src/pages/PhishingSimulations.tsx
+- src/pages/PredictiveInsights.tsx
+- src/pages/PurchaseOrders.tsx
+- src/pages/RBACPortal.tsx
+- src/pages/RemediationRules.tsx
+- src/pages/SalesQuotes.tsx
+- src/pages/UploadNetworkChecklist.tsx
+- src/pages/VendorDocumentation.tsx
+- src/pages/VisualWorkflowBuilder.tsx
+- src/pages/WorkflowBuilder.tsx
+- src/pages/hr/EmployeeOnboardingDashboard.tsx
+- src/pages/hr/EmployeeOnboardingEdit.tsx
+- src/pages/hr/EmployeeOnboardingNew.tsx
+- + ~20 more files
 
 ---
 
@@ -103,9 +123,10 @@ const customerId = await AuthService.getCustomerId(user.id);
    - [x] Phase 1: Refactor 8 critical files (COMPLETED)
    - [x] Phase 2: Refactor 4 high-traffic files with multiple calls (COMPLETED)
    - [x] Phase 3: Refactor 8 more files (COMPLETED)
-   - [ ] Phase 4: Refactor remaining ~48 files
-   - [ ] Phase 5: Add ESLint rule to prevent direct auth calls
-   - **Current:** 33% complete (24/72 files)
+   - [x] Phase 4: Refactor 9 more files (COMPLETED)
+   - [ ] Phase 5: Refactor remaining ~39 files
+   - [ ] Phase 6: Add ESLint rule to prevent direct auth calls
+   - **Current:** 40% complete (29/72 files)
    - **Target:** Reduce from 72 to <5 direct calls (Auth.tsx, ClientAuth.tsx, authHelpers.ts only)
 
 2. **Test CLI AI Function**
@@ -158,4 +179,4 @@ node scripts/layout-validation.js
 
 ---
 
-Last Updated: 2025-11-01 17:00 UTC
+Last Updated: 2025-11-01 18:30 UTC
