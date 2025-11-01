@@ -52,7 +52,7 @@ const DeploymentPlanner = () => {
   }
 
   return (
-    <DashboardLayout className="max-w-[1800px] overflow-x-hidden">
+    <DashboardLayout className="max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-4xl font-bold mb-2">Deployment Planner</h1>

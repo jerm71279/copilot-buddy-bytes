@@ -124,7 +124,7 @@ export default function IngestTrainingVideos() {
   };
 
   return (
-    <DashboardLayout className="max-w-4xl mx-auto">
+    <DashboardLayout className="max-w-7xl mx-auto space-y-6">
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
