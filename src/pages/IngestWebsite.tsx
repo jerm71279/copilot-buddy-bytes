@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useDocumentationFunctions } from '@/hooks/useDocumentationFunctions';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -13,6 +14,7 @@ export default function IngestWebsite() {
   const [content, setContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { ingestDocumentation } = useDocumentationFunctions();
+  const { customerId, isLoading: profileLoading } = useUserProfile();
 
   const handleFetchWebsite = async () => {
     if (!url) {
@@ -39,12 +41,19 @@ export default function IngestWebsite() {
       return;
     }
 
+    if (!customerId) {
+      toast.error('Unable to fetch your customer ID. Please try refreshing the page.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       await ingestDocumentation.invoke({
+        url: url || 'manual-input',
         title,
         content,
         source: url || 'manual-input',
+        customerId,
         category: 'website',
         metadata: {
           tags: ['website', 'documentation']
@@ -120,13 +129,18 @@ export default function IngestWebsite() {
 
             <Button
               onClick={handleIngest}
-              disabled={isLoading || !content || !title}
+              disabled={isLoading || !content || !title || profileLoading || !customerId}
               className="w-full"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Ingesting...
+                </>
+              ) : profileLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Loading...
                 </>
               ) : (
                 'Ingest Content'
