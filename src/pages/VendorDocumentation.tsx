@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStandardToast } from "@/hooks/useStandardToast";
 import { Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import DashboardNavigation from "@/components/DashboardNavigation";
+
 import { useAuthFunctions } from "@/hooks/useAuthFunctions";
 
 interface Vendor {
@@ -191,7 +191,7 @@ setFormData({
 
   return (
     <DashboardLayout>
-      <DashboardNavigation />
+      
       <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold">Vendor Documentation Management</h1>

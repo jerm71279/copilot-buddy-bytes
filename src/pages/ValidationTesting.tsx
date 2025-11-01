@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
-import DashboardNavigation from '@/components/DashboardNavigation';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -188,7 +188,7 @@ export default function ValidationTesting() {
 
   return (
     <DashboardLayout>
-      <DashboardNavigation />
+      
       <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Input Validation Testing</h1>
           <p className="text-muted-foreground">

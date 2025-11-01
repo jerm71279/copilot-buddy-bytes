@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogOut, MessageSquare } from "lucide-react";
-import DashboardNavigation from "@/components/DashboardNavigation";
+
 import { useSlackSync } from "@/hooks/useSlackSync";
 import { AddWorkspaceDialog } from "@/components/slack/AddWorkspaceDialog";
 import { WorkspaceList } from "@/components/slack/WorkspaceList";
@@ -35,14 +35,6 @@ const SlackSync = () => {
         </div>
       </nav>
 
-      <DashboardNavigation
-          title="Slack Sync"
-          dashboards={[
-            { name: "Knowledge Base", path: "/knowledge" },
-            { name: "SharePoint Sync", path: "/sharepoint-sync" },
-            { name: "Intelligent Assistant", path: "/intelligent-assistant" },
-          ]}
-        />
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Connected Workspaces */}
