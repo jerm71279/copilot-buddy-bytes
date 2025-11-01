@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { useToast } from "@/hooks/use-toast";
 
 interface TaskDetectionParams {
@@ -13,7 +14,7 @@ export const useRepetitiveTaskDetection = () => {
 
   const detectTask = useCallback(async ({ actionType, systemName, context }: TaskDetectionParams) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) {
         console.log('No authenticated user for task detection');
         return;

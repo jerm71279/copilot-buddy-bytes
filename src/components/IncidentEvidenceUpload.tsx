@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -65,22 +66,17 @@ export default function IncidentEvidenceUpload({
     setIsUploading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("Customer ID not found");
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) throw new Error("Customer ID not found");
 
       // Insert evidence file record
       const { error } = await supabase
         .from('evidence_files')
         .insert({
-          customer_id: profile.customer_id,
+          customer_id: customerId,
           incident_id: incidentId,
           file_name: file.name,
           file_type: file.type,

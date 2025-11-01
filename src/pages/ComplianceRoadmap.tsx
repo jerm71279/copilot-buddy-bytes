@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useComplianceRoadmap } from "@/hooks/useComplianceRoadmap";
+import { AuthService } from "@/services/authService";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -56,7 +57,7 @@ const ComplianceRoadmap = () => {
     
     setIsAssigningCustomer(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error('Not authenticated');
       
       const { error } = await supabase

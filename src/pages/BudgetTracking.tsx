@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { BudgetService } from "@/services/financeService";
+import { AuthService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -72,7 +73,7 @@ export default function BudgetTracking() {
 
   const handleCreateBudget = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user || !customerId) return;
 
       await BudgetService.createBudget({

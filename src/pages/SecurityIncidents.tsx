@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -75,7 +76,7 @@ export default function SecurityIncidents() {
 
   const createIncident = useMutation({
     mutationFn: async (incident: any) => {
-      const { data: user } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
 
       const { error } = await supabase
         .from('security_incidents' as any)
@@ -83,7 +84,7 @@ export default function SecurityIncidents() {
           ...incident,
           customer_id: customerId,
           initial_detection_time: new Date().toISOString(),
-          reported_by: user.user?.id
+          reported_by: user?.id
         });
 
       if (error) throw error;

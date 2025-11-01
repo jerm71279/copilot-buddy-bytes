@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { toast } from "sonner";
 import { z } from "zod";
 import { clientTicketSchema, sanitizeText } from "@/lib/validation";
@@ -75,19 +76,15 @@ export const useCreateTicket = (onSuccess?: () => void) => {
         priority: ticket.priority as any,
       });
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("customer_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const customerId = await AuthService.getCustomerId(user.id);
 
       const { data, error } = await supabase.functions.invoke("client-portal", {
         body: {
           action: "create_ticket",
-          customerId: profile?.customer_id,
+          customerId,
           submittedBy: user.id,
           subject: validatedData.subject,
           description: sanitizeText(validatedData.description),

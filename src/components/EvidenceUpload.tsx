@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -90,22 +91,17 @@ export default function EvidenceUpload({ frameworkId, controlId, onUploadComplet
     setIsUploading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) throw new Error("Customer ID not found");
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) throw new Error("Customer ID not found");
 
       // Insert evidence file record
       const { data: evidence, error } = await supabase
         .from('evidence_files')
         .insert({
-          customer_id: profile.customer_id,
+          customer_id: customerId,
           framework_id: selectedFramework,
           control_id: selectedControl || null,
           file_name: file.name,
