@@ -132,13 +132,6 @@ export default function EmployeeOnboardingDashboard() {
 
   return (
     <DashboardLayout>
-        <DashboardNavigation 
-          title="Employee Onboarding"
-          dashboards={[
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "Departments", path: "/departments" },
-          ]}
-        />
         
         <div className="flex justify-end gap-2 mb-6">
           <Button variant="outline" onClick={() => navigate('/hr/employee-onboarding/templates')}>

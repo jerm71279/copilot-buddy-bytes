@@ -172,13 +172,6 @@ export default function EmployeeOnboardingTemplates() {
 
   return (
     <DashboardLayout>
-        <DashboardNavigation 
-          title="Employee Onboarding Templates"
-          dashboards={[
-            { name: "HR Dashboard", path: "/dashboard/hr" },
-            { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
-          ]}
-        />
         
         <div className="flex justify-between items-center mb-6">
           <div>

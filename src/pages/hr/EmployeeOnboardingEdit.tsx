@@ -149,13 +149,6 @@ export default function EmployeeOnboardingEdit() {
 
   return (
     <DashboardLayout>
-      <DashboardNavigation 
-        title="Edit Employee Demographics"
-        dashboards={[
-          { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
-          { name: "Templates", path: "/hr/employee-onboarding/templates" },
-        ]}
-      />
 
       <div className="mb-6">
         <Button

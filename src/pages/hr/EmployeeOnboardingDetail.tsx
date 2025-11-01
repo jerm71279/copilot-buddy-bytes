@@ -232,13 +232,6 @@ export default function EmployeeOnboardingDetail() {
 
   return (
     <DashboardLayout>
-      <DashboardNavigation 
-        title="Employee Onboarding Details"
-        dashboards={[
-          { name: "Employee Onboarding", path: "/hr/employee-onboarding" },
-          { name: "Templates", path: "/hr/employee-onboarding/templates" },
-        ]}
-      />
 
         <div className="mb-6">
           <Button
