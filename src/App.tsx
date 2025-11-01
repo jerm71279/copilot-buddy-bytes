@@ -160,6 +160,7 @@ import PredictiveAnalyticsDashboard from "./pages/PredictiveAnalyticsDashboard";
 import ExtendedThinkingAI from "./pages/ExtendedThinkingAI";
 import CodeExecutionAI from "./pages/CodeExecutionAI";
 import Validator from "./pages/Validator";
+import ValidationRunner from "./pages/ValidationRunner";
 
 const queryClient = new QueryClient();
 
@@ -197,6 +198,11 @@ const App = () => (
           <Route path="/client-auth" element={<ClientAuth />} />
           <Route path="/demo" element={<DemoSelector />} />
           <Route path="/validator" element={<Validator />} />
+          <Route path="/admin/validation" element={
+            <ProtectedRoute requireAdmin>
+              <ValidationRunner />
+            </ProtectedRoute>
+          } />
           
           {/* File Collaboration - Protected */}
           <Route path="/files" element={

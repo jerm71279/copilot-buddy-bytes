@@ -254,4 +254,17 @@ Each validation run generates three reports:
 
 ---
 
+### In-App Validation Runner (no CLI needed)
+- Route: `/admin/validation` (Admin only)
+- Runs the same checks in-browser using raw source analysis
+- Displays modularization, layout uniformity, and key issues
+- Copy results to clipboard; logs full JSON to console
+
+How to use:
+1. Sign in as an admin
+2. Visit `/admin/validation`
+3. Click "Run Analysis" and review results
+
+---
+
 Last Updated: 2025-01-15
