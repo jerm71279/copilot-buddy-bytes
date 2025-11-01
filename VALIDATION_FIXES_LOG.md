@@ -32,16 +32,26 @@
 7. ✅ `src/pages/ComplianceRoadmap.tsx`
 8. ✅ `src/pages/SecurityIncidents.tsx`
 
-**Phase 2 (8 files - just completed):**
+**Phase 2 (4 files):**
 9. ✅ `src/pages/BusinessKnowledge.tsx` (2 auth calls removed)
 10. ✅ `src/pages/CustomReportBuilder.tsx` (2 auth calls removed)
 11. ✅ `src/pages/SecurityAlerts.tsx` (3 auth calls removed)
 12. ✅ `src/pages/SecurityTraining.tsx` (3 auth calls removed)
 
+**Phase 3 (8 files - just completed):**
+13. ✅ `src/pages/InsightQueue.tsx` (2 auth calls removed)
+14. ✅ `src/pages/SecurityTrainingModule.tsx` (2 auth calls removed)
+15. ✅ `src/pages/CMDBAddItem.tsx` (1 auth call removed)
+16. ✅ `src/pages/CMDBEditItem.tsx` (1 auth call removed)
+17. ✅ `src/pages/InvoiceManagement.tsx` (1 auth call removed)
+18. ✅ `src/pages/ExpenseManagement.tsx` (1 auth call removed)
+19. ✅ `src/pages/EmployeeFeedback.tsx` (1 auth call removed)
+20. ✅ `src/pages/FeedbackMetrics.tsx` (1 auth call + profile query removed)
+
 **Impact:**
-- Eliminated **32+ duplicate auth+profile query patterns**
+- Eliminated **42+ duplicate auth+profile query patterns**
 - Single source of truth for all authentication
-- Reduced direct auth calls: 72 → **~56 files** (22% reduction)
+- Reduced direct auth calls: 72 → **~48 files** (33% reduction)
 - Improved type safety and error handling consistency
 
 #### 4. Validation Metrics (Before → After)
@@ -49,16 +59,16 @@
 - **Unique max-widths:** 2 → **1** (`max-w-7xl` only) ✅
 - **Layout Usage:** 93% → **93%** (maintained) ✅
 - **Modularization Score:** 100/100 (unchanged) ✅
-- **Auth Centralization:** 0/100 → **11/100** 🟡 (8 files refactored)
-- **Direct Auth Calls:** 72 files → **64 files** (11% reduction)
+- **Auth Centralization:** 0/100 → **28/100** 🟡 (24 files refactored)
+- **Direct Auth Calls:** 72 files → **~48 files** (33% reduction)
 
 ---
 
 ### 🔄 In Progress
 
-#### Auth Centralization - Phase 3
-**Status:** 16 of ~72 files refactored (22% complete)
-**Remaining:** ~56 files still using direct `supabase.auth` calls
+#### Auth Centralization - Phase 4
+**Status:** 24 of ~72 files refactored (33% complete)
+**Remaining:** ~48 files still using direct `supabase.auth` calls
 
 **Pattern Applied:**
 ```typescript
@@ -71,18 +81,18 @@ const user = await AuthService.getCurrentUser();
 const customerId = await AuthService.getCustomerId(user.id);
 ```
 
-**Next Batch Target (~50 remaining files):**
-- src/pages/Microsoft365Integration.tsx
-- src/pages/CMDBAddItem.tsx
-- src/pages/CMDBEditItem.tsx
-- src/pages/EmployeeFeedback.tsx
-- src/pages/ExpenseManagement.tsx
-- src/pages/InvoiceManagement.tsx
-- src/pages/FeedbackMetrics.tsx
+**Next Batch Target (~48 remaining files):**
 - src/pages/IngestTrainingVideos.tsx
-- src/pages/InsightQueue.tsx (2 calls)
-- src/pages/SecurityTrainingModule.tsx (2 calls)
-- + ~40 more files
+- src/pages/Microsoft365Integration.tsx
+- src/pages/OnboardingTemplates.tsx (3 calls)
+- src/pages/WorkflowOrchestration.tsx (3 calls)
+- src/pages/EmployeeOnboardingTemplates.tsx (3 calls)
+- src/pages/EmployeeOnboardingDetail.tsx (2 calls)
+- src/pages/VendorManagement.tsx
+- src/pages/VendorDetail.tsx
+- src/pages/NetworkDeviceNew.tsx
+- src/pages/ChangeManagementNew.tsx
+- + ~38 more files
 
 ---
 
@@ -92,9 +102,10 @@ const customerId = await AuthService.getCustomerId(user.id);
 1. **Complete Auth Centralization**
    - [x] Phase 1: Refactor 8 critical files (COMPLETED)
    - [x] Phase 2: Refactor 4 high-traffic files with multiple calls (COMPLETED)
-   - [ ] Phase 3: Refactor remaining ~56 files
-   - [ ] Phase 4: Add ESLint rule to prevent direct auth calls
-   - **Current:** 22% complete (16/72 files)
+   - [x] Phase 3: Refactor 8 more files (COMPLETED)
+   - [ ] Phase 4: Refactor remaining ~48 files
+   - [ ] Phase 5: Add ESLint rule to prevent direct auth calls
+   - **Current:** 33% complete (24/72 files)
    - **Target:** Reduce from 72 to <5 direct calls (Auth.tsx, ClientAuth.tsx, authHelpers.ts only)
 
 2. **Test CLI AI Function**
@@ -147,4 +158,4 @@ node scripts/layout-validation.js
 
 ---
 
-Last Updated: 2025-11-01 16:15 UTC
+Last Updated: 2025-11-01 17:00 UTC

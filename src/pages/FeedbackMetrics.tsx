@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthService } from "@/services/authService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -103,21 +104,16 @@ export default function FeedbackMetrics() {
 
   const loadTotalInteractions = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await AuthService.getCurrentUser();
       if (!user) return;
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('customer_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!profile?.customer_id) return;
+      const customerId = await AuthService.getCustomerId(user.id);
+      if (!customerId) return;
 
       const { count, error } = await supabase
         .from('ai_interactions')
         .select('*', { count: 'exact', head: true })
-        .eq('customer_id', profile.customer_id);
+        .eq('customer_id', customerId);
 
       if (error) throw error;
       setTotalInteractions(count || 0);
