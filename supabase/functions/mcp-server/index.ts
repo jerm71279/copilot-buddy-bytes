@@ -51,129 +51,37 @@ serve(async (req) => {
     let error_message = null;
 
     try {
-      // Execute MCP tool based on tool_name
-      switch (tool_name) {
-        // Compliance Manager tools
-        case 'query_compliance_status':
-          output_data = await queryComplianceStatus(supabaseClient, customer_id, input_data);
-          break;
-        case 'predict_violations':
-          output_data = await predictViolations(supabaseClient, customer_id, input_data);
-          break;
-        case 'analyze_control_gaps':
-          output_data = await analyzeControlGaps(supabaseClient, customer_id, input_data);
-          break;
-        case 'generate_evidence_report':
-          output_data = await generateEvidenceReport(supabaseClient, customer_id, input_data);
-          break;
-        case 'assess_framework_coverage':
-          output_data = await assessFrameworkCoverage(supabaseClient, customer_id, input_data);
-          break;
-        
-        // Operations Optimizer tools
-        case 'analyze_workflow_efficiency':
-          output_data = await analyzeWorkflowEfficiency(supabaseClient, customer_id, input_data);
-          break;
-        case 'detect_process_bottlenecks':
-          output_data = await detectBottlenecks(supabaseClient, customer_id, input_data);
-          break;
-        case 'predict_completion_times':
-          output_data = await predictCompletionTimes(supabaseClient, customer_id, input_data);
-          break;
-        case 'recommend_optimizations':
-          output_data = await recommendOptimizations(supabaseClient, customer_id, input_data);
-          break;
-        case 'track_resource_utilization':
-          output_data = await trackResourceUtilization(supabaseClient, customer_id, input_data);
-          break;
-        
-        // Executive Intelligence tools
-        case 'generate_executive_summary':
-          output_data = await generateExecutiveSummary(supabaseClient, customer_id, input_data);
-          break;
-        case 'analyze_company_performance':
-          output_data = await analyzeCompanyPerformance(supabaseClient, customer_id, input_data);
-          break;
-        case 'forecast_quarterly_targets':
-          output_data = await forecastQuarterlyTargets(supabaseClient, customer_id, input_data);
-          break;
-        case 'identify_strategic_risks':
-          output_data = await identifyStrategicRisks(supabaseClient, customer_id, input_data);
-          break;
-        case 'benchmark_competitors':
-          output_data = await benchmarkCompetitors(supabaseClient, customer_id, input_data);
-          break;
-        
-        // Finance Analytics tools
-        case 'analyze_cash_flow':
-          output_data = await analyzeCashFlow(supabaseClient, customer_id, input_data);
-          break;
-        case 'generate_budget_report':
-          output_data = await generateBudgetReport(supabaseClient, customer_id, input_data);
-          break;
-        case 'forecast_revenue':
-          output_data = await forecastRevenue(supabaseClient, customer_id, input_data);
-          break;
-        case 'detect_financial_anomalies':
-          output_data = await detectFinancialAnomalies(supabaseClient, customer_id, input_data);
-          break;
-        case 'reconcile_accounts':
-          output_data = await reconcileAccounts(supabaseClient, customer_id, input_data);
-          break;
-        
-        // HR Management tools
-        case 'analyze_employee_turnover':
-          output_data = await analyzeEmployeeTurnover(supabaseClient, customer_id, input_data);
-          break;
-        case 'generate_hiring_forecast':
-          output_data = await generateHiringForecast(supabaseClient, customer_id, input_data);
-          break;
-        case 'assess_team_performance':
-          output_data = await assessTeamPerformance(supabaseClient, customer_id, input_data);
-          break;
-        case 'calculate_compensation_metrics':
-          output_data = await calculateCompensationMetrics(supabaseClient, customer_id, input_data);
-          break;
-        case 'track_employee_satisfaction':
-          output_data = await trackEmployeeSatisfaction(supabaseClient, customer_id, input_data);
-          break;
-        
-        // IT Operations tools
-        case 'monitor_system_health':
-          output_data = await monitorSystemHealth(supabaseClient, customer_id, input_data);
-          break;
-        case 'analyze_security_threats':
-          output_data = await analyzeSecurityThreats(supabaseClient, customer_id, input_data);
-          break;
-        case 'track_incident_resolution':
-          output_data = await trackIncidentResolution(supabaseClient, customer_id, input_data);
-          break;
-        case 'assess_infrastructure_capacity':
-          output_data = await assessInfrastructureCapacity(supabaseClient, customer_id, input_data);
-          break;
-        case 'generate_uptime_report':
-          output_data = await generateUptimeReport(supabaseClient, customer_id, input_data);
-          break;
-        
-        // Sales Intelligence tools
-        case 'forecast_sales_pipeline':
-          output_data = await forecastSalesPipeline(supabaseClient, customer_id, input_data);
-          break;
-        case 'analyze_customer_acquisition':
-          output_data = await analyzeCustomerAcquisition(supabaseClient, customer_id, input_data);
-          break;
-        case 'track_deal_velocity':
-          output_data = await trackDealVelocity(supabaseClient, customer_id, input_data);
-          break;
-        case 'identify_upsell_opportunities':
-          output_data = await identifyUpsellOpportunities(supabaseClient, customer_id, input_data);
-          break;
-        case 'generate_territory_performance':
-          output_data = await generateTerritoryPerformance(supabaseClient, customer_id, input_data);
-          break;
-        
-        default:
-          throw new Error(`Unknown tool: ${tool_name}`);
+      // Fetch server configuration to check for external endpoint
+      const { data: server, error: serverError } = await supabaseClient
+        .from('mcp_servers')
+        .select('endpoint_url, server_name, capabilities')
+        .eq('id', server_id)
+        .maybeSingle();
+
+      if (serverError) {
+        throw new Error(`Server not found: ${serverError.message}`);
+      }
+
+      if (!server) {
+        throw new Error('Server configuration not found');
+      }
+
+      // If server has an external endpoint, call it using MCP protocol
+      if (server.endpoint_url) {
+        output_data = await callExternalMCPServer(
+          server.endpoint_url,
+          tool_name,
+          input_data,
+          server.capabilities
+        );
+      } else {
+        // Fall back to internal mock implementations
+        output_data = await executeInternalTool(
+          supabaseClient,
+          tool_name,
+          customer_id,
+          input_data
+        );
       }
     } catch (error) {
       status = 'error';
@@ -224,6 +132,162 @@ serve(async (req) => {
     );
   }
 });
+
+/**
+ * Call external MCP protocol server
+ * Implements MCP protocol specification for tool execution
+ */
+async function callExternalMCPServer(
+  endpoint: string,
+  toolName: string,
+  inputData: any,
+  capabilities: any
+): Promise<any> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-MCP-Version': '1.0',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: crypto.randomUUID(),
+        method: 'tools/call',
+        params: {
+          name: toolName,
+          arguments: inputData || {},
+        },
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`External MCP server returned ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    // Handle JSON-RPC error response
+    if (result.error) {
+      throw new Error(`MCP Error: ${result.error.message || 'Unknown error'}`);
+    }
+
+    return result.result;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('External MCP server request timed out after 30s');
+    }
+    throw error;
+  }
+}
+
+/**
+ * Execute internal mock tools (fallback when no external endpoint)
+ */
+async function executeInternalTool(
+  supabase: any,
+  tool_name: string,
+  customer_id: string,
+  input_data: any
+): Promise<any> {
+  // Execute MCP tool based on tool_name
+  switch (tool_name) {
+        // Compliance Manager tools
+        case 'query_compliance_status':
+          return await queryComplianceStatus(supabase, customer_id, input_data);
+        case 'predict_violations':
+          return await predictViolations(supabase, customer_id, input_data);
+        case 'analyze_control_gaps':
+          return await analyzeControlGaps(supabase, customer_id, input_data);
+        case 'generate_evidence_report':
+          return await generateEvidenceReport(supabase, customer_id, input_data);
+        case 'assess_framework_coverage':
+          return await assessFrameworkCoverage(supabase, customer_id, input_data);
+        
+        // Operations Optimizer tools
+        case 'analyze_workflow_efficiency':
+          return await analyzeWorkflowEfficiency(supabase, customer_id, input_data);
+        case 'detect_process_bottlenecks':
+          return await detectBottlenecks(supabase, customer_id, input_data);
+        case 'predict_completion_times':
+          return await predictCompletionTimes(supabase, customer_id, input_data);
+        case 'recommend_optimizations':
+          return await recommendOptimizations(supabase, customer_id, input_data);
+        case 'track_resource_utilization':
+          return await trackResourceUtilization(supabase, customer_id, input_data);
+        
+        // Executive Intelligence tools
+        case 'generate_executive_summary':
+          return await generateExecutiveSummary(supabase, customer_id, input_data);
+        case 'analyze_company_performance':
+          return await analyzeCompanyPerformance(supabase, customer_id, input_data);
+        case 'forecast_quarterly_targets':
+          return await forecastQuarterlyTargets(supabase, customer_id, input_data);
+        case 'identify_strategic_risks':
+          return await identifyStrategicRisks(supabase, customer_id, input_data);
+        case 'benchmark_competitors':
+          return await benchmarkCompetitors(supabase, customer_id, input_data);
+        
+        // Finance Analytics tools
+        case 'analyze_cash_flow':
+          return await analyzeCashFlow(supabase, customer_id, input_data);
+        case 'generate_budget_report':
+          return await generateBudgetReport(supabase, customer_id, input_data);
+        case 'forecast_revenue':
+          return await forecastRevenue(supabase, customer_id, input_data);
+        case 'detect_financial_anomalies':
+          return await detectFinancialAnomalies(supabase, customer_id, input_data);
+        case 'reconcile_accounts':
+          return await reconcileAccounts(supabase, customer_id, input_data);
+        
+        // HR Management tools
+        case 'analyze_employee_turnover':
+          return await analyzeEmployeeTurnover(supabase, customer_id, input_data);
+        case 'generate_hiring_forecast':
+          return await generateHiringForecast(supabase, customer_id, input_data);
+        case 'assess_team_performance':
+          return await assessTeamPerformance(supabase, customer_id, input_data);
+        case 'calculate_compensation_metrics':
+          return await calculateCompensationMetrics(supabase, customer_id, input_data);
+        case 'track_employee_satisfaction':
+          return await trackEmployeeSatisfaction(supabase, customer_id, input_data);
+        
+        // IT Operations tools
+        case 'monitor_system_health':
+          return await monitorSystemHealth(supabase, customer_id, input_data);
+        case 'analyze_security_threats':
+          return await analyzeSecurityThreats(supabase, customer_id, input_data);
+        case 'track_incident_resolution':
+          return await trackIncidentResolution(supabase, customer_id, input_data);
+        case 'assess_infrastructure_capacity':
+          return await assessInfrastructureCapacity(supabase, customer_id, input_data);
+        case 'generate_uptime_report':
+          return await generateUptimeReport(supabase, customer_id, input_data);
+        
+        // Sales Intelligence tools
+        case 'forecast_sales_pipeline':
+          return await forecastSalesPipeline(supabase, customer_id, input_data);
+        case 'analyze_customer_acquisition':
+          return await analyzeCustomerAcquisition(supabase, customer_id, input_data);
+        case 'track_deal_velocity':
+          return await trackDealVelocity(supabase, customer_id, input_data);
+        case 'identify_upsell_opportunities':
+          return await identifyUpsellOpportunities(supabase, customer_id, input_data);
+        case 'generate_territory_performance':
+          return await generateTerritoryPerformance(supabase, customer_id, input_data);
+        
+        default:
+          throw new Error(`Unknown tool: ${tool_name}`);
+      }
+}
 
 // MCP Tool Implementations
 
