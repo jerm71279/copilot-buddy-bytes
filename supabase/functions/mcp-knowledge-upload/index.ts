@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
+import { chunkDocument, getDefaultChunkingOptions, type ChunkingOptions } from '../_shared/chunking.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,6 +15,8 @@ interface KnowledgeUploadRequest {
   sourceUrl?: string;
   tags?: string[];
   metadata?: Record<string, any>;
+  enableChunking?: boolean;
+  chunkingOptions?: Partial<ChunkingOptions>;
 }
 
 serve(async (req) => {
@@ -58,6 +61,7 @@ serve(async (req) => {
     const contentType = String(requestData.contentType || 'document').slice(0, 50);
     const sourceUrl = requestData.sourceUrl ? String(requestData.sourceUrl).slice(0, 500) : null;
     const tags = Array.isArray(requestData.tags) ? requestData.tags.slice(0, 20) : [];
+    const enableChunking = requestData.enableChunking ?? true; // Default to chunking
 
     if (!title || !content) {
       return new Response(
@@ -66,61 +70,148 @@ serve(async (req) => {
       );
     }
 
-    // Generate embedding
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!lovableApiKey) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const embeddingResponse = await fetch('https://ai.gateway.lovable.dev/v1/embeddings', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'text-embedding-ada-002',
-        input: `${title}\n\n${content}`,
-      }),
-    });
-
-    if (!embeddingResponse.ok) {
-      throw new Error('Failed to generate embedding');
+    // Get or use chunking settings
+    let chunkingOptions = getDefaultChunkingOptions();
+    if (requestData.chunkingOptions) {
+      chunkingOptions = { ...chunkingOptions, ...requestData.chunkingOptions };
     }
 
-    const embeddingData = await embeddingResponse.json();
-    const embedding = embeddingData.data[0].embedding;
+    if (enableChunking) {
+      // Chunk the document
+      const chunks = chunkDocument(content, chunkingOptions);
+      console.log(`Document chunked into ${chunks.length} chunks`);
 
-    // Insert knowledge entry
-    const { data: knowledgeEntry, error: insertError } = await supabase
-      .from('mcp_knowledge_base')
-      .insert({
+      // First, create parent document entry (no embedding, just metadata)
+      const { data: parentDoc, error: parentError } = await supabase
+        .from('mcp_knowledge_base')
+        .insert({
+          customer_id: profile.customer_id,
+          server_id: requestData.serverId || null,
+          title,
+          content: content.slice(0, 500) + '...', // Preview only
+          content_type: contentType,
+          source_url: sourceUrl,
+          tags,
+          metadata: { ...requestData.metadata, isParent: true, totalChunks: chunks.length },
+          is_chunked: true,
+          total_chunks: chunks.length,
+          created_by: user.id,
+        })
+        .select()
+        .single();
+
+      if (parentError) {
+        console.error('Parent doc error:', parentError);
+        throw new Error('Failed to create parent document');
+      }
+
+      // Generate embeddings for all chunks in parallel
+      const embeddingPromises = chunks.map(chunk =>
+        fetch('https://ai.gateway.lovable.dev/v1/embeddings', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${lovableApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'text-embedding-ada-002',
+            input: `${title}\n\n${chunk.content}`,
+          }),
+        }).then(r => r.json())
+      );
+
+      const embeddingResults = await Promise.all(embeddingPromises);
+
+      // Insert all chunks
+      const chunkInserts = chunks.map((chunk, idx) => ({
         customer_id: profile.customer_id,
         server_id: requestData.serverId || null,
-        title,
-        content,
+        title: `${title} (Chunk ${chunk.index + 1}/${chunks.length})`,
+        content: chunk.content,
         content_type: contentType,
         source_url: sourceUrl,
         tags,
-        metadata: requestData.metadata || {},
-        embedding,
+        metadata: { ...requestData.metadata, ...chunk.metadata },
+        embedding: embeddingResults[idx].data[0].embedding,
+        parent_document_id: parentDoc.id,
+        chunk_index: chunk.index,
+        total_chunks: chunks.length,
         created_by: user.id,
-      })
-      .select()
-      .single();
+      }));
 
-    if (insertError) {
-      console.error('Insert error:', insertError);
-      throw new Error('Failed to create knowledge entry');
+      const { error: chunksError } = await supabase
+        .from('mcp_knowledge_base')
+        .insert(chunkInserts);
+
+      if (chunksError) {
+        console.error('Chunks error:', chunksError);
+        throw new Error('Failed to create chunks');
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          data: parentDoc,
+          chunksCreated: chunks.length,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    } else {
+      // No chunking - create single document
+      const embeddingResponse = await fetch('https://ai.gateway.lovable.dev/v1/embeddings', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${lovableApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'text-embedding-ada-002',
+          input: `${title}\n\n${content}`,
+        }),
+      });
+
+      if (!embeddingResponse.ok) {
+        throw new Error('Failed to generate embedding');
+      }
+
+      const embeddingData = await embeddingResponse.json();
+      const embedding = embeddingData.data[0].embedding;
+
+      const { data: knowledgeEntry, error: insertError } = await supabase
+        .from('mcp_knowledge_base')
+        .insert({
+          customer_id: profile.customer_id,
+          server_id: requestData.serverId || null,
+          title,
+          content,
+          content_type: contentType,
+          source_url: sourceUrl,
+          tags,
+          metadata: requestData.metadata || {},
+          embedding,
+          created_by: user.id,
+        })
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error('Insert error:', insertError);
+        throw new Error('Failed to create knowledge entry');
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          data: knowledgeEntry,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        data: knowledgeEntry,
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
 
   } catch (error) {
     console.error('Error in mcp-knowledge-upload:', error);

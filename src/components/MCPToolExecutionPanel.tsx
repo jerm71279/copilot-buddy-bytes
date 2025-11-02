@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Wrench, ArrowLeft, BookOpen, Lightbulb, Sparkles } from "lucide-react";
+import { Wrench, ArrowLeft, BookOpen, Lightbulb, Sparkles, Scissors } from "lucide-react";
 import { MCPToolCard } from "./MCPToolCard";
 import { MCPToolParametersForm } from "./MCPToolParametersForm";
 import { MCPExecutionResults } from "./MCPExecutionResults";
@@ -14,6 +14,7 @@ import { MCPKnowledgeList } from "./MCPKnowledgeList";
 import { MCPKnowledgeManager } from "./MCPKnowledgeManager";
 import { MCPRAGQuery } from "./MCPRAGQuery";
 import { MCPKnowledgeUpload } from "./MCPKnowledgeUpload";
+import { MCPChunkingSettings } from "./MCPChunkingSettings";
 import { useMCPTools, MCPTool, executeMCPTool } from "@/hooks/useMCPServers";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -193,7 +194,7 @@ export function MCPToolExecutionPanel({
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="rag" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsList className="grid w-full grid-cols-5 mb-6">
               <TabsTrigger value="rag" className="gap-2">
                 <Sparkles className="h-4 w-4" />
                 AI Assistant
@@ -210,6 +211,10 @@ export function MCPToolExecutionPanel({
                 <Wrench className="h-4 w-4" />
                 Tools
                 <Badge variant="secondary" className="ml-1">{serverTools.length}</Badge>
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="gap-2">
+                <Scissors className="h-4 w-4" />
+                Settings
               </TabsTrigger>
             </TabsList>
 
@@ -270,6 +275,9 @@ export function MCPToolExecutionPanel({
                   </div>
                 )}
               </MCPCapabilitySection>
+            </TabsContent>
+            <TabsContent value="settings" className="space-y-4">
+              <MCPChunkingSettings />
             </TabsContent>
           </Tabs>
         </CardContent>

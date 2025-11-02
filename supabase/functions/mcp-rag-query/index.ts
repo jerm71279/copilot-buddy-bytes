@@ -85,15 +85,16 @@ serve(async (req) => {
     const embeddingData = await embeddingResponse.json();
     const embedding = embeddingData.data[0].embedding;
 
-    // Search knowledge base using vector similarity
+    // Search knowledge base using vector similarity (chunk-aware)
     const { data: searchResults, error: searchError } = await supabase.rpc(
-      'search_mcp_knowledge',
+      'search_mcp_knowledge_chunks',
       {
         query_embedding: embedding,
         query_customer_id: profile.customer_id,
         query_server_id: serverId || null,
         match_threshold: 0.7,
         match_count: topK,
+        include_context: true,
       }
     );
 
@@ -102,11 +103,15 @@ serve(async (req) => {
       throw new Error('Failed to search knowledge base');
     }
 
-    // Build context from retrieved documents
+    // Build context from retrieved documents/chunks
     const context = (searchResults || [])
-      .map((doc: any, idx: number) => 
-        `[Document ${idx + 1}] ${doc.title}\n${doc.content}`
-      )
+      .map((doc: any, idx: number) => {
+        let label = `[Document ${idx + 1}]`;
+        if (doc.is_chunk && doc.chunk_index !== null) {
+          label += ` (Chunk ${doc.chunk_index + 1}/${doc.total_chunks})`;
+        }
+        return `${label} ${doc.title}\n${doc.content}`;
+      })
       .join('\n\n');
 
     // Generate AI response using retrieved context

@@ -661,6 +661,7 @@ Operations | Sales | Security | Auto-Discovery | Health Monitor | Marketplace | 
 **Database Tables:**
 - `mcp_knowledge_base` - Knowledge storage with vector embeddings
 - `mcp_rag_queries` - Query history and analytics
+- `mcp_chunking_settings` - Per-customer chunking configuration
 
 **Capabilities:**
 - Vector similarity search using pgvector extension
@@ -675,83 +676,153 @@ Operations | Sales | Security | Auto-Discovery | Health Monitor | Marketplace | 
 - Tagging system for organization
 - Source URL tracking
 - Metadata storage as JSONB
+- **Parent-child chunk relationships**
+- **Chunk metadata (position, token count, boundaries)**
 
-#### 2. RAG Edge Functions
+#### 2. Intelligent Document Chunking
+**Module:** `supabase/functions/_shared/chunking.ts`
+
+**Chunking Strategies:**
+1. **Paragraph** - Splits on paragraph boundaries (\\n\\n)
+   - Best for: Well-structured documents
+   - Preserves natural document flow
+
+2. **Token** - Fixed token-size chunks with overlap
+   - Best for: Uniform processing
+   - Predictable chunk sizes
+
+3. **Semantic** - Splits on sentence boundaries
+   - Best for: Maintaining semantic coherence
+   - Natural language preservation
+
+4. **Hybrid** - Combines semantic with paragraph fallback
+   - Best for: Mixed content types
+   - Adaptive to document structure
+
+**Chunking Features:**
+- Configurable chunk size (100-8000 tokens)
+- Overlap between chunks (prevents context loss)
+- Minimum chunk size threshold
+- Token estimation (4 chars ≈ 1 token)
+- Chunk metadata tracking
+  - Start/end character positions
+  - Token counts
+  - Chunk index in document
+
+#### 3. Enhanced RAG Edge Functions
 **Files:**
 - `supabase/functions/mcp-rag-query/index.ts` - Query processing
-- `supabase/functions/mcp-knowledge-upload/index.ts` - Knowledge ingestion
+- `supabase/functions/mcp-knowledge-upload/index.ts` - Knowledge ingestion with chunking
 
 **Query Function Features:**
 - Embedding generation via Lovable AI
-- Semantic search with configurable similarity threshold
-- Context retrieval (top K documents)
+- **Chunk-aware semantic search**
+- Context retrieval with chunk information
+- **Chunk labeling in context** (e.g., "Document 1 (Chunk 2/5)")
 - AI response generation with retrieved context
 - Response time tracking
 - Query history logging
 
 **Upload Function Features:**
-- Automatic embedding generation
+- **Automatic document chunking** (enabled by default)
+- **Parallel embedding generation** for chunks
+- **Parent document creation** with preview
+- **Batch chunk insertion**
 - Content validation and sanitization
 - Tag processing
 - Metadata enrichment
 - Server association
+- Chunk count reporting
 
-#### 3. AI Assistant Interface
+**Chunking Workflow:**
+1. Upload document → 2. Apply chunking strategy → 3. Create parent entry → 4. Generate embeddings in parallel → 5. Insert chunks with relationships
+
+#### 4. AI Assistant Interface
 **Component:** `src/components/MCPRAGQuery.tsx`
 
 **Features:**
 - Natural language query input
 - Real-time AI responses
-- Retrieved document display with similarity scores
+- **Retrieved chunks display with similarity scores**
+- **Chunk position indicators** (Chunk X/Y)
 - Response time metrics
 - Server-specific or global queries
 
 **AI Integration:**
 - Uses Gemini 2.5 Flash for fast responses
-- Context-aware answers from knowledge base
+- **Context built from relevant chunks**
 - Fallback messages when no relevant docs found
 
-#### 4. Knowledge Management
+#### 5. Knowledge Management with Chunking
 **Components:**
-- `src/components/MCPKnowledgeUpload.tsx` - Upload dialog
+- `src/components/MCPKnowledgeUpload.tsx` - Upload with chunking toggle
 - `src/components/MCPKnowledgeManager.tsx` - Entry management
+- `src/components/MCPChunkingSettings.tsx` - **NEW: Strategy configuration**
 - `src/hooks/useMCPKnowledge.ts` - Data access layer
 
 **Upload Features:**
 - Multi-field form (title, content, type, URL, tags)
 - Content type selection (document, API doc, FAQ, guide)
+- **Chunking toggle** (enable/disable per upload)
 - Tag management
 - Source URL linking
-- Automatic embedding generation
+- **Automatic embedding generation for all chunks**
+- **Success message with chunk count**
+
+**Chunking Settings Features:**
+- Strategy selection (paragraph/token/semantic/hybrid)
+- Chunk size configuration (100-8000 tokens)
+- Overlap configuration (0-500 tokens)
+- Minimum chunk size threshold
+- **Paragraph separator customization**
+- Enable/disable chunking globally
+- Per-customer persistence
 
 **Management Features:**
 - List all knowledge entries
+- **Show chunk indicators** for parent docs
 - Delete entries with confirmation
 - View metadata and tags
 - Filter by server
 - Display content snippets
+- **Chunk count display**
 
-#### 5. Enhanced MCP Panel Integration
+#### 6. Enhanced Database Functions
+**New Functions:**
+- `search_mcp_knowledge_chunks()` - Chunk-aware semantic search
+  - Returns chunk metadata (index, total, parent ID)
+  - Labels chunks appropriately
+  - Maintains similarity scoring
+  
+- `get_knowledge_chunks_with_context()` - Retrieve adjacent chunks
+  - Configurable context window
+  - Maintains chunk order
+  - Useful for expanded context retrieval
+
+#### 7. Enhanced MCP Panel Integration
 **File:** `src/components/MCPToolExecutionPanel.tsx`
 
 **New Tab Structure:**
 1. **AI Assistant** (Primary) - RAG query interface
 2. **Instruction** - Server guidelines
-3. **Knowledge** - Uploaded documentation
+3. **Knowledge** - Uploaded documentation with chunking
 4. **Tools** - Executable tools
+5. **Settings** - **NEW: Chunking configuration**
 
 **Benefits:**
 - AI-first approach for user queries
-- Contextual help from knowledge base
+- Contextual help from chunked knowledge base
+- **Granular retrieval with chunk precision**
 - Seamless integration with existing tools
 - Unified engineering contact interface
+- **Per-customer chunking customization**
 
-#### 6. Query History & Analytics
+#### 8. Query History & Analytics
 **Table:** `mcp_rag_queries`
 
 **Tracked Metrics:**
 - Query text and timestamps
-- Retrieved documents with similarity scores
+- **Retrieved chunks** with similarity scores
 - AI responses
 - Response times
 - User and customer attribution
@@ -760,12 +831,38 @@ Operations | Sales | Security | Auto-Discovery | Health Monitor | Marketplace | 
 - Query pattern analysis
 - Knowledge gap identification
 - Performance monitoring
+- **Chunk effectiveness analysis**
 - User assistance tracking
+
+### Benefits of Chunking
+
+**1. Improved Retrieval Accuracy**
+- Smaller chunks = more precise semantic matching
+- Reduced noise in context
+- Better handling of multi-topic documents
+
+**2. Optimized Context Windows**
+- Fit more relevant information in limited context
+- Reduce token costs for AI inference
+- Better relevance-to-noise ratio
+
+**3. Flexible Strategies**
+- Paragraph: Maintains document structure
+- Token: Consistent processing
+- Semantic: Natural language flow
+- Hybrid: Adaptive to content
+
+**4. Enhanced User Experience**
+- More accurate answers
+- Better source attribution
+- Faster responses (smaller embeddings)
+- Transparent chunk provenance
 
 ### Security Implementation
 
 **RLS Policies:**
 - Customer-isolated knowledge bases
+- Customer-isolated chunking settings
 - User authentication required
 - Query history privacy
 - Profile-based access control
@@ -775,6 +872,8 @@ Operations | Sales | Security | Auto-Discovery | Health Monitor | Marketplace | 
 - Content size limits (50KB)
 - Tag count limits (20 max)
 - URL validation
+- **Chunk size validation**
+- **Overlap validation**
 
 ### Performance Optimizations
 
@@ -783,12 +882,21 @@ Operations | Sales | Security | Auto-Discovery | Health Monitor | Marketplace | 
 - Full-text search index
 - Customer and server indexes
 - Tag GIN index
+- **Parent document index**
+- **Chunk index for sorting**
 
 **Query Optimization:**
 - Configurable similarity threshold (default 0.7)
 - Top K limiting (max 10 results)
+- **Parallel embedding generation** for chunks
 - Response caching potential
-- Efficient embedding generation
+- Efficient chunk retrieval with indexes
+
+**Chunking Efficiency:**
+- **Batch chunk insertion**
+- **Parallel embedding generation**
+- Smart token estimation
+- Minimal database round-trips
 
 ### Integration Points
 
@@ -799,39 +907,74 @@ Operations | Sales | Security | Auto-Discovery | Health Monitor | Marketplace | 
 - Built-in rate limiting
 
 **Database Functions:**
-- `search_mcp_knowledge()` - Semantic search with vector similarity
+- `search_mcp_knowledge_chunks()` - Semantic search with chunk metadata
+- `get_knowledge_chunks_with_context()` - Adjacent chunk retrieval
 - Automatic RLS enforcement
 - Type-safe parameters
 
-### User Experience
+### User Workflow
 
-**Workflow:**
+**Upload with Chunking:**
 1. Upload documentation to knowledge base
-2. AI automatically generates embeddings
-3. Users ask natural language questions
-4. System retrieves relevant context
-5. AI generates accurate, sourced answers
-6. Documents shown with similarity scores
+2. Choose chunking strategy (or use defaults)
+3. System automatically chunks document
+4. Parallel embedding generation for all chunks
+5. Chunks stored with parent relationship
+6. Success message shows chunk count
+
+**Query with Chunking:**
+1. User asks natural language question
+2. System generates query embedding
+3. **Semantic search retrieves most relevant chunks**
+4. **Chunks labeled with position** (e.g., "Chunk 3/7")
+5. AI generates answer from chunk context
+6. Chunks shown with similarity scores
 
 **Benefits:**
-- Instant access to documentation
+- Instant access to precise information
+- **Better context relevance** with chunking
 - Context-aware assistance
 - No manual search required
-- Accurate, sourced responses
+- **Accurate, sourced responses with chunk provenance**
 - Knowledge reuse across team
+
+### Technical Highlights
+
+**Chunk Metadata:**
+```typescript
+{
+  startChar: number;      // Character position in parent
+  endChar: number;        // End position in parent
+  tokenCount: number;     // Estimated tokens
+}
+```
+
+**Parent-Child Relationship:**
+- Parent document stores metadata and preview
+- Each chunk references parent_document_id
+- Chunks indexed by chunk_index
+- total_chunks tracked for context
+
+**Parallel Processing:**
+- All chunk embeddings generated in parallel
+- Batch insertion for efficiency
+- Reduces upload time for large documents
 
 ### Future Enhancements
 
 **Potential Additions:**
-- Bulk document upload
-- Document versioning
+- Bulk document upload with chunking
+- Document versioning with chunk diffing
 - Knowledge graph visualization
 - Auto-refresh from external sources
 - Multi-modal support (images, code)
 - Custom embedding models
 - Advanced filtering (date ranges, authors)
-- Knowledge quality scoring
+- **Chunk reranking algorithms**
+- **Dynamic chunk size based on content**
+- **Cross-chunk context merging**
 - Automatic tagging with AI
+- **Chunk quality scoring**
 
 ---
 
@@ -858,6 +1001,6 @@ Operations | Sales | Security | Auto-Discovery | Health Monitor | Marketplace | 
 ---
 
 **Implementation Status: PHASE 8 COMPLETE ✅**
-**Core Features + RAG System: DEPLOYED**
+**Core Features + RAG with Intelligent Chunking: DEPLOYED**
 **Breaking Changes: NONE**
-**New Capabilities: RAG Knowledge Base, AI Assistant, Vector Search**
+**New Capabilities: RAG Knowledge Base, AI Assistant, Vector Search, Document Chunking (4 strategies), Chunk-aware Retrieval**

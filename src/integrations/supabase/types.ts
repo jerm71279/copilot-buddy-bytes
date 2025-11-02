@@ -8636,6 +8636,63 @@ export type Database = {
         }
         Relationships: []
       }
+      mcp_chunking_settings: {
+        Row: {
+          chunk_overlap: number
+          chunk_size: number
+          created_at: string
+          customer_id: string
+          id: string
+          is_active: boolean | null
+          metadata: Json | null
+          min_chunk_size: number
+          separator: string | null
+          strategy: string
+          updated_at: string
+        }
+        Insert: {
+          chunk_overlap?: number
+          chunk_size?: number
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          min_chunk_size?: number
+          separator?: string | null
+          strategy?: string
+          updated_at?: string
+        }
+        Update: {
+          chunk_overlap?: number
+          chunk_size?: number
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          min_chunk_size?: number
+          separator?: string | null
+          strategy?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_chunking_settings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mcp_chunking_settings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
       mcp_discovered_servers: {
         Row: {
           capabilities: Json | null
@@ -8818,6 +8875,8 @@ export type Database = {
       }
       mcp_knowledge_base: {
         Row: {
+          chunk_index: number | null
+          chunk_metadata: Json | null
           content: string
           content_type: string
           created_at: string
@@ -8825,14 +8884,19 @@ export type Database = {
           customer_id: string
           embedding: string | null
           id: string
+          is_chunked: boolean | null
           metadata: Json | null
+          parent_document_id: string | null
           server_id: string | null
           source_url: string | null
           tags: string[] | null
           title: string
+          total_chunks: number | null
           updated_at: string
         }
         Insert: {
+          chunk_index?: number | null
+          chunk_metadata?: Json | null
           content: string
           content_type?: string
           created_at?: string
@@ -8840,14 +8904,19 @@ export type Database = {
           customer_id: string
           embedding?: string | null
           id?: string
+          is_chunked?: boolean | null
           metadata?: Json | null
+          parent_document_id?: string | null
           server_id?: string | null
           source_url?: string | null
           tags?: string[] | null
           title: string
+          total_chunks?: number | null
           updated_at?: string
         }
         Update: {
+          chunk_index?: number | null
+          chunk_metadata?: Json | null
           content?: string
           content_type?: string
           created_at?: string
@@ -8855,11 +8924,14 @@ export type Database = {
           customer_id?: string
           embedding?: string | null
           id?: string
+          is_chunked?: boolean | null
           metadata?: Json | null
+          parent_document_id?: string | null
           server_id?: string | null
           source_url?: string | null
           tags?: string[] | null
           title?: string
+          total_chunks?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -8876,6 +8948,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "soc_security_overview"
             referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "mcp_knowledge_base_parent_document_id_fkey"
+            columns: ["parent_document_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_knowledge_base"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "mcp_knowledge_base_server_id_fkey"
@@ -14544,6 +14623,20 @@ export type Database = {
           integration_id: string
         }[]
       }
+      get_knowledge_chunks_with_context: {
+        Args: {
+          chunk_idx: number
+          context_window?: number
+          parent_doc_id: string
+        }
+        Returns: {
+          chunk_index: number
+          content: string
+          id: string
+          is_current: boolean
+          title: string
+        }[]
+      }
       get_user_customer_id: { Args: { _user_id: string }; Returns: string }
       has_permission: {
         Args: {
@@ -14604,6 +14697,29 @@ export type Database = {
           similarity: number
           source_url: string
           title: string
+        }[]
+      }
+      search_mcp_knowledge_chunks: {
+        Args: {
+          include_context?: boolean
+          match_count?: number
+          match_threshold?: number
+          query_customer_id: string
+          query_embedding: string
+          query_server_id?: string
+        }
+        Returns: {
+          chunk_index: number
+          content: string
+          content_type: string
+          id: string
+          is_chunk: boolean
+          metadata: Json
+          parent_document_id: string
+          similarity: number
+          source_url: string
+          title: string
+          total_chunks: number
         }[]
       }
       search_sharepoint_documents: {

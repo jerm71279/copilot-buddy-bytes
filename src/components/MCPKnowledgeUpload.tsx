@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Upload, Loader2, Plus } from "lucide-react";
+import { Upload, Loader2, Plus, Scissors } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -24,6 +25,7 @@ export function MCPKnowledgeUpload({ serverId, onUploadSuccess }: MCPKnowledgeUp
     contentType: "document",
     sourceUrl: "",
     tags: "",
+    enableChunking: true,
   });
 
   const handleSubmit = async () => {
@@ -48,19 +50,24 @@ export function MCPKnowledgeUpload({ serverId, onUploadSuccess }: MCPKnowledgeUp
           serverId,
           sourceUrl: formData.sourceUrl.trim() || null,
           tags,
+          enableChunking: formData.enableChunking,
         },
       });
 
       if (error) throw error;
 
       if (data.success) {
-        toast.success("Knowledge entry created successfully");
+        const message = data.chunksCreated 
+          ? `Knowledge entry created with ${data.chunksCreated} chunks`
+          : "Knowledge entry created successfully";
+        toast.success(message);
         setFormData({
           title: "",
           content: "",
           contentType: "document",
           sourceUrl: "",
           tags: "",
+          enableChunking: true,
         });
         setIsOpen(false);
         onUploadSuccess?.();
@@ -151,6 +158,26 @@ export function MCPKnowledgeUpload({ serverId, onUploadSuccess }: MCPKnowledgeUp
               placeholder="api, configuration, troubleshooting"
               value={formData.tags}
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="flex items-center justify-between pt-2 border-t">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <Scissors className="h-4 w-4" />
+                <Label htmlFor="enableChunking">Enable Chunking</Label>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Split large documents for better retrieval
+              </p>
+            </div>
+            <Switch
+              id="enableChunking"
+              checked={formData.enableChunking}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, enableChunking: checked })
+              }
               disabled={isLoading}
             />
           </div>
