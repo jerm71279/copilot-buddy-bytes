@@ -18,6 +18,10 @@ export interface MCPServer {
   description: string | null;
   created_at: string;
   updated_at: string;
+  group_id: string | null;
+  tags: string[];
+  metadata: any;
+  last_used_at: string | null;
 }
 
 export class MCPService extends BaseService {

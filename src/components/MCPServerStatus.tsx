@@ -10,6 +10,7 @@ import { useMCPServers, useMCPTools, executeMCPTool } from "@/hooks/useMCPServer
 import { getMCPServerStatusBadge, formatMCPCapabilities } from "@/lib/mcpUtils";
 import { supabase } from "@/integrations/supabase/client";
 import { MCPBulkOperations } from "./MCPBulkOperations";
+import { MCPServerFilters, ServerFilters } from "./MCPServerFilters";
 
 type MCPServerStatusProps = { 
   customerId?: string;
@@ -21,6 +22,13 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
   const { tools } = useMCPTools(servers.map(s => s.id));
   const [selectedServers, setSelectedServers] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState<ServerFilters>({
+    status: [],
+    groups: [],
+    tags: [],
+    serverType: [],
+    hasEndpoint: null,
+  });
 
   const testMCPTool = async (serverId: string, toolName: string) => {
     try {
@@ -78,14 +86,39 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
     }
   };
 
-  // Filter servers by search query
+  // Filter servers by search query and advanced filters
   const filteredServers = servers.filter(server => {
+    // Search query filter
     const query = searchQuery.toLowerCase();
-    return (
+    const matchesSearch = !query || (
       server.server_name.toLowerCase().includes(query) ||
       server.description?.toLowerCase().includes(query) ||
       server.server_type.toLowerCase().includes(query)
     );
+
+    // Status filter
+    const matchesStatus = filters.status.length === 0 || 
+      filters.status.includes(server.status);
+
+    // Group filter
+    const matchesGroup = filters.groups.length === 0 || 
+      (server.group_id && filters.groups.includes(server.group_id));
+
+    // Server type filter
+    const matchesType = filters.serverType.length === 0 || 
+      filters.serverType.includes(server.server_type);
+
+    // Tags filter
+    const matchesTags = filters.tags.length === 0 || 
+      (server.tags && Array.isArray(server.tags) && 
+       filters.tags.some(tag => (server.tags as string[]).includes(tag)));
+
+    // Endpoint filter
+    const matchesEndpoint = filters.hasEndpoint === null || 
+      (filters.hasEndpoint ? !!server.endpoint_url : !server.endpoint_url);
+
+    return matchesSearch && matchesStatus && matchesGroup && 
+           matchesType && matchesTags && matchesEndpoint;
   });
 
   if (isLoading) {
@@ -111,6 +144,14 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
         onClearSelection={() => setSelectedServers([])}
         onRefresh={reload}
       />
+
+      {customerId && (
+        <MCPServerFilters
+          customerId={customerId}
+          filters={filters}
+          onFiltersChange={setFilters}
+        />
+      )}
       
       <Card>
         <CardHeader>

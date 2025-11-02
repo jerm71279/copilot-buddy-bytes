@@ -17,6 +17,11 @@ export interface MCPServer {
   last_health_check: string | null;
   created_at: string;
   updated_at: string;
+  endpoint_url: string | null;
+  group_id: string | null;
+  tags: string[];
+  metadata: any;
+  last_used_at: string | null;
 }
 
 export interface MCPTool {
