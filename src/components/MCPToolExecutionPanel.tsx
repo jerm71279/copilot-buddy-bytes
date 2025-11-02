@@ -3,10 +3,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Wrench, ArrowLeft } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Wrench, ArrowLeft, BookOpen, Lightbulb } from "lucide-react";
 import { MCPToolCard } from "./MCPToolCard";
 import { MCPToolParametersForm } from "./MCPToolParametersForm";
 import { MCPExecutionResults } from "./MCPExecutionResults";
+import { MCPCapabilitySection, getCapabilityIcon } from "./MCPCapabilitySection";
+import { MCPInstructionsList } from "./MCPInstructionsList";
+import { MCPKnowledgeList } from "./MCPKnowledgeList";
 import { useMCPTools, MCPTool, executeMCPTool } from "@/hooks/useMCPServers";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -32,6 +36,38 @@ export function MCPToolExecutionPanel({
   const [showParametersDialog, setShowParametersDialog] = useState(false);
 
   const serverTools = tools[serverId] || [];
+
+  // Mock data - in production, this would come from server metadata
+  const instructions = [
+    {
+      id: '1',
+      title: 'Getting Started',
+      content: 'This server provides tools for engineering contact management. Start by reviewing available tools and their parameters.',
+      priority: 'high' as const,
+    },
+    {
+      id: '2',
+      title: 'Authentication',
+      content: 'All tool executions require valid authentication. Ensure your session is active before executing tools.',
+      priority: 'medium' as const,
+    },
+  ];
+
+  const knowledgeResources = [
+    {
+      id: '1',
+      title: 'API Documentation',
+      description: 'Complete API reference for all available tools and endpoints',
+      type: 'document' as const,
+      url: '#',
+    },
+    {
+      id: '2',
+      title: 'Server Database Schema',
+      description: 'Database structure and relationships for this MCP server',
+      type: 'database' as const,
+    },
+  ];
 
   const handleExecuteTool = async (tool: MCPTool) => {
     setSelectedTool(tool);
@@ -144,34 +180,84 @@ export function MCPToolExecutionPanel({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <Wrench className="h-5 w-5" />
-                Tools: {serverName}
+                Engineering Contact: {serverName}
               </CardTitle>
               <CardDescription className="mt-1">
-                Execute available tools on this server
+                Instructions, knowledge resources, and executable tools
               </CardDescription>
             </div>
-            <Badge variant="outline">{serverTools.length} tools</Badge>
           </div>
         </CardHeader>
         <CardContent>
-          {serverTools.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Wrench className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p>No tools available for this server</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {serverTools.map((tool) => (
-                <MCPToolCard
-                  key={tool.id}
-                  tool={tool}
-                  onExecute={handleExecuteTool}
-                  isExecuting={isExecuting && selectedTool?.id === tool.id}
-                />
-              ))}
-            </div>
-          )}
+          <Tabs defaultValue="tools" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="instruction" className="gap-2">
+                <Lightbulb className="h-4 w-4" />
+                Instruction
+              </TabsTrigger>
+              <TabsTrigger value="knowledge" className="gap-2">
+                <BookOpen className="h-4 w-4" />
+                Knowledge
+              </TabsTrigger>
+              <TabsTrigger value="tools" className="gap-2">
+                <Wrench className="h-4 w-4" />
+                Tools
+                <Badge variant="secondary" className="ml-1">{serverTools.length}</Badge>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="instruction" className="space-y-4">
+              <MCPCapabilitySection
+                type="instruction"
+                title="Server Instructions"
+                description="Guidelines and instructions for using this server"
+                count={instructions.length}
+                icon={getCapabilityIcon('instruction')}
+              >
+                <MCPInstructionsList instructions={instructions} />
+              </MCPCapabilitySection>
+            </TabsContent>
+
+            <TabsContent value="knowledge" className="space-y-4">
+              <MCPCapabilitySection
+                type="knowledge"
+                title="Knowledge Resources"
+                description="Documentation and reference materials"
+                count={knowledgeResources.length}
+                icon={getCapabilityIcon('knowledge')}
+              >
+                <MCPKnowledgeList resources={knowledgeResources} />
+              </MCPCapabilitySection>
+            </TabsContent>
+
+            <TabsContent value="tools" className="space-y-4">
+              <MCPCapabilitySection
+                type="tools"
+                title="Executable Tools"
+                description="Available tools for this server"
+                count={serverTools.length}
+                icon={getCapabilityIcon('tools')}
+              >
+                {serverTools.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Wrench className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No tools available for this server</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {serverTools.map((tool) => (
+                      <MCPToolCard
+                        key={tool.id}
+                        tool={tool}
+                        onExecute={handleExecuteTool}
+                        isExecuting={isExecuting && selectedTool?.id === tool.id}
+                      />
+                    ))}
+                  </div>
+                )}
+              </MCPCapabilitySection>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 
