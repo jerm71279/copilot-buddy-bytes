@@ -93,12 +93,12 @@ Deno.serve(async (req) => {
         status: 'pending',
       })
       .select()
-      .single();
+      .maybeSingle();
 
-    if (error) {
+    if (error || !entry) {
       console.error('Database error:', error);
       return new Response(
-        JSON.stringify({ error: error.message }),
+        JSON.stringify({ error: error ? error.message : 'Failed to create time entry' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

@@ -87,12 +87,12 @@ Deno.serve(async (req) => {
           : null,
       })
       .select()
-      .single();
+      .maybeSingle();
 
-    if (error) {
+    if (error || !config) {
       console.error('Database error:', error);
       return new Response(
-        JSON.stringify({ error: error instanceof Error ? error.message : 'Database error occurred' }),
+        JSON.stringify({ error: error ? (error instanceof Error ? error.message : 'Database error occurred') : 'Failed to create config' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

@@ -103,9 +103,9 @@ serve(async (req) => {
           created_by: user.id,
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (parentError) {
+      if (parentError || !parentDoc) {
         console.error('Parent doc error:', parentError);
         throw new Error('Failed to create parent document');
       }
@@ -197,9 +197,9 @@ serve(async (req) => {
           created_by: user.id,
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (insertError) {
+      if (insertError || !knowledgeEntry) {
         console.error('Insert error:', insertError);
         throw new Error('Failed to create knowledge entry');
       }
