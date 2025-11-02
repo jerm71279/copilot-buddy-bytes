@@ -13,6 +13,7 @@ import { MCPInstructionsList } from "./MCPInstructionsList";
 import { MCPKnowledgeList } from "./MCPKnowledgeList";
 import { MCPKnowledgeManager } from "./MCPKnowledgeManager";
 import { MCPRAGQuery } from "./MCPRAGQuery";
+import { MCPRAGHistory } from "./MCPRAGHistory";
 import { MCPKnowledgeUpload } from "./MCPKnowledgeUpload";
 import { MCPChunkingSettings } from "./MCPChunkingSettings";
 import { useMCPTools, MCPTool, executeMCPTool } from "@/hooks/useMCPServers";
@@ -38,6 +39,7 @@ export function MCPToolExecutionPanel({
   const [executionResult, setExecutionResult] = useState<any>(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const [showParametersDialog, setShowParametersDialog] = useState(false);
+  const [selectedQuery, setSelectedQuery] = useState("");
 
   const serverTools = tools[serverId] || [];
 
@@ -193,11 +195,15 @@ export function MCPToolExecutionPanel({
           </div>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="rag" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-6">
-              <TabsTrigger value="rag" className="gap-2">
+          <Tabs defaultValue="ai-assistant" className="w-full">
+            <TabsList className="grid w-full grid-cols-6 mb-6">
+              <TabsTrigger value="ai-assistant" className="gap-2">
                 <Sparkles className="h-4 w-4" />
                 AI Assistant
+              </TabsTrigger>
+              <TabsTrigger value="history" className="gap-2">
+                <Sparkles className="h-4 w-4" />
+                History
               </TabsTrigger>
               <TabsTrigger value="instruction" className="gap-2">
                 <Lightbulb className="h-4 w-4" />
@@ -218,8 +224,20 @@ export function MCPToolExecutionPanel({
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="rag" className="space-y-4">
-              <MCPRAGQuery serverId={serverId} serverName={serverName} />
+            <TabsContent value="ai-assistant" className="space-y-4">
+              <MCPRAGQuery 
+                serverId={serverId} 
+                serverName={serverName}
+                initialQuery={selectedQuery}
+                key={selectedQuery}
+              />
+            </TabsContent>
+
+            <TabsContent value="history" className="space-y-4">
+              <MCPRAGHistory 
+                serverId={serverId}
+                onQuerySelect={setSelectedQuery}
+              />
             </TabsContent>
 
             <TabsContent value="instruction" className="space-y-4">

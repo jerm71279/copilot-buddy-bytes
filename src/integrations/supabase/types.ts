@@ -8965,41 +8965,197 @@ export type Database = {
           },
         ]
       }
-      mcp_rag_queries: {
+      mcp_rag_analytics: {
         Row: {
-          ai_response: string | null
+          avg_chunks_retrieved: number | null
+          avg_response_time_ms: number | null
+          avg_user_rating: number | null
+          created_at: string
+          customer_id: string
+          date: string
+          id: string
+          metadata: Json | null
+          most_common_topics: Json | null
+          query_success_rate: number | null
+          server_id: string | null
+          total_queries: number | null
+          total_rated_queries: number | null
+          updated_at: string
+        }
+        Insert: {
+          avg_chunks_retrieved?: number | null
+          avg_response_time_ms?: number | null
+          avg_user_rating?: number | null
+          created_at?: string
+          customer_id: string
+          date?: string
+          id?: string
+          metadata?: Json | null
+          most_common_topics?: Json | null
+          query_success_rate?: number | null
+          server_id?: string | null
+          total_queries?: number | null
+          total_rated_queries?: number | null
+          updated_at?: string
+        }
+        Update: {
+          avg_chunks_retrieved?: number | null
+          avg_response_time_ms?: number | null
+          avg_user_rating?: number | null
+          created_at?: string
+          customer_id?: string
+          date?: string
+          id?: string
+          metadata?: Json | null
+          most_common_topics?: Json | null
+          query_success_rate?: number | null
+          server_id?: string | null
+          total_queries?: number | null
+          total_rated_queries?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_rag_analytics_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mcp_rag_analytics_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "mcp_rag_analytics_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mcp_rag_conversations: {
+        Row: {
           created_at: string
           customer_id: string
           id: string
-          query_text: string
-          response_time_ms: number | null
-          retrieved_docs: Json | null
           server_id: string | null
+          title: string
+          updated_at: string
           user_id: string
         }
         Insert: {
-          ai_response?: string | null
           created_at?: string
           customer_id: string
           id?: string
-          query_text: string
-          response_time_ms?: number | null
-          retrieved_docs?: Json | null
           server_id?: string | null
+          title?: string
+          updated_at?: string
           user_id: string
         }
         Update: {
-          ai_response?: string | null
           created_at?: string
           customer_id?: string
           id?: string
-          query_text?: string
-          response_time_ms?: number | null
-          retrieved_docs?: Json | null
           server_id?: string | null
+          title?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "mcp_rag_conversations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mcp_rag_conversations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "mcp_rag_conversations_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mcp_rag_queries: {
+        Row: {
+          ai_response: string | null
+          conversation_id: string | null
+          created_at: string
+          customer_id: string
+          expanded_queries: Json | null
+          feedback: string | null
+          hybrid_scores: Json | null
+          id: string
+          query_text: string
+          query_type: string | null
+          rerank_scores: Json | null
+          response_time_ms: number | null
+          retrieved_docs: Json | null
+          server_id: string | null
+          user_feedback: string | null
+          user_id: string
+          user_rating: number | null
+        }
+        Insert: {
+          ai_response?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          customer_id: string
+          expanded_queries?: Json | null
+          feedback?: string | null
+          hybrid_scores?: Json | null
+          id?: string
+          query_text: string
+          query_type?: string | null
+          rerank_scores?: Json | null
+          response_time_ms?: number | null
+          retrieved_docs?: Json | null
+          server_id?: string | null
+          user_feedback?: string | null
+          user_id: string
+          user_rating?: number | null
+        }
+        Update: {
+          ai_response?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          customer_id?: string
+          expanded_queries?: Json | null
+          feedback?: string | null
+          hybrid_scores?: Json | null
+          id?: string
+          query_text?: string
+          query_type?: string | null
+          rerank_scores?: Json | null
+          response_time_ms?: number | null
+          retrieved_docs?: Json | null
+          server_id?: string | null
+          user_feedback?: string | null
+          user_id?: string
+          user_rating?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_rag_queries_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_rag_conversations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "mcp_rag_queries_customer_id_fkey"
             columns: ["customer_id"]
@@ -14663,6 +14819,33 @@ export type Database = {
         }
         Returns: boolean
       }
+      hybrid_search_mcp_knowledge: {
+        Args: {
+          keyword_weight?: number
+          match_count?: number
+          match_threshold?: number
+          query_customer_id: string
+          query_embedding: string
+          query_server_id?: string
+          query_text: string
+          vector_weight?: number
+        }
+        Returns: {
+          chunk_index: number
+          content: string
+          content_type: string
+          hybrid_score: number
+          id: string
+          is_chunk: boolean
+          keyword_rank: number
+          metadata: Json
+          parent_document_id: string
+          source_url: string
+          title: string
+          total_chunks: number
+          vector_similarity: number
+        }[]
+      }
       increment_template_usage: {
         Args: { template_id_param: string }
         Returns: undefined
@@ -14743,6 +14926,16 @@ export type Database = {
         }[]
       }
       strip_control_chars: { Args: { input: string }; Returns: string }
+      update_rag_analytics: {
+        Args: {
+          p_chunks_retrieved: number
+          p_customer_id: string
+          p_response_time_ms: number
+          p_server_id: string
+          p_user_rating?: number
+        }
+        Returns: undefined
+      }
       validate_array_input: {
         Args: {
           field_name?: string

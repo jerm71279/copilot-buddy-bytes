@@ -154,7 +154,7 @@ ${context}`,
     const responseTime = Date.now() - startTime;
 
     // Log query
-    await supabase.from('mcp_rag_queries').insert({
+    const { data: queryLogData } = await supabase.from('mcp_rag_queries').insert({
       customer_id: profile.customer_id,
       server_id: serverId || null,
       user_id: user.id,
@@ -162,7 +162,7 @@ ${context}`,
       retrieved_docs: searchResults || [],
       ai_response: aiResponse,
       response_time_ms: responseTime,
-    });
+    }).select('id').maybeSingle();
 
     return new Response(
       JSON.stringify({
@@ -170,6 +170,7 @@ ${context}`,
         response: aiResponse,
         retrievedDocs: searchResults || [],
         responseTime,
+        queryId: queryLogData?.id,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
