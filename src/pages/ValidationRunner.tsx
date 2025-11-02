@@ -139,9 +139,35 @@ export default function ValidationRunner() {
       ],
     };
 
-    // Log detailed summary (so dev tools capture it) and update UI
-    // eslint-disable-next-line no-console
-    console.log("📊 IN-APP VALIDATION REPORT", combined);
+    // Print formatted results to console
+    console.log('\n' + '='.repeat(80));
+    console.log('📊 VALIDATION REPORT - ' + new Date().toLocaleString());
+    console.log('='.repeat(80));
+    console.log('\n🔍 CODE ANALYSIS:');
+    console.log(`   Modularization Score: ${combined.codeAnalysis.modularizationScore}/100`);
+    console.log(`   Total Issues: ${combined.codeAnalysis.totalIssues}`);
+    console.log(`   Critical Issues: ${combined.codeAnalysis.criticalIssues}`);
+    console.log('   Notes:');
+    combined.codeAnalysis.notes.forEach(note => console.log(`     • ${note}`));
+    
+    console.log('\n📐 LAYOUT VALIDATION:');
+    console.log(`   Uniformity Score: ${combined.layoutValidation.uniformityScore}/100`);
+    console.log(`   Pages Analyzed: ${combined.layoutValidation.totalPages}`);
+    console.log(`   Layout Usage: ${combined.layoutValidation.layoutUsagePct}%`);
+    console.log(`   Unique Max-Widths: ${combined.layoutValidation.uniqueMaxWidths.join(', ') || 'None'}`);
+    console.log(`   Issues Found: ${combined.layoutValidation.issueCount}`);
+    
+    if (combined.priorityActions.length > 0) {
+      console.log('\n⚠️  PRIORITY ACTIONS:');
+      combined.priorityActions.forEach((action, i) => 
+        console.log(`   ${i + 1}. ${action}`)
+      );
+    } else {
+      console.log('\n✅ No priority actions needed');
+    }
+    
+    console.log('\n' + '='.repeat(80) + '\n');
+    
     setReport(combined);
     setRunning(false);
   };

@@ -177,3 +177,21 @@ verify_jwt = false
 [functions.cli-ai]
 verify_jwt = false
 
+[functions.moe-router]
+verify_jwt = true
+
+[functions.seed-experts]
+verify_jwt = true
+
+[functions.mcp-rag-query]
+verify_jwt = true
+
+[functions.mcp-knowledge-upload]
+verify_jwt = true
+
+[functions.mcp-discovery]
+verify_jwt = true
+
+[functions.pattern-executor]
+verify_jwt = true
+
