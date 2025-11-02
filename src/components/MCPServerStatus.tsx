@@ -1,12 +1,15 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Activity, Server, Zap } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Activity, Server, Zap, Search } from "lucide-react";
 import { toast } from "sonner";
 import { useMCPServers, useMCPTools, executeMCPTool } from "@/hooks/useMCPServers";
 import { getMCPServerStatusBadge, formatMCPCapabilities } from "@/lib/mcpUtils";
 import { supabase } from "@/integrations/supabase/client";
+import { MCPBulkOperations } from "./MCPBulkOperations";
 
 type MCPServerStatusProps = { 
   customerId?: string;
@@ -14,8 +17,10 @@ type MCPServerStatusProps = {
 };
 
 export default function MCPServerStatus({ customerId, filterByServerType }: MCPServerStatusProps) {
-  const { servers, isLoading } = useMCPServers(filterByServerType);
+  const { servers, isLoading, reload } = useMCPServers(filterByServerType);
   const { tools } = useMCPTools(servers.map(s => s.id));
+  const [selectedServers, setSelectedServers] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const testMCPTool = async (serverId: string, toolName: string) => {
     try {
@@ -57,6 +62,32 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
     }
   };
 
+  const toggleServerSelection = (serverId: string) => {
+    setSelectedServers(prev => 
+      prev.includes(serverId) 
+        ? prev.filter(id => id !== serverId)
+        : [...prev, serverId]
+    );
+  };
+
+  const toggleAllServers = () => {
+    if (selectedServers.length === filteredServers.length) {
+      setSelectedServers([]);
+    } else {
+      setSelectedServers(filteredServers.map(s => s.id));
+    }
+  };
+
+  // Filter servers by search query
+  const filteredServers = servers.filter(server => {
+    const query = searchQuery.toLowerCase();
+    return (
+      server.server_name.toLowerCase().includes(query) ||
+      server.description?.toLowerCase().includes(query) ||
+      server.server_type.toLowerCase().includes(query)
+    );
+  });
+
   if (isLoading) {
     return (
       <Card>
@@ -75,15 +106,34 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
 
   return (
     <div className="space-y-4">
+      <MCPBulkOperations 
+        selectedServers={selectedServers}
+        onClearSelection={() => setSelectedServers([])}
+        onRefresh={reload}
+      />
+      
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Server className="h-5 w-5" />
-            MCP Servers
-          </CardTitle>
-          <CardDescription>
-            Model Context Protocol servers connecting AI to your data
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Server className="h-5 w-5" />
+                MCP Servers
+              </CardTitle>
+              <CardDescription>
+                Model Context Protocol servers connecting AI to your data
+              </CardDescription>
+            </div>
+            {servers.length > 0 && (
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  checked={selectedServers.length === filteredServers.length && filteredServers.length > 0}
+                  onCheckedChange={toggleAllServers}
+                />
+                <span className="text-sm text-muted-foreground">Select All</span>
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {servers.length === 0 ? (
@@ -92,22 +142,42 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
             </div>
           ) : (
             <div className="space-y-4">
-              {servers.map((server) => (
-                <Card key={server.id}>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Activity className="h-5 w-5 text-primary" />
-                        <div>
-                          <CardTitle className="text-lg">{server.server_name}</CardTitle>
-                          <CardDescription className="text-sm">
-                            {server.description}
-                          </CardDescription>
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search servers..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+
+              {filteredServers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No servers match your search
+                </div>
+              ) : (
+                filteredServers.map((server) => (
+                  <Card key={server.id}>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Checkbox
+                            checked={selectedServers.includes(server.id)}
+                            onCheckedChange={() => toggleServerSelection(server.id)}
+                          />
+                          <Activity className="h-5 w-5 text-primary" />
+                          <div>
+                            <CardTitle className="text-lg">{server.server_name}</CardTitle>
+                            <CardDescription className="text-sm">
+                              {server.description}
+                            </CardDescription>
+                          </div>
                         </div>
+                        {getMCPServerStatusBadge(server.status)}
                       </div>
-                      {getMCPServerStatusBadge(server.status)}
-                    </div>
-                  </CardHeader>
+                    </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div>
@@ -169,7 +239,8 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+                ))
+              )}
             </div>
           )}
         </CardContent>

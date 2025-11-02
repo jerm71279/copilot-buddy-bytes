@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MCPServerHealth } from "@/components/MCPServerHealth";
 import { MCPServerMarketplace } from "@/components/MCPServerMarketplace";
 import { MCPAutoDiscovery } from "@/components/MCPAutoDiscovery";
+import { MCPServerGroups } from "@/components/MCPServerGroups";
 
 /**
  * MCP Server Dashboard Data Flow
@@ -98,6 +99,7 @@ const MCPServerDashboard = () => {
               <TabsTrigger value="discovery" className="whitespace-nowrap shrink-0">Auto-Discovery</TabsTrigger>
               <TabsTrigger value="health" className="whitespace-nowrap shrink-0">Health Monitor</TabsTrigger>
               <TabsTrigger value="marketplace" className="whitespace-nowrap shrink-0">Marketplace</TabsTrigger>
+              <TabsTrigger value="groups" className="whitespace-nowrap shrink-0">Groups</TabsTrigger>
               <TabsTrigger value="configure" className="whitespace-nowrap shrink-0">Configure New</TabsTrigger>
             </TabsList>
           </div>
@@ -148,6 +150,10 @@ const MCPServerDashboard = () => {
 
           <TabsContent value="marketplace" className="space-y-4">
             <MCPServerMarketplace customerId={userCustomerId} />
+          </TabsContent>
+
+          <TabsContent value="groups" className="space-y-4">
+            <MCPServerGroups customerId={userCustomerId} />
           </TabsContent>
 
           <TabsContent value="configure" className="space-y-4">

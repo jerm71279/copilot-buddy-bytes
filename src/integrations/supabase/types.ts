@@ -8860,6 +8860,36 @@ export type Database = {
           },
         ]
       }
+      mcp_server_groups: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          customer_id: string
+          description: string | null
+          group_name: string
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          customer_id: string
+          description?: string | null
+          group_name: string
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          customer_id?: string
+          description?: string | null
+          group_name?: string
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       mcp_servers: {
         Row: {
           capabilities: Json
@@ -8869,11 +8899,15 @@ export type Database = {
           description: string | null
           endpoint_url: string | null
           error_message: string | null
+          group_id: string | null
           id: string
           last_health_check: string | null
+          last_used_at: string | null
+          metadata: Json | null
           server_name: string
           server_type: string
           status: string
+          tags: string[] | null
           updated_at: string
         }
         Insert: {
@@ -8884,11 +8918,15 @@ export type Database = {
           description?: string | null
           endpoint_url?: string | null
           error_message?: string | null
+          group_id?: string | null
           id?: string
           last_health_check?: string | null
+          last_used_at?: string | null
+          metadata?: Json | null
           server_name: string
           server_type: string
           status?: string
+          tags?: string[] | null
           updated_at?: string
         }
         Update: {
@@ -8899,14 +8937,26 @@ export type Database = {
           description?: string | null
           endpoint_url?: string | null
           error_message?: string | null
+          group_id?: string | null
           id?: string
           last_health_check?: string | null
+          last_used_at?: string | null
+          metadata?: Json | null
           server_name?: string
           server_type?: string
           status?: string
+          tags?: string[] | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "mcp_servers_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_server_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mcp_tools: {
         Row: {
