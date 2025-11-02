@@ -35,7 +35,7 @@ const AIImageGenerator = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2">AI Image Generator</h1>
             <p className="text-muted-foreground">

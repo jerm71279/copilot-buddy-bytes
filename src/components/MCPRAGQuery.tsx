@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Loader2, BookOpen, Settings2, Copy, ThumbsUp, ThumbsDown } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -13,6 +12,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useEdgeFunction } from "@/hooks/useEdgeFunctions";
+import { supabase } from "@/integrations/supabase/client";
 
 interface MCPRAGQueryProps {
   serverId?: string;
@@ -30,7 +31,6 @@ interface RetrievedDoc {
 
 export function MCPRAGQuery({ serverId, serverName, initialQuery = "" }: MCPRAGQueryProps) {
   const [query, setQuery] = useState(initialQuery);
-  const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
   const [retrievedDocs, setRetrievedDocs] = useState<RetrievedDoc[]>([]);
   const [responseTime, setResponseTime] = useState<number | null>(null);
@@ -38,41 +38,38 @@ export function MCPRAGQuery({ serverId, serverName, initialQuery = "" }: MCPRAGQ
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [lastQueryId, setLastQueryId] = useState<string | null>(null);
 
+  const { invoke: ragQuery, isLoading } = useEdgeFunction('mcp-rag-query', {
+    showErrorToast: true,
+    errorMessage: 'Failed to process query'
+  });
+
   const handleQuery = async () => {
     if (!query.trim()) {
       toast.error("Please enter a question");
       return;
     }
 
-    setIsLoading(true);
     setResponse(null);
     setRetrievedDocs([]);
 
     try {
-      const { data, error } = await supabase.functions.invoke('mcp-rag-query', {
-        body: {
-          query: query.trim(),
-          serverId,
-          topK: topK[0],
-        },
+      const data = await ragQuery({
+        query: query.trim(),
+        serverId,
+        topK: topK[0],
       });
 
-      if (error) throw error;
-
-      if (data.success) {
+      if (data?.success) {
         setResponse(data.response);
         setRetrievedDocs(data.retrievedDocs || []);
         setResponseTime(data.responseTime);
         setLastQueryId(data.queryId);
         toast.success("Query completed");
       } else {
-        throw new Error(data.error || "Query failed");
+        throw new Error(data?.error || "Query failed");
       }
     } catch (error) {
       console.error("RAG query error:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to process query");
-    } finally {
-      setIsLoading(false);
     }
   };
 

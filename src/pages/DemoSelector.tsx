@@ -77,7 +77,7 @@ const DemoSelector = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-6xl mx-auto space-y-8">
+        <div className="max-w-7xl mx-auto space-y-8">
           <Alert className="bg-primary/5 border-primary/20">
             <Info className="h-4 w-4" />
             <AlertDescription>

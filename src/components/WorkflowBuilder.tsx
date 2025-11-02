@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import { Plus, Trash2, Save, Play, GitBranch, Clock, Webhook } from "lucide-react";
 import { z } from "zod";
 import { WorkflowService, WorkflowStep } from "@/services/workflowService";
+import { useEdgeFunction } from "@/hooks/useEdgeFunctions";
 
 // Validation schemas
 const workflowSchema = z.object({
@@ -77,6 +78,12 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
   const [triggers, setTriggers] = useState<any[]>([]);
   const [showTriggerConfig, setShowTriggerConfig] = useState(false);
   const [selectedTriggerType, setSelectedTriggerType] = useState<string>("");
+
+  // Edge function hook for workflow execution
+  const { invoke: executeWorkflow, isLoading: isTestingWorkflow } = useEdgeFunction('workflow-executor', {
+    showErrorToast: true,
+    errorMessage: 'Test execution failed'
+  });
 
   /**
    * Available step types for workflow building
@@ -256,21 +263,18 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
     }
 
     try {
-      const { data, error } = await supabase.functions.invoke('workflow-executor', {
-        body: {
-          workflow_id: null,
-          trigger_data: { test: true, workflowName, steps },
-          triggered_by: 'test'
-        }
+      const data = await executeWorkflow({
+        workflow_id: null,
+        trigger_data: { test: true, workflowName, steps },
+        triggered_by: 'test'
       });
 
-      if (error) throw error;
-
-      toast.success("Test execution started - check execution history for results");
-      console.log("Test execution result:", data);
+      if (data) {
+        toast.success("Test execution started - check execution history for results");
+        console.log("Test execution result:", data);
+      }
     } catch (error) {
       console.error("Test execution failed:", error);
-      toast.error("Test execution failed");
     }
   };
 

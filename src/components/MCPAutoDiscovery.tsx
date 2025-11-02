@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Search, Plus, CheckCircle2, Clock, AlertCircle, RefreshCw } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useEdgeFunction } from "@/hooks/useEdgeFunctions";
 
 interface DiscoveredServer {
   id: string;
@@ -26,8 +27,12 @@ interface DiscoveredServer {
 export function MCPAutoDiscovery({ customerId }: { customerId: string }) {
   const [discoveredServers, setDiscoveredServers] = useState<DiscoveredServer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isScanning, setIsScanning] = useState(false);
   const [endpoints, setEndpoints] = useState("");
+  
+  const { invoke: mcpDiscovery, isLoading: isScanning } = useEdgeFunction('mcp-discovery', {
+    showErrorToast: true,
+    errorMessage: 'Failed to scan endpoints'
+  });
   const [commonEndpoints, setCommonEndpoints] = useState<string[]>([
     "https://api.github.com/mcp",
     "https://{your-domain}.atlassian.net/rest/api/3",
@@ -76,29 +81,22 @@ export function MCPAutoDiscovery({ customerId }: { customerId: string }) {
       return;
     }
 
-    setIsScanning(true);
     try {
-      const { data, error } = await supabase.functions.invoke('mcp-discovery', {
-        body: {
-          customer_id: customerId,
-          endpoints: endpointList,
-          scan_type: 'manual'
-        }
+      const data = await mcpDiscovery({
+        customer_id: customerId,
+        endpoints: endpointList,
+        scan_type: 'manual'
       });
 
-      if (error) throw error;
-
-      toast.success(
-        `Scan complete! Found ${data.servers_found} MCP server(s) from ${data.endpoints_scanned} endpoint(s)`
-      );
-
-      setEndpoints("");
-      await fetchDiscoveredServers();
+      if (data) {
+        toast.success(
+          `Scan complete! Found ${data.servers_found} MCP server(s) from ${data.endpoints_scanned} endpoint(s)`
+        );
+        setEndpoints("");
+        await fetchDiscoveredServers();
+      }
     } catch (error: any) {
       console.error('Discovery error:', error);
-      toast.error(error.message || 'Failed to scan endpoints');
-    } finally {
-      setIsScanning(false);
     }
   };
 

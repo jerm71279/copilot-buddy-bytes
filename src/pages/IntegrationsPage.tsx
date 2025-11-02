@@ -253,7 +253,7 @@ const IntegrationsPage = () => {
               </p>
             </div>
 
-            <div className="max-w-5xl mx-auto space-y-8">
+            <div className="max-w-7xl mx-auto space-y-8">
               {integrationDetails.map((category, catIndex) => (
                 <Card key={catIndex} className="border-border shadow-elevated">
                   <CardHeader>

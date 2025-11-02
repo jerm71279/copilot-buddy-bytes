@@ -8,8 +8,8 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Upload, Loader2, Plus, Scissors } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useEdgeFunction } from "@/hooks/useEdgeFunctions";
 
 interface MCPKnowledgeUploadProps {
   serverId?: string;
@@ -18,7 +18,6 @@ interface MCPKnowledgeUploadProps {
 
 export function MCPKnowledgeUpload({ serverId, onUploadSuccess }: MCPKnowledgeUploadProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -28,13 +27,16 @@ export function MCPKnowledgeUpload({ serverId, onUploadSuccess }: MCPKnowledgeUp
     enableChunking: true,
   });
 
+  const { invoke: uploadKnowledge, isLoading } = useEdgeFunction('mcp-knowledge-upload', {
+    showErrorToast: true,
+    errorMessage: 'Failed to upload knowledge'
+  });
+
   const handleSubmit = async () => {
     if (!formData.title.trim() || !formData.content.trim()) {
       toast.error("Title and content are required");
       return;
     }
-
-    setIsLoading(true);
 
     try {
       const tags = formData.tags
@@ -42,21 +44,17 @@ export function MCPKnowledgeUpload({ serverId, onUploadSuccess }: MCPKnowledgeUp
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0);
 
-      const { data, error } = await supabase.functions.invoke('mcp-knowledge-upload', {
-        body: {
-          title: formData.title.trim(),
-          content: formData.content.trim(),
-          contentType: formData.contentType,
-          serverId,
-          sourceUrl: formData.sourceUrl.trim() || null,
-          tags,
-          enableChunking: formData.enableChunking,
-        },
+      const data = await uploadKnowledge({
+        title: formData.title.trim(),
+        content: formData.content.trim(),
+        contentType: formData.contentType,
+        serverId,
+        sourceUrl: formData.sourceUrl.trim() || null,
+        tags,
+        enableChunking: formData.enableChunking,
       });
 
-      if (error) throw error;
-
-      if (data.success) {
+      if (data?.success) {
         const message = data.chunksCreated 
           ? `Knowledge entry created with ${data.chunksCreated} chunks`
           : "Knowledge entry created successfully";
@@ -72,13 +70,10 @@ export function MCPKnowledgeUpload({ serverId, onUploadSuccess }: MCPKnowledgeUp
         setIsOpen(false);
         onUploadSuccess?.();
       } else {
-        throw new Error(data.error || "Upload failed");
+        throw new Error(data?.error || "Upload failed");
       }
     } catch (error) {
       console.error("Upload error:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to upload knowledge");
-    } finally {
-      setIsLoading(false);
     }
   };
 

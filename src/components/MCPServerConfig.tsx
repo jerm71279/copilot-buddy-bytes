@@ -7,9 +7,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { Plus, X, Server } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useEdgeFunction } from "@/hooks/useEdgeFunctions";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Tool {
   tool_name: string;
@@ -29,7 +30,11 @@ export function MCPServerConfig({ customerId }: { customerId: string }) {
   const [tools, setTools] = useState<Tool[]>([]);
   const [currentTool, setCurrentTool] = useState({ name: "", description: "", schema: "{}" });
   const [showToolForm, setShowToolForm] = useState(false);
-  const [isTestingConnection, setIsTestingConnection] = useState(false);
+  
+  const { invoke: testMcpServer, isLoading: isTestingConnection } = useEdgeFunction('mcp-server', {
+    showErrorToast: true,
+    errorMessage: 'Failed to test connection'
+  });
 
   const isDemoMode = customerId === "demo-customer";
 
@@ -93,30 +98,22 @@ export function MCPServerConfig({ customerId }: { customerId: string }) {
       return;
     }
 
-    setIsTestingConnection(true);
     try {
-      const { data, error } = await supabase.functions.invoke('mcp-server', {
-        body: {
-          action: 'test_connection',
-          endpoint_url: endpointUrl,
-          auth_type: authType,
-          api_key: authType === 'api_key' ? apiKey : undefined,
-          auth_header: authHeader,
-        }
+      const data = await testMcpServer({
+        action: 'test_connection',
+        endpoint_url: endpointUrl,
+        auth_type: authType,
+        api_key: authType === 'api_key' ? apiKey : undefined,
+        auth_header: authHeader,
       });
 
-      if (error) throw error;
-
-      if (data.success) {
+      if (data?.success) {
         toast.success(`Connection successful! Server responded in ${data.response_time_ms}ms`);
       } else {
-        toast.error(`Connection failed: ${data.error}`);
+        toast.error(`Connection failed: ${data?.error}`);
       }
     } catch (error: any) {
       console.error("Connection test error:", error);
-      toast.error(error.message || "Failed to test connection");
-    } finally {
-      setIsTestingConnection(false);
     }
   };
 
