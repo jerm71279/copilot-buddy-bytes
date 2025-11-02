@@ -81,8 +81,7 @@ const SOCDashboard = () => {
       navigate("/demo");
       return;
     }
-    const { supabase } = await import("@/integrations/supabase/client");
-    await supabase.auth.signOut();
+    // Auth state change will handle navigation
     navigate("/auth");
   };
 

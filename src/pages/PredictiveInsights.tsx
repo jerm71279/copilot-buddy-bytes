@@ -21,6 +21,7 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
 import { useAIFunctions } from "@/hooks/useAIFunctions";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function PredictiveInsights() {
   const [selectedType, setSelectedType] = useState<string>("all");
@@ -28,6 +29,7 @@ export default function PredictiveInsights() {
   const toast = useStandardToast();
   const { customerId } = useUserProfile();
   const { predictiveInsights } = useAIFunctions();
+  const { user } = useAuth();
 
   // Fetch insights
   const { data: insights, isLoading } = useQuery({
@@ -67,7 +69,6 @@ export default function PredictiveInsights() {
   // Update insight status mutation
   const updateInsightMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
       const { error } = await supabase
         .from("ai_insights" as any)
         .update({ 

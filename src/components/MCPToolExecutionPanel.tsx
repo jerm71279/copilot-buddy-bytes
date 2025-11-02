@@ -20,6 +20,7 @@ import { useMCPTools, MCPTool, executeMCPTool } from "@/hooks/useMCPServers";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface MCPToolExecutionPanelProps {
   serverId: string;
@@ -34,6 +35,7 @@ export function MCPToolExecutionPanel({
 }: MCPToolExecutionPanelProps) {
   const { tools, isLoading } = useMCPTools([serverId]);
   const { toast } = useToast();
+  const { isAuthenticated, user } = useAuth();
   
   const [selectedTool, setSelectedTool] = useState<MCPTool | null>(null);
   const [executionResult, setExecutionResult] = useState<any>(null);
@@ -95,9 +97,8 @@ export function MCPToolExecutionPanel({
     setShowParametersDialog(false);
 
     try {
-      // Get auth session and customer ID
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      // Check authentication
+      if (!isAuthenticated || !user) {
         toast({
           title: "Authentication required",
           description: "Please sign in to execute tools",
@@ -106,10 +107,21 @@ export function MCPToolExecutionPanel({
         return;
       }
 
+      // Get session for auth token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Session expired",
+          description: "Please sign in again",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("customer_id")
-        .eq("user_id", session.user.id)
+        .eq("user_id", user.id)
         .maybeSingle();
 
       const customerId = profile?.customer_id;
@@ -126,7 +138,7 @@ export function MCPToolExecutionPanel({
         serverId,
         tool.tool_name,
         customerId,
-        session.user.id,
+        user.id,
         parameters
       );
       setExecutionResult(result);

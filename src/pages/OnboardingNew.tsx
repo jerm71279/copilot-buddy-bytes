@@ -11,6 +11,7 @@ import { ArrowLeft, Plus } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Template {
   id: string;
@@ -24,6 +25,7 @@ export default function OnboardingNew() {
   const navigate = useNavigate();
   const toast = useStandardToast();
   const { customerId, isLoading: profileLoading } = useUserProfile();
+  const { user } = useAuth();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -74,7 +76,6 @@ export default function OnboardingNew() {
     setIsLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
       // Create the onboarding

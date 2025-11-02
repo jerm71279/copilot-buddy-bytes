@@ -170,7 +170,7 @@ export function useSlackSync() {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await checkSession(); // Already using useRequireAuth hook
     // Navigation handled by auth state change
   };
 

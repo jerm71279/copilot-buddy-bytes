@@ -9,9 +9,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Mail, Shield, AlertTriangle, CheckCircle, XCircle, Target, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 const PhishingSimulations = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [selectedSimulation, setSelectedSimulation] = useState<any | null>(null);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -32,7 +34,6 @@ const PhishingSimulations = () => {
   const { data: attempts, isLoading: attemptsLoading } = useQuery({
     queryKey: ["phishing-attempts"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase

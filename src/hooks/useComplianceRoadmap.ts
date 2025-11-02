@@ -4,6 +4,7 @@ import { getUserCustomerId } from "@/lib/supabaseHelpers";
 import { AuthService } from "@/services/authService";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import type { 
   RoadmapStage, 
   RoadmapMilestone, 
@@ -17,6 +18,7 @@ export const useComplianceRoadmap = (frameworkId?: string) => {
   const queryClient = useQueryClient();
   const [customerId, setCustomerId] = useState<string | null>(null);
   const [isCustomerLoading, setIsCustomerLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
  
   useEffect(() => {
     const fetchCustomerId = async () => {

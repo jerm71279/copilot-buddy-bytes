@@ -50,8 +50,8 @@ const Portal = () => {
   }, [location]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
+    // Use the auth hook's session check instead of direct signOut
+    navigate("/auth");
   };
 
   if (loading || toolsLoading || dashboardsLoading || adminToolsLoading) {

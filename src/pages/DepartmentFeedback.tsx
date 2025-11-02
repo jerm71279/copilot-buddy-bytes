@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useStandardToast } from "@/hooks/useStandardToast";
 import { Loader2, CheckCircle2, AlertTriangle, Info, Lightbulb, ArrowLeft } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useAuth } from "@/hooks/useAuth";
 
 interface FeedbackItem {
   id: string;
@@ -32,6 +33,7 @@ interface FeedbackItem {
 const DepartmentFeedback = () => {
   const navigate = useNavigate();
   const toast = useStandardToast();
+  const { user } = useAuth();
   const [feedback, setFeedback] = useState<FeedbackItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDept, setSelectedDept] = useState<string>("all");
@@ -83,7 +85,7 @@ const DepartmentFeedback = () => {
         .update({
           acknowledged: true,
           acknowledged_at: new Date().toISOString(),
-          acknowledged_by: (await supabase.auth.getUser()).data.user?.id,
+          acknowledged_by: user?.id,
         })
         .eq('id', feedbackId);
 
