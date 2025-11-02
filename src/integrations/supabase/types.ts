@@ -8816,6 +8816,134 @@ export type Database = {
           },
         ]
       }
+      mcp_knowledge_base: {
+        Row: {
+          content: string
+          content_type: string
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          embedding: string | null
+          id: string
+          metadata: Json | null
+          server_id: string | null
+          source_url: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          content_type?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          embedding?: string | null
+          id?: string
+          metadata?: Json | null
+          server_id?: string | null
+          source_url?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          content_type?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          embedding?: string | null
+          id?: string
+          metadata?: Json | null
+          server_id?: string | null
+          source_url?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_knowledge_base_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mcp_knowledge_base_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "mcp_knowledge_base_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mcp_rag_queries: {
+        Row: {
+          ai_response: string | null
+          created_at: string
+          customer_id: string
+          id: string
+          query_text: string
+          response_time_ms: number | null
+          retrieved_docs: Json | null
+          server_id: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_response?: string | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          query_text: string
+          response_time_ms?: number | null
+          retrieved_docs?: Json | null
+          server_id?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_response?: string | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          query_text?: string
+          response_time_ms?: number | null
+          retrieved_docs?: Json | null
+          server_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_rag_queries_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mcp_rag_queries_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "mcp_rag_queries_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mcp_resources: {
         Row: {
           access_count: number
@@ -14460,6 +14588,24 @@ export type Database = {
         }[]
       }
       sanitize_text_array: { Args: { input: string[] }; Returns: string[] }
+      search_mcp_knowledge: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_customer_id: string
+          query_embedding: string
+          query_server_id?: string
+        }
+        Returns: {
+          content: string
+          content_type: string
+          id: string
+          metadata: Json
+          similarity: number
+          source_url: string
+          title: string
+        }[]
+      }
       search_sharepoint_documents: {
         Args: {
           _customer_id: string

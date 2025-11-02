@@ -4,13 +4,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Wrench, ArrowLeft, BookOpen, Lightbulb } from "lucide-react";
+import { Wrench, ArrowLeft, BookOpen, Lightbulb, Sparkles } from "lucide-react";
 import { MCPToolCard } from "./MCPToolCard";
 import { MCPToolParametersForm } from "./MCPToolParametersForm";
 import { MCPExecutionResults } from "./MCPExecutionResults";
 import { MCPCapabilitySection, getCapabilityIcon } from "./MCPCapabilitySection";
 import { MCPInstructionsList } from "./MCPInstructionsList";
 import { MCPKnowledgeList } from "./MCPKnowledgeList";
+import { MCPKnowledgeManager } from "./MCPKnowledgeManager";
+import { MCPRAGQuery } from "./MCPRAGQuery";
+import { MCPKnowledgeUpload } from "./MCPKnowledgeUpload";
 import { useMCPTools, MCPTool, executeMCPTool } from "@/hooks/useMCPServers";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -189,8 +192,12 @@ export function MCPToolExecutionPanel({
           </div>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="tools" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+          <Tabs defaultValue="rag" className="w-full">
+            <TabsList className="grid w-full grid-cols-4 mb-6">
+              <TabsTrigger value="rag" className="gap-2">
+                <Sparkles className="h-4 w-4" />
+                AI Assistant
+              </TabsTrigger>
               <TabsTrigger value="instruction" className="gap-2">
                 <Lightbulb className="h-4 w-4" />
                 Instruction
@@ -206,6 +213,10 @@ export function MCPToolExecutionPanel({
               </TabsTrigger>
             </TabsList>
 
+            <TabsContent value="rag" className="space-y-4">
+              <MCPRAGQuery serverId={serverId} serverName={serverName} />
+            </TabsContent>
+
             <TabsContent value="instruction" className="space-y-4">
               <MCPCapabilitySection
                 type="instruction"
@@ -219,14 +230,17 @@ export function MCPToolExecutionPanel({
             </TabsContent>
 
             <TabsContent value="knowledge" className="space-y-4">
+              <div className="flex justify-end mb-4">
+                <MCPKnowledgeUpload serverId={serverId} />
+              </div>
               <MCPCapabilitySection
                 type="knowledge"
-                title="Knowledge Resources"
-                description="Documentation and reference materials"
-                count={knowledgeResources.length}
+                title="Knowledge Base"
+                description="Uploaded documentation and reference materials"
+                count={0}
                 icon={getCapabilityIcon('knowledge')}
               >
-                <MCPKnowledgeList resources={knowledgeResources} />
+                <MCPKnowledgeManager serverId={serverId} />
               </MCPCapabilitySection>
             </TabsContent>
 
