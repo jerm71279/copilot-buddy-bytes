@@ -32,6 +32,14 @@ export interface MCPTool {
   avg_execution_time_ms: number | null;
   server_id: string;
   is_enabled: boolean;
+  parameters?: Record<string, {
+    type: string;
+    description?: string;
+    required?: boolean;
+    default?: any;
+  }>;
+  required_permissions?: string[];
+  is_dangerous?: boolean;
 }
 
 export interface MCPExecutionLog {

@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Activity, Server, Zap, Search } from "lucide-react";
+import { Activity, Server, Zap, Search, Wrench, Power, PowerOff, Settings, Trash2, RefreshCw, CheckSquare, Square } from "lucide-react";
 import { toast } from "sonner";
 import { useMCPServers, useMCPTools, executeMCPTool, MCPServer } from "@/hooks/useMCPServers";
 import { getMCPServerStatusBadge, formatMCPCapabilities } from "@/lib/mcpUtils";
@@ -14,6 +14,7 @@ import { MCPServerFilters, ServerFilters } from "./MCPServerFilters";
 import { MCPQuickFilters } from "./MCPQuickFilters";
 import { MCPFilterChips } from "./MCPFilterChips";
 import { MCPSortOptions, SortOption } from "./MCPSortOptions";
+import { MCPToolExecutionPanel } from "./MCPToolExecutionPanel";
 
 type MCPServerStatusProps = { 
   customerId?: string;
@@ -27,6 +28,8 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("date-newest");
   const [groups, setGroups] = useState<Array<{ id: string; group_name: string; color: string }>>([]);
+  const [viewMode, setViewMode] = useState<'list' | 'tools'>('list');
+  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
   const [filters, setFilters] = useState<ServerFilters>({
     status: [],
     groups: [],
@@ -200,18 +203,25 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
     }
   });
 
+  // Handle tool execution view
+  if (viewMode === 'tools' && selectedServerId) {
+    const server = servers.find(s => s.id === selectedServerId);
+    return (
+      <MCPToolExecutionPanel
+        serverId={selectedServerId}
+        serverName={server?.server_name || 'Unknown Server'}
+        onBack={() => {
+          setViewMode('list');
+          setSelectedServerId(null);
+        }}
+      />
+    );
+  }
+
   if (isLoading) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Server className="h-5 w-5" />
-            MCP Servers
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8 text-muted-foreground">Loading MCP servers...</div>
-        </CardContent>
+...
       </Card>
     );
   }
@@ -377,6 +387,19 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
                           </div>
                         </div>
                       )}
+
+                      <div className="flex gap-2 flex-wrap">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedServerId(server.id);
+                            setViewMode('tools');
+                          }}
+                        >
+                          <Wrench className="mr-2 h-4 w-4" /> Execute Tools
+                        </Button>
+                      </div>
 
                       {server.last_health_check && (
                         <p className="text-xs text-muted-foreground">
