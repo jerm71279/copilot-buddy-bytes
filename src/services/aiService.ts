@@ -50,4 +50,34 @@ export class AIService {
     if (error) throw error;
     return data;
   }
+
+  /**
+   * Route query to best expert using Mixture of Experts
+   */
+  static async routeWithMoE(
+    query: string,
+    options?: {
+      queryType?: 'reasoning' | 'vision' | 'code' | 'general' | 'fast_response';
+      useMultipleExperts?: boolean;
+    }
+  ) {
+    const { data, error } = await supabase.functions.invoke('moe-router', {
+      body: { query, ...options }
+    });
+
+    if (error) throw error;
+    return data;
+  }
+
+  /**
+   * Seed default AI experts (admin only)
+   */
+  static async seedExperts() {
+    const { data, error } = await supabase.functions.invoke('seed-experts', {
+      body: {}
+    });
+
+    if (error) throw error;
+    return data;
+  }
 }

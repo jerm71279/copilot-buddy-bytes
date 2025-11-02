@@ -79,6 +79,16 @@ export function useAIFunctions() {
     errorMessage: 'Failed to generate insights',
   });
 
+  const moeRouter = useEdgeFunction<{ query: string; queryType?: string; useMultipleExperts?: boolean }, any>('moe-router', {
+    showErrorToast: true,
+    errorMessage: 'Failed to route query',
+  });
+
+  const seedExperts = useEdgeFunction<void, any>('seed-experts', {
+    showErrorToast: true,
+    errorMessage: 'Failed to seed experts',
+  });
+
   return {
     aiInsights,
     imageGeneration,
@@ -88,5 +98,7 @@ export function useAIFunctions() {
     departmentAssistant,
     patternExecutor,
     predictiveInsights,
+    moeRouter,
+    seedExperts,
   };
 }

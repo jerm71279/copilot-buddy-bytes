@@ -11,12 +11,20 @@ serve(async (req) => {
   }
 
   try {
-    const { model, prompt } = await req.json();
+    const { model, prompt, useMoE } = await req.json();
 
     if (!model || !prompt) {
       return new Response(
         JSON.stringify({ error: 'model and prompt are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // If MoE routing is requested, use the moe-router instead
+    if (useMoE) {
+      return new Response(
+        JSON.stringify({ info: 'Use moe-router edge function for MoE capabilities' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
