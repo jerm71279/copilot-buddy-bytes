@@ -44,7 +44,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
     }, 300);
 
     return () => clearTimeout(debounce);
-  }, [query, performSearch]);
+  }, [query]);
 
   const handleSelect = (result: SearchResult) => {
     if (result.url?.startsWith("http")) {
