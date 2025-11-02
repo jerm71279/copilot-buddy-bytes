@@ -7,11 +7,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function UploadNetworkChecklist() {
   const navigate = useNavigate();
   const { customerId, isLoading: profileLoading } = useUserProfile();
   const showToast = useStandardToast();
+  const { user } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
 
   const handleUploadChecklist = async () => {
@@ -22,7 +24,6 @@ export default function UploadNetworkChecklist() {
 
     setIsUploading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         showToast.error("You must be logged in");
         return;

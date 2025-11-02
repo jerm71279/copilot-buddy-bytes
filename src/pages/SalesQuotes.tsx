@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Dialog,
   DialogContent,
@@ -48,6 +49,7 @@ interface Quote {
 const SalesQuotes = () => {
   const { customerId, isLoading: profileLoading } = useUserProfile();
   const showToast = useStandardToast();
+  const { user } = useAuth();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -87,7 +89,6 @@ const SalesQuotes = () => {
     if (!customerId) return;
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       await QuoteService.createQuote({

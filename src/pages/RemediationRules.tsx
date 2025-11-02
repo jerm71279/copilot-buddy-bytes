@@ -15,11 +15,13 @@ import { Plus, Power, PowerOff } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function RemediationRules() {
   const queryClient = useQueryClient();
   const toast = useStandardToast();
   const { profile, customerId } = useUserProfile();
+  const { user } = useAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newRule, setNewRule] = useState({
     rule_name: "",
@@ -46,7 +48,6 @@ export default function RemediationRules() {
 
   const createRule = useMutation({
     mutationFn: async (rule: typeof newRule) => {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase

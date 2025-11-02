@@ -14,6 +14,7 @@ import { Plus, Search, FileText, DollarSign, TrendingUp } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface PurchaseOrder {
   id: string;
@@ -31,6 +32,7 @@ interface PurchaseOrder {
 export default function PurchaseOrders() {
   const { customerId, isLoading: profileLoading } = useUserProfile();
   const showToast = useStandardToast();
+  const { user } = useAuth();
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -67,7 +69,6 @@ export default function PurchaseOrders() {
 
   const handleCreatePO = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user || !customerId) return;
 
       await PurchaseOrderService.createPurchaseOrder({

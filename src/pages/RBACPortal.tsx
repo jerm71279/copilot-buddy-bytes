@@ -17,17 +17,18 @@ import MCPServerStatus from "@/components/MCPServerStatus";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function RBACPortal() {
   const [activeTab, setActiveTab] = useState("roles");
   const queryClient = useQueryClient();
   const { profile, isLoading: profileLoading } = useUserProfile();
+  const { user } = useAuth();
 
   // Check if user has admin permissions
   const { data: isAdmin, isLoading } = useQuery({
     queryKey: ["rbac-admin-check"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return false;
 
       const { data, error } = await supabase

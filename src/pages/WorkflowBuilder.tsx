@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Plus, Trash2, Settings } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from "@/hooks/useStandardToast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface WorkflowStep {
   id: string;
@@ -21,6 +22,7 @@ interface WorkflowStep {
 export default function WorkflowBuilder() {
   const navigate = useNavigate();
   const showToast = useStandardToast();
+  const { user } = useAuth();
   const [workflowName, setWorkflowName] = useState("");
   const [description, setDescription] = useState("");
   const [workflowType, setWorkflowType] = useState("custom");
@@ -52,7 +54,6 @@ export default function WorkflowBuilder() {
 
     setIsSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
       const { data: profile } = await supabase

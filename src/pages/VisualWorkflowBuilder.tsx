@@ -33,6 +33,7 @@ import {
   Globe
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 // Custom node components
 const TriggerNode = ({ data }: { data: any }) => (
@@ -103,6 +104,7 @@ export default function VisualWorkflowBuilder() {
   const [searchParams] = useSearchParams();
   const workflowId = searchParams.get('id');
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const [workflowName, setWorkflowName] = useState("");
   const [workflowDescription, setWorkflowDescription] = useState("");
@@ -138,7 +140,6 @@ export default function VisualWorkflowBuilder() {
   // Save workflow mutation
   const saveWorkflowMutation = useMutation({
     mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
       const { data: profile } = await supabase

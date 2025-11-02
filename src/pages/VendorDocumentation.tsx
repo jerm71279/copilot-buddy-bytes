@@ -13,6 +13,7 @@ import { Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 import { useAuthFunctions } from "@/hooks/useAuthFunctions";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Vendor {
   id: string;
@@ -29,6 +30,7 @@ interface Vendor {
 
 export default function VendorDocumentation() {
   const { signupComplete } = useAuthFunctions();
+  const { user } = useAuth();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [showDialog, setShowDialog] = useState(false);
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
@@ -60,7 +62,6 @@ const [formData, setFormData] = useState({
 
   const handleSave = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       // Try to get user's customer
