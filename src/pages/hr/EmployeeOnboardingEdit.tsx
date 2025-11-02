@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ export default function EmployeeOnboardingEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useStandardToast();
+  const { user } = useAuth();
   const { roles } = useOnboardingRoles();
   const { users } = useOnboardingUsers();
   const { templates } = useOnboardingTemplates();
@@ -63,11 +65,8 @@ export default function EmployeeOnboardingEdit() {
       const typedData = data as any;
       
       // Check if we have a template but no tasks - copy from template using modularized hook
-      if (typedData.template_id) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          await copyTasks(id, typedData.template_id, user.id);
-        }
+      if (typedData.template_id && user) {
+        await copyTasks(id, typedData.template_id, user.id);
       }
 
       setFormData({

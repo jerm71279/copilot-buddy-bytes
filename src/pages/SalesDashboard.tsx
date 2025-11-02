@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { SalesService, SalesStats } from "@/services/salesService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -74,6 +75,7 @@ import {
 
 const SalesDashboard = () => {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const isPreviewMode = useDemoMode();
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -129,8 +131,7 @@ const SalesDashboard = () => {
       navigate("/demo");
       return;
     }
-    const { supabase } = await import("@/integrations/supabase/client");
-    await supabase.auth.signOut();
+    await signOut();
     navigate("/auth");
   };
 

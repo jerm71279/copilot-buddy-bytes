@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +33,7 @@ export default function EmployeeOnboardingDashboard() {
   const navigate = useNavigate();
   const toast = useStandardToast();
   const { checkSessionAndLoad } = useRequireAuth();
+  const { user } = useAuth();
   const [onboardings, setOnboardings] = useState<EmployeeOnboarding[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -67,7 +69,6 @@ export default function EmployeeOnboardingDashboard() {
   const loadOnboardings = async () => {
     try {
       // Get current user's customer_id
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate('/auth');
         return;

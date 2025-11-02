@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 export default function EmployeeOnboardingNew() {
   const navigate = useNavigate();
   const toast = useStandardToast();
+  const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const preselectedTemplateId = searchParams.get('template');
   const { templates } = useOnboardingTemplates();
@@ -57,7 +59,6 @@ export default function EmployeeOnboardingNew() {
     setIsLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
       const { data: profile } = await supabase

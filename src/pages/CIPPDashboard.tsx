@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "@/hooks/useAuth";
 import ExternalSystemsBar from "@/components/ExternalSystemsBar";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,6 +59,7 @@ import { CIPPService, CIPPTenant, TenantHealth } from "@/services/cippService";
 
 const CIPPDashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [tenants, setTenants] = useState<CIPPTenant[]>([]);
   const [healthData, setHealthData] = useState<TenantHealth[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +74,6 @@ const CIPPDashboard = () => {
     try {
       setLoading(true);
 
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error("Please log in to continue");
         navigate("/auth");
