@@ -54,7 +54,7 @@ export const AIMCPGenerator: React.FC<AIMCPGeneratorProps> = ({
     setShowResults(false);
 
     const result = await aiMCPGenerator.invoke({
-      prompt: `Generate MCP servers for ${department}`,
+      prompt: `Generate MCP servers for ${department} with REAL endpoint suggestions where possible`,
       config: {
         customerId,
         department,
@@ -62,7 +62,8 @@ export const AIMCPGenerator: React.FC<AIMCPGeneratorProps> = ({
           currentProcesses: currentProcesses.split('\n').filter(p => p.trim()),
           painPoints: painPoints.split('\n').filter(p => p.trim()),
           goals: goals.split('\n').filter(g => g.trim()),
-        }
+        },
+        preferRealEndpoints: true, // Signal to AI to suggest real MCP servers
       }
     });
 

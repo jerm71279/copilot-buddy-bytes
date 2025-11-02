@@ -41,6 +41,11 @@ serve(async (req) => {
 
     const requestBody = await req.json();
     
+    // Handle connection test action
+    if (requestBody.action === 'test_connection') {
+      return await handleConnectionTest(requestBody);
+    }
+    
     // Validate input
     const validatedInput = mcpRequestSchema.parse(requestBody);
     const { tool_name, server_id, customer_id, user_id, input_data } = validatedInput;
@@ -132,6 +137,114 @@ serve(async (req) => {
     );
   }
 });
+
+/**
+ * Test connection to external MCP server
+ */
+async function handleConnectionTest(requestBody: any): Promise<Response> {
+  const { endpoint_url, auth_type, api_key, auth_header } = requestBody;
+
+  if (!endpoint_url) {
+    return new Response(
+      JSON.stringify({ success: false, error: 'Endpoint URL is required' }),
+      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
+  const startTime = Date.now();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout for tests
+
+  try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-MCP-Version': '1.0',
+    };
+
+    // Add authentication if provided
+    if (auth_type && api_key) {
+      if (auth_type === 'bearer') {
+        headers[auth_header || 'Authorization'] = `Bearer ${api_key}`;
+      } else if (auth_type === 'api_key') {
+        headers[auth_header || 'X-API-Key'] = api_key;
+      } else if (auth_type === 'custom') {
+        headers[auth_header || 'Authorization'] = api_key;
+      }
+    }
+
+    // Send a test request to list available tools
+    const response = await fetch(endpoint_url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: crypto.randomUUID(),
+        method: 'tools/list',
+        params: {}
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    const responseTime = Date.now() - startTime;
+
+    if (!response.ok) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: `Server returned ${response.status}: ${response.statusText}`,
+          response_time_ms: responseTime
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const result = await response.json();
+
+    if (result.error) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: `MCP Error: ${result.error.message || 'Unknown error'}`,
+          response_time_ms: responseTime
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        response_time_ms: responseTime,
+        tools_found: Array.isArray(result.result) ? result.result.length : 0,
+        message: 'Connection successful'
+      }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  } catch (error) {
+    clearTimeout(timeoutId);
+    const responseTime = Date.now() - startTime;
+    
+    let errorMessage = 'Unknown error';
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        errorMessage = 'Connection timed out after 10 seconds';
+      } else {
+        errorMessage = error.message;
+      }
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: errorMessage,
+        response_time_ms: responseTime
+      }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+}
 
 /**
  * Call external MCP protocol server

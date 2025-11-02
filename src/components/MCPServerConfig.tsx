@@ -22,10 +22,14 @@ export function MCPServerConfig({ customerId }: { customerId: string }) {
   const [description, setDescription] = useState("");
   const [serverType, setServerType] = useState("");
   const [endpointUrl, setEndpointUrl] = useState("");
+  const [authType, setAuthType] = useState<string>("none");
+  const [apiKey, setApiKey] = useState("");
+  const [authHeader, setAuthHeader] = useState("Authorization");
   const [selectedCapabilities, setSelectedCapabilities] = useState<string[]>([]);
   const [tools, setTools] = useState<Tool[]>([]);
   const [currentTool, setCurrentTool] = useState({ name: "", description: "", schema: "{}" });
   const [showToolForm, setShowToolForm] = useState(false);
+  const [isTestingConnection, setIsTestingConnection] = useState(false);
 
   const isDemoMode = customerId === "demo-customer";
 
@@ -83,6 +87,39 @@ export function MCPServerConfig({ customerId }: { customerId: string }) {
     setTools(tools.filter((_, i) => i !== index));
   };
 
+  const testConnection = async () => {
+    if (!endpointUrl) {
+      toast.error("Endpoint URL is required to test connection");
+      return;
+    }
+
+    setIsTestingConnection(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('mcp-server', {
+        body: {
+          action: 'test_connection',
+          endpoint_url: endpointUrl,
+          auth_type: authType,
+          api_key: authType === 'api_key' ? apiKey : undefined,
+          auth_header: authHeader,
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success(`Connection successful! Server responded in ${data.response_time_ms}ms`);
+      } else {
+        toast.error(`Connection failed: ${data.error}`);
+      }
+    } catch (error: any) {
+      console.error("Connection test error:", error);
+      toast.error(error.message || "Failed to test connection");
+    } finally {
+      setIsTestingConnection(false);
+    }
+  };
+
   const saveServer = async () => {
     if (isDemoMode) {
       toast.error("Cannot save MCP servers in demo mode");
@@ -100,6 +137,17 @@ export function MCPServerConfig({ customerId }: { customerId: string }) {
     }
 
     try {
+      // Build config with authentication if provided
+      const config: Record<string, any> = {};
+      if (authType !== 'none' && apiKey) {
+        config.auth = {
+          type: authType,
+          header: authHeader,
+        };
+        // Store API key securely in config (would be encrypted in production)
+        config.api_key_hash = btoa(apiKey); // Basic encoding, use proper encryption in production
+      }
+
       // Insert MCP server
       const { data: server, error: serverError } = await supabase
         .from("mcp_servers")
@@ -110,8 +158,8 @@ export function MCPServerConfig({ customerId }: { customerId: string }) {
           server_type: serverType,
           endpoint_url: endpointUrl || null,
           capabilities: selectedCapabilities,
-          status: "inactive",
-          config: {}
+          status: endpointUrl ? "active" : "inactive",
+          config
         })
         .select()
         .maybeSingle();
@@ -142,6 +190,9 @@ export function MCPServerConfig({ customerId }: { customerId: string }) {
       setDescription("");
       setServerType("");
       setEndpointUrl("");
+      setAuthType("none");
+      setApiKey("");
+      setAuthHeader("Authorization");
       setSelectedCapabilities([]);
       setTools([]);
     } catch (error: any) {
@@ -185,32 +236,105 @@ export function MCPServerConfig({ customerId }: { customerId: string }) {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="server-type">Server Type</Label>
-              <Select value={serverType} onValueChange={setServerType}>
-                <SelectTrigger id="server-type">
-                  <SelectValue placeholder="Select server type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {serverTypes.map(type => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="server-type">Server Type</Label>
+            <Select value={serverType} onValueChange={setServerType}>
+              <SelectTrigger id="server-type">
+                <SelectValue placeholder="Select server type" />
+              </SelectTrigger>
+              <SelectContent>
+                {serverTypes.map(type => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
+        {/* External MCP Server Configuration */}
+        <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-sm">External MCP Server (Optional)</h3>
+              <p className="text-xs text-muted-foreground">Connect to a real MCP protocol server</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="endpoint">Endpoint URL (Optional)</Label>
+              <Label htmlFor="endpoint">Endpoint URL</Label>
               <Input
                 id="endpoint"
                 placeholder="https://api.example.com/mcp"
                 value={endpointUrl}
                 onChange={(e) => setEndpointUrl(e.target.value)}
               />
+              <p className="text-xs text-muted-foreground">
+                Leave empty to use internal mock implementation
+              </p>
             </div>
+
+            {endpointUrl && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="auth-type">Authentication Type</Label>
+                  <Select value={authType} onValueChange={setAuthType}>
+                    <SelectTrigger id="auth-type">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="api_key">API Key</SelectItem>
+                      <SelectItem value="bearer">Bearer Token</SelectItem>
+                      <SelectItem value="custom">Custom Header</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {authType !== 'none' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="auth-header">Header Name</Label>
+                      <Input
+                        id="auth-header"
+                        placeholder="Authorization"
+                        value={authHeader}
+                        onChange={(e) => setAuthHeader(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="api-key">
+                        {authType === 'bearer' ? 'Bearer Token' : 'API Key'}
+                      </Label>
+                      <Input
+                        id="api-key"
+                        type="password"
+                        placeholder="Enter your API key or token"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                      />
+                    </div>
+                  </>
+                )}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={testConnection}
+                  disabled={isTestingConnection}
+                  className="w-full"
+                >
+                  {isTestingConnection ? (
+                    <>Testing Connection...</>
+                  ) : (
+                    <>Test Connection</>
+                  )}
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
