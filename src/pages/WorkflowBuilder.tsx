@@ -101,7 +101,7 @@ export default function WorkflowBuilder() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
           <div className="flex items-center gap-4 mb-6">
             <Button variant="ghost" size="sm" onClick={() => navigate('/workflows')}>
               <ArrowLeft className="h-4 w-4 mr-2" />

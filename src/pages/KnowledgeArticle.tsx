@@ -10,11 +10,13 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useStandardToast } from "@/hooks/useStandardToast";
 import { useDocumentationFunctions } from "@/hooks/useDocumentationFunctions";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function KnowledgeArticle() {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useStandardToast();
+  const { user } = useAuth();
   const [article, setArticle] = useState<any>(null);
   const [versions, setVersions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,8 +40,7 @@ export default function KnowledgeArticle() {
       setArticle(data);
 
       // Log access
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      if (user?.id) {
         await supabase.from("knowledge_access_logs").insert({
           user_id: user.id,
           customer_id: data.customer_id,
@@ -103,7 +104,7 @@ export default function KnowledgeArticle() {
 
   return (
     <DashboardLayout showDashboardNavigation={false}>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <Button variant="ghost" onClick={() => navigate("/knowledge")} className="mb-4">

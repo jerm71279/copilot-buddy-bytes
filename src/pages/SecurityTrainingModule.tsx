@@ -190,7 +190,7 @@ const SecurityTrainingModule = () => {
     const passed = completion?.passed || false;
 
     return (
-      <div className="container mx-auto p-6 max-w-4xl">
+      <div className="container mx-auto p-6 max-w-7xl">
         <Card className="border-2">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4">
@@ -267,7 +267,7 @@ const SecurityTrainingModule = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <div className="container mx-auto p-6 max-w-7xl">
       {/* Header */}
       <div className="mb-6">
         <Button

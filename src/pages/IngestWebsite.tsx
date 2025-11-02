@@ -74,7 +74,7 @@ export default function IngestWebsite() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8 px-4 max-w-4xl">
+      <div className="container mx-auto py-8 px-4 max-w-7xl">
         <Card>
           <CardHeader>
             <CardTitle>Ingest Website Content</CardTitle>

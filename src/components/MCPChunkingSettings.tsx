@@ -8,8 +8,10 @@ import { Switch } from "@/components/ui/switch";
 import { Scissors, Save, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 export function MCPChunkingSettings() {
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [settings, setSettings] = useState({
     strategy: 'paragraph' as 'paragraph' | 'token' | 'semantic' | 'hybrid',
@@ -25,11 +27,13 @@ export function MCPChunkingSettings() {
   }, []);
 
   const loadSettings = async () => {
+    if (!user?.id) return;
+    
     try {
       const { data: profile } = await supabase
         .from('user_profiles')
         .select('customer_id')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (!profile?.customer_id) return;
@@ -60,13 +64,18 @@ export function MCPChunkingSettings() {
   };
 
   const saveSettings = async () => {
+    if (!user?.id) {
+      toast.error('User not authenticated');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const { data: profile } = await supabase
         .from('user_profiles')
         .select('customer_id')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (!profile?.customer_id) {

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useMCPServers, useMCPTools, executeMCPTool, MCPServer } from "@/hooks/useMCPServers";
 import { getMCPServerStatusBadge, formatMCPCapabilities } from "@/lib/mcpUtils";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { MCPBulkOperations } from "./MCPBulkOperations";
 import { MCPServerFilters, ServerFilters } from "./MCPServerFilters";
 import { MCPQuickFilters } from "./MCPQuickFilters";
@@ -22,6 +23,7 @@ type MCPServerStatusProps = {
 };
 
 export default function MCPServerStatus({ customerId, filterByServerType }: MCPServerStatusProps) {
+  const { user } = useAuth();
   const { servers, isLoading, reload } = useMCPServers(filterByServerType);
   const { tools } = useMCPTools(servers.map(s => s.id));
   const [selectedServers, setSelectedServers] = useState<string[]>([]);
@@ -57,8 +59,7 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
 
   const testMCPTool = async (serverId: string, toolName: string) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      if (!user?.id) {
         toast.error("Authentication required");
         return;
       }
@@ -70,7 +71,7 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
         const { data: profile } = await supabase
           .from("user_profiles")
           .select("customer_id")
-          .eq("user_id", session.user.id)
+          .eq("user_id", user.id)
           .maybeSingle();
         resolvedCustomerId = profile?.customer_id || undefined;
       }
@@ -82,7 +83,7 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
 
       toast.info(`Testing ${toolName}...`);
 
-      const result = await executeMCPTool(serverId, toolName, resolvedCustomerId, session.user.id);
+      const result = await executeMCPTool(serverId, toolName, resolvedCustomerId, user.id);
 
       if (result.success) {
         toast.success(`${toolName} executed successfully in ${result.execution_time_ms}ms`);

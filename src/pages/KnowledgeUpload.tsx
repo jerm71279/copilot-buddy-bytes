@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,10 +9,12 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useStandardToast } from "@/hooks/useStandardToast";
 import { useDocumentationFunctions } from "@/hooks/useDocumentationFunctions";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function KnowledgeUpload() {
   const navigate = useNavigate();
   const toast = useStandardToast();
+  const { user } = useAuth();
   useUserProfile();
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
@@ -31,8 +32,7 @@ export default function KnowledgeUpload() {
 
     setIsUploading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      if (!user?.id) {
         toast.error("You must be logged in to upload files");
         return;
       }
@@ -60,7 +60,7 @@ export default function KnowledgeUpload() {
 
   return (
     <DashboardLayout showDashboardNavigation={false}>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <Button variant="ghost" onClick={() => navigate("/knowledge")} className="mb-6">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Knowledge Base
