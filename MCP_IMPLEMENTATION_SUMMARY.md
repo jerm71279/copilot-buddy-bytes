@@ -145,19 +145,95 @@ Systematic implementation of 7 major MCP server improvements to transform the pl
 
 ---
 
+## Phase 4: Auto-Discovery System ✅
+
+### 7. Auto-Discovery Scanner
+**Files:** 
+- `supabase/functions/mcp-discovery/index.ts` (backend)
+- `src/components/MCPAutoDiscovery.tsx` (frontend)
+- New database tables: `mcp_discovered_servers`, `mcp_discovery_scans`
+
+**Capabilities:**
+- Network endpoint scanning for MCP protocol servers
+- Automatic tool discovery via `tools/list` method
+- Provider detection from hostname patterns
+- Response time measurement
+- Parallel endpoint scanning with 8s timeout per endpoint
+- Discovery history tracking
+
+**Discovery Process:**
+1. User enters endpoint URLs (one per line) or uses "Quick Scan Common"
+2. System scans each endpoint:
+   - Sends MCP protocol `tools/list` request
+   - Validates JSON-RPC 2.0 response
+   - Extracts server name, capabilities, and tools
+   - Detects provider from hostname
+   - Measures response time
+3. Stores discovered servers in database
+4. Displays results with install option
+
+**Auto-Detection Features:**
+- **Provider Detection**: Automatically identifies Atlassian, GitHub, ServiceNow, Salesforce, Microsoft from hostnames
+- **Tool Extraction**: Parses tool list with names, descriptions, and input schemas
+- **Server Naming**: Derives server name from hostname or endpoint
+- **Status Tracking**: `discovered` → `verified` → `installed` lifecycle
+
+**Database Schema:**
+```sql
+mcp_discovered_servers:
+  - endpoint_url: URL that was scanned
+  - server_name: Detected or derived server name
+  - provider: Auto-detected provider
+  - capabilities: Array of tool names
+  - tools: Array of {tool_name, description, input_schema}
+  - response_time_ms: Ping time
+  - status: discovered | verified | installed | failed
+  - is_installed: Boolean flag
+
+mcp_discovery_scans:
+  - scan_type: manual | scheduled | auto
+  - endpoints_scanned: Count
+  - servers_found: Count
+  - status: running | completed | failed
+```
+
+**UI Features:**
+- Multi-line endpoint input
+- "Quick Scan Common" button (pre-fills known endpoints)
+- Real-time scanning progress
+- Discovered server cards showing:
+  - Server name and provider
+  - Endpoint URL
+  - Status badge
+  - Capabilities (first 5 shown)
+  - Response time, tool count, last seen date
+  - One-click install button
+- Status icons (verified=green check, installed=blue check, failed=red alert)
+
+**Common Endpoints Pre-loaded:**
+```
+https://api.github.com/mcp
+https://{your-domain}.atlassian.net/rest/api/3
+https://{instance}.service-now.com/api/now
+https://api.slack.com/mcp
+```
+
+---
+
 ## Integration Points
 
 ### MCPServerDashboard Integration
 **File:** `src/pages/MCPServerDashboard.tsx`
 
 **New Tabs Added:**
+- **Auto-Discovery** - Network scanning for MCP servers
 - **Health Monitor** - Real-time health metrics
 - **Marketplace** - Template browsing and installation
 
 **Tab Structure:**
 ```
 All Servers | Compliance | Executive | Finance | HR | IT | 
-Operations | Sales | Security | Health Monitor | Marketplace | Configure New
+Operations | Sales | Security | Auto-Discovery | Health Monitor | Marketplace | Configure New
 ```
 
 ### Edge Function Updates
@@ -330,13 +406,14 @@ Operations | Sales | Security | Health Monitor | Marketplace | Configure New
 - All mock implementations
 - Manual configuration only
 
-### After Implementation
+### After Implementation (All 8 Features)
 - ✅ Authentication system with 4 auth types
 - ✅ Connection testing with <10s validation
 - ✅ Real-time health monitoring (30s refresh)
 - ✅ 6 pre-configured marketplace templates
 - ✅ One-click template installation
 - ✅ Enhanced AI generator with real endpoint suggestions
+- ✅ Auto-discovery network scanner
 - ✅ Comprehensive documentation
 
 ### Expected Outcomes
@@ -345,6 +422,7 @@ Operations | Sales | Security | Health Monitor | Marketplace | Configure New
 - 80% faster server setup time
 - 100% pre-save endpoint validation
 - Real-time operational visibility
+- Automated discovery of network MCP servers
 
 ---
 
@@ -383,5 +461,5 @@ Operations | Sales | Security | Health Monitor | Marketplace | Configure New
 ---
 
 **Implementation Status: COMPLETE ✅**
-**Deployment Ready: YES**
+**All 8 Features Deployed: YES**
 **Breaking Changes: NONE**

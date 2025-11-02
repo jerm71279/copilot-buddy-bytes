@@ -8636,6 +8636,123 @@ export type Database = {
         }
         Relationships: []
       }
+      mcp_discovered_servers: {
+        Row: {
+          capabilities: Json | null
+          customer_id: string | null
+          discovered_at: string
+          endpoint_url: string
+          error_message: string | null
+          id: string
+          is_installed: boolean
+          last_seen_at: string
+          metadata: Json | null
+          provider: string | null
+          response_time_ms: number | null
+          server_name: string | null
+          status: string
+          tools: Json | null
+        }
+        Insert: {
+          capabilities?: Json | null
+          customer_id?: string | null
+          discovered_at?: string
+          endpoint_url: string
+          error_message?: string | null
+          id?: string
+          is_installed?: boolean
+          last_seen_at?: string
+          metadata?: Json | null
+          provider?: string | null
+          response_time_ms?: number | null
+          server_name?: string | null
+          status?: string
+          tools?: Json | null
+        }
+        Update: {
+          capabilities?: Json | null
+          customer_id?: string | null
+          discovered_at?: string
+          endpoint_url?: string
+          error_message?: string | null
+          id?: string
+          is_installed?: boolean
+          last_seen_at?: string
+          metadata?: Json | null
+          provider?: string | null
+          response_time_ms?: number | null
+          server_name?: string | null
+          status?: string
+          tools?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_discovered_servers_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mcp_discovered_servers_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
+      mcp_discovery_scans: {
+        Row: {
+          completed_at: string | null
+          customer_id: string | null
+          endpoints_scanned: number
+          error_message: string | null
+          id: string
+          scan_type: string
+          servers_found: number
+          started_at: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          customer_id?: string | null
+          endpoints_scanned?: number
+          error_message?: string | null
+          id?: string
+          scan_type: string
+          servers_found?: number
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          customer_id?: string | null
+          endpoints_scanned?: number
+          error_message?: string | null
+          id?: string
+          scan_type?: string
+          servers_found?: number
+          started_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_discovery_scans_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mcp_discovery_scans_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "soc_security_overview"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
       mcp_execution_logs: {
         Row: {
           compliance_tags: string[] | null
