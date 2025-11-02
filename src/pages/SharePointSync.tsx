@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -103,8 +104,7 @@ const SharePointSync = () => {
 
   const fetchSharePointSites = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!user) return;
 
       // Get Microsoft 365 linked identity
       const { data: identities } = await supabase.auth.getUserIdentities();
@@ -183,8 +183,7 @@ const SharePointSync = () => {
     setSyncing(config.id);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not authenticated");
+      if (!user) throw new Error("Not authenticated");
 
       // Get Microsoft 365 access token
       const { data: identities } = await supabase.auth.getUserIdentities();
@@ -220,9 +219,11 @@ const SharePointSync = () => {
     await fetchConfigs();
   };
 
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
+
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/auth";
+    await signOut();
   };
 
   if (isLoading) {

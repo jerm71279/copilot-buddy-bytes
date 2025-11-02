@@ -3,23 +3,23 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Layers, Users, Clock, TrendingUp, AlertCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useEdgeFunction } from "@/hooks/useEdgeFunction";
+import { useAuth } from "@/hooks/useAuth";
 
 const DataProducts = () => {
+  const { isAuthenticated } = useAuth();
+  const analyticsEngine = useEdgeFunction('analytics-engine');
+  
   const { data: products, isLoading } = useQuery({
     queryKey: ['data-products'],
     queryFn: async () => {
-      const { data: authData } = await supabase.auth.getSession();
-      if (!authData.session) return [];
+      if (!isAuthenticated) return [];
 
-      const { data, error } = await supabase.functions.invoke('analytics-engine', {
-        body: { action: 'data-products-overview' }
-      });
-
-      if (error) throw error;
-      return data.products || [];
-    }
+      const data = await analyticsEngine.execute({ action: 'data-products-overview' });
+      return data?.products || [];
+    },
+    enabled: isAuthenticated
   });
 
   const getDomainColor = (domain: string) => {

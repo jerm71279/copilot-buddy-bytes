@@ -4,10 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Activity, TrendingUp, BarChart3, PieChart } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useEdgeFunction } from "@/hooks/useEdgeFunction";
 
 const domains = [
   { id: 'hr', label: 'HR', variant: 'default' as const },
@@ -19,8 +18,8 @@ const domains = [
 
 const CrossDomainAnalytics = () => {
   const [selectedDomains, setSelectedDomains] = useState<string[]>(['hr', 'it']);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
+  const analyticsEngine = useEdgeFunction('analytics-engine');
 
   const toggleDomain = (domainId: string) => {
     setSelectedDomains(prev =>
@@ -36,24 +35,19 @@ const CrossDomainAnalytics = () => {
       return;
     }
 
-    setIsAnalyzing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('analytics-engine', {
-        body: {
-          action: 'cross-domain-analytics',
-          domains: selectedDomains
-        }
+      const data = await analyticsEngine.execute({
+        action: 'cross-domain-analytics',
+        domains: selectedDomains
       });
 
-      if (error) throw error;
-
-      setAnalysisResults(data.results);
-      toast.success('Analysis completed successfully');
+      if (data?.results) {
+        setAnalysisResults(data.results);
+        toast.success('Analysis completed successfully');
+      }
     } catch (error) {
       console.error('Analysis error:', error);
       toast.error('Failed to run analysis');
-    } finally {
-      setIsAnalyzing(false);
     }
   };
 
@@ -98,10 +92,10 @@ const CrossDomainAnalytics = () => {
 
             <Button 
               onClick={runAnalysis} 
-              disabled={isAnalyzing || selectedDomains.length === 0}
+              disabled={analyticsEngine.loading || selectedDomains.length === 0}
               className="w-full mt-6"
             >
-              {isAnalyzing ? 'Analyzing...' : `Analyze ${selectedDomains.length} Domain${selectedDomains.length !== 1 ? 's' : ''}`}
+              {analyticsEngine.loading ? 'Analyzing...' : `Analyze ${selectedDomains.length} Domain${selectedDomains.length !== 1 ? 's' : ''}`}
             </Button>
           </CardContent>
         </Card>

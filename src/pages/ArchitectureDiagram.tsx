@@ -206,7 +206,7 @@ const ArchitectureDiagram = () => {
 
   return (
     <div className="min-h-screen w-full bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-[95vw] overflow-auto" ref={containerRef}>
+      <div className="w-full max-w-7xl overflow-auto" ref={containerRef}>
         <div className="mermaid">{mermaidDiagram}</div>
       </div>
     </div>

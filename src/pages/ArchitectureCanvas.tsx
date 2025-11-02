@@ -318,7 +318,7 @@ graph TB
 
   return (
     <DashboardLayout>
-        <div className="max-w-[98vw] mx-auto">
+        <div className="max-w-7xl mx-auto">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">OberaConnect System Architecture</h1>

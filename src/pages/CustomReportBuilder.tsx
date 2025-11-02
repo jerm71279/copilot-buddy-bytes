@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthService } from "@/services/authService";
+import { useEdgeFunction } from "@/hooks/useEdgeFunction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ import { useStandardToast } from "@/hooks/useStandardToast";
 export default function CustomReportBuilder() {
   const queryClient = useQueryClient();
   const toast = useStandardToast();
+  const customReportEngine = useEdgeFunction('custom-report-engine');
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newReport, setNewReport] = useState({
     report_name: "",
@@ -100,14 +102,13 @@ export default function CustomReportBuilder() {
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke("custom-report-engine", {
-        body: {
-          action: "execute_report",
-          reportId,
-          customerId
-        },
+      const data = await customReportEngine.execute({
+        action: "execute_report",
+        reportId,
+        customerId
       });
-      if (error) throw error;
+      
+      if (!data) throw new Error("Failed to execute report");
       return data;
     },
     onSuccess: (data) => {

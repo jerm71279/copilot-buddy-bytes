@@ -1,24 +1,23 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { RevioDataResponse } from '@/types/revio';
 import { toast } from 'sonner';
+import { useEdgeFunction } from '@/hooks/useEdgeFunction';
 
 export const useRevioData = () => {
   const [data, setData] = useState<RevioDataResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const revioDataFn = useEdgeFunction('revio-data', { showErrorToast: false });
 
   const fetchRevioData = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const { data: responseData, error: functionError } = await supabase.functions.invoke('revio-data', {
-        body: { dataType: 'all' }
-      });
+      const responseData = await revioDataFn.execute({ dataType: 'all' });
 
-      if (functionError) {
-        throw functionError;
+      if (!responseData) {
+        throw new Error('Failed to fetch Revio data');
       }
 
       if (responseData?.success) {

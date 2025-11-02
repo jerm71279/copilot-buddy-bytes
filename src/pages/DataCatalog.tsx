@@ -6,41 +6,34 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Database, Search, Filter, Tag, Clock, Shield } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useEdgeFunction } from "@/hooks/useEdgeFunction";
 
 const DataCatalog = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [domainFilter, setDomainFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const dataCatalogFn = useEdgeFunction('data-catalog');
 
   const { data: catalogEntries, isLoading, refetch } = useQuery({
     queryKey: ['data-catalog', searchQuery, domainFilter, typeFilter],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke('data-catalog', {
-        body: {
-          action: 'search',
-          query: searchQuery || undefined,
-          domain: domainFilter !== 'all' ? domainFilter : undefined,
-          tags: typeFilter !== 'all' ? [typeFilter] : undefined
-        }
+      const data = await dataCatalogFn.execute({
+        action: 'search',
+        query: searchQuery || undefined,
+        domain: domainFilter !== 'all' ? domainFilter : undefined,
+        tags: typeFilter !== 'all' ? [typeFilter] : undefined
       });
 
-      if (error) throw error;
-      return data.results || [];
+      return data?.results || [];
     }
   });
 
   const { data: stats } = useQuery({
     queryKey: ['catalog-stats'],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke('data-catalog', {
-        body: { action: 'stats' }
-      });
-
-      if (error) throw error;
-      return data.summary;
+      const data = await dataCatalogFn.execute({ action: 'stats' });
+      return data?.summary;
     }
   });
 

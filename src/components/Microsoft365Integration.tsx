@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useRequireAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Mail, User, FileText, Loader2, MessageSquare } from "lucide-react";
@@ -47,6 +47,7 @@ interface TeamsMessage {
 }
 
 export const Microsoft365Integration = () => {
+  const { user: authUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
@@ -59,21 +60,19 @@ export const Microsoft365Integration = () => {
 
   useEffect(() => {
     checkAuthProvider();
-  }, []);
+  }, [authUser]);
 
   const checkAuthProvider = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
+      if (!authUser) {
         setError('Please sign in to access Microsoft 365 integration');
         setLoading(false);
         return;
       }
 
       // Check if user has Azure provider
-      const hasAzure = user.app_metadata?.providers?.includes('azure') || 
-                       user.app_metadata?.provider === 'azure';
+      const hasAzure = authUser.app_metadata?.providers?.includes('azure') || 
+                       authUser.app_metadata?.provider === 'azure';
       
       setHasAzureProvider(hasAzure);
 

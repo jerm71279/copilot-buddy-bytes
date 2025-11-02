@@ -1,7 +1,8 @@
-import { useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { AuthService } from "@/services/authService";
 import { useToast } from "@/hooks/use-toast";
+import { useEdgeFunction } from "@/hooks/useEdgeFunction";
 
 interface TaskDetectionParams {
   actionType: string;
@@ -11,6 +12,8 @@ interface TaskDetectionParams {
 
 export const useRepetitiveTaskDetection = () => {
   const { toast } = useToast();
+  const taskDetector = useEdgeFunction('repetitive-task-detector', { showErrorToast: false });
+  const automationSuggester = useEdgeFunction('automation-suggester', { showErrorToast: false });
 
   const detectTask = useCallback(async ({ actionType, systemName, context }: TaskDetectionParams) => {
     try {
@@ -22,19 +25,14 @@ export const useRepetitiveTaskDetection = () => {
 
       console.log(`Detecting task: ${actionType} on ${systemName}`);
 
-      const { data, error } = await supabase.functions.invoke('repetitive-task-detector', {
-        body: {
-          userId: user.id,
-          actionType,
-          systemName,
-          context
-        }
+      const data = await taskDetector.execute({
+        userId: user.id,
+        actionType,
+        systemName,
+        context
       });
 
-      if (error) {
-        console.error('Error detecting task:', error);
-        return;
-      }
+      if (!data) return;
 
       console.log('Task detection result:', data);
 
@@ -53,12 +51,10 @@ export const useRepetitiveTaskDetection = () => {
 
         if (tasks && tasks.length > 0) {
           // Trigger automation suggester
-          const { data: suggestion, error: suggestionError } = await supabase.functions.invoke('automation-suggester', {
-            body: { taskId: tasks[0].id }
-          });
+          const suggestion = await automationSuggester.execute({ taskId: tasks[0].id });
 
-          if (suggestionError) {
-            console.error('Error generating suggestion:', suggestionError);
+          if (!suggestion) {
+            console.error('Error generating suggestion');
             return;
           }
 
@@ -73,7 +69,7 @@ export const useRepetitiveTaskDetection = () => {
     } catch (error) {
       console.error('Failed to detect task:', error);
     }
-  }, [toast]);
+  }, [toast, taskDetector, automationSuggester]);
 
   return { detectTask };
 };

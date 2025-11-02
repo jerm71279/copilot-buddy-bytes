@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -49,16 +50,17 @@ const IntelligentAssistant = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { intelligentAssistant } = useComplianceFunctions();
 
+  const { user: authUser } = useAuth();
+
   const loadUserProfile = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!authUser) return;
     
-    setUserId(user.id);
+    setUserId(authUser.id);
 
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("customer_id")
-      .eq("user_id", user.id)
+      .eq("user_id", authUser.id)
       .maybeSingle();
 
     if (profile?.customer_id) {
@@ -153,9 +155,10 @@ const IntelligentAssistant = () => {
     }
   };
 
+  const { signOut } = useAuth();
+
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
+    await signOut();
   };
 
   return (
