@@ -18,7 +18,7 @@ export const PageContainer = ({
   const paddingClasses = noPadding ? "" : "px-4 pb-8 pt-8";
   
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden relative">
+    <div className="min-h-screen bg-background relative">
       <main
         className={`container mx-auto ${paddingClasses} ${className}`}
         style={{ 
