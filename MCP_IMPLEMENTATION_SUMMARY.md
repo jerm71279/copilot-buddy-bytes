@@ -294,9 +294,22 @@ mcp_servers additions:
 ## Phase 6: Advanced Filtering & Views ✅
 
 ### 10. Enhanced Filter System
-**File:** `src/components/MCPServerFilters.tsx`
+**Files:** 
+- `src/components/MCPServerFilters.tsx` (advanced filters)
+- `src/components/MCPQuickFilters.tsx` (one-click presets)
+- `src/components/MCPFilterChips.tsx` (visual active filters)
+- `src/components/MCPSortOptions.tsx` (sorting dropdown)
+- `src/components/MCPServerStatus.tsx` (integration)
 
-**Filter Capabilities:**
+**Quick Filter Presets:**
+- **Needs Attention** - Inactive or error servers
+- **Active Only** - Only active servers  
+- **No Endpoint** - Servers without endpoint configured
+- **Fully Configured** - Active servers with endpoints
+- **Recently Added** - Servers added in last 7 days
+- **Production** - Production environment servers (tag-based)
+
+**Advanced Filter Capabilities:**
 - **Status Filter**: Active, Inactive, Error (multi-select checkboxes)
 - **Group Filter**: Filter by server groups (multi-select with color indicators)
 - **Server Type Filter**: Filter by type (compliance, IT, security, etc.)
@@ -304,26 +317,36 @@ mcp_servers additions:
 - **Endpoint Filter**: Show servers with/without endpoint configuration
 - **Search**: Real-time text search across name, description, type
 
-**Features:**
-- Collapsible filter panel with chevron indicator
-- Active filter count badge
-- "Clear All" button to reset filters
-- Persistent filter state during session
-- Combines with search for compound filtering
-- Auto-fetches available groups, tags, and types from database
+**Sort Options:**
+- Name (A-Z, Z-A)
+- Date Added (Newest First, Oldest First)
+- Status (Active First, Inactive First)
+- Server Type (A-Z, Z-A)
+
+**Visual Filter Features:**
+- **Filter Chips**: Active filters displayed as removable badges
+  - Click X to remove individual filters
+  - Color-coded group chips with group color
+  - Tag chips with # prefix
+  - Status and type capitalization
+- **Filter Count**: Badge showing number of active filters
+- **Results Counter**: "Showing X of Y servers" display
+- **Collapsible Filters**: Advanced filters panel with expand/collapse
+- **Clear All Button**: One-click to reset all filters
 
 **Filter Logic:**
 - Multiple filters combine with AND logic
 - Filters within same category use OR logic (e.g., "Active OR Inactive")
 - Search applies across all visible fields
 - Real-time filtering without page reload
+- Sort applies after filtering
 
-**UI Components:**
-- Collapsible card with smooth animation
-- Color-coded group indicators
-- Checkbox selections for boolean filters
-- Dropdown for endpoint configuration
-- Tag badges for quick tag selection
+**UI/UX Enhancements:**
+- Quick filter buttons with icons for common scenarios
+- Active quick filter highlighting
+- Smooth collapsible animations
+- Persistent filter state during session
+- Auto-fetches available groups, tags, and types from database
 
 ---
 

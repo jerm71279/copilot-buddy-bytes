@@ -6,11 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Activity, Server, Zap, Search } from "lucide-react";
 import { toast } from "sonner";
-import { useMCPServers, useMCPTools, executeMCPTool } from "@/hooks/useMCPServers";
+import { useMCPServers, useMCPTools, executeMCPTool, MCPServer } from "@/hooks/useMCPServers";
 import { getMCPServerStatusBadge, formatMCPCapabilities } from "@/lib/mcpUtils";
 import { supabase } from "@/integrations/supabase/client";
 import { MCPBulkOperations } from "./MCPBulkOperations";
 import { MCPServerFilters, ServerFilters } from "./MCPServerFilters";
+import { MCPQuickFilters } from "./MCPQuickFilters";
+import { MCPFilterChips } from "./MCPFilterChips";
+import { MCPSortOptions, SortOption } from "./MCPSortOptions";
 
 type MCPServerStatusProps = { 
   customerId?: string;
@@ -22,6 +25,8 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
   const { tools } = useMCPTools(servers.map(s => s.id));
   const [selectedServers, setSelectedServers] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState<SortOption>("date-newest");
+  const [groups, setGroups] = useState<Array<{ id: string; group_name: string; color: string }>>([]);
   const [filters, setFilters] = useState<ServerFilters>({
     status: [],
     groups: [],
@@ -29,6 +34,23 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
     serverType: [],
     hasEndpoint: null,
   });
+
+  useEffect(() => {
+    if (customerId) {
+      fetchGroups();
+    }
+  }, [customerId]);
+
+  const fetchGroups = async () => {
+    const { data } = await supabase
+      .from('mcp_server_groups')
+      .select('id, group_name, color')
+      .eq('customer_id', customerId);
+    
+    if (data) {
+      setGroups(data);
+    }
+  };
 
   const testMCPTool = async (serverId: string, toolName: string) => {
     try {
@@ -79,11 +101,40 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
   };
 
   const toggleAllServers = () => {
-    if (selectedServers.length === filteredServers.length) {
+    if (selectedServers.length === sortedAndFilteredServers.length) {
       setSelectedServers([]);
     } else {
-      setSelectedServers(filteredServers.map(s => s.id));
+      setSelectedServers(sortedAndFilteredServers.map(s => s.id));
     }
+  };
+
+  const applyQuickFilter = (quickFilters: Partial<ServerFilters>) => {
+    setFilters(prev => ({
+      ...prev,
+      ...quickFilters,
+      // Merge arrays properly
+      status: quickFilters.status || prev.status,
+      groups: quickFilters.groups || prev.groups,
+      tags: quickFilters.tags || prev.tags,
+      serverType: quickFilters.serverType || prev.serverType,
+    }));
+  };
+
+  const removeFilter = (filterType: keyof ServerFilters, value?: string) => {
+    setFilters(prev => {
+      if (filterType === 'hasEndpoint') {
+        return { ...prev, hasEndpoint: null };
+      }
+      
+      if (value && Array.isArray(prev[filterType])) {
+        return {
+          ...prev,
+          [filterType]: (prev[filterType] as string[]).filter(v => v !== value),
+        };
+      }
+      
+      return prev;
+    });
   };
 
   // Filter servers by search query and advanced filters
@@ -121,6 +172,34 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
            matchesType && matchesTags && matchesEndpoint;
   });
 
+  // Sort servers
+  const sortedAndFilteredServers = [...filteredServers].sort((a, b) => {
+    switch (sortOption) {
+      case "name-asc":
+        return a.server_name.localeCompare(b.server_name);
+      case "name-desc":
+        return b.server_name.localeCompare(a.server_name);
+      case "date-newest":
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      case "date-oldest":
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      case "status-asc":
+        const statusOrder = { active: 0, inactive: 1, error: 2 };
+        return (statusOrder[a.status as keyof typeof statusOrder] || 999) - 
+               (statusOrder[b.status as keyof typeof statusOrder] || 999);
+      case "status-desc":
+        const statusOrderDesc = { error: 0, inactive: 1, active: 2 };
+        return (statusOrderDesc[a.status as keyof typeof statusOrderDesc] || 999) - 
+               (statusOrderDesc[b.status as keyof typeof statusOrderDesc] || 999);
+      case "type-asc":
+        return a.server_type.localeCompare(b.server_type);
+      case "type-desc":
+        return b.server_type.localeCompare(a.server_type);
+      default:
+        return 0;
+    }
+  });
+
   if (isLoading) {
     return (
       <Card>
@@ -145,11 +224,31 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
         onRefresh={reload}
       />
 
+      {/* Quick Filters */}
+      <Card>
+        <CardContent className="p-4">
+          <MCPQuickFilters 
+            onApplyFilter={applyQuickFilter}
+            currentFilters={filters}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Advanced Filters */}
       {customerId && (
         <MCPServerFilters
           customerId={customerId}
           filters={filters}
           onFiltersChange={setFilters}
+        />
+      )}
+
+      {/* Active Filter Chips */}
+      {customerId && (
+        <MCPFilterChips
+          filters={filters}
+          groups={groups}
+          onRemoveFilter={removeFilter}
         />
       )}
       
@@ -165,15 +264,23 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
                 Model Context Protocol servers connecting AI to your data
               </CardDescription>
             </div>
-            {servers.length > 0 && (
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  checked={selectedServers.length === filteredServers.length && filteredServers.length > 0}
-                  onCheckedChange={toggleAllServers}
-                />
-                <span className="text-sm text-muted-foreground">Select All</span>
-              </div>
-            )}
+            <div className="flex items-center gap-4">
+              {servers.length > 0 && (
+                <>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={selectedServers.length === sortedAndFilteredServers.length && sortedAndFilteredServers.length > 0}
+                      onCheckedChange={toggleAllServers}
+                    />
+                    <span className="text-sm text-muted-foreground">Select All</span>
+                  </div>
+                  <MCPSortOptions value={sortOption} onChange={setSortOption} />
+                </>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>Showing {sortedAndFilteredServers.length} of {servers.length} servers</span>
           </div>
         </CardHeader>
         <CardContent>
@@ -194,12 +301,12 @@ export default function MCPServerStatus({ customerId, filterByServerType }: MCPS
                 />
               </div>
 
-              {filteredServers.length === 0 ? (
+              {sortedAndFilteredServers.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  No servers match your search
+                  No servers match your filters
                 </div>
               ) : (
-                filteredServers.map((server) => (
+                sortedAndFilteredServers.map((server) => (
                   <Card key={server.id}>
                     <CardHeader>
                       <div className="flex items-center justify-between">
