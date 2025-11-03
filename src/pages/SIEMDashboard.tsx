@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useQuery } from '@tanstack/react-query';
-import { Shield, Activity, AlertTriangle, Search, Filter, Download, FileWarning, Database, FileText } from 'lucide-react';
+import { Shield, Activity, AlertTriangle, Search, Filter, Download, FileWarning, Database, FileText, Mail } from 'lucide-react';
 import { useStandardToast } from '@/hooks/useStandardToast';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
@@ -104,6 +104,14 @@ const SIEMDashboard = () => {
         <Button variant="ghost" size="sm" onClick={() => navigate('/siem')}>
           <Activity className="h-4 w-4 mr-2" />
           SIEM
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/endpoint')}>
+          <Shield className="h-4 w-4 mr-2" />
+          EDR
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/email')}>
+          <Mail className="h-4 w-4 mr-2" />
+          Email
         </Button>
       </div>
 

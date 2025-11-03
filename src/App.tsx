@@ -139,6 +139,8 @@ import ModuleManagement from "./pages/ModuleManagement";
 import SecurityTraining from "./pages/SecurityTraining";
 import SecurityTrainingModule from "./pages/SecurityTrainingModule";
 import PhishingSimulations from "./pages/PhishingSimulations";
+import EndpointSecurity from "./pages/EndpointSecurity";
+import EmailSecurity from "./pages/EmailSecurity";
 import EmployeeFeedback from "./pages/EmployeeFeedback";
 import InternalOperationsDashboard from "./pages/InternalOperationsDashboard";
 import DeploymentPlanner from "./pages/DeploymentPlanner";
@@ -390,6 +392,16 @@ const App = () => (
           <Route path="/security/playbooks" element={
             <ProtectedRoute requireAdmin>
               <ResponsePlaybooks />
+            </ProtectedRoute>
+          } />
+          <Route path="/security/endpoint" element={
+            <ProtectedRoute requireAdmin>
+              <EndpointSecurity />
+            </ProtectedRoute>
+          } />
+          <Route path="/security/email" element={
+            <ProtectedRoute requireAdmin>
+              <EmailSecurity />
             </ProtectedRoute>
           } />
           <Route path="/siem" element={

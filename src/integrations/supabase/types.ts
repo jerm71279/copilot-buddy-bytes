@@ -6065,6 +6065,104 @@ export type Database = {
         }
         Relationships: []
       }
+      email_accounts: {
+        Row: {
+          account_type: string
+          created_at: string
+          customer_id: string
+          display_name: string | null
+          email_address: string
+          id: string
+          is_monitored: boolean | null
+          last_scan: string | null
+          threat_count: number | null
+          updated_at: string
+        }
+        Insert: {
+          account_type?: string
+          created_at?: string
+          customer_id: string
+          display_name?: string | null
+          email_address: string
+          id?: string
+          is_monitored?: boolean | null
+          last_scan?: string | null
+          threat_count?: number | null
+          updated_at?: string
+        }
+        Update: {
+          account_type?: string
+          created_at?: string
+          customer_id?: string
+          display_name?: string | null
+          email_address?: string
+          id?: string
+          is_monitored?: boolean | null
+          last_scan?: string | null
+          threat_count?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      email_threats: {
+        Row: {
+          created_at: string
+          customer_id: string
+          detected_at: string
+          email_account_id: string
+          id: string
+          recipient: string
+          resolved_at: string | null
+          sender: string
+          severity: string
+          status: string
+          subject: string | null
+          threat_details: string | null
+          threat_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          detected_at?: string
+          email_account_id: string
+          id?: string
+          recipient: string
+          resolved_at?: string | null
+          sender: string
+          severity: string
+          status?: string
+          subject?: string | null
+          threat_details?: string | null
+          threat_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          detected_at?: string
+          email_account_id?: string
+          id?: string
+          recipient?: string
+          resolved_at?: string | null
+          sender?: string
+          severity?: string
+          status?: string
+          subject?: string | null
+          threat_details?: string | null
+          threat_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_threats_email_account_id_fkey"
+            columns: ["email_account_id"]
+            isOneToOne: false
+            referencedRelation: "email_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employee_certifications: {
         Row: {
           certification_body: string | null
@@ -6817,6 +6915,110 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      endpoint_threats: {
+        Row: {
+          created_at: string
+          customer_id: string
+          description: string | null
+          detected_at: string
+          endpoint_id: string
+          file_path: string | null
+          id: string
+          process_name: string | null
+          resolved_at: string | null
+          severity: string
+          status: string
+          threat_name: string
+          threat_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          detected_at?: string
+          endpoint_id: string
+          file_path?: string | null
+          id?: string
+          process_name?: string | null
+          resolved_at?: string | null
+          severity: string
+          status?: string
+          threat_name: string
+          threat_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          detected_at?: string
+          endpoint_id?: string
+          file_path?: string | null
+          id?: string
+          process_name?: string | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          threat_name?: string
+          threat_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "endpoint_threats_endpoint_id_fkey"
+            columns: ["endpoint_id"]
+            isOneToOne: false
+            referencedRelation: "endpoints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      endpoints: {
+        Row: {
+          agent_version: string | null
+          created_at: string
+          customer_id: string
+          hostname: string
+          id: string
+          ip_address: string | null
+          last_seen: string | null
+          os_type: string
+          os_version: string | null
+          risk_score: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          agent_version?: string | null
+          created_at?: string
+          customer_id: string
+          hostname: string
+          id?: string
+          ip_address?: string | null
+          last_seen?: string | null
+          os_type: string
+          os_version?: string | null
+          risk_score?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          agent_version?: string | null
+          created_at?: string
+          customer_id?: string
+          hostname?: string
+          id?: string
+          ip_address?: string | null
+          last_seen?: string | null
+          os_type?: string
+          os_version?: string | null
+          risk_score?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       etl_pipeline_runs: {
         Row: {

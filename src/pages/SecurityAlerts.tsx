@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertTriangle, Shield, CheckCircle, XCircle, Clock, TrendingUp, Activity, FileWarning, Database, FileText } from "lucide-react";
+import { AlertTriangle, Shield, CheckCircle, XCircle, Clock, TrendingUp, Activity, FileWarning, Database, FileText, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
@@ -241,6 +241,14 @@ export default function SecurityAlerts() {
         <Button variant="outline" size="sm" onClick={() => navigate('/siem')}>
           <Activity className="h-4 w-4 mr-2" />
           SIEM
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/endpoint')}>
+          <Shield className="h-4 w-4 mr-2" />
+          EDR
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/email')}>
+          <Mail className="h-4 w-4 mr-2" />
+          Email
         </Button>
       </div>
 

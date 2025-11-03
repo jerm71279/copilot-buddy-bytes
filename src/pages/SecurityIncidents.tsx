@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertTriangle, Clock, CheckCircle, Shield, Users, FileText, Activity, FileWarning, Database } from "lucide-react";
+import { AlertTriangle, Clock, CheckCircle, Shield, Users, FileText, Activity, FileWarning, Database, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
@@ -195,6 +195,14 @@ export default function SecurityIncidents() {
         <Button variant="outline" size="sm" onClick={() => navigate('/siem')}>
           <Activity className="h-4 w-4 mr-2" />
           SIEM
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/endpoint')}>
+          <Shield className="h-4 w-4 mr-2" />
+          EDR
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/email')}>
+          <Mail className="h-4 w-4 mr-2" />
+          Email
         </Button>
       </div>
 

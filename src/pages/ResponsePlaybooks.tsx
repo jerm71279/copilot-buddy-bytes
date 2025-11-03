@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { BookOpen, Play, CheckCircle, Clock, AlertCircle, Shield, AlertTriangle, FileWarning, Database, FileText, Activity } from "lucide-react";
+import { BookOpen, Play, CheckCircle, Clock, AlertCircle, Shield, AlertTriangle, FileWarning, Database, FileText, Activity, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
@@ -143,6 +143,14 @@ export default function ResponsePlaybooks() {
         <Button variant="outline" size="sm" onClick={() => navigate('/siem')}>
           <Activity className="h-4 w-4 mr-2" />
           SIEM
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/endpoint')}>
+          <Shield className="h-4 w-4 mr-2" />
+          EDR
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate('/security/email')}>
+          <Mail className="h-4 w-4 mr-2" />
+          Email
         </Button>
       </div>
 
