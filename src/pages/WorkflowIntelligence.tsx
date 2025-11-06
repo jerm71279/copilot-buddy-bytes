@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Brain, TrendingUp, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
+import { Brain, TrendingUp, AlertTriangle, CheckCircle2, Loader2, Link2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAIStream } from "@/hooks/useAIStream";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const WorkflowIntelligence = () => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
   const [queryType, setQueryType] = useState<'analyze' | 'workflows' | 'compliance' | 'anomalies'>('analyze');
@@ -83,6 +85,14 @@ const WorkflowIntelligence = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/langchain-demo')}
+            >
+              <Link2 className="h-4 w-4 mr-2" />
+              Langchain Demo
+            </Button>
             <Badge variant="outline" className="gap-1">
               <CheckCircle2 className="h-3 w-3" />
               Lovable AI
