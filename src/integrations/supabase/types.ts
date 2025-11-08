@@ -8030,6 +8030,214 @@ export type Database = {
           },
         ]
       }
+      integration_health_checks: {
+        Row: {
+          checked_at: string | null
+          error_message: string | null
+          health_status: string
+          id: string
+          integration_id: string | null
+          latency_ms: number | null
+        }
+        Insert: {
+          checked_at?: string | null
+          error_message?: string | null
+          health_status: string
+          id?: string
+          integration_id?: string | null
+          latency_ms?: number | null
+        }
+        Update: {
+          checked_at?: string | null
+          error_message?: string | null
+          health_status?: string
+          id?: string
+          integration_id?: string | null
+          latency_ms?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_health_checks_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "integration_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integration_logs: {
+        Row: {
+          created_at: string | null
+          customer_id: string | null
+          duration_ms: number | null
+          error_message: string | null
+          id: string
+          integration_name: string
+          operation: string
+          request_data: Json | null
+          response_data: Json | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          integration_name: string
+          operation: string
+          request_data?: Json | null
+          response_data?: Json | null
+          status: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          integration_name?: string
+          operation?: string
+          request_data?: Json | null
+          response_data?: Json | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      integration_onboarding_checklist: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          integration_id: string | null
+          notes: string | null
+          phase: string
+          responsible_role: string
+          started_at: string | null
+          status: string
+          step_description: string
+          step_number: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          integration_id?: string | null
+          notes?: string | null
+          phase: string
+          responsible_role: string
+          started_at?: string | null
+          status?: string
+          step_description: string
+          step_number: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          integration_id?: string | null
+          notes?: string | null
+          phase?: string
+          responsible_role?: string
+          started_at?: string | null
+          status?: string
+          step_description?: string
+          step_number?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_onboarding_checklist_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "integration_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integration_registry: {
+        Row: {
+          api_version: string | null
+          auth_method: string
+          base_url: string | null
+          connection_method: string
+          created_at: string | null
+          created_by: string | null
+          credential_rotation_schedule: string | null
+          credential_vault_path: string | null
+          documentation_url: string | null
+          edge_function_name: string | null
+          health_status: string | null
+          id: string
+          integration_name: string
+          last_credential_rotation: string | null
+          last_health_check: string | null
+          notes: string | null
+          rate_limit_per_day: number | null
+          rate_limit_per_minute: number | null
+          status: string
+          system_type: string
+          updated_at: string | null
+          vendor_name: string
+        }
+        Insert: {
+          api_version?: string | null
+          auth_method: string
+          base_url?: string | null
+          connection_method: string
+          created_at?: string | null
+          created_by?: string | null
+          credential_rotation_schedule?: string | null
+          credential_vault_path?: string | null
+          documentation_url?: string | null
+          edge_function_name?: string | null
+          health_status?: string | null
+          id?: string
+          integration_name: string
+          last_credential_rotation?: string | null
+          last_health_check?: string | null
+          notes?: string | null
+          rate_limit_per_day?: number | null
+          rate_limit_per_minute?: number | null
+          status?: string
+          system_type: string
+          updated_at?: string | null
+          vendor_name: string
+        }
+        Update: {
+          api_version?: string | null
+          auth_method?: string
+          base_url?: string | null
+          connection_method?: string
+          created_at?: string | null
+          created_by?: string | null
+          credential_rotation_schedule?: string | null
+          credential_vault_path?: string | null
+          documentation_url?: string | null
+          edge_function_name?: string | null
+          health_status?: string | null
+          id?: string
+          integration_name?: string
+          last_credential_rotation?: string | null
+          last_health_check?: string | null
+          notes?: string | null
+          rate_limit_per_day?: number | null
+          rate_limit_per_minute?: number | null
+          status?: string
+          system_type?: string
+          updated_at?: string | null
+          vendor_name?: string
+        }
+        Relationships: []
+      }
       integrations: {
         Row: {
           auth_method: string

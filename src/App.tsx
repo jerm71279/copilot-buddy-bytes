@@ -142,6 +142,8 @@ import PhishingSimulations from "./pages/PhishingSimulations";
 import EndpointSecurity from "./pages/EndpointSecurity";
 import EmailSecurity from "./pages/EmailSecurity";
 import LangchainDemo from "./pages/LangchainDemo";
+import IntegrationOnboarding from "./pages/IntegrationOnboarding";
+import IntegrationOnboardingDetail from "./pages/IntegrationOnboardingDetail";
 import EmployeeFeedback from "./pages/EmployeeFeedback";
 import InternalOperationsDashboard from "./pages/InternalOperationsDashboard";
 import DeploymentPlanner from "./pages/DeploymentPlanner";
@@ -187,6 +189,8 @@ const App = () => (
           <Route path="/cmmc-readiness" element={<CMMCReadiness />} />
           <Route path="/workflow-intelligence" element={<WorkflowIntelligence />} />
           <Route path="/langchain-demo" element={<LangchainDemo />} />
+          <Route path="/integration-onboarding" element={<IntegrationOnboarding />} />
+          <Route path="/integration-onboarding/:id" element={<IntegrationOnboardingDetail />} />
           <Route path="/ai-hub" element={<AIHub />} />
           <Route path="/prompt-library" element={
             <ProtectedRoute>
