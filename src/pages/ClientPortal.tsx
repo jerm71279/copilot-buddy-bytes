@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCustomerCustomization } from "@/hooks/useCustomerCustomization";
+import { useClientPortalAccess } from "@/hooks/useUserAccess";
 
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +22,10 @@ import { z } from "zod";
 
 export default function ClientPortal() {
   const queryClient = useQueryClient();
+
+  // SECURITY: Check user access (allows both client users and MSP employees for support)
+  const { isLoading: accessLoading, isMSPEmployee } = useClientPortalAccess();
+
   const [isTicketOpen, setIsTicketOpen] = useState(false);
   const [newTicket, setNewTicket] = useState({
     subject: "",
@@ -28,6 +33,17 @@ export default function ClientPortal() {
     priority: "medium",
     category: "general"
   });
+
+  // Show loading state while checking access
+  if (accessLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">Loading portal...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Get user profile and customer customization
   const { data: userProfile } = useQuery({

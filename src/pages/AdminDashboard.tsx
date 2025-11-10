@@ -13,6 +13,7 @@ import { AIMCPGenerator } from "@/components/AIMCPGenerator";
 import MCPExecutionLogs from "@/components/MCPExecutionLogs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import { useAdminOnly } from "@/hooks/useUserAccess";
 
 
 import { DashboardSettingsMenu } from "@/components/DashboardSettingsMenu";
@@ -82,11 +83,27 @@ type Customer = {
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const isPreviewMode = useDemoMode();
+
+  // SECURITY: Enforce admin-only access with is_client_user check
+  // This hook automatically redirects client users to /client-portal
+  const { isLoading: accessLoading } = useAdminOnly();
+
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [userCustomerId, setUserCustomerId] = useState<string>("00000000-0000-0000-0000-000000000000");
   const [activeView, setActiveView] = useState<string | null>(null);
+
+  // Show loading state while checking access
+  if (accessLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">Verifying access permissions...</p>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     checkAdminAccess();
