@@ -7,7 +7,7 @@
  * 
  * Features:
  * - Sequential step execution
- * - Multiple step types (API calls, data transforms, conditions, database ops, delays)
+ * - Multiple step types (API calls, data transforms, conditions, database ops, delays, MCP tools)
  * - Detailed execution logging
  * - Error handling and recovery
  * - Execution time tracking
@@ -20,6 +20,7 @@
  * - notification: Send notifications (placeholder for integration)
  * - database_operation: CRUD operations on database tables
  * - delay: Wait/sleep operations
+ * - mcp_tool_execution: Execute an MCP tool via the mcp-server
  * 
  * Integration Points:
  * - workflow-webhook: Called by webhook triggers
@@ -52,6 +53,7 @@ const executeWorkflowSchema = z.object({
   workflow_id: z.string().uuid('Invalid workflow ID format'),
   trigger_data: z.record(z.any()).optional(),
   triggered_by: z.string().max(50, 'Triggered by value too long').optional(),
+  user_id: z.string().uuid("Invalid user ID format").optional(), // Added user_id for context
 });
 
 // Maximum payload size (1MB)
@@ -81,7 +83,7 @@ serve(async (req) => {
     // Parse and validate request payload
     const requestBody = await req.json();
     const validatedInput = executeWorkflowSchema.parse(requestBody);
-    const { workflow_id, trigger_data, triggered_by = 'manual' } = validatedInput;
+    const { workflow_id, trigger_data, triggered_by = 'manual', user_id } = validatedInput;
 
     // Validation: workflow_id is required
     if (!workflow_id) {
@@ -169,6 +171,9 @@ serve(async (req) => {
           case 'delay':
             stepResult = await executeDelay(step.config);
             break;
+          case 'mcp_tool_execution':
+            stepResult = await executeMcpTool(step.config, supabase, workflow.customer_id, user_id);
+            break;
           default:
             // Unknown step type - log warning but don't fail
             stepResult = { success: true, message: `Skipped unknown step type: ${step.type}` };
@@ -249,6 +254,72 @@ serve(async (req) => {
     );
   }
 });
+
+/**
+ * Executes an MCP tool via the mcp-server Edge Function
+ * 
+ * Config format:
+ * {
+ *   "tool_name": "apply_cipp_baseline",
+ *   "input_data": {
+ *     "baselineId": "uuid-string",
+ *     "targetTenantIds": ["uuid-string-1", "uuid-string-2"]
+ *   }
+ * }
+ * 
+ * @param config - MCP tool execution configuration
+ * @param supabase - Supabase client instance
+ * @param customer_id - Customer context for the tool execution
+ * @param user_id - User context for the tool execution
+ * @returns { success: boolean, data?: any, error?: string }
+ */
+async function executeMcpTool(config: any, supabase: any, customer_id: string, user_id?: string) {
+  try {
+    const { tool_name, input_data } = config;
+
+    if (!tool_name) {
+      throw new Error("tool_name is required for mcp_tool_execution step");
+    }
+
+    // Find an active MCP server (can be enhanced to find by department)
+    const { data: mcpServer, error: serverError } = await supabase
+      .from('mcp_servers')
+      .select('id')
+      .eq('status', 'active')
+      .limit(1)
+      .single();
+
+    if (serverError || !mcpServer) {
+      throw new Error(`No active MCP server found: ${serverError?.message}`);
+    }
+
+    const { data, error } = await supabase.functions.invoke('mcp-server', {
+      body: {
+        tool_name,
+        server_id: mcpServer.id,
+        customer_id,
+        user_id,
+        input_data,
+      },
+    });
+
+    if (error) {
+      throw new Error(`MCP tool execution failed: ${error.message}`);
+    }
+
+    return {
+      success: data.success,
+      data: data.data,
+      error: data.error,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
 
 /**
  * Executes an HTTP API call step
