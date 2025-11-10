@@ -15,6 +15,8 @@ const assistantRequestSchema = z.object({
     role: z.enum(["user", "assistant", "system"]),
     content: z.string(),
   })).optional(),
+  customerId: z.string().uuid("Invalid customer ID format").optional(), // Added customerId
+  userId: z.string().uuid("Invalid user ID format").optional(),     // Added userId
 });
 
 // Maximum payload size (2MB)
@@ -39,7 +41,7 @@ serve(async (req) => {
     
     // Validate input
     const validatedInput = assistantRequestSchema.parse(requestBody);
-    const { department, query, conversationHistory = [] } = validatedInput;
+    const { department, query, conversationHistory = [], customerId, userId } = validatedInput;
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -51,39 +53,56 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get MCP server and tools for this department
-    const { data: mcpServers } = await supabase
+    // Get MCP server for this department (needed for server_id in mcp-server invocation)
+    const { data: mcpServers, error: mcpServerError } = await supabase
       .from("mcp_servers")
-      .select(`
-        *,
-        mcp_tools (*)
-      `)
+      .select("id, server_name") // Only need id and name
       .ilike("server_type", `%${department}%`)
       .eq("status", "active")
       .limit(1);
 
-    if (!mcpServers || mcpServers.length === 0) {
+    if (mcpServerError || !mcpServers || mcpServers.length === 0) {
+      console.error("MCP Server Error:", mcpServerError);
       return new Response(
         JSON.stringify({ 
-          error: `No MCP server found for ${department} department`,
+          error: `No active MCP server found for ${department} department`,
           response: "I'm currently unable to access department-specific tools. Please try again later."
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-
     const mcpServer = mcpServers[0];
-    const tools = mcpServer.mcp_tools || [];
 
-    console.log(`Found MCP server: ${mcpServer.server_name} with ${tools.length} tools`);
+    // Fetch all tools from mcp_tools table
+    const { data: allTools, error: toolsError } = await supabase
+      .from("mcp_tools")
+      .select("*");
+
+    if (toolsError) {
+      console.error("Error fetching MCP tools:", toolsError);
+      throw new Error("Failed to fetch available tools.");
+    }
+
+    // Filter tools by department relevance (example: 'apply_cipp_baseline' for 'it' or 'compliance')
+    // This logic can be expanded based on a 'department_relevance' field in mcp_tools table
+    const departmentRelevantTools = allTools.filter((tool: any) => {
+      // For now, hardcode relevance for 'apply_cipp_baseline'
+      if (tool.name === 'apply_cipp_baseline') {
+        return department === 'it' || department === 'compliance';
+      }
+      // Add more filtering logic here for other tools
+      return true; // Default to true if no specific department filter
+    });
+
+    console.log(`Found ${departmentRelevantTools.length} relevant tools for ${department} department.`);
 
     // Build tool definitions for AI
-    const toolDefinitions = tools.map((tool: any) => ({
+    const toolDefinitions = departmentRelevantTools.map((tool: any) => ({
       type: "function",
       function: {
-        name: tool.tool_name,
+        name: tool.name,
         description: tool.description,
-        parameters: tool.input_schema
+        parameters: tool.parameters // Use the parameters JSONB directly
       }
     }));
 
@@ -150,30 +169,39 @@ serve(async (req) => {
 
       console.log(`AI requested tool: ${toolName} with args:`, toolArgs);
 
-      // Execute MCP tool and log
-      const tool = tools.find((t: any) => t.tool_name === toolName);
-      if (tool) {
-        await supabase.from("mcp_execution_logs").insert({
-          server_id: mcpServer.id,
-          customer_id: mcpServer.customer_id,
-          tool_id: tool.id,
-          tool_name: toolName,
-          input_data: toolArgs,
-          status: "completed",
-          execution_time_ms: Math.floor(Math.random() * 1000) + 100, // Simulated
-          output_data: { 
-            result: "Tool execution simulated - real implementation would query actual data",
-            insight: `${toolName} analysis completed successfully`
-          }
-        });
+      // Find the tool definition to get its details for mcp-server invocation
+      const toolToExecute = departmentRelevantTools.find((t: any) => t.name === toolName);
+
+      if (!toolToExecute) {
+        throw new Error(`AI requested unknown tool: ${toolName}`);
+      }
+
+      // Invoke the mcp-server Edge Function
+      const { data: mcpResponse, error: mcpInvokeError } = await supabase.functions.invoke(
+        'mcp-server',
+        {
+          body: {
+            tool_name: toolToExecute.name,
+            server_id: mcpServer.id,
+            customer_id: customerId,
+            user_id: userId,
+            input_data: toolArgs,
+          },
+        }
+      );
+
+      if (mcpInvokeError) {
+        console.error("Error invoking mcp-server:", mcpInvokeError);
+        throw new Error(`Failed to execute tool via MCP server: ${mcpInvokeError.message}`);
       }
 
       // Return response with tool execution info
       return new Response(
         JSON.stringify({
-          response: assistantMessage.content || `I've analyzed your request using ${toolName}. Based on the data, I can provide insights tailored to your ${department} needs.`,
+          response: assistantMessage.content || `I've executed the tool '${toolName}'. Here are the results: ${JSON.stringify(mcpResponse)}`,
           toolCalled: toolName,
           toolArgs,
+          toolResult: mcpResponse, // Include the actual result from MCP server
           conversationHistory: [
             ...conversationHistory,
             { role: "user", content: query },
@@ -205,3 +233,4 @@ serve(async (req) => {
     );
   }
 });
+
