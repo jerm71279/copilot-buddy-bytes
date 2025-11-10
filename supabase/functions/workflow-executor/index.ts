@@ -281,6 +281,39 @@ async function executeMcpTool(config: any, supabase: any, customer_id: string, u
       throw new Error("tool_name is required for mcp_tool_execution step");
     }
 
+    // Fetch tool definition to get required permissions
+    const { data: toolDefinition, error: toolError } = await supabase
+      .from('mcp_tools')
+      .select('required_permissions')
+      .eq('name', tool_name)
+      .single();
+
+    if (toolError || !toolDefinition) {
+      throw new Error(`Tool '${tool_name}' not found: ${toolError?.message}`);
+    }
+
+    // Fetch user profile to check permissions
+    if (!user_id) {
+      throw new Error("User ID is required for permission check in workflow.");
+    }
+    const { data: userProfile, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('department')
+      .eq('user_id', user_id)
+      .single();
+
+    if (profileError || !userProfile) {
+      throw new Error(`Failed to fetch user profile for permission check: ${profileError?.message}`);
+    }
+
+    // Permission Check
+    const userDepartment = userProfile.department;
+    const requiredPermissions = toolDefinition.required_permissions || [];
+
+    if (requiredPermissions.length > 0 && !requiredPermissions.includes(userDepartment)) {
+      throw new Error(`Permission denied. User with department '${userDepartment}' cannot execute tool '${tool_name}'.`);
+    }
+
     // Find an active MCP server (can be enhanced to find by department)
     const { data: mcpServer, error: serverError } = await supabase
       .from('mcp_servers')

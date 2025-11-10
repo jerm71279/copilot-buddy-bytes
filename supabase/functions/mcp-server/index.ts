@@ -81,15 +81,29 @@ serve(async (req) => {
       
       const validatedToolInput = toolParametersSchema.parse(input_data);
 
-      // 3. Placeholder for Permission Check
-      // In a real scenario, you would fetch user roles/permissions and check against toolDefinition.required_permissions
-      // For now, we'll assume the user has permission if the tool is found.
-      console.log(`Checking permissions for user ${user_id} to execute tool '${tool_name}'...`);
-      // Example: if (!userHasPermission(user_id, toolDefinition.required_permissions)) {
-      //   throw new Error('Permission denied to execute this tool.');
-      // }
+      // 3. Fetch user profile to check permissions
+      if (!user_id) {
+        throw new Error("User ID is required for permission check.");
+      }
+      const { data: userProfile, error: profileError } = await supabaseClient
+        .from('user_profiles')
+        .select('department')
+        .eq('user_id', user_id)
+        .single();
 
-      // 4. Dynamically invoke the specified Edge Function
+      if (profileError || !userProfile) {
+        throw new Error(`Failed to fetch user profile: ${profileError?.message}`);
+      }
+
+      // 4. Permission Check
+      const userDepartment = userProfile.department;
+      const requiredPermissions = toolDefinition.required_permissions || [];
+      
+      if (requiredPermissions.length > 0 && !requiredPermissions.includes(userDepartment)) {
+        throw new Error(`Permission denied. User with department '${userDepartment}' cannot execute this tool.`);
+      }
+
+      // 5. Dynamically invoke the specified Edge Function
       const { data: invokedFunctionData, error: invokedFunctionError } = await supabaseClient.functions.invoke(
         toolDefinition.edge_function,
         {
