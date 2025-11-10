@@ -7,17 +7,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { 
-  RefreshCw, 
-  Shield, 
-  AlertCircle, 
-  CheckCircle, 
-  Cloud, 
+import {
+  RefreshCw,
+  Shield,
+  AlertCircle,
+  CheckCircle,
+  Cloud,
   Settings,
   Activity,
-  TrendingUp
+  TrendingUp,
+  FileText
 } from "lucide-react";
 
 /**
@@ -86,6 +88,11 @@ const CIPPDashboard = () => {
   const [syncing, setSyncing] = useState(false);
   const [customerId, setCustomerId] = useState<string | null>(null);
 
+  // New state for tabs
+  const [securityBaselines, setSecurityBaselines] = useState<any[]>([]);
+  const [policies, setPolicies] = useState<any[]>([]);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -128,15 +135,44 @@ const CIPPDashboard = () => {
       // Load health data
       if (tenantsData && tenantsData.length > 0) {
         const tenantIds = tenantsData.map(t => t.id);
-        const { data: healthData, error: healthError } = await supabase
+        const { data: healthData, error: healthError} = await supabase
           .from('cipp_tenant_health')
           .select('*')
           .in('tenant_id', tenantIds)
-          .order('last_checked_at', { ascending: false });
+          .order('last_checked_at', { ascending: false});
 
         if (healthError) throw healthError;
         setHealthData(healthData || []);
       }
+
+      // Load security baselines
+      const { data: baselinesData, error: baselinesError } = await supabase
+        .from('cipp_security_baselines')
+        .select('*')
+        .eq('customer_id', profile.customer_id)
+        .order('created_at', { ascending: false });
+
+      if (!baselinesError) setSecurityBaselines(baselinesData || []);
+
+      // Load policies
+      const { data: policiesData, error: policiesError } = await supabase
+        .from('cipp_policies')
+        .select('*')
+        .eq('customer_id', profile.customer_id)
+        .order('created_at', { ascending: false });
+
+      if (!policiesError) setPolicies(policiesData || []);
+
+      // Load audit logs
+      const { data: auditData, error: auditError } = await supabase
+        .from('cipp_audit_logs')
+        .select('*')
+        .eq('customer_id', profile.customer_id)
+        .order('created_at', { ascending: false })
+        .limit(50); // Limit to last 50 logs
+
+      if (!auditError) setAuditLogs(auditData || []);
+
     } catch (error) {
       console.error('Error loading CIPP data:', error);
       toast.error("Failed to load CIPP data");
@@ -373,13 +409,47 @@ const CIPPDashboard = () => {
               <CardHeader>
                 <CardTitle>Security Baselines</CardTitle>
                 <CardDescription>
-                  Automated security configurations and standards
+                  Automated security configurations and standards ({securityBaselines.length} total)
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  Security baselines management coming soon
-                </div>
+                {securityBaselines.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No security baselines configured yet</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Baseline Name</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Applied To</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Created</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {securityBaselines.map((baseline) => (
+                        <TableRow key={baseline.id}>
+                          <TableCell className="font-medium">{baseline.baseline_name}</TableCell>
+                          <TableCell className="capitalize">{baseline.baseline_type}</TableCell>
+                          <TableCell>
+                            {baseline.applied_to_tenants?.length || 0} tenant(s)
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={baseline.is_active ? "default" : "secondary"}>
+                              {baseline.is_active ? "Active" : "Inactive"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {new Date(baseline.created_at).toLocaleDateString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -389,13 +459,47 @@ const CIPPDashboard = () => {
               <CardHeader>
                 <CardTitle>Policies</CardTitle>
                 <CardDescription>
-                  Conditional Access, Intune, and other policies
+                  Conditional Access, Intune, and other policies ({policies.length} total)
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  Policy management coming soon
-                </div>
+                {policies.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No policies configured yet</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Policy Name</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Applied To</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Last Updated</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {policies.map((policy) => (
+                        <TableRow key={policy.id}>
+                          <TableCell className="font-medium">{policy.policy_name}</TableCell>
+                          <TableCell className="capitalize">{policy.policy_type}</TableCell>
+                          <TableCell>
+                            {policy.applied_to_tenants?.length || 0} tenant(s)
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={policy.is_enabled ? "default" : "secondary"}>
+                              {policy.is_enabled ? "Enabled" : "Disabled"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {new Date(policy.updated_at).toLocaleDateString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -405,13 +509,51 @@ const CIPPDashboard = () => {
               <CardHeader>
                 <CardTitle>Audit Logs</CardTitle>
                 <CardDescription>
-                  CIPP action history and audit trail
+                  CIPP action history and audit trail (Last 50 entries)
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  Audit logs coming soon
-                </div>
+                {auditLogs.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No audit logs found</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date/Time</TableHead>
+                        <TableHead>Action</TableHead>
+                        <TableHead>Resource</TableHead>
+                        <TableHead>Performed By</TableHead>
+                        <TableHead>Result</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {auditLogs.map((log) => (
+                        <TableRow key={log.id}>
+                          <TableCell>
+                            {new Date(log.created_at).toLocaleString()}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {log.action_description}
+                          </TableCell>
+                          <TableCell>
+                            {log.target_resource || 'N/A'}
+                          </TableCell>
+                          <TableCell>
+                            {log.performed_by || 'System'}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={log.result === 'success' ? "default" : "destructive"}>
+                              {log.result || 'Unknown'}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

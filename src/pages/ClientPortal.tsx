@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useCustomerCustomization } from "@/hooks/useCustomerCustomization";
 
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +28,27 @@ export default function ClientPortal() {
     priority: "medium",
     category: "general"
   });
+
+  // Get user profile and customer customization
+  const { data: userProfile } = useQuery({
+    queryKey: ["user_profile"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("customer_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Apply customer branding
+  const { customization } = useCustomerCustomization(userProfile?.customer_id);
 
   const { data: tickets } = useQuery({
     queryKey: ["client_tickets"],
@@ -145,9 +167,18 @@ export default function ClientPortal() {
           ]}
         />
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Client Portal</h1>
-            <p className="text-muted-foreground">Manage support tickets and service requests</p>
+          <div className="flex items-center gap-4">
+            {customization?.company_logo_url && (
+              <img
+                src={customization.company_logo_url}
+                alt="Company Logo"
+                className="h-12 w-auto object-contain"
+              />
+            )}
+            <div>
+              <h1 className="text-3xl font-bold">Client Portal</h1>
+              <p className="text-muted-foreground">Manage support tickets and service requests</p>
+            </div>
           </div>
         <Dialog open={isTicketOpen} onOpenChange={setIsTicketOpen}>
           <DialogTrigger asChild>

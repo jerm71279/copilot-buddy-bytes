@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { loadWorkflowTemplates } from "@/lib/workflowTemplates";
 import Navigation from "@/components/Navigation";
 import DashboardNavigation from "@/components/DashboardNavigation";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Zap, Play, Pause, Plus, Clock, CheckCircle2, GitBranch } from "lucide-react";
+import { Zap, Play, Pause, Plus, Clock, CheckCircle2, GitBranch, Download } from "lucide-react";
 
 /**
  * Workflow Automation Data Flow
@@ -167,6 +168,59 @@ export default function WorkflowAutomation() {
     }
   };
 
+  const handleLoadTemplates = async () => {
+    try {
+      // Get user's customer_id
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to load templates",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('customer_id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!profile?.customer_id) {
+        toast({
+          title: "Error",
+          description: "No customer profile found",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Load templates
+      const createdIds = await loadWorkflowTemplates(profile.customer_id);
+
+      if (createdIds.length > 0) {
+        toast({
+          title: "Success",
+          description: `Loaded ${createdIds.length} workflow templates successfully`
+        });
+        await loadWorkflows();
+      } else {
+        toast({
+          title: "Info",
+          description: "No new templates to load (they may already exist)",
+        });
+      }
+    } catch (error) {
+      console.error('Error loading templates:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load workflow templates",
+        variant: "destructive"
+      });
+    }
+  };
+
   const getStatusColor = (isActive: boolean) => {
     return isActive ? "default" : "secondary";
   };
@@ -213,10 +267,16 @@ export default function WorkflowAutomation() {
           <div>
             <p className="text-muted-foreground">Automate repetitive tasks and connect systems</p>
           </div>
-          <Button onClick={() => navigate('/workflows/builder')}>
-            <Plus className="mr-2 h-4 w-4" />
-            New Workflow
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleLoadTemplates}>
+              <Download className="mr-2 h-4 w-4" />
+              Load Templates
+            </Button>
+            <Button onClick={() => navigate('/workflows/builder')}>
+              <Plus className="mr-2 h-4 w-4" />
+              New Workflow
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}

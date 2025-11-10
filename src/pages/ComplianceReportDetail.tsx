@@ -7,8 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, FileText, Download, Calendar, Shield, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { ArrowLeft, FileText, Download, Calendar, Shield, CheckCircle, AlertCircle, XCircle, FileJson, FileSpreadsheet } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Finding {
   title?: string;
@@ -213,6 +219,113 @@ export default function ComplianceReportDetail() {
     return colors[status] || "secondary";
   };
 
+  const exportAsJSON = () => {
+    try {
+      const jsonData = JSON.stringify(report, null, 2);
+      const blob = new Blob([jsonData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${report.report_name}_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Success",
+        description: "Report exported as JSON"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to export report",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const exportAsCSV = () => {
+    try {
+      // Create CSV header
+      const headers = ['Report Name', 'Framework', 'Status', 'Generated Date', 'Period Start', 'Period End', 'Evidence Count'];
+
+      // Create CSV row with report data
+      const row = [
+        report.report_name,
+        report.framework,
+        report.status,
+        new Date(report.generated_at).toLocaleDateString(),
+        new Date(report.report_period_start).toLocaleDateString(),
+        new Date(report.report_period_end).toLocaleDateString(),
+        report.evidence_count || 0
+      ];
+
+      // Convert findings to CSV rows if they exist
+      let findingsRows: string[] = [];
+      if (report.findings) {
+        findingsRows.push('\n\nFindings');
+        findingsRows.push('Title,Severity,Status,Description');
+
+        const processFindings = (findings: any) => {
+          if (Array.isArray(findings)) {
+            findings.forEach((finding: Finding) => {
+              findingsRows.push([
+                finding.title || '',
+                finding.severity || '',
+                finding.status || '',
+                (finding.description || '').replace(/,/g, ';').replace(/\n/g, ' ')
+              ].join(','));
+            });
+          } else if (typeof findings === 'object') {
+            Object.values(findings).forEach((categoryFindings: any) => {
+              if (Array.isArray(categoryFindings)) {
+                categoryFindings.forEach((finding: Finding) => {
+                  findingsRows.push([
+                    finding.title || '',
+                    finding.severity || '',
+                    finding.status || '',
+                    (finding.description || '').replace(/,/g, ';').replace(/\n/g, ' ')
+                  ].join(','));
+                });
+              }
+            });
+          }
+        };
+
+        processFindings(report.findings);
+      }
+
+      // Combine all CSV content
+      const csvContent = [
+        headers.join(','),
+        row.join(','),
+        ...findingsRows
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${report.report_name}_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Success",
+        description: "Report exported as CSV"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to export report",
+        variant: "destructive"
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -287,10 +400,24 @@ export default function ComplianceReportDetail() {
               <Badge variant={getStatusColor(report.status)}>
                 {report.status}
               </Badge>
-              <Button variant="outline">
-                <Download className="mr-2 h-4 w-4" />
-                Export Report
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    <Download className="mr-2 h-4 w-4" />
+                    Export Report
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={exportAsJSON}>
+                    <FileJson className="mr-2 h-4 w-4" />
+                    Export as JSON
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={exportAsCSV}>
+                    <FileSpreadsheet className="mr-2 h-4 w-4" />
+                    Export as CSV
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 

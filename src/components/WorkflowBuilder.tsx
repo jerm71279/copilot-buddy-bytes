@@ -266,12 +266,7 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
 
   /**
    * Tests the workflow without saving
-   * Currently logs to console - in production would call workflow-executor
-   * 
-   * Future Implementation:
-   * - Call workflow-executor edge function with test flag
-   * - Show execution results in modal or side panel
-   * - Allow step-by-step debugging
+   * Calls workflow-executor edge function to validate workflow logic
    */
   const testWorkflow = async () => {
     if (steps.length === 0) {
@@ -279,10 +274,70 @@ export const WorkflowBuilder = ({ customerId }: { customerId: string }) => {
       return;
     }
 
-    toast.success("Test execution started - check execution history for results");
-    
-    // TODO: Call workflow-executor edge function for real testing
-    console.log("Testing workflow:", { workflowName, steps, triggers });
+    if (!workflowName.trim()) {
+      toast.error("Please provide a workflow name before testing");
+      return;
+    }
+
+    try {
+      toast.loading("Starting workflow test execution...", { id: "workflow-test" });
+
+      // Prepare workflow data for execution
+      const workflowData = {
+        workflow_name: workflowName,
+        description: description || "Test execution",
+        steps: steps.map((step, index) => ({
+          id: step.id,
+          type: step.type,
+          sequence: index,
+          config: step.config || {}
+        })),
+        customer_id: customerId,
+        is_test: true // Flag to indicate this is a test execution
+      };
+
+      // Call the workflow-executor edge function
+      const { data, error } = await supabase.functions.invoke('workflow-executor', {
+        body: {
+          workflow: workflowData,
+          trigger_type: 'manual',
+          test_mode: true
+        }
+      });
+
+      if (error) {
+        console.error("Workflow test error:", error);
+        toast.error(`Test execution failed: ${error.message}`, { id: "workflow-test" });
+        return;
+      }
+
+      // Show success message with execution details
+      toast.success(
+        `Test execution completed! ${data?.steps_executed || steps.length} steps processed.`,
+        { id: "workflow-test" }
+      );
+
+      // Log detailed results for debugging
+      console.log("Workflow test results:", {
+        workflowName,
+        stepsExecuted: data?.steps_executed,
+        executionTime: data?.execution_time_ms,
+        results: data?.results,
+        logs: data?.logs
+      });
+
+      // Show detailed execution info if available
+      if (data?.results) {
+        toast.info(
+          `Execution: ${data.execution_time_ms || 0}ms | Status: ${data.status || 'completed'}`,
+          { duration: 5000 }
+        );
+      }
+
+    } catch (err: any) {
+      console.error("Workflow test exception:", err);
+      toast.error(`Test execution error: ${err.message || 'Unknown error'}`, { id: "workflow-test" });
+    }
   };
 
   return (
