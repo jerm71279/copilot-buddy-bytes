@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus, Trash2, Settings } from "lucide-react";
+import McpToolStepConfigDialog from "@/components/McpToolStepConfigDialog";
 
 interface WorkflowStep {
   id: string;
@@ -27,6 +28,8 @@ export default function WorkflowBuilder() {
   const [workflowType, setWorkflowType] = useState("custom");
   const [steps, setSteps] = useState<WorkflowStep[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
+  const [configuringStep, setConfiguringStep] = useState<WorkflowStep | null>(null);
 
   const addStep = (type: string) => {
     const newStep: WorkflowStep = {
@@ -43,6 +46,21 @@ export default function WorkflowBuilder() {
       ...step,
       sequence: idx
     })));
+  };
+
+  const openConfigDialog = (step: WorkflowStep) => {
+    setConfiguringStep(step);
+    setIsConfigDialogOpen(true);
+  };
+
+  const handleSaveConfig = (config: Record<string, any>) => {
+    if (configuringStep) {
+      setSteps(steps.map(step => 
+        step.id === configuringStep.id ? { ...step, config } : step
+      ));
+    }
+    setConfiguringStep(null);
+    setIsConfigDialogOpen(false);
   };
 
   const handleSave = async () => {
@@ -109,7 +127,8 @@ export default function WorkflowBuilder() {
     { value: "action", label: "Action", description: "Perform an action" },
     { value: "notification", label: "Notification", description: "Send a notification" },
     { value: "api_call", label: "API Call", description: "Call external API" },
-    { value: "delay", label: "Delay", description: "Wait before next step" }
+    { value: "delay", label: "Delay", description: "Wait before next step" },
+    { value: "mcp_tool_execution", label: "Execute MCP Tool", description: "Run an AI-driven tool" }
   ];
 
   return (
@@ -215,12 +234,12 @@ export default function WorkflowBuilder() {
                               <div>
                                 <p className="font-medium">Step {index + 1}: {step.type}</p>
                                 <p className="text-sm text-muted-foreground capitalize">
-                                  {step.type.replace('_', ' ')}
+                                  {step.config.tool_name || step.type.replace('_', ' ')}
                                 </p>
                               </div>
                             </div>
                             <div className="flex gap-2">
-                              <Button variant="ghost" size="sm">
+                              <Button variant="ghost" size="sm" onClick={() => openConfigDialog(step)} disabled={step.type !== 'mcp_tool_execution'}>
                                 <Settings className="h-4 w-4" />
                               </Button>
                               <Button 
@@ -269,6 +288,14 @@ export default function WorkflowBuilder() {
           </div>
         </div>
       </main>
+      {isConfigDialogOpen && configuringStep && (
+        <McpToolStepConfigDialog
+          isOpen={isConfigDialogOpen}
+          onClose={() => setIsConfigDialogOpen(false)}
+          onSave={handleSaveConfig}
+          initialConfig={configuringStep.config}
+        />
+      )}
     </div>
   );
 }
